@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於三用電表使用</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="_1">關於三用電表使用</h1>
+<p>三用電表（Multimeter）是電子電路測試與除錯最基本也最重要的工具。學會正確使用三用電表，可以快速診斷電路問題。</p>
+<hr />
+<h2 id="_2">一、什麼是三用電表</h2>
+<h3 id="11">1.1 基本介紹</h3>
+<p>三用電表能測量三種基本電學量：<br />
+- <strong>電壓（Voltage）</strong> - 單位：伏特（V）<br />
+- <strong>電流（Current）</strong> - 單位：安培（A）<br />
+- <strong>電阻（Resistance）</strong> - 單位：歐姆（Ω）</p>
+<p>現代數位三用電表（DMM, Digital Multimeter）通常還具備更多功能。</p>
+<h3 id="12">1.2 類型比較</h3>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>優點</th>
+<th>缺點</th>
+<th>價格範圍</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>指針式（類比）</td>
+<td>觀察變化直覺、不需電池顯示</td>
+<td>讀數較難、精度較低</td>
+<td>NT$ 200-500</td>
+</tr>
+<tr>
+<td>數位式（DMM）</td>
+<td>讀數清楚、精度高、功能多</td>
+<td>需要電池、反應稍慢</td>
+<td>NT$ 300-2000+</td>
+</tr>
+<tr>
+<td>自動量程</td>
+<td>操作簡單、不怕選錯檔位</td>
+<td>價格較高</td>
+<td>NT$ 500+</td>
+</tr>
+<tr>
+<td>手動量程</td>
+<td>價格便宜、可控制精度</td>
+<td>需要選對檔位</td>
+<td>NT$ 300+</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>初學者建議</strong>：選擇自動量程的數位三用電表，操作簡單不易出錯。</p>
+</blockquote>
+<hr />
+<h2 id="_3">二、三用電表的構造</h2>
+<h3 id="21">2.1 面板說明</h3>
+<pre><code>┌─────────────────────────────────────┐
+│           ┌───────────┐             │
+│           │  1 2 . 3 4│  ← 數位顯示幕
+│           │     V     │             │
+│           └───────────┘             │
+│                                     │
+│              ┌───┐                  │
+│         OFF  │   │  V~              │
+│              │ ○ │                  │
+│        Ω  ←──┤   ├──→ V⎓           │
+│              │   │                  │
+│         ⫘   │   │  mA              │
+│              └───┘                  │
+│            旋轉開關                  │
+│                                     │
+│    ┌───┐    ┌───┐    ┌───┐         │
+│    │COM│    │VΩ │    │mA │  ← 插孔  │
+│    └───┘    └───┘    └───┘         │
+│     黑       紅       紅            │
+│    (共用)   (電壓/   (電流)         │
+│            電阻)                    │
+└─────────────────────────────────────┘
+</code></pre>
+<h3 id="22">2.2 旋轉開關檔位</h3>
+<table>
+<thead>
+<tr>
+<th>符號</th>
+<th>功能</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OFF</td>
+<td>關閉</td>
+<td>不使用時轉到此檔</td>
+</tr>
+<tr>
+<td>V⎓ 或 DCV</td>
+<td>直流電壓</td>
+<td>測量電池、Arduino 輸出</td>
+</tr>
+<tr>
+<td>V~ 或 ACV</td>
+<td>交流電壓</td>
+<td>測量家用電（危險！）</td>
+</tr>
+<tr>
+<td>A 或 mA</td>
+<td>電流</td>
+<td>測量電路電流消耗</td>
+</tr>
+<tr>
+<td>Ω</td>
+<td>電阻</td>
+<td>測量電阻值、檢查通斷</td>
+</tr>
+<tr>
+<td>⫘ 或 )))</td>
+<td>通斷測試</td>
+<td>檢查線路是否連通（會發出嗶聲）</td>
+</tr>
+<tr>
+<td>⫘ 或 →|←</td>
+<td>二極體測試</td>
+<td>檢查二極體、LED 方向</td>
+</tr>
+<tr>
+<td>hFE</td>
+<td>電晶體測試</td>
+<td>測量電晶體放大倍率</td>
+</tr>
+<tr>
+<td>°C/°F</td>
+<td>溫度</td>
+<td>需搭配溫度探棒</td>
+</tr>
+<tr>
+<td>Hz</td>
+<td>頻率</td>
+<td>測量訊號頻率</td>
+</tr>
+<tr>
+<td>F</td>
+<td>電容</td>
+<td>測量電容值</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23">2.3 測試棒插孔</h3>
+<table>
+<thead>
+<tr>
+<th>插孔</th>
+<th>顏色</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>COM</td>
+<td>黑色</td>
+<td>共用端（負極/接地）</td>
+</tr>
+<tr>
+<td>VΩmA</td>
+<td>紅色</td>
+<td>電壓、電阻、小電流測量</td>
+</tr>
+<tr>
+<td>10A 或 20A</td>
+<td>紅色</td>
+<td>大電流測量（通常另一孔）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>重要</strong>：測量電流時，紅色測試棒要插對孔位！</p>
+<hr />
+<h2 id="_4">三、測量直流電壓（最常用）</h2>
+<h3 id="31">3.1 適用場景</h3>
+<ul>
+<li>檢查電源供應電壓</li>
+<li>測量 Arduino 腳位輸出</li>
+<li>檢查電池電量</li>
+<li>驗證電路各點電壓</li>
+</ul>
+<h3 id="32">3.2 操作步驟</h3>
+<pre><code>步驟 1：插入測試棒
+┌─────────────────┐
+│  COM    VΩmA    │
+│   ●       ●     │
+│   ↑       ↑     │
+│  黑棒    紅棒   │
+└─────────────────┘
+
+步驟 2：選擇檔位
+• 自動量程：轉到 V⎓ 即可
+• 手動量程：選擇大於預期電壓的檔位
+  - 測 5V → 選 20V 檔
+  - 測 12V → 選 20V 檔
+  - 不確定 → 從最大檔位開始
+
+步驟 3：測量
+      ┌──────────┐
+ 紅棒 →│   +5V    │← 被測電壓正極
+      │          │
+ 黑棒 →│   GND    │← 被測電壓負極
+      └──────────┘
+
+步驟 4：讀取數值
+• 顯示正值：紅棒接正極
+• 顯示負值：極性接反（不會損壞）
+</code></pre>
+<h3 id="33-arduino">3.3 Arduino 電壓測量範例</h3>
+<pre><code>測量 Arduino 的 5V 輸出：
+
+    Arduino UNO
+    ┌──────────────┐
+    │              │
+    │  5V  ●───────┼──→ 紅棒
+    │              │
+    │  GND ●───────┼──→ 黑棒
+    │              │
+    └──────────────┘
+
+預期讀數：4.8V ~ 5.2V（正常範圍）
+
+測量數位腳位輸出：
+
+    Arduino UNO
+    ┌──────────────┐
+    │              │
+    │  D13 ●───────┼──→ 紅棒
+    │              │
+    │  GND ●───────┼──→ 黑棒
+    │              │
+    └──────────────┘
+
+預期讀數：
+• HIGH 狀態：約 5V
+• LOW 狀態：約 0V
+</code></pre>
+<h3 id="34">3.4 常見問題</h3>
+<table>
+<thead>
+<tr>
+<th>現象</th>
+<th>可能原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>顯示 0V</td>
+<td>電源未開、線路斷開、檔位錯誤</td>
+</tr>
+<tr>
+<td>數值不穩定</td>
+<td>接觸不良、電源不穩</td>
+</tr>
+<tr>
+<td>顯示 OL</td>
+<td>超出量程、斷路</td>
+</tr>
+<tr>
+<td>數值偏低</td>
+<td>電池沒電、負載過重</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_5">四、測量電阻</h2>
+<h3 id="41">4.1 適用場景</h3>
+<ul>
+<li>確認電阻值</li>
+<li>檢查線路是否斷開</li>
+<li>測量感測器電阻變化</li>
+<li>檢查焊點品質</li>
+</ul>
+<h3 id="42">4.2 操作步驟</h3>
+<pre><code>重要：測量電阻前必須斷電！
+
+步驟 1：斷開被測電路的電源
+
+步驟 2：選擇 Ω 檔位
+• 自動量程：轉到 Ω 即可
+• 手動量程：
+  - 測 1kΩ → 選 2kΩ 或 20kΩ 檔
+  - 測 10kΩ → 選 20kΩ 或 200kΩ 檔
+
+步驟 3：將測試棒接觸電阻兩端
+       ┌─────┐
+  紅棒 →│█████│← 黑棒
+       └─────┘
+        電阻
+
+步驟 4：讀取數值
+• 單位注意：Ω、kΩ、MΩ
+• 1kΩ = 1000Ω
+• 1MΩ = 1000kΩ = 1,000,000Ω
+</code></pre>
+<h3 id="43">4.3 電阻色碼對照</h3>
+<pre><code>四環電阻讀法：
+┌─────────────────────────────┐
+│  ██  ██  ██  ██             │
+│  第1 第2 倍率 誤差           │
+└─────────────────────────────┘
+
+顏色對照：
+黑=0  棕=1  紅=2  橙=3  黃=4
+綠=5  藍=6  紫=7  灰=8  白=9
+
+倍率環：
+黑=×1  棕=×10  紅=×100  橙=×1k  黃=×10k
+
+範例：棕黑橙金 = 10 × 1000 = 10kΩ（誤差±5%）
+</code></pre>
+<h3 id="44">4.4 注意事項</h3>
+<table>
+<thead>
+<tr>
+<th>注意事項</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>必須斷電</td>
+<td>帶電測量會損壞電表或得到錯誤數值</td>
+</tr>
+<tr>
+<td>不要用手碰觸</td>
+<td>人體電阻會影響測量結果</td>
+</tr>
+<tr>
+<td>電路中測量</td>
+<td>需將電阻從電路中取出，否則會測到並聯電阻</td>
+</tr>
+<tr>
+<td>顯示 OL</td>
+<td>電阻值超出量程或斷路</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="continuity">五、通斷測試（Continuity）</h2>
+<h3 id="51">5.1 適用場景</h3>
+<ul>
+<li>檢查線路是否連通</li>
+<li>檢查焊點是否良好</li>
+<li>找出斷線位置</li>
+<li>驗證開關功能</li>
+</ul>
+<h3 id="52">5.2 操作步驟</h3>
+<pre><code>步驟 1：轉到通斷測試檔位（⫘ 或 )))）
+
+步驟 2：將測試棒接觸兩個測試點
+
+      測試點A           測試點B
+         ●───────────────●
+         ↑               ↑
+        紅棒            黑棒
+
+步驟 3：判斷結果
+• 發出「嗶」聲 → 導通（連接良好）
+• 沒有聲音 → 斷路（沒有連接）
+• 顯示數值 → 電阻值（小於 50Ω 通常會響）
+</code></pre>
+<h3 id="53">5.3 應用範例</h3>
+<pre><code>檢查杜邦線是否正常：
+
+    ┌─────────────────────────┐
+    │ 杜邦線                   │
+    ●─────────────────────────●
+    ↑                         ↑
+   紅棒                      黑棒
+
+   嗶聲 → 線材正常
+   無聲 → 線材斷裂
+
+檢查麵包板連接：
+
+    麵包板
+    ┌───────────────┐
+    │ ● ● ● ● ●    │  ← 同一排應該導通
+    │               │
+    │ ● ● ● ● ●    │  ← 不同排應該不導通
+    └───────────────┘
+</code></pre>
+<hr />
+<h2 id="_6">六、測量直流電流</h2>
+<h3 id="61">6.1 適用場景</h3>
+<ul>
+<li>測量電路總耗電</li>
+<li>檢查元件電流消耗</li>
+<li>驗證電源供應能力</li>
+<li>診斷異常耗電</li>
+</ul>
+<h3 id="62">6.2 重要概念</h3>
+<pre><code>電壓測量 = 並聯（跨接在被測點兩端）
+
+    電源 ──┬── 負載 ──┐
+           │          │
+          電表        │
+           │          │
+           └──────────┘
+
+電流測量 = 串聯（電流必須流經電表）
+
+    電源 ──── 電表 ──── 負載 ──┐
+                              │
+              ←───────────────┘
+</code></pre>
+<h3 id="63">6.3 操作步驟</h3>
+<pre><code>步驟 1：選擇正確的插孔
+• 小電流（&lt;200mA）：使用 mA 孔
+• 大電流（&gt;200mA）：使用 10A/20A 孔
+
+步驟 2：斷開電路
+
+步驟 3：將電表串聯到電路中
+
+    修改前：
+    電源(+) ────────────── 負載 ──── 電源(-)
+
+    修改後：
+    電源(+) ── 紅棒 ─[電表]─ 黑棒 ── 負載 ──── 電源(-)
+
+步驟 4：開啟電源，讀取數值
+
+步驟 5：測量完畢後恢復電路
+</code></pre>
+<h3 id="64-arduino">6.4 Arduino 電流測量範例</h3>
+<pre><code>測量 Arduino + LED 的總電流：
+
+    USB 電源             Arduino
+       │                ┌──────┐
+       ├──紅棒─[電表]─黑棒─┤ VIN  │
+       │                │      │
+       └────────────────┤ GND  │
+                        │      │
+                        │  D13 ├──[R]──[LED]──┐
+                        │      │              │
+                        │  GND ├──────────────┘
+                        └──────┘
+
+預期讀數：
+• Arduino 待機：約 30-50mA
+• Arduino + LED：約 40-70mA
+</code></pre>
+<h3 id="65">6.5 安全注意事項</h3>
+<table>
+<thead>
+<tr>
+<th>注意事項</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>從大量程開始</td>
+<td>不確定電流大小時，先用最大檔位</td>
+</tr>
+<tr>
+<td>檢查插孔</td>
+<td>mA 孔通常有保險絲保護，10A 孔可能沒有</td>
+</tr>
+<tr>
+<td>不可測市電</td>
+<td>電流檔測量市電非常危險！</td>
+</tr>
+<tr>
+<td>快速測量</td>
+<td>大電流測量時不要持續太久</td>
+</tr>
+<tr>
+<td>勿並聯測電流</td>
+<td>會造成短路！</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_7">七、二極體測試</h2>
+<h3 id="71">7.1 適用場景</h3>
+<ul>
+<li>確認 LED 極性</li>
+<li>檢查二極體好壞</li>
+<li>判斷二極體方向</li>
+</ul>
+<h3 id="72">7.2 操作步驟</h3>
+<pre><code>步驟 1：轉到二極體測試檔位（→|←）
+
+步驟 2：正向測試
+        ┌──────┐
+   紅棒 →│ →|← │→ 黑棒
+        └──────┘
+         二極體
+
+   • LED 微亮 → 正向導通
+   • 顯示 0.5-0.7V → 矽二極體正常
+   • 顯示 0.2-0.3V → 蕭基二極體正常
+
+步驟 3：反向測試（對調測試棒）
+        ┌──────┐
+   黑棒 →│ →|← │→ 紅棒
+        └──────┘
+
+   • 顯示 OL → 反向截止（正常）
+   • 顯示數值 → 二極體可能損壞
+</code></pre>
+<h3 id="73-led">7.3 LED 極性判斷</h3>
+<pre><code>使用二極體檔位測試 LED：
+
+    紅棒接長腳（正極）
+        ↓
+       ┌─┐
+       │●│ ← LED 會微微發光
+       └┬┘
+        ↑
+    黑棒接短腳（負極）
+
+如果不亮，對調測試棒即可找到正確極性
+</code></pre>
+<hr />
+<h2 id="_8">八、實用測量技巧</h2>
+<h3 id="81">8.1 測量前檢查</h3>
+<pre><code>每次使用前的自我檢測：
+
+1. 檢查電池電量
+   • 顯示低電量符號要換電池
+   • 數值不穩定可能是電池問題
+
+2. 測試棒檢查
+   • 通斷檔，紅黑棒相碰應該響
+   • 檢查測試棒有無斷裂
+
+3. 歸零確認
+   • 電阻檔，紅黑棒相碰應顯示接近 0Ω
+</code></pre>
+<h3 id="82">8.2 提高測量準確度</h3>
+<table>
+<thead>
+<tr>
+<th>技巧</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>穩定接觸</td>
+<td>測試棒要穩定接觸測量點</td>
+</tr>
+<tr>
+<td>等待穩定</td>
+<td>數值跳動時等待穩定再讀取</td>
+</tr>
+<tr>
+<td>多次測量</td>
+<td>重要數據測量 2-3 次確認</td>
+</tr>
+<tr>
+<td>注意單位</td>
+<td>mV/V、mA/A、Ω/kΩ/MΩ</td>
+</tr>
+<tr>
+<td>適當量程</td>
+<td>手動量程時選擇最適合的檔位</td>
+</tr>
+</tbody>
+</table>
+<h3 id="83-arduino">8.3 Arduino 常用測量項目</h3>
+<table>
+<thead>
+<tr>
+<th>測量項目</th>
+<th>檔位</th>
+<th>預期數值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5V 電源</td>
+<td>DCV</td>
+<td>4.8 ~ 5.2V</td>
+</tr>
+<tr>
+<td>3.3V 電源</td>
+<td>DCV</td>
+<td>3.2 ~ 3.4V</td>
+</tr>
+<tr>
+<td>數位 HIGH</td>
+<td>DCV</td>
+<td>4.5 ~ 5V</td>
+</tr>
+<tr>
+<td>數位 LOW</td>
+<td>DCV</td>
+<td>0 ~ 0.5V</td>
+</tr>
+<tr>
+<td>類比輸出 (PWM)</td>
+<td>DCV</td>
+<td>0 ~ 5V 平均值</td>
+</tr>
+<tr>
+<td>LED 限流電阻</td>
+<td>Ω</td>
+<td>220Ω ~ 1kΩ</td>
+</tr>
+<tr>
+<td>上拉電阻</td>
+<td>Ω</td>
+<td>4.7kΩ ~ 10kΩ</td>
+</tr>
+<tr>
+<td>待機電流</td>
+<td>mA</td>
+<td>30 ~ 50mA</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_9">九、安全注意事項</h2>
+<h3 id="91">9.1 危險警告</h3>
+<pre><code>⚠️ 絕對禁止事項：
+
+1. 電流檔測量電壓
+   → 會造成短路，燒毀保險絲或電表
+
+2. 測量市電時使用錯誤檔位
+   → 可能觸電或損壞電表
+
+3. 超過電表額定值
+   → 損壞電表，可能引發危險
+
+4. 使用破損的測試棒
+   → 可能觸電
+</code></pre>
+<h3 id="92">9.2 安全守則</h3>
+<table>
+<thead>
+<tr>
+<th>守則</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>先確認檔位</td>
+<td>測量前再次確認旋鈕位置</td>
+</tr>
+<tr>
+<td>單手操作</td>
+<td>測量高壓時僅用單手，減少電流經過心臟風險</td>
+</tr>
+<tr>
+<td>檢查額定值</td>
+<td>不超過電表標示的最大值</td>
+</tr>
+<tr>
+<td>測試棒檢查</td>
+<td>使用前檢查絕緣是否完好</td>
+</tr>
+<tr>
+<td>低壓優先</td>
+<td>初學者先從低壓電路開始練習</td>
+</tr>
+</tbody>
+</table>
+<h3 id="93-arduino">9.3 Arduino 專案安全電壓</h3>
+<pre><code>安全範圍（初學者適用）：
+
+✓ 安全：
+  • 電池供電（3V ~ 12V）
+  • USB 供電（5V）
+  • Arduino 腳位（0 ~ 5V）
+  • 各種感測器訊號
+
+✗ 危險（需專業指導）：
+  • 市電 110V/220V
+  • 馬達驅動高電壓
+  • 電源供應器內部
+</code></pre>
+<hr />
+<h2 id="_10">十、選購建議</h2>
+<h3 id="101">10.1 初學者推薦</h3>
+<table>
+<thead>
+<tr>
+<th>功能需求</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>自動量程</td>
+<td>不用擔心選錯檔位</td>
+</tr>
+<tr>
+<td>通斷測試</td>
+<td>有蜂鳴聲功能</td>
+</tr>
+<tr>
+<td>二極體測試</td>
+<td>可測 LED 極性</td>
+</tr>
+<tr>
+<td>背光顯示</td>
+<td>光線不足時方便讀數</td>
+</tr>
+<tr>
+<td>保護功能</td>
+<td>過載保護、保險絲</td>
+</tr>
+</tbody>
+</table>
+<h3 id="102">10.2 推薦型號參考</h3>
+<table>
+<thead>
+<tr>
+<th>等級</th>
+<th>價格範圍</th>
+<th>適合對象</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>入門款</td>
+<td>NT$ 200-400</td>
+<td>學生、偶爾使用</td>
+</tr>
+<tr>
+<td>中階款</td>
+<td>NT$ 400-800</td>
+<td>Maker、愛好者</td>
+</tr>
+<tr>
+<td>專業款</td>
+<td>NT$ 1000+</td>
+<td>專業維修、精密測量</td>
+</tr>
+</tbody>
+</table>
+<h3 id="103">10.3 購買通路</h3>
+<table>
+<thead>
+<tr>
+<th>通路</th>
+<th>特點</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>電子材料行</td>
+<td>可現場試用、諮詢</td>
+</tr>
+<tr>
+<td>網路商城</td>
+<td>選擇多、價格透明</td>
+</tr>
+<tr>
+<td>五金行</td>
+<td>方便取得、入門款為主</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="faq">十一、常見問題 FAQ</h2>
+<h3 id="q1-ol">Q1：顯示 OL 是什麼意思？</h3>
+<p><strong>OL = Over Limit（超出量程）</strong><br />
+- 電壓檔：電壓超過最大量程<br />
+- 電阻檔：電阻值太大或斷路<br />
+- 解決：換更大的量程或檢查連接</p>
+<h3 id="q2">Q2：為什麼測量電阻時數值一直跳動？</h3>
+<p><strong>可能原因：</strong><br />
+1. 手碰觸到測試點（人體電阻干擾）<br />
+2. 接觸不良<br />
+3. 電路未完全斷電<br />
+4. 被測元件有電容效應</p>
+<h3 id="q3">Q3：自動量程和手動量程怎麼選？</h3>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>優點</th>
+<th>缺點</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>自動量程</td>
+<td>方便、不怕選錯</td>
+<td>反應稍慢、價格較高</td>
+</tr>
+<tr>
+<td>手動量程</td>
+<td>反應快、便宜</td>
+<td>需要判斷量程</td>
+</tr>
+</tbody>
+</table>
+<p><strong>建議</strong>：初學者選自動量程，熟練後可用手動量程。</p>
+<h3 id="q4">Q4：電表需要校正嗎？</h3>
+<p><strong>一般使用不需要。</strong> 但：<br />
+- 高精度需求時建議定期校正<br />
+- 懷疑數值不準時，可用已知電阻/電壓對照<br />
+- 專業用途建議每年校正一次</p>
+<h3 id="q5">Q5：保險絲燒了怎麼辦？</h3>
+<p><strong>更換保險絲：</strong><br />
+1. 打開電表後蓋<br />
+2. 找到燒毀的保險絲<br />
+3. 更換相同規格的保險絲（注意電流值和類型）<br />
+4. 檢討為何燒毀，避免再次發生</p>
+<hr />
+<h2 id="_11">十二、重點整理</h2>
+<h3 id="_12">測量檔位選擇</h3>
+<table>
+<thead>
+<tr>
+<th>測量項目</th>
+<th>檔位</th>
+<th>接法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>直流電壓</td>
+<td>V⎓</td>
+<td>並聯</td>
+</tr>
+<tr>
+<td>交流電壓</td>
+<td>V~</td>
+<td>並聯</td>
+</tr>
+<tr>
+<td>電阻</td>
+<td>Ω</td>
+<td>斷電後測量</td>
+</tr>
+<tr>
+<td>直流電流</td>
+<td>A/mA</td>
+<td>串聯</td>
+</tr>
+<tr>
+<td>通斷</td>
+<td>⫘</td>
+<td>斷電後測量</td>
+</tr>
+<tr>
+<td>二極體</td>
+<td>→|←</td>
+<td>斷電後測量</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">安全原則</h3>
+<ol>
+<li><strong>測量前確認檔位</strong> - 避免燒毀電表</li>
+<li><strong>電阻測量要斷電</strong> - 否則數值錯誤</li>
+<li><strong>電流測量要串聯</strong> - 並聯會短路</li>
+<li><strong>從大量程開始</strong> - 不確定時的安全做法</li>
+<li><strong>定期檢查測試棒</strong> - 確保安全</li>
+</ol>
+<h3 id="_14">初學者練習順序</h3>
+<pre><code>1. 測量電池電壓（1.5V、9V）
+2. 測量電阻（確認色碼）
+3. 通斷測試（檢查線路）
+4. 測量 Arduino 5V 輸出
+5. 測量數位腳位高低電位
+6. 測量 LED 限流電阻
+7. 測量電路電流（進階）
+</code></pre>
+<hr />
+<p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

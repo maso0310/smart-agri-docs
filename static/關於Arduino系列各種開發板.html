@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於Arduino系列各種開發板</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="arduino">Arduino 系列各種開發板</h1>
+<h2 id="_1">前言</h2>
+<p>Arduino 有許多不同型號的開發板，各有不同的特性和用途。本文介紹常見的開發板，幫助你選擇適合的型號。</p>
+<hr />
+<h2 id="arduino_1">官方 Arduino 開發板</h2>
+<h3 id="arduino-uno">Arduino Uno（最推薦入門）</h3>
+<pre><code>┌─────────────────────────────────┐
+│  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │  ← 數位腳位 0-13
+│                                 │
+│    ┌───────────┐               │
+│    │   ATmega  │    [USB-B]    │
+│    │    328P   │               │
+│    └───────────┘               │
+│                      [DC 插孔] │
+│  ○ ○ ○ ○ ○ ○                   │  ← 類比腳位 A0-A5
+└─────────────────────────────────┘
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>規格</th>
+<th>數值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>微控制器</td>
+<td>ATmega328P</td>
+</tr>
+<tr>
+<td>工作電壓</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>輸入電壓</td>
+<td>7-12V（建議 9V）</td>
+</tr>
+<tr>
+<td>數位 I/O</td>
+<td>14 個（6 個可 PWM）</td>
+</tr>
+<tr>
+<td>類比輸入</td>
+<td>6 個（A0-A5）</td>
+</tr>
+<tr>
+<td>Flash 記憶體</td>
+<td>32 KB</td>
+</tr>
+<tr>
+<td>SRAM</td>
+<td>2 KB</td>
+</tr>
+<tr>
+<td>EEPROM</td>
+<td>1 KB</td>
+</tr>
+<tr>
+<td>時脈速度</td>
+<td>16 MHz</td>
+</tr>
+<tr>
+<td>USB 介面</td>
+<td>Type-B</td>
+</tr>
+<tr>
+<td>尺寸</td>
+<td>68.6 x 53.4 mm</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>原廠約 $700，副廠約 $100-200</td>
+</tr>
+</tbody>
+</table>
+<p><strong>特點</strong>：</p>
+<ul>
+<li>最經典、資源最多的開發板</li>
+<li>接腳間距大，方便接線</li>
+<li>適合初學者入門</li>
+</ul>
+<p><strong>適用場景</strong>：</p>
+<ul>
+<li>學習 Arduino 程式設計</li>
+<li>各種感測器實驗</li>
+<li>原型開發</li>
+</ul>
+<hr />
+<h3 id="arduino-nano">Arduino Nano</h3>
+<pre><code>┌─────────────────────────────┐
+│ ○○○○○○○○○○○○○○○           │
+│ ┌───────────────┐ [Mini-USB]│
+│ │   ATmega328P  │           │
+│ └───────────────┘           │
+│ ○○○○○○○○○○○○○○○           │
+└─────────────────────────────┘
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>規格</th>
+<th>數值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>微控制器</td>
+<td>ATmega328P（同 Uno）</td>
+</tr>
+<tr>
+<td>工作電壓</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>數位 I/O</td>
+<td>14 個（6 個可 PWM）</td>
+</tr>
+<tr>
+<td>類比輸入</td>
+<td>8 個（A0-A7）</td>
+</tr>
+<tr>
+<td>Flash 記憶體</td>
+<td>32 KB</td>
+</tr>
+<tr>
+<td>SRAM</td>
+<td>2 KB</td>
+</tr>
+<tr>
+<td>時脈速度</td>
+<td>16 MHz</td>
+</tr>
+<tr>
+<td>USB 介面</td>
+<td>Mini-USB 或 Type-C（新版）</td>
+</tr>
+<tr>
+<td>尺寸</td>
+<td>45 x 18 mm</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>原廠約 $700，副廠約 $60-100</td>
+</tr>
+</tbody>
+</table>
+<p><strong>特點</strong>：</p>
+<ul>
+<li>與 Uno 相同的晶片，但體積小很多</li>
+<li>可直接插在麵包板上</li>
+<li>多 2 個類比輸入（A6、A7）</li>
+</ul>
+<p><strong>適用場景</strong>：</p>
+<ul>
+<li>空間有限的專案</li>
+<li>需要插在麵包板上的實驗</li>
+<li>穿戴式裝置</li>
+</ul>
+<hr />
+<h3 id="arduino-mega-2560">Arduino Mega 2560</h3>
+<pre><code>┌─────────────────────────────────────────────────┐
+│  ○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○ │
+│                                                 │
+│    ┌───────────┐                               │
+│    │ ATmega2560│         [USB-B]               │
+│    └───────────┘                               │
+│                               [DC 插孔]        │
+│  ○○○○○○○○○○○○○○○○                              │
+└─────────────────────────────────────────────────┘
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>規格</th>
+<th>數值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>微控制器</td>
+<td>ATmega2560</td>
+</tr>
+<tr>
+<td>工作電壓</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>數位 I/O</td>
+<td><strong>54 個</strong>（15 個可 PWM）</td>
+</tr>
+<tr>
+<td>類比輸入</td>
+<td><strong>16 個</strong>（A0-A15）</td>
+</tr>
+<tr>
+<td>Flash 記憶體</td>
+<td><strong>256 KB</strong></td>
+</tr>
+<tr>
+<td>SRAM</td>
+<td><strong>8 KB</strong></td>
+</tr>
+<tr>
+<td>EEPROM</td>
+<td>4 KB</td>
+</tr>
+<tr>
+<td>時脈速度</td>
+<td>16 MHz</td>
+</tr>
+<tr>
+<td>Serial 埠</td>
+<td><strong>4 組</strong>（Serial, Serial1-3）</td>
+</tr>
+<tr>
+<td>尺寸</td>
+<td>101.5 x 53.3 mm</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>原廠約 $1,400，副廠約 $200-300</td>
+</tr>
+</tbody>
+</table>
+<p><strong>特點</strong>：</p>
+<ul>
+<li>超多 I/O 腳位</li>
+<li>大容量記憶體</li>
+<li>多組硬體 Serial</li>
+<li>適合大型專案</li>
+</ul>
+<p><strong>適用場景</strong>：</p>
+<ul>
+<li>3D 印表機控制板</li>
+<li>機器人（需要控制多個馬達）</li>
+<li>需要大量感測器的專案</li>
+<li>記憶體需求大的程式</li>
+</ul>
+<hr />
+<h3 id="arduino-leonardo">Arduino Leonardo</h3>
+<table>
+<thead>
+<tr>
+<th>規格</th>
+<th>數值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>微控制器</td>
+<td>ATmega32U4</td>
+</tr>
+<tr>
+<td>工作電壓</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>數位 I/O</td>
+<td>20 個（7 個可 PWM）</td>
+</tr>
+<tr>
+<td>類比輸入</td>
+<td>12 個</td>
+</tr>
+<tr>
+<td>Flash 記憶體</td>
+<td>32 KB</td>
+</tr>
+<tr>
+<td>SRAM</td>
+<td>2.5 KB</td>
+</tr>
+<tr>
+<td>時脈速度</td>
+<td>16 MHz</td>
+</tr>
+<tr>
+<td>USB 介面</td>
+<td>Micro-USB（原生 USB）</td>
+</tr>
+<tr>
+<td>尺寸</td>
+<td>68.6 x 53.3 mm</td>
+</tr>
+</tbody>
+</table>
+<p><strong>特點</strong>：</p>
+<ul>
+<li><strong>原生 USB 支援</strong>：可模擬鍵盤、滑鼠</li>
+<li>不需要額外的 USB 轉 Serial 晶片</li>
+</ul>
+<p><strong>適用場景</strong>：</p>
+<ul>
+<li>自製鍵盤/滑鼠</li>
+<li>遊戲控制器</li>
+<li>USB HID 設備</li>
+<li>自動化腳本（模擬鍵盤輸入）</li>
+</ul>
+<p><strong>範例：模擬鍵盤</strong></p>
+<pre><code class="language-cpp">#include &lt;Keyboard.h&gt;
+
+void setup() {
+  Keyboard.begin();
+}
+
+void loop() {
+  if (digitalRead(2) == LOW) {
+    Keyboard.print(&quot;Hello World!&quot;);
+    delay(1000);
+  }
+}
+</code></pre>
+<hr />
+<h3 id="arduino-due">Arduino Due</h3>
+<table>
+<thead>
+<tr>
+<th>規格</th>
+<th>數值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>微控制器</td>
+<td>AT91SAM3X8E（32 位元 ARM）</td>
+</tr>
+<tr>
+<td>工作電壓</td>
+<td><strong>3.3V</strong> ⚠️</td>
+</tr>
+<tr>
+<td>數位 I/O</td>
+<td>54 個（12 個可 PWM）</td>
+</tr>
+<tr>
+<td>類比輸入</td>
+<td>12 個</td>
+</tr>
+<tr>
+<td>類比輸出</td>
+<td><strong>2 個</strong>（DAC）</td>
+</tr>
+<tr>
+<td>Flash 記憶體</td>
+<td>512 KB</td>
+</tr>
+<tr>
+<td>SRAM</td>
+<td>96 KB</td>
+</tr>
+<tr>
+<td>時脈速度</td>
+<td><strong>84 MHz</strong></td>
+</tr>
+<tr>
+<td>尺寸</td>
+<td>101.5 x 53.3 mm</td>
+</tr>
+</tbody>
+</table>
+<p><strong>特點</strong>：</p>
+<ul>
+<li><strong>32 位元 ARM 處理器</strong>：效能遠超 8 位元板</li>
+<li><strong>真正的類比輸出</strong>（DAC）</li>
+<li>運算速度快</li>
+</ul>
+<p><strong>注意事項</strong>：</p>
+<ul>
+<li>⚠️ <strong>工作電壓是 3.3V</strong>，不能接 5V 訊號！</li>
+<li>部分 5V 的擴充板/模組無法直接使用</li>
+</ul>
+<p><strong>適用場景</strong>：</p>
+<ul>
+<li>需要高運算效能</li>
+<li>音訊處理</li>
+<li>訊號處理</li>
+<li>需要真正類比輸出</li>
+</ul>
+<hr />
+<h3 id="arduino-pro-mini">Arduino Pro Mini</h3>
+<pre><code>┌─────────────────────┐
+│ ○○○○○○○○○○○○       │
+│ ┌─────────────┐     │
+│ │  ATmega328P │     │ ← 無 USB，需外接燒錄器
+│ └─────────────┘     │
+│ ○○○○○○○○○○○○       │
+└─────────────────────┘
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>規格</th>
+<th>數值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>微控制器</td>
+<td>ATmega328P</td>
+</tr>
+<tr>
+<td>工作電壓</td>
+<td>3.3V 或 5V（依版本）</td>
+</tr>
+<tr>
+<td>數位 I/O</td>
+<td>14 個</td>
+</tr>
+<tr>
+<td>類比輸入</td>
+<td>6 個</td>
+</tr>
+<tr>
+<td>Flash 記憶體</td>
+<td>32 KB</td>
+</tr>
+<tr>
+<td>時脈速度</td>
+<td>8 MHz (3.3V) 或 16 MHz (5V)</td>
+</tr>
+<tr>
+<td>USB 介面</td>
+<td><strong>無</strong>（需外接 FTDI 燒錄器）</td>
+</tr>
+<tr>
+<td>尺寸</td>
+<td><strong>33 x 18 mm</strong>（超小）</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>副廠約 $30-60</td>
+</tr>
+</tbody>
+</table>
+<p><strong>特點</strong>：</p>
+<ul>
+<li><strong>最小體積</strong>的 ATmega328P 板</li>
+<li>沒有 USB，省電</li>
+<li>超便宜</li>
+</ul>
+<p><strong>適用場景</strong>：</p>
+<ul>
+<li>嵌入式產品</li>
+<li>極度空間受限的專案</li>
+<li>電池供電（省電需求）</li>
+<li>大量部署（成本考量）</li>
+</ul>
+<hr />
+<h2 id="esp-arduino-ide">ESP 系列（相容 Arduino IDE）</h2>
+<p>雖然不是官方 Arduino，但可以用 Arduino IDE 開發，而且<strong>內建 WiFi</strong>！</p>
+<h3 id="esp8266-nodemcu-d1-mini">ESP8266 (NodeMCU / D1 Mini)</h3>
+<pre><code>┌─────────────────────────┐
+│ ○○○○○○○○○○○○○○○        │
+│ ┌─────────────┐         │
+│ │   ESP8266   │  [USB]  │
+│ │   (WiFi)    │         │
+│ └─────────────┘         │
+│ ○○○○○○○○○○○○○○○        │
+└─────────────────────────┘
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>規格</th>
+<th>數值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>微控制器</td>
+<td>ESP8266（32 位元）</td>
+</tr>
+<tr>
+<td>工作電壓</td>
+<td><strong>3.3V</strong> ⚠️</td>
+</tr>
+<tr>
+<td>數位 I/O</td>
+<td>11 個（GPIO）</td>
+</tr>
+<tr>
+<td>類比輸入</td>
+<td>1 個（0-1V）</td>
+</tr>
+<tr>
+<td>Flash 記憶體</td>
+<td>4 MB（依版本）</td>
+</tr>
+<tr>
+<td>SRAM</td>
+<td>80 KB</td>
+</tr>
+<tr>
+<td>時脈速度</td>
+<td>80 / 160 MHz</td>
+</tr>
+<tr>
+<td>WiFi</td>
+<td><strong>802.11 b/g/n</strong></td>
+</tr>
+<tr>
+<td>尺寸</td>
+<td>依版本不同</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>約 $80-150</td>
+</tr>
+</tbody>
+</table>
+<p><strong>常見型號</strong>：</p>
+<ul>
+<li><strong>NodeMCU</strong>：有 USB，方便開發</li>
+<li><strong>D1 Mini</strong>：更小，適合專案</li>
+<li><strong>ESP-01</strong>：最小，只有 2 個 GPIO</li>
+</ul>
+<p><strong>特點</strong>：</p>
+<ul>
+<li><strong>內建 WiFi</strong></li>
+<li>效能比 Arduino Uno 強很多</li>
+<li>便宜</li>
+</ul>
+<p><strong>注意事項</strong>：</p>
+<ul>
+<li>⚠️ <strong>工作電壓是 3.3V</strong></li>
+<li>GPIO 腳位編號與 Arduino 不同</li>
+<li>類比輸入範圍只有 0-1V</li>
+</ul>
+<p><strong>適用場景</strong>：</p>
+<ul>
+<li>物聯網 (IoT) 專案</li>
+<li>WiFi 遠端控制</li>
+<li>智慧家庭</li>
+<li>資料上傳雲端</li>
+</ul>
+<hr />
+<h3 id="esp32">ESP32</h3>
+<pre><code>┌─────────────────────────────┐
+│ ○○○○○○○○○○○○○○○○○○○       │
+│ ┌─────────────────┐         │
+│ │     ESP32       │  [USB]  │
+│ │  (WiFi + BLE)   │         │
+│ └─────────────────┘         │
+│ ○○○○○○○○○○○○○○○○○○○       │
+└─────────────────────────────┘
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>規格</th>
+<th>數值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>微控制器</td>
+<td>ESP32（32 位元<strong>雙核心</strong>）</td>
+</tr>
+<tr>
+<td>工作電壓</td>
+<td><strong>3.3V</strong> ⚠️</td>
+</tr>
+<tr>
+<td>數位 I/O</td>
+<td><strong>34 個</strong> GPIO</td>
+</tr>
+<tr>
+<td>類比輸入</td>
+<td>18 個（12 位元）</td>
+</tr>
+<tr>
+<td>類比輸出</td>
+<td>2 個（DAC）</td>
+</tr>
+<tr>
+<td>Flash 記憶體</td>
+<td>4-16 MB（依版本）</td>
+</tr>
+<tr>
+<td>SRAM</td>
+<td>520 KB</td>
+</tr>
+<tr>
+<td>時脈速度</td>
+<td>240 MHz（雙核心）</td>
+</tr>
+<tr>
+<td>WiFi</td>
+<td><strong>802.11 b/g/n</strong></td>
+</tr>
+<tr>
+<td>藍牙</td>
+<td><strong>Bluetooth 4.2 + BLE</strong></td>
+</tr>
+<tr>
+<td>尺寸</td>
+<td>依版本不同</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>約 $120-200</td>
+</tr>
+</tbody>
+</table>
+<p><strong>特點</strong>：</p>
+<ul>
+<li><strong>雙核心處理器</strong>：一個跑 WiFi，一個跑程式</li>
+<li><strong>WiFi + 藍牙</strong></li>
+<li>大量 GPIO</li>
+<li>真正的類比輸出（DAC）</li>
+<li>觸控感測腳位</li>
+<li>霍爾感測器</li>
+</ul>
+<p><strong>適用場景</strong>：</p>
+<ul>
+<li>進階物聯網專案</li>
+<li>需要藍牙的專案</li>
+<li>音訊專案（有 I2S）</li>
+<li>需要大量 I/O 的 IoT</li>
+</ul>
+<hr />
+<h3 id="esp-01-wifi">ESP-01（最小 WiFi 模組）</h3>
+<pre><code>┌───────────────┐
+│ ○ ○ ○ ○      │  ← 8 個腳位
+│ ┌─────────┐  │
+│ │ ESP8266 │  │
+│ └─────────┘  │
+│    [天線]    │
+└───────────────┘
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>規格</th>
+<th>數值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>微控制器</td>
+<td>ESP8266</td>
+</tr>
+<tr>
+<td>工作電壓</td>
+<td><strong>3.3V</strong> ⚠️（需 200mA 以上）</td>
+</tr>
+<tr>
+<td>GPIO</td>
+<td><strong>只有 2 個</strong>（GPIO0, GPIO2）</td>
+</tr>
+<tr>
+<td>Flash 記憶體</td>
+<td>1 MB</td>
+</tr>
+<tr>
+<td>WiFi</td>
+<td>802.11 b/g/n</td>
+</tr>
+<tr>
+<td>尺寸</td>
+<td><strong>24.75 x 14.5 mm</strong>（超小）</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>約 $40-60</td>
+</tr>
+</tbody>
+</table>
+<p><strong>特點</strong>：</p>
+<ul>
+<li><strong>最便宜的 WiFi 方案</strong></li>
+<li>體積超小</li>
+<li>GPIO 很少</li>
+</ul>
+<p><strong>兩種用法</strong>：</p>
+<ol>
+<li><strong>AT 指令模式</strong>：Arduino 透過 Serial 發送 AT 指令控制</li>
+<li><strong>獨立運作</strong>：直接燒錄程式到 ESP-01</li>
+</ol>
+<p><strong>適用場景</strong>：</p>
+<ul>
+<li>為 Arduino 加上 WiFi 功能</li>
+<li>簡單的 WiFi 開關</li>
+<li>成本敏感的專案</li>
+</ul>
+<hr />
+<h2 id="_2">規格比較總表</h2>
+<h3 id="arduino_2">官方 Arduino 板比較</h3>
+<table>
+<thead>
+<tr>
+<th>型號</th>
+<th>處理器</th>
+<th>電壓</th>
+<th>Flash</th>
+<th>RAM</th>
+<th>I/O</th>
+<th>PWM</th>
+<th>類比輸入</th>
+<th>特色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Uno</td>
+<td>ATmega328P</td>
+<td>5V</td>
+<td>32KB</td>
+<td>2KB</td>
+<td>14</td>
+<td>6</td>
+<td>6</td>
+<td>最經典</td>
+</tr>
+<tr>
+<td>Nano</td>
+<td>ATmega328P</td>
+<td>5V</td>
+<td>32KB</td>
+<td>2KB</td>
+<td>14</td>
+<td>6</td>
+<td>8</td>
+<td>小巧</td>
+</tr>
+<tr>
+<td>Mega</td>
+<td>ATmega2560</td>
+<td>5V</td>
+<td>256KB</td>
+<td>8KB</td>
+<td>54</td>
+<td>15</td>
+<td>16</td>
+<td>超多 I/O</td>
+</tr>
+<tr>
+<td>Leonardo</td>
+<td>ATmega32U4</td>
+<td>5V</td>
+<td>32KB</td>
+<td>2.5KB</td>
+<td>20</td>
+<td>7</td>
+<td>12</td>
+<td>USB HID</td>
+</tr>
+<tr>
+<td>Due</td>
+<td>ARM Cortex-M3</td>
+<td><strong>3.3V</strong></td>
+<td>512KB</td>
+<td>96KB</td>
+<td>54</td>
+<td>12</td>
+<td>12</td>
+<td>高效能</td>
+</tr>
+<tr>
+<td>Pro Mini</td>
+<td>ATmega328P</td>
+<td>3.3/5V</td>
+<td>32KB</td>
+<td>2KB</td>
+<td>14</td>
+<td>6</td>
+<td>6</td>
+<td>最小</td>
+</tr>
+</tbody>
+</table>
+<h3 id="esp">ESP 系列比較</h3>
+<table>
+<thead>
+<tr>
+<th>型號</th>
+<th>處理器</th>
+<th>電壓</th>
+<th>Flash</th>
+<th>RAM</th>
+<th>GPIO</th>
+<th>WiFi</th>
+<th>藍牙</th>
+<th>特色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ESP-01</td>
+<td>ESP8266</td>
+<td>3.3V</td>
+<td>1MB</td>
+<td>80KB</td>
+<td>2</td>
+<td>✓</td>
+<td>✗</td>
+<td>最小 WiFi</td>
+</tr>
+<tr>
+<td>NodeMCU</td>
+<td>ESP8266</td>
+<td>3.3V</td>
+<td>4MB</td>
+<td>80KB</td>
+<td>11</td>
+<td>✓</td>
+<td>✗</td>
+<td>方便開發</td>
+</tr>
+<tr>
+<td>ESP32</td>
+<td>雙核心</td>
+<td>3.3V</td>
+<td>4-16MB</td>
+<td>520KB</td>
+<td>34</td>
+<td>✓</td>
+<td>✓</td>
+<td>最強大</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_3">如何選擇開發板？</h2>
+<h3 id="_4">選擇流程圖</h3>
+<pre><code>需要 WiFi/藍牙？
+    │
+    ├─ 是 → 需要藍牙？
+    │         │
+    │         ├─ 是 → ESP32
+    │         │
+    │         └─ 否 → 預算有限？
+    │                   │
+    │                   ├─ 是 → ESP-01 + Arduino
+    │                   │
+    │                   └─ 否 → NodeMCU / ESP8266
+    │
+    └─ 否 → 需要很多 I/O？
+              │
+              ├─ 是 → Arduino Mega
+              │
+              └─ 否 → 需要模擬 USB 設備？
+                        │
+                        ├─ 是 → Arduino Leonardo
+                        │
+                        └─ 否 → 空間有限？
+                                  │
+                                  ├─ 是 → Arduino Nano / Pro Mini
+                                  │
+                                  └─ 否 → Arduino Uno（入門首選）
+</code></pre>
+<h3 id="_5">依需求選擇</h3>
+<table>
+<thead>
+<tr>
+<th>需求</th>
+<th>推薦型號</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>初學入門</td>
+<td><strong>Arduino Uno</strong></td>
+</tr>
+<tr>
+<td>空間有限</td>
+<td>Arduino Nano / Pro Mini</td>
+</tr>
+<tr>
+<td>需要 WiFi</td>
+<td>NodeMCU / ESP32</td>
+</tr>
+<tr>
+<td>需要藍牙</td>
+<td>ESP32</td>
+</tr>
+<tr>
+<td>大量 I/O</td>
+<td>Arduino Mega</td>
+</tr>
+<tr>
+<td>USB 鍵盤/滑鼠</td>
+<td>Arduino Leonardo</td>
+</tr>
+<tr>
+<td>高運算效能</td>
+<td>Arduino Due / ESP32</td>
+</tr>
+<tr>
+<td>最便宜 WiFi</td>
+<td>ESP-01</td>
+</tr>
+<tr>
+<td>電池供電（省電）</td>
+<td>Pro Mini (3.3V)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_6">依專案類型選擇</h3>
+<table>
+<thead>
+<tr>
+<th>專案類型</th>
+<th>推薦型號</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>感測器實驗</td>
+<td>Arduino Uno</td>
+</tr>
+<tr>
+<td>智慧家庭</td>
+<td>ESP8266 / ESP32</td>
+</tr>
+<tr>
+<td>機器人</td>
+<td>Arduino Mega</td>
+</tr>
+<tr>
+<td>穿戴裝置</td>
+<td>Arduino Nano / Pro Mini</td>
+</tr>
+<tr>
+<td>3D 印表機</td>
+<td>Arduino Mega</td>
+</tr>
+<tr>
+<td>遊戲控制器</td>
+<td>Arduino Leonardo</td>
+</tr>
+<tr>
+<td>物聯網 IoT</td>
+<td>ESP32</td>
+</tr>
+<tr>
+<td>溫室監控</td>
+<td>Arduino Uno + ESP-01 或 NodeMCU</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_7">電壓注意事項 ⚠️</h2>
+<h3 id="5v-vs-33v">5V vs 3.3V</h3>
+<table>
+<thead>
+<tr>
+<th>5V 開發板</th>
+<th>3.3V 開發板</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arduino Uno</td>
+<td>Arduino Due</td>
+</tr>
+<tr>
+<td>Arduino Nano</td>
+<td>ESP8266 系列</td>
+</tr>
+<tr>
+<td>Arduino Mega</td>
+<td>ESP32 系列</td>
+</tr>
+<tr>
+<td>Arduino Leonardo</td>
+<td>Arduino Pro Mini (3.3V 版)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">混用時的注意事項</h3>
+<p><strong>5V Arduino 接 3.3V 模組（如 ESP-01）</strong>：</p>
+<pre><code>Arduino TX (5V) ──[分壓電路]── ESP-01 RX (3.3V)
+Arduino RX (5V) ──────────── ESP-01 TX (3.3V)  ← 這方向 OK
+
+分壓電路：
+5V ── R1(1kΩ) ──┬── 3.3V 輸出
+                │
+           R2(2kΩ)
+                │
+               GND
+</code></pre>
+<p><strong>3.3V 模組接 5V 感測器</strong>：</p>
+<ul>
+<li>需要使用<strong>電平轉換模組</strong></li>
+<li>或選擇 3.3V 相容的感測器</li>
+</ul>
+<hr />
+<h2 id="_9">購買建議</h2>
+<h3 id="vs">原廠 vs 副廠</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>原廠</th>
+<th>副廠/相容板</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>價格</td>
+<td>較貴（$500-1500）</td>
+<td>便宜（$50-200）</td>
+</tr>
+<tr>
+<td>品質</td>
+<td>穩定</td>
+<td>參差不齊</td>
+</tr>
+<tr>
+<td>驅動程式</td>
+<td>通常免安裝</td>
+<td>可能需要安裝 CH340 驅動</td>
+</tr>
+<tr>
+<td>適合</td>
+<td>專業開發、長期使用</td>
+<td>學習、實驗、原型</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">常見副廠晶片</h3>
+<ul>
+<li><strong>CH340</strong>：便宜的 USB 轉 Serial 晶片，需要安裝驅動</li>
+<li><strong>CP2102</strong>：品質較好的替代晶片</li>
+<li><strong>FT232</strong>：與原廠相同，但較貴</li>
+</ul>
+<h3 id="_11">購買通路</h3>
+<table>
+<thead>
+<tr>
+<th>通路</th>
+<th>特點</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原廠官網</td>
+<td>保證正品，但價格高</td>
+</tr>
+<tr>
+<td>台灣電子材料行</td>
+<td>可現場看貨，有售後</td>
+</tr>
+<tr>
+<td>蝦皮/露天</td>
+<td>便宜，但品質不一</td>
+</tr>
+<tr>
+<td>淘寶</td>
+<td>最便宜，但運送時間長</td>
+</tr>
+<tr>
+<td>iCShop、光華商場</td>
+<td>台灣常用的電子零件店</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_12">常見問題</h2>
+<h3 id="q1">Q1: 初學者該買哪一款？</h3>
+<p><strong>A</strong>: <strong>Arduino Uno</strong>。資源最多、教學最完整、接腳間距大方便接線。</p>
+<h3 id="q2">Q2: 想做物聯網該買哪一款？</h3>
+<p><strong>A</strong>: <strong>ESP32</strong> 或 <strong>NodeMCU</strong>。內建 WiFi，不需要額外模組。</p>
+<h3 id="q3-arduino-nano-uno">Q3: Arduino Nano 和 Uno 哪個好？</h3>
+<p><strong>A</strong>: 核心規格相同，差別在體積。需要插麵包板選 Nano，需要方便接杜邦線選 Uno。</p>
+<h3 id="q4">Q4: 副廠板能用嗎？</h3>
+<p><strong>A</strong>: 可以，功能一樣。但可能需要安裝 CH340 驅動程式，品質也較不穩定。</p>
+<h3 id="q5-esp32-arduino">Q5: ESP32 和 Arduino 哪個好？</h3>
+<p><strong>A</strong>:</p>
+<ul>
+<li>需要 WiFi/藍牙 → ESP32</li>
+<li>純學習/簡單專案 → Arduino Uno（資源多、問題好解決）</li>
+<li>兩者都會是最好的</li>
+</ul>
+<hr />
+<h2 id="_13">總結</h2>
+<h3 id="_14">入門推薦</h3>
+<pre><code>第一塊板：Arduino Uno（學習基礎）
+         ↓
+第二塊板：ESP8266/NodeMCU（學習物聯網）
+         ↓
+第三塊板：ESP32（進階專案）
+</code></pre>
+<h3 id="_15">一句話選擇指南</h3>
+<ul>
+<li><strong>什麼都不會</strong> → Arduino Uno</li>
+<li><strong>要連網</strong> → ESP32 / NodeMCU</li>
+<li><strong>要很多腳位</strong> → Arduino Mega</li>
+<li><strong>要做鍵盤滑鼠</strong> → Arduino Leonardo</li>
+<li><strong>要最小體積</strong> → Arduino Pro Mini / ESP-01</li>
+<li><strong>要最強效能</strong> → ESP32</li>
+</ul>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

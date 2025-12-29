@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於Pandas資料分析</title>
+
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+
+        }
+        @media (max-width: 768px) {
+
+            body {  }
+        }
+
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="pandas">關於 Pandas 資料分析</h1>
+<p>Pandas 是 Python 中最重要的資料分析套件，提供了高效能、易用的資料結構與分析工具。無論是讀取 CSV、清洗資料、還是進行統計分析，Pandas 都是首選工具。</p>
+<hr />
+
+<h2 id="_1">一、安裝與匯入</h2>
+<h3 id="install">安裝 Pandas</h3>
+<pre><code class="language-bash"># 使用 pip 安裝
+pip install pandas
+
+# 若需要讀取 Excel 檔案
+pip install pandas openpyxl
+
+# 完整資料科學環境
+pip install pandas numpy matplotlib
+</code></pre>
+
+<h3 id="import">匯入慣例</h3>
+<pre><code class="language-python">import pandas as pd
+import numpy as np
+
+# 檢查版本
+print(pd.__version__)
+</code></pre>
+
+<blockquote>
+<strong>為什麼用 pd？</strong> 這是 Python 社群的慣例，讓程式碼更簡潔易讀。
+</blockquote>
+<hr />
+
+<h2 id="_2">二、核心資料結構</h2>
+<h3 id="series">Series - 一維資料</h3>
+<p>Series 就像是一個有標籤的陣列，每個元素都有一個索引（index）。</p>
+<pre><code class="language-python"># 從清單建立
+s = pd.Series([10, 20, 30, 40])
+print(s)
+# 0    10
+# 1    20
+# 2    30
+# 3    40
+
+# 自訂索引
+s = pd.Series([10, 20, 30], index=['a', 'b', 'c'])
+print(s['b'])  # 20
+
+# 從字典建立
+data = {'蘋果': 100, '香蕉': 50, '橘子': 80}
+s = pd.Series(data)
+</code></pre>
+
+<h3 id="dataframe">DataFrame - 二維表格</h3>
+<p>DataFrame 是最常用的資料結構，可以想像成 Excel 試算表或資料庫表格。</p>
+<pre><code class="language-python"># 從字典建立
+data = {
+    '姓名': ['小明', '小華', '小美'],
+    '年齡': [25, 30, 28],
+    '城市': ['台北', '台中', '高雄']
+}
+df = pd.DataFrame(data)
+print(df)
+#    姓名  年齡  城市
+# 0  小明   25  台北
+# 1  小華   30  台中
+# 2  小美   28  高雄
+
+# 從串列建立
+data = [
+    ['小明', 25, '台北'],
+    ['小華', 30, '台中'],
+    ['小美', 28, '高雄']
+]
+df = pd.DataFrame(data, columns=['姓名', '年齡', '城市'])
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>資料結構</th>
+<th>維度</th>
+<th>類比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Series</td>
+<td>1D</td>
+<td>一欄 Excel 資料</td>
+</tr>
+<tr>
+<td>DataFrame</td>
+<td>2D</td>
+<td>整個 Excel 工作表</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<h2 id="_3">三、資料載入與儲存</h2>
+<h3 id="read_csv">讀取 CSV 檔案</h3>
+<pre><code class="language-python"># 基本讀取
+df = pd.read_csv('data.csv')
+
+# 指定編碼（中文常用）
+df = pd.read_csv('data.csv', encoding='utf-8')
+df = pd.read_csv('data.csv', encoding='big5')
+
+# 指定分隔符號
+df = pd.read_csv('data.txt', sep='\t')  # Tab 分隔
+
+# 跳過標題列
+df = pd.read_csv('data.csv', header=None)
+
+# 選擇特定欄位
+df = pd.read_csv('data.csv', usecols=['name', 'age'])
+
+# 處理缺失值
+df = pd.read_csv('data.csv', na_values=['NA', 'N/A', ''])
+</code></pre>
+
+<h3 id="read_excel">讀取 Excel 檔案</h3>
+<pre><code class="language-python"># 讀取 Excel
+df = pd.read_excel('data.xlsx')
+
+# 指定工作表
+df = pd.read_excel('data.xlsx', sheet_name='Sheet2')
+df = pd.read_excel('data.xlsx', sheet_name=0)  # 第一個工作表
+
+# 讀取所有工作表
+all_sheets = pd.read_excel('data.xlsx', sheet_name=None)
+# 返回字典: {'Sheet1': df1, 'Sheet2': df2}
+</code></pre>
+
+<h3 id="other_formats">其他格式</h3>
+<pre><code class="language-python"># JSON
+df = pd.read_json('data.json')
+
+# HTML 表格
+tables = pd.read_html('https://example.com/table.html')
+df = tables[0]  # 取得第一個表格
+
+# SQL 資料庫
+import sqlite3
+conn = sqlite3.connect('database.db')
+df = pd.read_sql('SELECT * FROM users', conn)
+
+# 剪貼簿
+df = pd.read_clipboard()
+</code></pre>
+
+<h3 id="save">儲存資料</h3>
+<pre><code class="language-python"># 儲存為 CSV
+df.to_csv('output.csv', index=False)
+df.to_csv('output.csv', index=False, encoding='utf-8-sig')  # Excel 友善
+
+# 儲存為 Excel
+df.to_excel('output.xlsx', index=False, sheet_name='資料')
+
+# 儲存為 JSON
+df.to_json('output.json', orient='records', force_ascii=False)
+</code></pre>
+<hr />
+
+<h2 id="_4">四、資料檢視與概覽</h2>
+<h3 id="basic_view">基本檢視</h3>
+<pre><code class="language-python"># 查看前 N 筆
+df.head()       # 預設前 5 筆
+df.head(10)     # 前 10 筆
+
+# 查看後 N 筆
+df.tail()
+df.tail(3)
+
+# 隨機抽樣
+df.sample(5)    # 隨機 5 筆
+df.sample(frac=0.1)  # 隨機 10%
+</code></pre>
+
+<h3 id="info">資料資訊</h3>
+<pre><code class="language-python"># 基本資訊
+df.info()
+# &lt;class 'pandas.core.frame.DataFrame'&gt;
+# RangeIndex: 100 entries, 0 to 99
+# Data columns (total 3 columns):
+#  #   Column  Non-Null Count  Dtype
+# ---  ------  --------------  -----
+#  0   姓名     100 non-null    object
+#  1   年齡     98 non-null     float64
+#  2   城市     100 non-null    object
+
+# 形狀（列數, 欄數）
+df.shape        # (100, 3)
+
+# 欄位名稱
+df.columns      # Index(['姓名', '年齡', '城市'], dtype='object')
+
+# 資料類型
+df.dtypes
+
+# 索引
+df.index
+</code></pre>
+
+<h3 id="describe">統計摘要</h3>
+<pre><code class="language-python"># 數值欄位統計
+df.describe()
+#             年齡
+# count   98.000000
+# mean    28.500000
+# std      5.123456
+# min     20.000000
+# 25%     25.000000
+# 50%     28.000000
+# 75%     32.000000
+# max     40.000000
+
+# 包含所有欄位
+df.describe(include='all')
+
+# 個別統計
+df['年齡'].mean()      # 平均
+df['年齡'].median()    # 中位數
+df['年齡'].std()       # 標準差
+df['年齡'].min()       # 最小值
+df['年齡'].max()       # 最大值
+df['年齡'].sum()       # 總和
+df['年齡'].count()     # 非空數量
+
+# 唯一值
+df['城市'].unique()          # 不重複值
+df['城市'].nunique()         # 不重複值數量
+df['城市'].value_counts()    # 各值計數
+</code></pre>
+<hr />
+
+<h2 id="_5">五、資料選取與過濾</h2>
+<h3 id="select_column">選取欄位</h3>
+<pre><code class="language-python"># 選取單一欄位（回傳 Series）
+df['姓名']
+df.姓名
+
+# 選取多個欄位（回傳 DataFrame）
+df[['姓名', '年齡']]
+
+# 選取欄位範圍
+df.loc[:, '姓名':'城市']
+</code></pre>
+
+<h3 id="select_row">選取列</h3>
+<pre><code class="language-python"># 依位置選取（iloc）
+df.iloc[0]        # 第一列
+df.iloc[0:5]      # 前 5 列
+df.iloc[-1]       # 最後一列
+df.iloc[[0, 2, 4]]  # 第 1, 3, 5 列
+
+# 依標籤選取（loc）
+df.loc[0]
+df.loc[0:4]       # 注意：loc 包含結束索引
+df.loc[[0, 2, 4]]
+
+# 選取特定儲存格
+df.iloc[0, 1]     # 第一列第二欄
+df.loc[0, '年齡'] # 第一列的年齡
+df.at[0, '年齡']  # 較快的單值存取
+</code></pre>
+
+<h3 id="filter">條件過濾</h3>
+<pre><code class="language-python"># 單一條件
+df[df['年齡'] > 25]
+df[df['城市'] == '台北']
+
+# 多重條件（使用 & | ~）
+df[(df['年齡'] > 25) & (df['城市'] == '台北')]
+df[(df['年齡'] < 20) | (df['年齡'] > 30)]
+df[~(df['城市'] == '台北')]  # 不等於
+
+# isin 篩選
+df[df['城市'].isin(['台北', '高雄'])]
+
+# 字串包含
+df[df['姓名'].str.contains('小')]
+
+# 區間篩選
+df[df['年齡'].between(25, 30)]
+
+# 空值篩選
+df[df['年齡'].isna()]     # 是空值
+df[df['年齡'].notna()]    # 非空值
+
+# query 方法（更直覺的語法）
+df.query('年齡 > 25 and 城市 == "台北"')
+</code></pre>
+<hr />
+
+<h2 id="_6">六、資料處理與清洗</h2>
+<h3 id="missing">處理缺失值</h3>
+<pre><code class="language-python"># 檢查缺失值
+df.isna()           # 每個值是否為空
+df.isna().sum()     # 每欄空值數量
+df.isna().sum().sum()  # 總空值數量
+
+# 刪除缺失值
+df.dropna()                    # 刪除任何有空值的列
+df.dropna(how='all')           # 刪除全部為空的列
+df.dropna(subset=['年齡'])     # 只檢查特定欄位
+df.dropna(thresh=2)            # 至少 2 個非空值才保留
+
+# 填充缺失值
+df.fillna(0)                   # 填入 0
+df.fillna('未知')              # 填入字串
+df['年齡'].fillna(df['年齡'].mean())  # 填入平均值
+df.fillna(method='ffill')      # 向前填充
+df.fillna(method='bfill')      # 向後填充
+</code></pre>
+
+<h3 id="duplicate">處理重複值</h3>
+<pre><code class="language-python"># 檢查重複
+df.duplicated()              # 每列是否重複
+df.duplicated().sum()        # 重複數量
+
+# 刪除重複
+df.drop_duplicates()                      # 刪除完全相同的列
+df.drop_duplicates(subset=['姓名'])       # 依特定欄位
+df.drop_duplicates(keep='first')          # 保留第一筆
+df.drop_duplicates(keep='last')           # 保留最後一筆
+df.drop_duplicates(keep=False)            # 全部刪除
+</code></pre>
+
+<h3 id="dtype">資料型態轉換</h3>
+<pre><code class="language-python"># 查看資料型態
+df.dtypes
+
+# 轉換型態
+df['年齡'] = df['年齡'].astype(int)
+df['價格'] = df['價格'].astype(float)
+df['日期'] = pd.to_datetime(df['日期'])
+
+# 類別型態（節省記憶體）
+df['城市'] = df['城市'].astype('category')
+
+# 數值轉換
+df['價格'] = pd.to_numeric(df['價格'], errors='coerce')  # 錯誤轉為 NaN
+</code></pre>
+
+<h3 id="modify">修改資料</h3>
+<pre><code class="language-python"># 新增欄位
+df['國家'] = '台灣'
+df['年齡組'] = df['年齡'].apply(lambda x: '青年' if x < 30 else '中年')
+
+# 修改欄位名稱
+df.rename(columns={'姓名': 'name', '年齡': 'age'}, inplace=True)
+df.columns = ['col1', 'col2', 'col3']
+
+# 刪除欄位
+df.drop('國家', axis=1)
+df.drop(['欄位1', '欄位2'], axis=1)
+
+# 刪除列
+df.drop(0)              # 刪除索引 0
+df.drop([0, 1, 2])      # 刪除多列
+
+# 取代值
+df.replace('台北', '台北市')
+df.replace({'台北': '台北市', '高雄': '高雄市'})
+df['城市'].replace({'台北': '台北市'}, inplace=True)
+</code></pre>
+
+<h3 id="string">字串處理</h3>
+<pre><code class="language-python"># str 存取器
+df['姓名'].str.upper()          # 轉大寫
+df['姓名'].str.lower()          # 轉小寫
+df['姓名'].str.strip()          # 去除空白
+df['姓名'].str.replace('小', '大')
+df['姓名'].str.split('-')       # 分割
+df['姓名'].str.len()            # 長度
+
+# 正則表達式
+df['電話'].str.extract(r'(\d{4})-(\d{4})')
+df['姓名'].str.match(r'^小')    # 是否符合
+</code></pre>
+<hr />
+
+<h2 id="_7">七、資料分組與聚合</h2>
+<h3 id="groupby">GroupBy 分組</h3>
+<pre><code class="language-python"># 基本分組
+grouped = df.groupby('城市')
+
+# 分組後聚合
+df.groupby('城市')['年齡'].mean()
+df.groupby('城市')['年齡'].sum()
+df.groupby('城市')['年齡'].count()
+
+# 多重分組
+df.groupby(['城市', '性別'])['年齡'].mean()
+
+# 多重聚合
+df.groupby('城市').agg({
+    '年齡': 'mean',
+    '薪資': 'sum',
+    '姓名': 'count'
+})
+
+# 同時多種聚合
+df.groupby('城市')['年齡'].agg(['mean', 'min', 'max', 'count'])
+
+# 自訂聚合函數
+df.groupby('城市')['年齡'].agg(lambda x: x.max() - x.min())
+</code></pre>
+
+<h3 id="pivot">樞紐分析表</h3>
+<pre><code class="language-python"># 樞紐分析表
+pd.pivot_table(df,
+               values='銷售額',
+               index='城市',
+               columns='月份',
+               aggfunc='sum')
+
+# 多重聚合
+pd.pivot_table(df,
+               values='銷售額',
+               index='城市',
+               aggfunc=['sum', 'mean', 'count'])
+
+# 交叉表
+pd.crosstab(df['城市'], df['性別'])
+</code></pre>
+<hr />
+
+<h2 id="_8">八、資料合併與連接</h2>
+<h3 id="concat">串接 concat</h3>
+<pre><code class="language-python"># 垂直串接（新增列）
+df_all = pd.concat([df1, df2, df3])
+df_all = pd.concat([df1, df2], ignore_index=True)
+
+# 水平串接（新增欄）
+df_wide = pd.concat([df1, df2], axis=1)
+</code></pre>
+
+<h3 id="merge">合併 merge</h3>
+<pre><code class="language-python"># 內連接（只保留共同鍵）
+df_merged = pd.merge(df1, df2, on='id')
+
+# 左連接（保留左表所有資料）
+df_merged = pd.merge(df1, df2, on='id', how='left')
+
+# 右連接
+df_merged = pd.merge(df1, df2, on='id', how='right')
+
+# 外連接（保留所有資料）
+df_merged = pd.merge(df1, df2, on='id', how='outer')
+
+# 不同欄位名稱
+df_merged = pd.merge(df1, df2, left_on='user_id', right_on='id')
+
+# 多鍵合併
+df_merged = pd.merge(df1, df2, on=['城市', '年份'])
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>合併方式</th>
+<th>說明</th>
+<th>SQL 對應</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>inner</td>
+<td>只保留兩邊都有的</td>
+<td>INNER JOIN</td>
+</tr>
+<tr>
+<td>left</td>
+<td>保留左表所有</td>
+<td>LEFT JOIN</td>
+</tr>
+<tr>
+<td>right</td>
+<td>保留右表所有</td>
+<td>RIGHT JOIN</td>
+</tr>
+<tr>
+<td>outer</td>
+<td>保留所有資料</td>
+<td>FULL OUTER JOIN</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="join">join 方法</h3>
+<pre><code class="language-python"># 依索引合併
+df1.join(df2, how='left')
+df1.join(df2, on='key')
+</code></pre>
+<hr />
+
+<h2 id="_9">九、時間序列處理</h2>
+<h3 id="datetime">日期時間轉換</h3>
+<pre><code class="language-python"># 轉換為日期時間
+df['日期'] = pd.to_datetime(df['日期'])
+df['日期'] = pd.to_datetime(df['日期'], format='%Y/%m/%d')
+
+# 常見格式
+# %Y: 4位年份  %m: 月份  %d: 日
+# %H: 時(24)   %M: 分    %S: 秒
+# %Y-%m-%d %H:%M:%S -> 2024-01-15 14:30:00
+
+# 擷取日期元件
+df['年'] = df['日期'].dt.year
+df['月'] = df['日期'].dt.month
+df['日'] = df['日期'].dt.day
+df['星期'] = df['日期'].dt.dayofweek  # 0=週一
+df['星期名'] = df['日期'].dt.day_name()
+df['季度'] = df['日期'].dt.quarter
+</code></pre>
+
+<h3 id="date_index">日期索引</h3>
+<pre><code class="language-python"># 設定日期為索引
+df.set_index('日期', inplace=True)
+
+# 依日期範圍篩選
+df['2024-01-01':'2024-06-30']
+df.loc['2024']      # 整年
+df.loc['2024-03']   # 整月
+
+# 重新取樣（時間聚合）
+df.resample('M').sum()    # 月
+df.resample('W').mean()   # 週
+df.resample('D').count()  # 日
+df.resample('H').sum()    # 時
+</code></pre>
+
+<h3 id="date_range">產生日期序列</h3>
+<pre><code class="language-python"># 日期範圍
+dates = pd.date_range('2024-01-01', '2024-12-31', freq='D')
+dates = pd.date_range('2024-01-01', periods=12, freq='M')
+
+# 頻率代碼
+# D: 日  W: 週  M: 月末  MS: 月初
+# Q: 季  Y: 年  H: 時   T/min: 分
+</code></pre>
+<hr />
+
+<h2 id="_10">十、排序與排名</h2>
+<h3 id="sort">排序</h3>
+<pre><code class="language-python"># 依值排序
+df.sort_values('年齡')                    # 升冪
+df.sort_values('年齡', ascending=False)   # 降冪
+
+# 多欄排序
+df.sort_values(['城市', '年齡'], ascending=[True, False])
+
+# 依索引排序
+df.sort_index()
+df.sort_index(ascending=False)
+</code></pre>
+
+<h3 id="rank">排名</h3>
+<pre><code class="language-python"># 排名
+df['排名'] = df['分數'].rank()
+df['排名'] = df['分數'].rank(ascending=False)  # 分數高排名前
+
+# 分組排名
+df['組內排名'] = df.groupby('城市')['分數'].rank(ascending=False)
+</code></pre>
+<hr />
+
+<h2 id="_11">十一、Apply 與 Lambda</h2>
+<h3 id="apply">Apply 函數</h3>
+<pre><code class="language-python"># 對 Series 應用函數
+df['年齡'].apply(lambda x: x * 2)
+df['姓名'].apply(len)
+
+# 對 DataFrame 應用函數
+df.apply(lambda x: x.max() - x.min())  # 對每欄
+df.apply(lambda x: x['年齡'] + 10, axis=1)  # 對每列
+
+# 自訂函數
+def categorize_age(age):
+    if age < 20:
+        return '青少年'
+    elif age < 40:
+        return '青年'
+    else:
+        return '中年'
+
+df['年齡組'] = df['年齡'].apply(categorize_age)
+</code></pre>
+
+<h3 id="map">Map 與 Replace</h3>
+<pre><code class="language-python"># map 對應
+mapping = {'台北': 'Taipei', '台中': 'Taichung', '高雄': 'Kaohsiung'}
+df['城市英文'] = df['城市'].map(mapping)
+
+# applymap 對每個元素（DataFrame）
+df.applymap(lambda x: str(x).upper())  # pandas < 2.1
+df.map(lambda x: str(x).upper())       # pandas >= 2.1
+</code></pre>
+<hr />
+
+<h2 id="_12">十二、實用技巧</h2>
+<h3 id="memory">記憶體優化</h3>
+<pre><code class="language-python"># 查看記憶體使用
+df.info(memory_usage='deep')
+df.memory_usage(deep=True)
+
+# 優化數值型態
+df['整數欄'] = df['整數欄'].astype('int32')  # 或 int16, int8
+df['浮點欄'] = df['浮點欄'].astype('float32')
+
+# 類別型態（重複值多時很有效）
+df['城市'] = df['城市'].astype('category')
+</code></pre>
+
+<h3 id="chaining">方法串接</h3>
+<pre><code class="language-python"># 清晰的資料處理流程
+result = (df
+    .query('年齡 > 20')
+    .groupby('城市')
+    .agg({'薪資': 'mean', '年齡': 'count'})
+    .rename(columns={'年齡': '人數'})
+    .sort_values('薪資', ascending=False)
+    .head(10)
+)
+</code></pre>
+
+<h3 id="display">顯示設定</h3>
+<pre><code class="language-python"># 顯示設定
+pd.set_option('display.max_columns', None)  # 顯示所有欄
+pd.set_option('display.max_rows', 100)      # 最多顯示 100 列
+pd.set_option('display.width', None)        # 不換行
+pd.set_option('display.float_format', '{:.2f}'.format)  # 小數位數
+
+# 重設設定
+pd.reset_option('all')
+</code></pre>
+<hr />
+
+<h2 id="_13">十三、常用操作速查表</h2>
+<h3 id="io">資料輸入輸出</h3>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>語法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>讀取 CSV</td>
+<td><code>pd.read_csv('file.csv')</code></td>
+</tr>
+<tr>
+<td>讀取 Excel</td>
+<td><code>pd.read_excel('file.xlsx')</code></td>
+</tr>
+<tr>
+<td>讀取 JSON</td>
+<td><code>pd.read_json('file.json')</code></td>
+</tr>
+<tr>
+<td>儲存 CSV</td>
+<td><code>df.to_csv('file.csv', index=False)</code></td>
+</tr>
+<tr>
+<td>儲存 Excel</td>
+<td><code>df.to_excel('file.xlsx', index=False)</code></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="view">資料檢視</h3>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>語法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>前 N 筆</td>
+<td><code>df.head(n)</code></td>
+</tr>
+<tr>
+<td>後 N 筆</td>
+<td><code>df.tail(n)</code></td>
+</tr>
+<tr>
+<td>形狀</td>
+<td><code>df.shape</code></td>
+</tr>
+<tr>
+<td>欄位</td>
+<td><code>df.columns</code></td>
+</tr>
+<tr>
+<td>資料型態</td>
+<td><code>df.dtypes</code></td>
+</tr>
+<tr>
+<td>基本資訊</td>
+<td><code>df.info()</code></td>
+</tr>
+<tr>
+<td>統計摘要</td>
+<td><code>df.describe()</code></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="select">資料選取</h3>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>語法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>選取欄位</td>
+<td><code>df['欄位']</code> 或 <code>df[['欄1', '欄2']]</code></td>
+</tr>
+<tr>
+<td>依位置選取</td>
+<td><code>df.iloc[row, col]</code></td>
+</tr>
+<tr>
+<td>依標籤選取</td>
+<td><code>df.loc[row, col]</code></td>
+</tr>
+<tr>
+<td>條件篩選</td>
+<td><code>df[df['欄位'] > 值]</code></td>
+</tr>
+<tr>
+<td>多條件</td>
+<td><code>df[(條件1) & (條件2)]</code></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="clean">資料清洗</h3>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>語法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>檢查空值</td>
+<td><code>df.isna().sum()</code></td>
+</tr>
+<tr>
+<td>刪除空值列</td>
+<td><code>df.dropna()</code></td>
+</tr>
+<tr>
+<td>填充空值</td>
+<td><code>df.fillna(值)</code></td>
+</tr>
+<tr>
+<td>刪除重複</td>
+<td><code>df.drop_duplicates()</code></td>
+</tr>
+<tr>
+<td>取代值</td>
+<td><code>df.replace(舊, 新)</code></td>
+</tr>
+<tr>
+<td>重新命名欄位</td>
+<td><code>df.rename(columns={'舊': '新'})</code></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="agg">分組聚合</h3>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>語法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>分組</td>
+<td><code>df.groupby('欄位')</code></td>
+</tr>
+<tr>
+<td>分組平均</td>
+<td><code>df.groupby('欄位')['數值欄'].mean()</code></td>
+</tr>
+<tr>
+<td>分組計數</td>
+<td><code>df.groupby('欄位').size()</code></td>
+</tr>
+<tr>
+<td>多重聚合</td>
+<td><code>df.groupby('欄位').agg({'欄1': 'sum', '欄2': 'mean'})</code></td>
+</tr>
+<tr>
+<td>樞紐分析</td>
+<td><code>pd.pivot_table(df, values, index, columns)</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<h2 id="_14">十四、常見問題</h2>
+<h3 id="q1">Q1：SettingWithCopyWarning 警告怎麼處理？</h3>
+<pre><code class="language-python"># 錯誤寫法（可能產生警告）
+df[df['年齡'] > 20]['新欄'] = 值
+
+# 正確寫法
+df.loc[df['年齡'] > 20, '新欄'] = 值
+
+# 或使用 copy()
+df_filtered = df[df['年齡'] > 20].copy()
+df_filtered['新欄'] = 值
+</code></pre>
+
+<h3 id="q2">Q2：如何處理大型資料集？</h3>
+<pre><code class="language-python"># 分塊讀取
+for chunk in pd.read_csv('large.csv', chunksize=10000):
+    process(chunk)
+
+# 指定資料型態節省記憶體
+dtypes = {'id': 'int32', 'name': 'category'}
+df = pd.read_csv('large.csv', dtype=dtypes)
+
+# 只讀取需要的欄位
+df = pd.read_csv('large.csv', usecols=['col1', 'col2'])
+</code></pre>
+
+<h3 id="q3">Q3：如何加速 Pandas 操作？</h3>
+<ol>
+<li>使用向量化操作，避免迴圈</li>
+<li>使用 <code>query()</code> 取代布林索引</li>
+<li>優化資料型態</li>
+<li>考慮使用 <code>modin</code> 或 <code>polars</code></li>
+</ol>
+
+<h3 id="q4">Q4：inplace=True 是什麼意思？</h3>
+<pre><code class="language-python"># 不使用 inplace（原 df 不變，回傳新 df）
+df_new = df.drop('欄位', axis=1)
+
+# 使用 inplace（直接修改原 df）
+df.drop('欄位', axis=1, inplace=True)
+
+# 建議：盡量避免 inplace，改用方法串接
+</code></pre>
+<hr />
+
+<h2 id="_15">十五、智慧農業應用範例</h2>
+<h3 id="sensor">感測器資料分析</h3>
+<pre><code class="language-python">import pandas as pd
+
+# 讀取感測器資料
+df = pd.read_csv('sensor_data.csv')
+
+# 轉換時間
+df['timestamp'] = pd.to_datetime(df['timestamp'])
+df.set_index('timestamp', inplace=True)
+
+# 計算每日平均
+daily_avg = df.resample('D').mean()
+
+# 找出異常溫度
+high_temp = df[df['temperature'] > 35]
+low_temp = df[df['temperature'] < 10]
+
+# 計算各感測器的統計
+stats = df.groupby('sensor_id').agg({
+    'temperature': ['mean', 'min', 'max', 'std'],
+    'humidity': ['mean', 'min', 'max']
+})
+
+# 匯出報表
+stats.to_excel('sensor_report.xlsx')
+</code></pre>
+
+<h3 id="yield">產量分析</h3>
+<pre><code class="language-python"># 讀取產量資料
+df = pd.read_csv('harvest_data.csv')
+
+# 依作物分組統計
+crop_stats = df.groupby('crop_type').agg({
+    'yield_kg': 'sum',
+    'area_sqm': 'sum',
+    'cost': 'sum'
+})
+crop_stats['yield_per_sqm'] = crop_stats['yield_kg'] / crop_stats['area_sqm']
+crop_stats['cost_per_kg'] = crop_stats['cost'] / crop_stats['yield_kg']
+
+# 月份趨勢分析
+df['month'] = pd.to_datetime(df['harvest_date']).dt.month
+monthly_yield = df.pivot_table(
+    values='yield_kg',
+    index='month',
+    columns='crop_type',
+    aggfunc='sum'
+)
+</code></pre>
+<hr />
+
+<p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

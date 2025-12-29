@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於影像鑲嵌軟體之運算原理 (Photogrammetry)</title>
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --text-color: #eee;
+            --card-bg: #16213e;
+            --accent-color: #0f3460;
+            --highlight-color: #e94560;
+            --code-bg: #0d1117;
+            --border-color: #30475e;
+            --link-color: #4da6ff;
+            --table-header: #1f4068;
+            --table-row-even: #1a1a2e;
+            --table-row-odd: #16213e;
+        }
+        .light-mode {
+            --bg-color: #f5f5f5;
+            --text-color: #333;
+            --card-bg: #fff;
+            --accent-color: #e3e3e3;
+            --highlight-color: #d32f2f;
+            --code-bg: #f8f8f8;
+            --border-color: #ddd;
+            --link-color: #1976d2;
+            --table-header: #4a6fa5;
+            --table-row-even: #f0f0f0;
+            --table-row-odd: #fff;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin: 20px 0 30px;
+            color: var(--highlight-color);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 40px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--highlight-color);
+            color: var(--highlight-color);
+            font-size: 1.5rem;
+        }
+        h3 {
+            margin-top: 25px;
+            color: var(--link-color);
+            font-size: 1.2rem;
+        }
+        h4 {
+            margin-top: 20px;
+            color: var(--text-color);
+            font-size: 1.1rem;
+        }
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        pre {
+            background-color: var(--code-bg);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid var(--highlight-color);
+        }
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95rem;
+            color: #e6e6e6;
+        }
+        .light-mode code {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+        th {
+            background-color: var(--table-header);
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: var(--table-row-even);
+        }
+        tr:nth-child(odd) {
+            background-color: var(--table-row-odd);
+        }
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .home-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 25px;
+            background-color: var(--highlight-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: transform 0.3s, background-color 0.3s;
+            text-decoration: none;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .home-btn:hover {
+            transform: scale(1.1);
+            background-color: #c82333;
+            text-decoration: none;
+        }
+        .theme-toggle {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: transform 0.3s;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .highlight {
+            background-color: var(--accent-color);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        .tip {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #4caf50;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .warning {
+            background-color: rgba(255, 152, 0, 0.1);
+            border-left: 4px solid #ff9800;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .formula {
+            background-color: var(--accent-color);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.1rem;
+        }
+        .workflow {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 30px 0;
+        }
+        .workflow-step {
+            background: linear-gradient(135deg, var(--table-header) 0%, var(--accent-color) 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 150px;
+            font-weight: bold;
+        }
+        .workflow-arrow {
+            font-size: 1.5rem;
+            color: var(--highlight-color);
+        }
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: var(--highlight-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .workflow {
+                flex-direction: column;
+            }
+            .workflow-arrow {
+                transform: rotate(90deg);
+            }
+            h1 { font-size: 1.7rem; }
+            pre { padding: 12px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="home-btn" title="返回首頁">🏠</a>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換主題">🌓</button>
+
+    <div class="container">
+        <h1>關於影像鑲嵌軟體之運算原理</h1>
+
+        <div class="card">
+            <h2>攝影測量與 SfM 概述</h2>
+            <p>
+                <strong>攝影測量 (Photogrammetry)</strong> 是一門透過分析照片來獲取物體幾何資訊的科學。
+                現代影像鑲嵌軟體如 <strong>Agisoft Metashape</strong>、<strong>Pix4D</strong>、
+                <strong>OpenDroneMap</strong> 等，都是基於 <strong>運動恢復結構 (Structure from Motion, SfM)</strong>
+                和<strong>多視圖立體匹配 (Multi-View Stereo, MVS)</strong> 技術來處理無人機航拍影像。
+            </p>
+            <p>
+                這些軟體能夠從大量重疊的二維照片中，重建出三維場景結構，並產生正射影像、數值高程模型 (DEM)、
+                三維點雲等成果，廣泛應用於智慧農業、測繪、建築、考古等領域。
+            </p>
+        </div>
+
+        <h2>處理流程概覽</h2>
+
+        <div class="workflow">
+            <div class="workflow-step">📷 影像輸入</div>
+            <span class="workflow-arrow">→</span>
+            <div class="workflow-step">🔍 特徵提取</div>
+            <span class="workflow-arrow">→</span>
+            <div class="workflow-step">🔗 特徵匹配</div>
+            <span class="workflow-arrow">→</span>
+            <div class="workflow-step">📐 相機定位</div>
+            <span class="workflow-arrow">→</span>
+            <div class="workflow-step">☁️ 稀疏點雲</div>
+        </div>
+
+        <div class="workflow">
+            <div class="workflow-step">☁️ 密集點雲</div>
+            <span class="workflow-arrow">→</span>
+            <div class="workflow-step">🗻 網格模型</div>
+            <span class="workflow-arrow">→</span>
+            <div class="workflow-step">🎨 紋理貼圖</div>
+            <span class="workflow-arrow">→</span>
+            <div class="workflow-step">🗺️ 正射影像</div>
+            <span class="workflow-arrow">→</span>
+            <div class="workflow-step">📊 DEM/DSM</div>
+        </div>
+
+        <h2>第一階段：特徵提取與匹配</h2>
+
+        <div class="card">
+            <h3><span class="step-number">1</span>特徵點檢測 (Feature Detection)</h3>
+            <p>
+                軟體首先在每張影像中檢測<strong>關鍵點 (Keypoints)</strong>，這些是影像中具有獨特性、
+                容易辨識的點位，如角點、斑點等。常用的演算法包括：
+            </p>
+            <ul>
+                <li><strong>SIFT (Scale-Invariant Feature Transform)</strong>：尺度不變特徵轉換，對旋轉、縮放、光照變化具有良好的不變性</li>
+                <li><strong>SURF (Speeded Up Robust Features)</strong>：加速穩健特徵，比 SIFT 更快</li>
+                <li><strong>ORB (Oriented FAST and Rotated BRIEF)</strong>：開源且快速的替代方案</li>
+                <li><strong>SuperPoint</strong>：基於深度學習的特徵檢測器</li>
+            </ul>
+
+            <h4>SIFT 特徵檢測原理</h4>
+            <ol>
+                <li><strong>尺度空間極值檢測</strong>：建立高斯金字塔，檢測 DoG (Difference of Gaussian) 極值點</li>
+                <li><strong>關鍵點定位</strong>：精確定位極值點位置，濾除低對比度點和邊緣響應點</li>
+                <li><strong>方向分配</strong>：基於梯度方向直方圖為關鍵點分配主方向</li>
+                <li><strong>描述子生成</strong>：在關鍵點周圍計算 128 維特徵向量</li>
+            </ol>
+        </div>
+
+        <div class="card">
+            <h3><span class="step-number">2</span>特徵匹配 (Feature Matching)</h3>
+            <p>
+                在所有影像對之間進行特徵點匹配，找出對應的同名點。這個步驟決定了哪些影像有重疊區域。
+            </p>
+
+            <h4>匹配策略</h4>
+            <ul>
+                <li><strong>暴力匹配 (Brute-Force)</strong>：計算所有描述子對之間的距離</li>
+                <li><strong>FLANN (Fast Library for Approximate Nearest Neighbors)</strong>：使用 KD-Tree 加速近鄰搜尋</li>
+                <li><strong>比值測試 (Ratio Test)</strong>：過濾不可靠的匹配，最近鄰/次近鄰距離比 < 0.8</li>
+            </ul>
+
+            <h4>誤匹配剔除</h4>
+            <ul>
+                <li><strong>RANSAC (Random Sample Consensus)</strong>：隨機抽樣一致性算法，剔除離群點</li>
+                <li><strong>基礎矩陣約束</strong>：匹配點對需滿足對極幾何約束</li>
+                <li><strong>雙向匹配驗證</strong>：A→B 和 B→A 的匹配結果需一致</li>
+            </ul>
+        </div>
+
+        <h3>Python 特徵匹配範例</h3>
+<pre><code>import cv2
+import numpy as np
+
+def detect_and_match_features(img1_path, img2_path, method='sift'):
+    """
+    特徵檢測與匹配
+
+    Args:
+        img1_path, img2_path: 影像路徑
+        method: 特徵檢測方法 ('sift', 'orb', 'akaze')
+
+    Returns:
+        matches: 匹配的特徵點對
+        kp1, kp2: 關鍵點
+    """
+    # 讀取影像
+    img1 = cv2.imread(img1_path, cv2.IMREAD_GRAYSCALE)
+    img2 = cv2.imread(img2_path, cv2.IMREAD_GRAYSCALE)
+
+    # 選擇特徵檢測器
+    if method == 'sift':
+        detector = cv2.SIFT_create(nfeatures=10000)
+    elif method == 'orb':
+        detector = cv2.ORB_create(nfeatures=10000)
+    elif method == 'akaze':
+        detector = cv2.AKAZE_create()
+
+    # 檢測特徵點並計算描述子
+    kp1, des1 = detector.detectAndCompute(img1, None)
+    kp2, des2 = detector.detectAndCompute(img2, None)
+
+    print(f"影像1特徵點: {len(kp1)}")
+    print(f"影像2特徵點: {len(kp2)}")
+
+    # 特徵匹配
+    if method == 'orb':
+        # ORB 使用 Hamming 距離
+        bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=False)
+    else:
+        # SIFT/AKAZE 使用 L2 距離
+        bf = cv2.BFMatcher(cv2.NORM_L2, crossCheck=False)
+
+    # KNN 匹配
+    matches = bf.knnMatch(des1, des2, k=2)
+
+    # 比值測試過濾
+    good_matches = []
+    for m, n in matches:
+        if m.distance < 0.75 * n.distance:
+            good_matches.append(m)
+
+    print(f"初步匹配點: {len(matches)}")
+    print(f"過濾後匹配點: {len(good_matches)}")
+
+    # 使用 RANSAC 剔除誤匹配
+    if len(good_matches) >= 4:
+        src_pts = np.float32([kp1[m.queryIdx].pt for m in good_matches]).reshape(-1, 1, 2)
+        dst_pts = np.float32([kp2[m.trainIdx].pt for m in good_matches]).reshape(-1, 1, 2)
+
+        # 計算基礎矩陣，同時進行 RANSAC 過濾
+        F, mask = cv2.findFundamentalMat(src_pts, dst_pts, cv2.FM_RANSAC, 3.0)
+
+        # 只保留內點
+        matches_mask = mask.ravel().tolist()
+        inlier_matches = [m for m, msk in zip(good_matches, matches_mask) if msk]
+
+        print(f"RANSAC 後匹配點: {len(inlier_matches)}")
+
+        return inlier_matches, kp1, kp2, img1, img2
+
+    return good_matches, kp1, kp2, img1, img2
+
+
+def visualize_matches(img1, img2, kp1, kp2, matches, output_path):
+    """視覺化匹配結果"""
+    result = cv2.drawMatches(
+        img1, kp1, img2, kp2, matches[:100],  # 只繪製前100個匹配
+        None, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS
+    )
+    cv2.imwrite(output_path, result)
+    print(f"匹配結果已儲存: {output_path}")
+
+
+# 使用範例
+matches, kp1, kp2, img1, img2 = detect_and_match_features(
+    'drone_image_001.jpg',
+    'drone_image_002.jpg',
+    method='sift'
+)
+visualize_matches(img1, img2, kp1, kp2, matches, 'matches_result.jpg')</code></pre>
+
+        <h2>第二階段：運動恢復結構 (SfM)</h2>
+
+        <div class="card">
+            <h3><span class="step-number">3</span>相機姿態估計 (Camera Pose Estimation)</h3>
+            <p>
+                SfM 的核心是從二維影像匹配點中恢復相機的三維位置和姿態（外部參數），
+                以及相機的內部參數（焦距、主點、畸變係數等）。
+            </p>
+
+            <h4>相機模型</h4>
+            <div class="formula">
+                <strong>針孔相機模型：</strong> s · [u, v, 1]<sup>T</sup> = K · [R | t] · [X, Y, Z, 1]<sup>T</sup>
+            </div>
+
+            <ul>
+                <li><strong>K</strong>：內部參數矩陣（焦距 f<sub>x</sub>, f<sub>y</sub>，主點 c<sub>x</sub>, c<sub>y</sub>）</li>
+                <li><strong>R</strong>：旋轉矩陣（3×3）</li>
+                <li><strong>t</strong>：平移向量（3×1）</li>
+                <li><strong>[u, v]</strong>：影像座標</li>
+                <li><strong>[X, Y, Z]</strong>：世界座標</li>
+            </ul>
+
+            <h4>增量式 SfM 流程</h4>
+            <ol>
+                <li>選擇初始影像對（匹配點多、基線適當）</li>
+                <li>計算本質矩陣 (Essential Matrix)，分解得到 R, t</li>
+                <li>三角測量 (Triangulation) 得到初始 3D 點</li>
+                <li>逐步加入新影像，使用 PnP (Perspective-n-Point) 算法估計相機姿態</li>
+                <li>對新影像進行三角測量，加入更多 3D 點</li>
+                <li>光束平差 (Bundle Adjustment) 全局優化</li>
+            </ol>
+        </div>
+
+        <div class="card">
+            <h3><span class="step-number">4</span>光束平差 (Bundle Adjustment)</h3>
+            <p>
+                光束平差是 SfM 的關鍵優化步驟，它同時優化所有相機參數和 3D 點位置，
+                最小化<strong>重投影誤差 (Reprojection Error)</strong>。
+            </p>
+
+            <div class="formula">
+                min Σ<sub>i</sub> Σ<sub>j</sub> || x<sub>ij</sub> - π(C<sub>i</sub>, X<sub>j</sub>) ||²
+            </div>
+
+            <p>其中：</p>
+            <ul>
+                <li>x<sub>ij</sub>：第 j 個 3D 點在第 i 張影像上的觀測位置</li>
+                <li>π(C<sub>i</sub>, X<sub>j</sub>)：3D 點 X<sub>j</sub> 透過相機 C<sub>i</sub> 投影的預測位置</li>
+            </ul>
+
+            <p>
+                光束平差通常使用 <strong>Levenberg-Marquardt</strong> 演算法求解這個非線性最小二乘問題。
+                由於問題的稀疏結構（每個點只被部分相機觀測到），可以使用稀疏矩陣技術加速計算。
+            </p>
+        </div>
+
+        <h3>SfM 基本實作範例</h3>
+<pre><code>import cv2
+import numpy as np
+from scipy.optimize import least_squares
+from scipy.sparse import lil_matrix
+
+class SimpleSfM:
+    """簡化版 SfM 實作"""
+
+    def __init__(self, camera_matrix):
+        """
+        Args:
+            camera_matrix: 相機內參矩陣 K
+        """
+        self.K = camera_matrix
+        self.camera_poses = []  # 相機姿態 [R, t]
+        self.points_3d = []     # 3D 點雲
+        self.observations = []  # 觀測記錄
+
+    def estimate_essential_matrix(self, pts1, pts2):
+        """
+        估計本質矩陣
+
+        Args:
+            pts1, pts2: 匹配點對
+
+        Returns:
+            E: 本質矩陣
+            mask: 內點遮罩
+        """
+        E, mask = cv2.findEssentialMat(
+            pts1, pts2, self.K,
+            method=cv2.RANSAC,
+            prob=0.999,
+            threshold=1.0
+        )
+        return E, mask
+
+    def decompose_essential_matrix(self, E, pts1, pts2):
+        """
+        分解本質矩陣得到 R, t
+
+        Args:
+            E: 本質矩陣
+            pts1, pts2: 匹配點
+
+        Returns:
+            R, t: 旋轉矩陣和平移向量
+        """
+        _, R, t, mask = cv2.recoverPose(E, pts1, pts2, self.K)
+        return R, t, mask
+
+    def triangulate_points(self, R1, t1, R2, t2, pts1, pts2):
+        """
+        三角測量
+
+        Args:
+            R1, t1, R2, t2: 兩相機的姿態
+            pts1, pts2: 對應的影像點
+
+        Returns:
+            points_3d: 三維點座標
+        """
+        # 建立投影矩陣
+        P1 = self.K @ np.hstack([R1, t1])
+        P2 = self.K @ np.hstack([R2, t2])
+
+        # 三角測量
+        pts1_norm = pts1.reshape(-1, 2).T
+        pts2_norm = pts2.reshape(-1, 2).T
+
+        points_4d = cv2.triangulatePoints(P1, P2, pts1_norm, pts2_norm)
+
+        # 轉換為 3D 座標
+        points_3d = points_4d[:3] / points_4d[3]
+
+        return points_3d.T
+
+    def pnp_pose_estimation(self, points_3d, points_2d):
+        """
+        PnP 相機姿態估計
+
+        Args:
+            points_3d: 已知 3D 點
+            points_2d: 對應的影像點
+
+        Returns:
+            R, t: 相機姿態
+            inliers: 內點索引
+        """
+        success, rvec, tvec, inliers = cv2.solvePnPRansac(
+            points_3d, points_2d, self.K, None,
+            iterationsCount=1000,
+            reprojectionError=2.0,
+            flags=cv2.SOLVEPNP_ITERATIVE
+        )
+
+        if success:
+            R, _ = cv2.Rodrigues(rvec)
+            return R, tvec, inliers.flatten()
+
+        return None, None, None
+
+    def bundle_adjustment(self, camera_params, points_3d, observations,
+                          camera_indices, point_indices):
+        """
+        光束平差優化
+
+        Args:
+            camera_params: 相機參數 (n_cameras, 6) - [rvec, tvec]
+            points_3d: 3D 點 (n_points, 3)
+            observations: 2D 觀測點 (n_observations, 2)
+            camera_indices: 每個觀測對應的相機索引
+            point_indices: 每個觀測對應的點索引
+
+        Returns:
+            optimized_camera_params, optimized_points_3d
+        """
+        n_cameras = camera_params.shape[0]
+        n_points = points_3d.shape[0]
+        n_observations = observations.shape[0]
+
+        # 將參數展平
+        x0 = np.hstack([camera_params.ravel(), points_3d.ravel()])
+
+        def residual_func(x):
+            """計算殘差"""
+            camera_params = x[:n_cameras * 6].reshape(n_cameras, 6)
+            points = x[n_cameras * 6:].reshape(n_points, 3)
+
+            residuals = np.zeros(n_observations * 2)
+
+            for i, (cam_idx, pt_idx) in enumerate(zip(camera_indices, point_indices)):
+                # 取得相機參數
+                rvec = camera_params[cam_idx, :3]
+                tvec = camera_params[cam_idx, 3:6]
+
+                # 旋轉矩陣
+                R, _ = cv2.Rodrigues(rvec)
+
+                # 投影
+                pt_3d = points[pt_idx]
+                pt_cam = R @ pt_3d + tvec
+                pt_proj = self.K @ pt_cam
+                pt_2d_pred = pt_proj[:2] / pt_proj[2]
+
+                # 殘差
+                residuals[2*i:2*i+2] = observations[i] - pt_2d_pred
+
+            return residuals
+
+        # 建立稀疏 Jacobian 結構
+        def build_sparse_jacobian_structure():
+            m = n_observations * 2
+            n = n_cameras * 6 + n_points * 3
+            A = lil_matrix((m, n), dtype=int)
+
+            for i, (cam_idx, pt_idx) in enumerate(zip(camera_indices, point_indices)):
+                # 相機參數的影響
+                A[2*i:2*i+2, cam_idx*6:(cam_idx+1)*6] = 1
+                # 點位置的影響
+                A[2*i:2*i+2, n_cameras*6 + pt_idx*3:n_cameras*6 + (pt_idx+1)*3] = 1
+
+            return A
+
+        A = build_sparse_jacobian_structure()
+
+        # 使用 Levenberg-Marquardt 優化
+        result = least_squares(
+            residual_func, x0,
+            jac_sparsity=A,
+            verbose=2,
+            x_scale='jac',
+            ftol=1e-4,
+            method='trf'
+        )
+
+        # 解析結果
+        optimized_camera_params = result.x[:n_cameras * 6].reshape(n_cameras, 6)
+        optimized_points_3d = result.x[n_cameras * 6:].reshape(n_points, 3)
+
+        return optimized_camera_params, optimized_points_3d
+
+
+# 使用範例
+if __name__ == '__main__':
+    # 假設的相機內參
+    K = np.array([
+        [1000, 0, 960],
+        [0, 1000, 540],
+        [0, 0, 1]
+    ], dtype=np.float64)
+
+    sfm = SimpleSfM(K)
+
+    # 模擬匹配點
+    pts1 = np.random.rand(100, 2) * 500 + 200
+    pts2 = pts1 + np.random.randn(100, 2) * 2 + np.array([50, 10])
+
+    # 估計本質矩陣
+    E, mask = sfm.estimate_essential_matrix(pts1, pts2)
+    print(f"本質矩陣計算完成，內點數: {mask.sum()}")
+
+    # 分解得到相對姿態
+    R, t, _ = sfm.decompose_essential_matrix(E, pts1[mask.ravel()==1], pts2[mask.ravel()==1])
+    print(f"相機相對旋轉:\n{R}")
+    print(f"相機相對平移: {t.T}")</code></pre>
+
+        <h2>第三階段：密集重建</h2>
+
+        <div class="card">
+            <h3><span class="step-number">5</span>多視圖立體匹配 (Multi-View Stereo, MVS)</h3>
+            <p>
+                SfM 產生的是稀疏點雲，密集重建則是在每個像素位置估計深度值，產生密集點雲。
+            </p>
+
+            <h4>常用 MVS 演算法</h4>
+            <table>
+                <tr>
+                    <th>演算法</th>
+                    <th>原理</th>
+                    <th>特點</th>
+                </tr>
+                <tr>
+                    <td>PMVS/CMVS</td>
+                    <td>Patch-based MVS</td>
+                    <td>經典方法，穩定可靠</td>
+                </tr>
+                <tr>
+                    <td>PatchMatch Stereo</td>
+                    <td>隨機初始化 + 傳播</td>
+                    <td>快速，GPU 加速</td>
+                </tr>
+                <tr>
+                    <td>SGM</td>
+                    <td>Semi-Global Matching</td>
+                    <td>適用於雙目立體</td>
+                </tr>
+                <tr>
+                    <td>Deep MVS</td>
+                    <td>深度學習方法</td>
+                    <td>MVSNet, CasMVSNet</td>
+                </tr>
+            </table>
+
+            <h4>深度估計流程</h4>
+            <ol>
+                <li><strong>深度假設</strong>：在一定範圍內假設多個深度值</li>
+                <li><strong>代價計算</strong>：計算參考視圖與源視圖的光度一致性</li>
+                <li><strong>代價聚合</strong>：空間正則化，考慮鄰域一致性</li>
+                <li><strong>深度選擇</strong>：選擇代價最小的深度值</li>
+                <li><strong>深度細化</strong>：濾除異常值，平滑處理</li>
+            </ol>
+        </div>
+
+        <div class="card">
+            <h3><span class="step-number">6</span>網格重建與紋理貼圖</h3>
+
+            <h4>網格重建方法</h4>
+            <ul>
+                <li><strong>Delaunay 三角化</strong>：基於點雲的三角網格</li>
+                <li><strong>Poisson 重建</strong>：基於法向量的隱式曲面重建</li>
+                <li><strong>Marching Cubes</strong>：從體素網格提取等值面</li>
+                <li><strong>Alpha Shapes</strong>：保持幾何細節</li>
+            </ul>
+
+            <h4>紋理貼圖</h4>
+            <p>
+                紋理貼圖是將原始影像的色彩資訊映射到三維網格表面。需要處理：
+            </p>
+            <ul>
+                <li>影像選擇：選擇最佳視角的影像</li>
+                <li>接縫處理：減少不同影像間的色差</li>
+                <li>光照補償：校正不同時間拍攝的光照差異</li>
+            </ul>
+        </div>
+
+        <h2>第四階段：成果產出</h2>
+
+        <div class="card">
+            <h3><span class="step-number">7</span>正射影像 (Orthomosaic)</h3>
+            <p>
+                正射影像是經過幾何校正的影像，消除了地形起伏和相機傾斜造成的變形，
+                具有統一的比例尺，可以直接進行測量。
+            </p>
+
+            <h4>正射校正原理</h4>
+            <div class="formula">
+                對於每個 DSM 上的點 (X, Y, Z)，計算其在原始影像中的位置，取得像素值
+            </div>
+
+            <h4>生成流程</h4>
+            <ol>
+                <li>建立數值表面模型 (DSM)</li>
+                <li>定義輸出正射影像的範圍和解析度</li>
+                <li>對每個輸出像素，反投影到原始影像取樣</li>
+                <li>處理多影像重疊區域的融合</li>
+                <li>色彩均衡和接縫處理</li>
+            </ol>
+        </div>
+
+        <div class="card">
+            <h3><span class="step-number">8</span>數值高程模型 (DEM/DSM/DTM)</h3>
+
+            <table>
+                <tr>
+                    <th>類型</th>
+                    <th>全名</th>
+                    <th>說明</th>
+                </tr>
+                <tr>
+                    <td>DSM</td>
+                    <td>Digital Surface Model</td>
+                    <td>數值表面模型，包含地表所有物體（建築、植被）</td>
+                </tr>
+                <tr>
+                    <td>DTM</td>
+                    <td>Digital Terrain Model</td>
+                    <td>數值地形模型，僅表示裸地高程</td>
+                </tr>
+                <tr>
+                    <td>DEM</td>
+                    <td>Digital Elevation Model</td>
+                    <td>數值高程模型，泛指高程網格資料</td>
+                </tr>
+                <tr>
+                    <td>CHM</td>
+                    <td>Canopy Height Model</td>
+                    <td>冠層高度模型 (CHM = DSM - DTM)</td>
+                </tr>
+            </table>
+        </div>
+
+        <h2>Agisoft Metashape 處理參數</h2>
+
+        <div class="card">
+            <h3>對齊相片 (Align Photos) 參數</h3>
+            <table>
+                <tr>
+                    <th>參數</th>
+                    <th>選項</th>
+                    <th>影響</th>
+                </tr>
+                <tr>
+                    <td>精確度 (Accuracy)</td>
+                    <td>最高/高/中/低</td>
+                    <td>影像縮放比例，越高越精確但更慢</td>
+                </tr>
+                <tr>
+                    <td>關鍵點限制</td>
+                    <td>0 = 無限制</td>
+                    <td>每張影像的最大特徵點數</td>
+                </tr>
+                <tr>
+                    <td>連結點限制</td>
+                    <td>0 = 無限制</td>
+                    <td>每張影像保留的匹配點數</td>
+                </tr>
+                <tr>
+                    <td>預選</td>
+                    <td>通用/參考</td>
+                    <td>利用 GPS 或通用方法預篩選影像對</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>建立密集點雲參數</h3>
+            <table>
+                <tr>
+                    <th>參數</th>
+                    <th>選項</th>
+                    <th>說明</th>
+                </tr>
+                <tr>
+                    <td>品質 (Quality)</td>
+                    <td>超高/高/中/低/最低</td>
+                    <td>影像降取樣程度，影響點雲密度</td>
+                </tr>
+                <tr>
+                    <td>深度過濾</td>
+                    <td>激進/中度/輕度/禁用</td>
+                    <td>異常點過濾強度</td>
+                </tr>
+            </table>
+
+            <div class="tip">
+                <strong>農業應用建議：</strong>
+                <ul>
+                    <li>對齊精確度：使用「高」即可，平衡速度與精度</li>
+                    <li>密集點雲品質：「中」適合大面積農田</li>
+                    <li>深度過濾：植被區域建議使用「輕度」以保留細節</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>常見影像鑲嵌軟體比較</h2>
+
+        <table>
+            <tr>
+                <th>軟體</th>
+                <th>授權</th>
+                <th>特點</th>
+                <th>適用場景</th>
+            </tr>
+            <tr>
+                <td>Agisoft Metashape</td>
+                <td>商業</td>
+                <td>功能全面，穩定可靠</td>
+                <td>專業測繪、研究</td>
+            </tr>
+            <tr>
+                <td>Pix4Dmapper</td>
+                <td>商業</td>
+                <td>雲端整合，農業模組</td>
+                <td>農業、建築</td>
+            </tr>
+            <tr>
+                <td>DJI Terra</td>
+                <td>商業</td>
+                <td>DJI 無人機整合</td>
+                <td>DJI 用戶</td>
+            </tr>
+            <tr>
+                <td>OpenDroneMap</td>
+                <td>開源</td>
+                <td>免費，社群活躍</td>
+                <td>預算有限、學習</td>
+            </tr>
+            <tr>
+                <td>COLMAP</td>
+                <td>開源</td>
+                <td>高品質 SfM/MVS</td>
+                <td>研究、客製化</td>
+            </tr>
+            <tr>
+                <td>Meshroom</td>
+                <td>開源</td>
+                <td>節點式工作流</td>
+                <td>3D 建模</td>
+            </tr>
+        </table>
+
+        <h2>智慧農業應用</h2>
+
+        <div class="tip">
+            <strong>正射影像應用：</strong>
+            <ul>
+                <li>農田邊界精確測量</li>
+                <li>作物生長監測與 NDVI 分析</li>
+                <li>病蟲害分佈定位</li>
+                <li>雜草分佈圖製作</li>
+            </ul>
+        </div>
+
+        <div class="tip">
+            <strong>DEM/DSM 應用：</strong>
+            <ul>
+                <li>農田地形分析與排水規劃</li>
+                <li>作物高度估計與生物量計算</li>
+                <li>等高線圖製作</li>
+                <li>坡度坡向分析</li>
+            </ul>
+        </div>
+
+        <div class="warning">
+            <strong>飛行規劃注意事項：</strong>
+            <ul>
+                <li>前向重疊率建議 75-85%</li>
+                <li>側向重疊率建議 65-75%</li>
+                <li>飛行高度決定 GSD（地面取樣距離）</li>
+                <li>避免在正午強光或陰影過大時拍攝</li>
+                <li>確保影像清晰無模糊</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>延伸學習資源</h3>
+            <ul>
+                <li><a href="https://www.agisoft.com/pdf/metashape-pro_1_8_en.pdf" target="_blank">Agisoft Metashape 官方手冊</a></li>
+                <li><a href="https://github.com/colmap/colmap" target="_blank">COLMAP 開源 SfM/MVS</a></li>
+                <li><a href="https://github.com/OpenDroneMap/ODM" target="_blank">OpenDroneMap</a></li>
+                <li><a href="https://alicevision.org/" target="_blank">Meshroom / AliceVision</a></li>
+                <li>書籍：《Multiple View Geometry in Computer Vision》by Hartley & Zisserman</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        }
+
+        (function() {
+            if (localStorage.getItem('theme') === 'light') {
+                document.body.classList.add('light-mode');
+            }
+        })();
+    </script>
+</body>
+</html>

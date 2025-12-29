@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於靜電與電路保護</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="_1">關於靜電與電路保護</h1>
+<p>靜電是電子電路的隱形殺手。了解靜電的危害與防護措施，可以大幅降低元件損壞的風險。</p>
+<hr />
+<h2 id="esd">一、什麼是靜電（ESD）</h2>
+<p><strong>ESD</strong>（Electrostatic Discharge，靜電放電）是指靜電荷在物體間快速轉移的現象。</p>
+<h3 id="_2">日常靜電來源</h3>
+<table>
+<thead>
+<tr>
+<th>情境</th>
+<th>產生電壓</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>走過地毯</td>
+<td>1,500 ~ 35,000V</td>
+</tr>
+<tr>
+<td>拿起塑膠袋</td>
+<td>1,200 ~ 20,000V</td>
+</tr>
+<tr>
+<td>坐在椅子上起身</td>
+<td>1,500 ~ 18,000V</td>
+</tr>
+<tr>
+<td>穿脫毛衣</td>
+<td>7,000 ~ 15,000V</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>人體感知靜電的門檻約 3,000V，但許多電子元件在 100V 以下就會損壞！</p>
+</blockquote>
+<h3 id="_3">為什麼靜電會傷害電路</h3>
+<p>電子元件內部的電路非常精密，尤其是：<br />
+- <strong>MOSFET 電晶體</strong>：閘極氧化層極薄，數十伏特就可能擊穿<br />
+- <strong>IC 晶片</strong>：內部線路寬度僅奈米等級<br />
+- <strong>微控制器</strong>（如 Arduino、ESP8266）：內含大量敏感電路</p>
+<p>靜電放電時，瞬間電流可達數安培，足以燒毀微小的電路結構。</p>
+<hr />
+<h2 id="_4">二、靜電對常見元件的影響</h2>
+<h3 id="21">2.1 敏感度分類</h3>
+<table>
+<thead>
+<tr>
+<th>敏感度等級</th>
+<th>元件類型</th>
+<th>損壞電壓</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>極高敏感</td>
+<td>MOSFET、JFET、CMOS IC</td>
+<td>&lt; 100V</td>
+</tr>
+<tr>
+<td>高敏感</td>
+<td>運算放大器、微控制器</td>
+<td>100 ~ 500V</td>
+</tr>
+<tr>
+<td>中等敏感</td>
+<td>LED、二極體、電晶體</td>
+<td>500 ~ 2000V</td>
+</tr>
+<tr>
+<td>低敏感</td>
+<td>電阻、電容、繼電器</td>
+<td>&gt; 2000V</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-arduino">2.2 常見 Arduino 相關元件敏感度</h3>
+<table>
+<thead>
+<tr>
+<th>元件</th>
+<th>敏感度</th>
+<th>注意事項</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arduino UNO</td>
+<td>中高</td>
+<td>ATmega328P 需注意</td>
+</tr>
+<tr>
+<td>ESP8266 / ESP32</td>
+<td>高</td>
+<td>WiFi 晶片敏感</td>
+</tr>
+<tr>
+<td>DHT11 / DHT22</td>
+<td>中</td>
+<td>內部有 IC</td>
+</tr>
+<tr>
+<td>OLED 螢幕</td>
+<td>高</td>
+<td>驅動 IC 敏感</td>
+</tr>
+<tr>
+<td>伺服馬達</td>
+<td>低</td>
+<td>相對耐受</td>
+</tr>
+<tr>
+<td>繼電器模組</td>
+<td>低</td>
+<td>機械結構為主</td>
+</tr>
+<tr>
+<td>LED</td>
+<td>中</td>
+<td>直接觸摸影響小</td>
+</tr>
+<tr>
+<td>步進馬達驅動板</td>
+<td>高</td>
+<td>含 MOSFET</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_5">三、靜電損壞的類型</h2>
+<h3 id="31-catastrophic-failure">3.1 立即性損壞（Catastrophic Failure）</h3>
+<p>元件當場失效，完全無法運作。<br />
+- 症狀：元件發熱、燒焦痕跡、完全不動作<br />
+- 容易發現，但元件報廢</p>
+<h3 id="32-latent-damage">3.2 潛在性損壞（Latent Damage）</h3>
+<p><strong>更危險的情況！</strong></p>
+<p>元件受損但仍能運作，但：<br />
+- 效能下降<br />
+- 穩定性變差<br />
+- 壽命大幅縮短<br />
+- 可能在日後突然失效</p>
+<p>這種損壞難以察覺，元件可能在使用數週或數月後才出問題。</p>
+<hr />
+<h2 id="_6">四、靜電防護措施</h2>
+<h3 id="41">4.1 個人防護</h3>
+<h4 id="_7">防靜電手環</h4>
+<p>最有效的個人防護工具：</p>
+<pre><code>┌─────────────────────────────────────┐
+│                                     │
+│    [手環] ──── [導線] ──── [接地]   │
+│                                     │
+│    • 手環緊貼手腕                   │
+│    • 導線連接到接地點               │
+│    • 電阻約 1MΩ（安全放電）         │
+│                                     │
+└─────────────────────────────────────┘
+</code></pre>
+<p><strong>使用方式：</strong><br />
+1. 將手環戴在手腕上，金屬片接觸皮膚<br />
+2. 鱷魚夾夾在接地點（如電腦機殼金屬部分）<br />
+3. 確保導線沒有斷裂</p>
+<h4 id="_8">沒有手環時的替代方案</h4>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>操作</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>觸摸接地金屬</td>
+<td>碰觸前先摸電腦機殼</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>保持濕度</td>
+<td>使用加濕器</td>
+<td>輔助</td>
+</tr>
+<tr>
+<td>避免合成纖維</td>
+<td>穿棉質衣物</td>
+<td>預防</td>
+</tr>
+<tr>
+<td>洗手</td>
+<td>操作前洗手擦乾</td>
+<td>輔助</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42">4.2 工作環境</h3>
+<h4 id="_9">理想的防靜電環境</h4>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>建議</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>濕度</td>
+<td>40% ~ 60% RH</td>
+</tr>
+<tr>
+<td>工作墊</td>
+<td>防靜電墊（接地）</td>
+</tr>
+<tr>
+<td>地板</td>
+<td>防靜電地板或地墊</td>
+</tr>
+<tr>
+<td>衣著</td>
+<td>棉質衣物、防靜電工作服</td>
+</tr>
+<tr>
+<td>包裝</td>
+<td>元件放在防靜電袋內</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_10">簡易防靜電工作區</h4>
+<pre><code>桌面配置：
+
+┌────────────────────────────────────────┐
+│  ┌──────────────────────────────────┐  │
+│  │      防靜電工作墊（接地）         │  │
+│  │                                  │  │
+│  │    [工作區]     [元件放置區]     │  │
+│  │                                  │  │
+│  └──────────────────────────────────┘  │
+│                                        │
+│  接地線 ─────────────────→ 電源插座地線 │
+└────────────────────────────────────────┘
+</code></pre>
+<h3 id="43">4.3 元件存放</h3>
+<h4 id="_11">防靜電袋的種類</h4>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>外觀</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>粉紅色防靜電袋</td>
+<td>粉紅半透明</td>
+<td>防止摩擦產生靜電</td>
+</tr>
+<tr>
+<td>銀色屏蔽袋</td>
+<td>銀灰色金屬感</td>
+<td>完全隔絕外部靜電</td>
+</tr>
+<tr>
+<td>黑色導電袋</td>
+<td>黑色不透明</td>
+<td>導電保護，適合運輸</td>
+</tr>
+</tbody>
+</table>
+<p><strong>正確存放方式：</strong><br />
+- IC 晶片插在導電泡棉上<br />
+- 開發板放入原廠防靜電袋<br />
+- 散裝元件用防靜電盒分類</p>
+<hr />
+<h2 id="_12">五、電路串接時的注意事項</h2>
+<h3 id="51">5.1 操作前準備</h3>
+<ol>
+<li><strong>整理工作區</strong></li>
+<li>清除塑膠袋、保麗龍等易產生靜電的物品</li>
+<li>
+<p>準備好所有需要的元件</p>
+</li>
+<li>
+<p><strong>釋放身體靜電</strong></p>
+</li>
+<li>戴上防靜電手環，或</li>
+<li>
+<p>觸摸接地金屬 5 秒以上</p>
+</li>
+<li>
+<p><strong>確認濕度</strong></p>
+</li>
+<li>乾燥環境靜電更容易產生</li>
+<li>冬天或冷氣房要特別注意</li>
+</ol>
+<h3 id="52">5.2 拿取元件的正確方式</h3>
+<h4 id="ic">IC 晶片</h4>
+<pre><code>正確拿法：
+     ┌───────────┐
+     │  IC 晶片  │
+     └───────────┘
+         ↑
+    握住兩側邊緣
+    避免碰觸接腳
+
+錯誤拿法：
+     ┌───────────┐
+     │  IC 晶片  │  ← 手指壓在晶片上
+     └─┬─┬─┬─┬─┬─┘
+       ↑ ↑ ↑ ↑ ↑
+      碰觸到接腳 ✗
+</code></pre>
+<h4 id="_13">開發板</h4>
+<pre><code>正確拿法：
+┌─────────────────────┐
+│                     │
+│    Arduino UNO      │
+│                     │
+└─────────────────────┘
+  ↑                 ↑
+握住板子邊緣，避免碰觸：
+- USB 接口金屬部分
+- 排針接腳
+- 晶片表面
+</code></pre>
+<h3 id="53">5.3 插拔元件的安全步驟</h3>
+<p><strong>正確順序：</strong></p>
+<ol>
+<li>確保電路<strong>斷電</strong></li>
+<li>釋放身體靜電</li>
+<li>一手扶穩電路板</li>
+<li>另一手拿取元件邊緣</li>
+<li>對準位置輕輕插入</li>
+<li>確認方向正確再通電</li>
+</ol>
+<p><strong>常見錯誤：</strong><br />
+- ❌ 帶電插拔元件<br />
+- ❌ 用力過猛導致接腳彎曲<br />
+- ❌ 在地毯上操作<br />
+- ❌ 穿著毛衣操作</p>
+<h3 id="54">5.4 焊接時的靜電防護</h3>
+<table>
+<thead>
+<tr>
+<th>注意事項</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>使用接地烙鐵</td>
+<td>烙鐵頭接地可防止靜電</td>
+</tr>
+<tr>
+<td>先焊不敏感元件</td>
+<td>電阻、電容先焊</td>
+</tr>
+<tr>
+<td>敏感元件最後焊</td>
+<td>IC、微控制器最後處理</td>
+</tr>
+<tr>
+<td>避免長時間加熱</td>
+<td>快速完成焊接</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_14">六、靜電損壞的診斷</h2>
+<h3 id="61">6.1 懷疑靜電損壞時的檢查</h3>
+<table>
+<thead>
+<tr>
+<th>症狀</th>
+<th>可能原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>元件完全不動作</td>
+<td>立即性損壞</td>
+</tr>
+<tr>
+<td>時好時壞</td>
+<td>潛在性損壞</td>
+</tr>
+<tr>
+<td>異常發熱</td>
+<td>內部短路</td>
+</tr>
+<tr>
+<td>電流消耗異常</td>
+<td>漏電</td>
+</tr>
+<tr>
+<td>數值讀取不穩定</td>
+<td>內部電路受損</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62">6.2 簡易測試方法</h3>
+<p><strong>對於 Arduino：</strong></p>
+<pre><code class="language-cpp">void setup() {
+  Serial.begin(9600);
+  Serial.println(&quot;Arduino 正常運作&quot;);
+
+  // 測試所有數位腳位
+  for (int i = 2; i &lt;= 13; i++) {
+    pinMode(i, OUTPUT);
+    digitalWrite(i, HIGH);
+    delay(100);
+    digitalWrite(i, LOW);
+  }
+  Serial.println(&quot;腳位測試完成&quot;);
+}
+
+void loop() {
+  // 持續監控
+  Serial.println(millis());
+  delay(1000);
+}
+</code></pre>
+<p>如果某些腳位無法正常輸出，可能已受損。</p>
+<hr />
+<h2 id="_15">七、防靜電設備採購建議</h2>
+<h3 id="71">7.1 基本防護套件</h3>
+<table>
+<thead>
+<tr>
+<th>物品</th>
+<th>價格範圍</th>
+<th>必要性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>防靜電手環</td>
+<td>NT$ 50-150</td>
+<td>必備</td>
+</tr>
+<tr>
+<td>防靜電工作墊</td>
+<td>NT$ 200-500</td>
+<td>建議</td>
+</tr>
+<tr>
+<td>防靜電袋（10入）</td>
+<td>NT$ 50-100</td>
+<td>建議</td>
+</tr>
+<tr>
+<td>導電泡棉</td>
+<td>NT$ 30-80</td>
+<td>選配</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72">7.2 進階防護</h3>
+<table>
+<thead>
+<tr>
+<th>物品</th>
+<th>價格範圍</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>離子風扇</td>
+<td>NT$ 2000+</td>
+<td>消除工作區靜電</td>
+</tr>
+<tr>
+<td>防靜電地墊</td>
+<td>NT$ 500+</td>
+<td>站立工作區</td>
+</tr>
+<tr>
+<td>靜電電壓測試器</td>
+<td>NT$ 1000+</td>
+<td>檢測環境靜電</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="faq">八、常見問題 FAQ</h2>
+<h3 id="q1">Q1：普通塑膠袋可以裝電子元件嗎？</h3>
+<p><strong>不建議。</strong> 普通塑膠袋：<br />
+- 摩擦會產生靜電<br />
+- 無法隔絕外部靜電<br />
+- 可能造成潛在損壞</p>
+<p>應使用粉紅色防靜電袋或銀色屏蔽袋。</p>
+<h3 id="q2">Q2：防靜電手環一定要接地嗎？</h3>
+<p><strong>最好要接地。</strong><br />
+- 接地型手環效果最好<br />
+- 無線型手環效果有限<br />
+- 沒有手環時，頻繁觸摸接地金屬</p>
+<h3 id="q3">Q3：室內濕度多少最安全？</h3>
+<p><strong>40% ~ 60% RH 最佳。</strong><br />
+- 濕度太低（&lt;30%）：靜電容易累積<br />
+- 濕度太高（&gt;70%）：可能造成結露</p>
+<h3 id="q4">Q4：新買的元件需要特別處理嗎？</h3>
+<p><strong>保持在原包裝內直到使用。</strong><br />
+- 原廠包裝通常有防靜電設計<br />
+- 拆封後盡快使用或轉存到防靜電袋<br />
+- 不要隨意放在桌面上</p>
+<h3 id="q5">Q5：學生實驗課需要很嚴格的防護嗎？</h3>
+<p><strong>基本防護即可：</strong><br />
+1. 操作前觸摸接地金屬<br />
+2. 避免穿毛衣操作<br />
+3. 保持桌面整潔，移除塑膠袋<br />
+4. 斷電後再插拔元件</p>
+<hr />
+<h2 id="_16">九、重點總結</h2>
+<h3 id="_17">必記守則</h3>
+<ol>
+<li><strong>操作前先放電</strong> - 觸摸接地金屬或戴手環</li>
+<li><strong>握邊緣不握腳</strong> - 拿元件時握邊緣</li>
+<li><strong>斷電再插拔</strong> - 永遠在斷電狀態操作</li>
+<li><strong>妥善存放</strong> - 使用防靜電袋保存元件</li>
+<li><strong>保持適當濕度</strong> - 避免過於乾燥的環境</li>
+</ol>
+<h3 id="_18">高風險情境</h3>
+<ul>
+<li>冬天乾燥的室內</li>
+<li>冷氣房</li>
+<li>鋪地毯的房間</li>
+<li>穿著合成纖維衣物</li>
+<li>剛拆開塑膠包裝後</li>
+</ul>
+<hr />
+<p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

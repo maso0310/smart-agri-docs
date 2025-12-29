@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於麵包板與基礎接線</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="_1">關於麵包板與基礎接線</h1>
+<h2 id="_2">為什麼需要麵包板？</h2>
+<p>在學習電子電路時，我們需要一個可以快速搭建、測試、修改電路的平台。麵包板（Breadboard）就是這樣的工具：</p>
+<ul>
+<li><strong>免焊接</strong>：插拔元件即可，不需要焊接技術</li>
+<li><strong>可重複使用</strong>：拆掉重來，元件不會損壞</li>
+<li><strong>快速原型</strong>：幾分鐘就能完成電路測試</li>
+<li><strong>視覺化</strong>：清楚看到電路連接方式</li>
+</ul>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                      電路開發流程                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────┐      ┌─────────┐      ┌─────────┐                │
+│   │  構思   │ ──→  │ 麵包板  │ ──→  │  焊接   │                │
+│   │  電路   │      │  測試   │      │ 成品板  │                │
+│   └─────────┘      └─────────┘      └─────────┘                │
+│                         ↑                                       │
+│                         │                                       │
+│                    修改調整                                     │
+│                    反覆測試                                     │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_3">麵包板是什麼？</h2>
+<p>麵包板是一塊塑膠板，上面有許多小孔，孔的下方有金屬彈片將特定的孔連接在一起。只要把元件的腳插入孔中，就能透過金屬彈片形成電路連接。</p>
+<h3 id="_4">外觀結構</h3>
+<pre><code>標準 830 孔麵包板（最常見）：
+
+         1   5   10  15  20  25  30  35  40  45  50  55  60
+    ┌────────────────────────────────────────────────────────┐
+    │  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │ ← 電源軌 (+)
+ +  │  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─  │   (紅線標示)
+    │  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │ ← 電源軌 (-)
+ -  │  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─  │   (藍/黑線標示)
+    ├────────────────────────────────────────────────────────┤
+  a │  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │
+  b │  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │ ← 元件區
+  c │  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │   上半部
+  d │  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │
+  e │  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │
+    │                      中央溝槽                           │ ← IC 跨接區
+  f │  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │
+  g │  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │ ← 元件區
+  h │  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │   下半部
+  i │  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │
+  j │  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │
+    ├────────────────────────────────────────────────────────┤
+ +  │  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │ ← 電源軌 (+)
+    │  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─  │
+ -  │  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │ ← 電源軌 (-)
+    └────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_5">內部連接原理（重要！）</h2>
+<h3 id="_6">電源軌連接方式</h3>
+<pre><code>電源軌：整排水平連通
+
+    + 軌（紅色）
+    ┌─────────────────────────────────────────┐
+    │  ●━━━●━━━●━━━●━━━●━━━●━━━●━━━●━━━●━━━●  │  ← 整排相連
+    └─────────────────────────────────────────┘
+
+    - 軌（藍色）
+    ┌─────────────────────────────────────────┐
+    │  ●━━━●━━━●━━━●━━━●━━━●━━━●━━━●━━━●━━━●  │  ← 整排相連
+    └─────────────────────────────────────────┘
+
+    用途：提供電源（VCC）和接地（GND）給整個電路
+</code></pre>
+<h3 id="_7">元件區連接方式</h3>
+<pre><code>元件區：每直排 5 孔相連（被中央溝槽隔開）
+
+    列號：  1     2     3     4     5
+          ┌───┐ ┌───┐ ┌───┐ ┌───┐ ┌───┐
+      a   │ ● │ │ ● │ │ ● │ │ ● │ │ ● │
+      b   │ ┃ │ │ ┃ │ │ ┃ │ │ ┃ │ │ ┃ │
+      c   │ ┃ │ │ ┃ │ │ ┃ │ │ ┃ │ │ ┃ │   ← 每直排 a-e 相連
+      d   │ ┃ │ │ ┃ │ │ ┃ │ │ ┃ │ │ ┃ │
+      e   │ ● │ │ ● │ │ ● │ │ ● │ │ ● │
+          └───┘ └───┘ └───┘ └───┘ └───┘
+          ═════════════════════════════    ← 中央溝槽（斷開）
+          ┌───┐ ┌───┐ ┌───┐ ┌───┐ ┌───┐
+      f   │ ● │ │ ● │ │ ● │ │ ● │ │ ● │
+      g   │ ┃ │ │ ┃ │ │ ┃ │ │ ┃ │ │ ┃ │
+      h   │ ┃ │ │ ┃ │ │ ┃ │ │ ┃ │ │ ┃ │   ← 每直排 f-j 相連
+      i   │ ┃ │ │ ┃ │ │ ┃ │ │ ┃ │ │ ┃ │
+      j   │ ● │ │ ● │ │ ● │ │ ● │ │ ● │
+          └───┘ └───┘ └───┘ └───┘ └───┘
+
+    重點：
+    - 同一直排的 a,b,c,d,e 互相連通
+    - 同一直排的 f,g,h,i,j 互相連通
+    - 上半部 (a-e) 和下半部 (f-j) 不連通
+    - 不同直排之間不連通
+</code></pre>
+<h3 id="_8">連接規則圖解</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                        連接規則速記                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   電源軌：橫向連通 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━                  │
+│                                                                 │
+│   元件區：直向連通（5孔一組）                                    │
+│                                                                 │
+│           ┃     ┃     ┃     ┃                                  │
+│           ┃     ┃     ┃     ┃                                  │
+│           ┃     ┃     ┃     ┃                                  │
+│                                                                 │
+│   中央溝槽：上下斷開                                             │
+│                                                                 │
+│   ════════════════════════════                                  │
+│                                                                 │
+│           ┃     ┃     ┃     ┃                                  │
+│           ┃     ┃     ┃     ┃                                  │
+│           ┃     ┃     ┃     ┃                                  │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_9">麵包板尺寸比較</h2>
+<pre><code>┌────────────────┬───────────┬─────────────┬───────────────────┐
+│ 尺寸           │ 孔數      │ 尺寸(約)    │ 適用場合          │
+├────────────────┼───────────┼─────────────┼───────────────────┤
+│ 迷你型         │ 170 孔    │ 4.5 x 3.5cm │ 極簡單電路測試    │
+│ 小型           │ 400 孔    │ 8.5 x 5.5cm │ 小型專案          │
+│ 標準型         │ 830 孔    │ 16.5 x 5.5cm│ 大多數專案（推薦）│
+│ 大型           │ 1660 孔   │ 兩塊拼接    │ 複雜專案          │
+└────────────────┴───────────┴─────────────┴───────────────────┘
+
+迷你型（170孔）：        標準型（830孔）：
+┌──────────┐              ┌─────────────────────────────┐
+│ ○○○○○○○○ │              │ ○○○○○○○○○○○○○○○○○○○○○○○○○ │
+│ ○○○○○○○○ │              │ ○○○○○○○○○○○○○○○○○○○○○○○○○ │
+│ ○○○○○○○○ │              │ ○○○○○○○○○○○○○○○○○○○○○○○○○ │
+│ ○○○○○○○○ │              │ ○○○○○○○○○○○○○○○○○○○○○○○○○ │
+│ ○○○○○○○○ │              │ ○○○○○○○○○○○○○○○○○○○○○○○○○ │
+│ ○○○○○○○○ │              │ ═══════════════════════════ │
+│ ○○○○○○○○ │              │ ○○○○○○○○○○○○○○○○○○○○○○○○○ │
+│ ○○○○○○○○ │              │ ○○○○○○○○○○○○○○○○○○○○○○○○○ │
+└──────────┘              │ ○○○○○○○○○○○○○○○○○○○○○○○○○ │
+                          │ ○○○○○○○○○○○○○○○○○○○○○○○○○ │
+無電源軌                   │ ○○○○○○○○○○○○○○○○○○○○○○○○○ │
+                          └─────────────────────────────┘
+                          有電源軌（上下各兩排）
+</code></pre>
+<hr />
+<h2 id="_10">杜邦線與跳線</h2>
+<h3 id="_11">杜邦線類型</h3>
+<pre><code>┌─────────────────┬─────────────────────────────────────────────┐
+│ 類型            │ 用途                                        │
+├─────────────────┼─────────────────────────────────────────────┤
+│ 公-公 (M-M)     │ 麵包板內部連接、麵包板到麵包板              │
+│ 公-母 (M-F)     │ Arduino 到麵包板、模組連接                  │
+│ 母-母 (F-F)     │ Arduino 排針到模組排針                      │
+└─────────────────┴─────────────────────────────────────────────┘
+
+接頭外觀：
+    公頭 (Male)           母頭 (Female)
+    ┌─────┐               ┌─────┐
+    │     │               │ ┌─┐ │
+    │  │  │               │ │ │ │
+    │  │  │               │ └─┘ │
+    └──┼──┘               └─────┘
+       │                  可插入公頭
+    插入孔中
+</code></pre>
+<h3 id="_12">跳線顏色規範（建議）</h3>
+<pre><code>┌─────────────────┬───────────────────────────────────────┐
+│ 顏色            │ 建議用途                              │
+├─────────────────┼───────────────────────────────────────┤
+│ 紅色            │ 電源正極 (VCC, 5V, 3.3V)             │
+│ 黑色            │ 接地 (GND)                           │
+│ 橙色/黃色       │ 訊號線                               │
+│ 綠色            │ 資料線 (如 I2C SDA)                  │
+│ 藍色            │ 時脈線 (如 I2C SCL)                  │
+│ 白色            │ 其他訊號                             │
+└─────────────────┴───────────────────────────────────────┘
+
+遵循顏色規範的好處：
+- 快速辨識電路連接
+- 方便除錯
+- 減少接錯的機會
+</code></pre>
+<hr />
+<h2 id="_13">基本接線技巧</h2>
+<h3 id="_14">技巧一：電源配線</h3>
+<pre><code>從 Arduino 連接電源到麵包板：
+
+Arduino                     麵包板
+┌─────────┐                ┌───────────────────────────┐
+│         │                │ + ○━━━━━━━━━━━━━━━━━━━━━○ │
+│      5V │───紅線────────→│   ↑                       │
+│         │                │   接這裡                  │
+│     GND │───黑線────────→│ - ○━━━━━━━━━━━━━━━━━━━━━○ │
+│         │                │   ↑                       │
+└─────────┘                │   接這裡                  │
+                           │                           │
+                           │   a ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │
+                           │   b ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │
+                           │   ...                     │
+                           └───────────────────────────┘
+
+現在整個 + 軌都是 5V，整個 - 軌都是 GND
+</code></pre>
+<h3 id="_15">技巧二：元件正確放置</h3>
+<pre><code>正確：跨越不同列（形成電路）
+
+    列 1   列 2   列 3   列 4
+    ┌───┐ ┌───┐ ┌───┐ ┌───┐
+  a │ ● │ │ ○ │ │ ○ │ │ ○ │     LED 負極
+  b │ ┃ │ │   │ │   │ │   │        ↓
+  c │ ┃ │ │   │ │   │ │   │     ┌──●──┐
+  d │ ┃ │ │   │ │ ● │ │   │     │     │
+  e │ ● │ │   │ │ ┃ │ │   │     └──●──┘
+    └───┘ └───┘ └─┃─┘ └───┘        ↑
+                  ┃            LED 正極
+    LED 跨越列 1 和列 3
+
+錯誤：同一列的不同行（短路！）
+
+    列 1
+    ┌───┐
+  a │ ● │ ← LED 負極      這樣是短路！
+  b │ ┃ │                 因為 a,b,c,d,e
+  c │ ┃ │                 都是連通的
+  d │ ● │ ← LED 正極
+  e │   │
+    └───┘
+</code></pre>
+<h3 id="ic">技巧三：IC 晶片放置</h3>
+<pre><code>IC 晶片必須跨越中央溝槽：
+
+    列 1   列 2   列 3   列 4
+    ┌───┐ ┌───┐ ┌───┐ ┌───┐
+  a │   │ │   │ │   │ │   │
+  b │   │ │   │ │   │ │   │
+  c │   │ │   │ │   │ │   │
+  d │ ● │ │ ● │ │ ● │ │ ● │  ← IC 腳位 1-4
+  e │ ┃ │ │ ┃ │ │ ┃ │ │ ┃ │
+    └─┃─┘ └─┃─┘ └─┃─┘ └─┃─┘
+    ══╬═════╬═════╬═════╬══  ← 中央溝槽
+    ┌─┃─┐ ┌─┃─┐ ┌─┃─┐ ┌─┃─┐
+  f │ ┃ │ │ ┃ │ │ ┃ │ │ ┃ │
+  g │ ● │ │ ● │ │ ● │ │ ● │  ← IC 腳位 8-5
+  h │   │ │   │ │   │ │   │
+  i │   │ │   │ │   │ │   │
+  j │   │ │   │ │   │ │   │
+    └───┘ └───┘ └───┘ └───┘
+
+    這樣每個腳位都有獨立的連接點（a-d 或 g-j）
+</code></pre>
+<hr />
+<h2 id="_16">實作範例</h2>
+<h3 id="led">範例一：LED 閃爍電路</h3>
+<pre><code>電路圖：
+
+    Arduino D13 ───→ 220Ω電阻 ───→ LED正極 ───→ LED負極 ───→ GND
+
+麵包板接線：
+
+    Arduino                     麵包板
+    ┌─────────┐                ┌───────────────────────────────┐
+    │         │                │ + ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ │
+    │      5V │─紅─────────────│───↑                           │
+    │     GND │─黑─────────────│ - ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ │
+    │         │                │   ↑ │                         │
+    │     D13 │─橙───────┐     ├─────┼─────────────────────────┤
+    │         │          │     │     │    1   2   3   4   5    │
+    └─────────┘          │     │   a ○   ○   ○   ○   ○        │
+                         │     │   b ○   ○   ○   ○   ○        │
+                         └────→│   c ●───電阻───●   ○   ○     │
+                               │   d ○       ┃   ●LED+●       │
+                               │   e ○       ┃   ○   ┃        │
+                               │             ┃       ┃        │
+                               │           可跳線    可跳線    │
+                               │           連接     連到GND   │
+                               └───────────────────────────────┘
+
+零件：
+- 220Ω 電阻（紅紅棕金）
+- LED（長腳正極、短腳負極）
+</code></pre>
+<p><strong>Arduino 程式：</strong></p>
+<pre><code class="language-cpp">/*
+ * LED 閃爍基礎範例
+ */
+
+const int LED_PIN = 13;
+
+void setup() {
+    pinMode(LED_PIN, OUTPUT);
+}
+
+void loop() {
+    digitalWrite(LED_PIN, HIGH);  // LED 亮
+    delay(1000);                  // 等待 1 秒
+    digitalWrite(LED_PIN, LOW);   // LED 滅
+    delay(1000);                  // 等待 1 秒
+}
+</code></pre>
+<h3 id="led_1">範例二：按鈕控制 LED</h3>
+<pre><code>電路圖：
+
+    5V ───→ 按鈕 ───→ Arduino D2
+                  │
+                  └─→ 10kΩ下拉電阻 ───→ GND
+
+    Arduino D13 ───→ 220Ω ───→ LED ───→ GND
+
+麵包板接線：
+
+                               ┌───────────────────────────────┐
+    Arduino                    │ + ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ │
+    ┌─────────┐                │   ↑                           │
+    │      5V │─紅────────────→│   ●───────────┐               │
+    │     GND │─黑────────────→│ - ○ ○ ○ ● ○ ● ○ ○ ○ ○ ○ ○ ○ │
+    │         │                │       ↑   ↑   ↑               │
+    │      D2 │─橙───────┐     ├───────┼───┼───┼───────────────┤
+    │     D13 │─黃─────┐ │     │   1   2   3   4   5   6   7   │
+    │         │        │ │     │ a ○   ○   ○   ○   ○   ○   ○  │
+    └─────────┘        │ │     │ b ○   ●───按鈕───●   ○   ○  │
+                       │ │     │ c ●   ┃       ┃   ○   ○   ○  │
+                       │ └────→│ d 電  ┃      10k  ○   ○   ○  │
+                       │       │ e 阻  ┃       ┃   ○   ○   ○  │
+                       │       │   ┃   ┃       ┃              │
+                       │       │ f ┃   ○   ○   ┃   ○   ○   ○  │
+                       │       │ g ●───LED────●   ○   ○   ○  │
+                       └──────→│ h ○       ┃   ○   ○   ○   ○  │
+                               │ i ○       ┃   ○   ○   ○   ○  │
+                               │ j ○       ●到GND ○   ○   ○  │
+                               └───────────────────────────────┘
+</code></pre>
+<p><strong>Arduino 程式：</strong></p>
+<pre><code class="language-cpp">/*
+ * 按鈕控制 LED
+ * 按下按鈕時 LED 亮起
+ */
+
+const int BUTTON_PIN = 2;
+const int LED_PIN = 13;
+
+void setup() {
+    pinMode(BUTTON_PIN, INPUT);  // 外部有下拉電阻
+    pinMode(LED_PIN, OUTPUT);
+}
+
+void loop() {
+    int buttonState = digitalRead(BUTTON_PIN);
+
+    if (buttonState == HIGH) {
+        digitalWrite(LED_PIN, HIGH);
+    } else {
+        digitalWrite(LED_PIN, LOW);
+    }
+}
+</code></pre>
+<h3 id="led_2">範例三：可變電阻控制 LED 亮度</h3>
+<pre><code>電路圖：
+
+    5V ───→ 可變電阻一端
+            可變電阻中間腳 ───→ Arduino A0
+    GND ──→ 可變電阻另一端
+
+    Arduino D9 (PWM) ───→ 220Ω ───→ LED ───→ GND
+
+麵包板接線：
+
+                               ┌───────────────────────────────┐
+    Arduino                    │ + ○ ● ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ │
+    ┌─────────┐                │     ↓                         │
+    │      5V │─紅────────────→│   ●───可變電阻上腳            │
+    │     GND │─黑────────────→│ - ○ ●─可變電阻下腳 ○ ○ ○ ○ ○ │
+    │         │                │     ↑                         │
+    │      A0 │─橙────────────→│   ●───可變電阻中腳            │
+    │      D9 │─黃───────┐     ├───────────────────────────────┤
+    │         │          │     │   1   2   3   4   5   6   7   │
+    └─────────┘          │     │ a ○   ○   ○   ○   ○   ○   ○  │
+                         │     │ b ○   ○   ○   ○   ○   ○   ○  │
+                         └────→│ c ●───電阻───●LED+●   ○   ○  │
+                               │ d ○       ┃   ○   ┃   ○   ○  │
+                               │ e ○       ┃   ○   ●到GND ○  │
+                               └───────────────────────────────┘
+
+可變電阻接法（從底部看）：
+     ┌─────────┐
+     │    ●    │ ← 中間腳（訊號輸出到 A0）
+     │  ●   ●  │ ← 兩側腳（一端接 5V，一端接 GND）
+     └─────────┘
+</code></pre>
+<p><strong>Arduino 程式：</strong></p>
+<pre><code class="language-cpp">/*
+ * 可變電阻控制 LED 亮度
+ * 旋轉可變電阻改變 LED 亮度
+ */
+
+const int POT_PIN = A0;   // 可變電阻
+const int LED_PIN = 9;    // PWM 腳位
+
+void setup() {
+    pinMode(LED_PIN, OUTPUT);
+    Serial.begin(9600);
+}
+
+void loop() {
+    int potValue = analogRead(POT_PIN);       // 讀取 0-1023
+    int brightness = map(potValue, 0, 1023, 0, 255);  // 轉換為 0-255
+
+    analogWrite(LED_PIN, brightness);         // PWM 輸出
+
+    Serial.print(&quot;可變電阻: &quot;);
+    Serial.print(potValue);
+    Serial.print(&quot; -&gt; 亮度: &quot;);
+    Serial.println(brightness);
+
+    delay(100);
+}
+</code></pre>
+<h3 id="dht11">範例四：DHT11 感測器接線</h3>
+<pre><code>DHT11 接線：
+
+      DHT11 模組           麵包板
+    ┌───────────┐
+    │   ┌───┐   │
+    │   │DHT│   │
+    │   └───┘   │
+    │  S  +  -  │
+    └──┬──┬──┬──┘
+       │  │  │
+       │  │  └──→ GND（-軌）
+       │  └─────→ VCC（+軌）
+       └────────→ Arduino D4
+
+麵包板配置：
+
+                               ┌───────────────────────────────┐
+    Arduino                    │ + ○ ● ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ │
+    ┌─────────┐                │     ↑ DHT VCC                 │
+    │      5V │─紅────────────→│   ●─┘                         │
+    │     GND │─黑────────────→│ - ○ ● ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ │
+    │         │                │     ↑ DHT GND                 │
+    │      D4 │─橙────────────→│   ●───DHT Signal              │
+    │         │                │                               │
+    └─────────┘                └───────────────────────────────┘
+</code></pre>
+<h3 id="i2c-lcd">範例五：I2C LCD 接線</h3>
+<pre><code>I2C LCD 模組只需要 4 條線：
+
+    Arduino                 I2C LCD
+    ┌─────────┐            ┌───────────┐
+    │      5V │──紅───────→│ VCC       │
+    │     GND │──黑───────→│ GND       │
+    │     SDA │──綠───────→│ SDA       │  (A4 on Uno)
+    │     SCL │──藍───────→│ SCL       │  (A5 on Uno)
+    └─────────┘            └───────────┘
+
+可以不經過麵包板，直接使用母-母杜邦線連接
+</code></pre>
+<hr />
+<h2 id="_17">常見錯誤與避免</h2>
+<h3 id="_18">錯誤一：短路</h3>
+<pre><code>問題：同一直排插入元件的兩個腳位
+
+    錯誤示範：
+    ┌───┐
+  a │ ● │ ← LED 負極     這兩個孔是連通的！
+  b │ ┃ │                LED 正負極直接短路
+  c │ ● │ ← LED 正極     可能燒毀 LED 或 Arduino
+  d │   │
+  e │   │
+    └───┘
+
+    正確做法：
+    ┌───┐ ┌───┐
+  a │ ● │ │   │          跨越不同列
+  b │ ┃ │ │   │          透過電阻限流
+  c │ ● │ │ ● │
+  d │   │ │ ┃ │
+  e │   │ │ ● │
+    └───┘ └───┘
+    電阻    LED
+</code></pre>
+<h3 id="_19">錯誤二：電源軌未連接</h3>
+<pre><code>問題：某些麵包板的電源軌中間有斷開
+
+    ┌──────────────────────────────────────┐
+    │ + ●━━━━━━━━━━━●  ✂  ●━━━━━━━━━━━● │  ← 中間斷開！
+    └──────────────────────────────────────┘
+                       ↑
+                  某些板子這裡斷開
+
+    解決方法：用跳線將兩邊連接起來
+
+    ┌──────────────────────────────────────┐
+    │ + ●━━━━━━━━━━━●──跳線──●━━━━━━━━━━━● │
+    └──────────────────────────────────────┘
+</code></pre>
+<h3 id="_20">錯誤三：忘記共地</h3>
+<pre><code>問題：不同電源供電但沒有共地
+
+    Arduino (5V)              外部電源 (9V)
+         │                         │
+         │                         │
+         ▼                         ▼
+    ┌─────────┐              ┌─────────┐
+    │ 控制訊號 │              │  馬達   │
+    └────┬────┘              └────┬────┘
+         │                         │
+         ✗ 沒有連接 GND ✗          │
+         │                         │
+                                   ▼
+                              電路不正常
+
+    正確做法：所有電源的 GND 必須連接在一起
+
+    Arduino GND ───────────── 外部電源 GND
+</code></pre>
+<h3 id="_21">錯誤四：元件腳位太粗或太細</h3>
+<pre><code>問題：元件腳位無法正確插入麵包板
+
+    太粗：強行插入會損壞麵包板彈片
+    太細：接觸不良，時好時壞
+
+    解決方法：
+    1. 太粗的元件（如大功率電阻）：使用轉接線
+    2. 太細的元件：用杜邦線焊接延長
+    3. 模組類元件：使用排針或杜邦線連接
+</code></pre>
+<h3 id="_22">錯誤五：電源極性接反</h3>
+<pre><code>╔══════════════════════════════════════════════════════════════════╗
+║  ⚠️ 警告：電源極性接反可能燒毀元件！                            ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  容易接反的元件：                                                ║
+║  - 電解電容（有極性標示）                                        ║
+║  - LED（長腳正極、短腳負極）                                     ║
+║  - 二極體（有環的一端是負極）                                    ║
+║  - 某些 IC 晶片                                                  ║
+║                                                                  ║
+║  預防方法：                                                      ║
+║  1. 接線前先確認極性                                             ║
+║  2. 使用顏色規範（紅正黑負）                                     ║
+║  3. 通電前再次檢查                                               ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+</code></pre>
+<hr />
+<h2 id="_23">進階技巧</h2>
+<h3 id="_24">技巧一：整理線路</h3>
+<pre><code>凌亂的線路：                    整理後：
+    ╲╱╲╱                        ┌───────┐
+   ╱╲╱╲                         │ │ │ │ │
+  ╲  ╱                          │ │ │ │ │
+   ╲╱                           └─┴─┴─┴─┘
+
+整理要點：
+1. 相同功能的線用相同顏色
+2. 線路盡量走直角
+3. 長度剛好，不要過長
+4. 電源線和訊號線分開走
+</code></pre>
+<h3 id="_25">技巧二：模組化布局</h3>
+<pre><code>將電路分區域：
+
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐          │
+│  │  電源區  │  │  感測器  │  │  輸出區  │          │
+│  │          │  │    區    │  │          │          │
+│  │ 穩壓電路 │  │ DHT11    │  │ LED      │          │
+│  │ 電容濾波 │  │ 土壤濕度 │  │ 繼電器   │          │
+│  └──────────┘  └──────────┘  └──────────┘          │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="_26">技巧三：使用多塊麵包板</h3>
+<pre><code>複雜專案可以用多塊麵包板：
+
+    ┌─────────────┐    ┌─────────────┐
+    │   控制區    │    │   驅動區    │
+    │  Arduino    │    │   繼電器    │
+    │  感測器     │────│   馬達驅動  │
+    └─────────────┘    └─────────────┘
+           │
+           │ 電源和訊號線連接
+           │
+    ┌─────────────┐
+    │   電源區    │
+    │  電源供應   │
+    │  穩壓電路   │
+    └─────────────┘
+</code></pre>
+<hr />
+<h2 id="_27">元件辨識速查</h2>
+<h3 id="_28">電阻色環</h3>
+<pre><code>常用電阻值與色環：
+
+    220Ω  = 紅 紅 棕 金    ████████████
+    330Ω  = 橙 橙 棕 金
+    1kΩ   = 棕 黑 紅 金
+    4.7kΩ = 黃 紫 紅 金
+    10kΩ  = 棕 黑 橙 金
+
+色環對照：
+    黑=0  棕=1  紅=2  橙=3  黃=4
+    綠=5  藍=6  紫=7  灰=8  白=9
+    金=±5%  銀=±10%
+
+計算方法：
+    第一色環 × 10 + 第二色環 × 10^(第三色環)
+    例如：紅紅棕 = 22 × 10^1 = 220Ω
+</code></pre>
+<h3 id="led_3">LED 極性</h3>
+<pre><code>辨識 LED 正負極：
+
+方法一：腳長
+    長腳 = 正極 (Anode, +)
+    短腳 = 負極 (Cathode, -)
+
+方法二：內部結構
+      ┌─────┐
+      │ ▲   │  ← 較小的是正極
+      │ █   │  ← 較大的是負極
+      └──┬──┘
+        ─┴─
+
+方法三：LED 外殼缺口
+    有缺口的一側 = 負極
+</code></pre>
+<h3 id="_29">電解電容極性</h3>
+<pre><code>辨識電解電容正負極：
+
+    ┌───────────┐
+    │ ▓▓▓▓▓▓▓▓▓ │  ← 有標示 (-) 的是負極
+    │ ▓ ━━━━ ▓▓ │
+    │ ▓ ━━━━ ▓▓ │
+    │ ▓▓▓▓▓▓▓▓▓ │
+    └─────┬─────┘
+      長腳│短腳
+       +    -
+
+    長腳 = 正極
+    短腳 = 負極
+    外殼標示 (-) 的那側 = 負極
+</code></pre>
+<hr />
+<h2 id="_30">快速參考</h2>
+<h3 id="_31">麵包板連接規則</h3>
+<pre><code>電源軌：橫向全部連通
+元件區：直向 5 孔一組（a-e 或 f-j）
+中央溝槽：上下區域斷開
+</code></pre>
+<h3 id="_32">常用接線組合</h3>
+<pre><code>Arduino 5V   → 麵包板 + 軌
+Arduino GND  → 麵包板 - 軌
+Arduino Dx   → 元件訊號腳
+元件 VCC     → 麵包板 + 軌
+元件 GND     → 麵包板 - 軌
+</code></pre>
+<h3 id="_33">安全檢查清單</h3>
+<pre><code>□ 電源極性正確（紅正黑負）
+□ 元件極性正確（LED、電容）
+□ 無短路（同列不插兩個腳）
+□ 電阻值正確
+□ 所有 GND 已連接
+□ 電壓符合元件規格
+</code></pre>
+<hr />
+<h2 id="_34">延伸學習</h2>
+<ul>
+<li><a href="關於基礎電子學與Arduino.md">關於基礎電子學與Arduino</a> - 電壓電流基礎</li>
+<li><a href="關於上拉電阻與下拉電阻.md">關於上拉電阻與下拉電阻</a> - 按鈕電路設計</li>
+<li><a href="關於電源供應.md">關於電源供應</a> - 電源電路設計</li>
+<li><a href="關於Arduino程式常用語法.md">關於Arduino程式常用語法</a> - 程式基礎</li>
+</ul>
+<hr />
+<h2 id="_35">本文件適用於</h2>
+<ul>
+<li><strong>所有學員</strong>：電子電路入門必備知識</li>
+<li>第一次接觸麵包板的初學者</li>
+<li>需要複習接線基礎的學員</li>
+</ul>
+<hr />
+<blockquote>
+<p>提示：麵包板接線錯誤是初學者最常見的問題，接線前務必理解內部連接原理！</p>
+</blockquote>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

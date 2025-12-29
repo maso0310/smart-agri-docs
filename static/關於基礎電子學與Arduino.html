@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於基礎電子學與Arduino</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="arduino">基礎電子學與 Arduino</h1>
+<h2 id="_1">前言</h2>
+<p>學習 Arduino 之前，了解一些基礎電子學知識會讓你更容易理解電路的運作原理，也能避免燒壞元件。別擔心，這些概念其實很直覺，我們會用生活中的例子來解釋。</p>
+<hr />
+<h2 id="voltage">一、電壓 (Voltage)</h2>
+<h3 id="_2">什麼是電壓？</h3>
+<p><strong>電壓就像「水壓」</strong>。</p>
+<p>想像你家的水塔：</p>
+<ul>
+<li>水塔越高，水壓越大，水流出來的力道越強</li>
+<li>電壓也是一樣，電壓越高，推動電流的「力道」越大</li>
+</ul>
+<h3 id="_3">單位</h3>
+<ul>
+<li><strong>伏特 (V, Volt)</strong></li>
+<li>常見電壓：USB 5V、乾電池 1.5V、9V 電池、家用電 110V</li>
+</ul>
+<h3 id="_4">生活比喻</h3>
+<pre><code>水塔高度 = 電壓
+水塔越高 → 水壓越大 → 水流越急
+電壓越高 → 推力越大 → 電流越強
+</code></pre>
+<h3 id="arduino_1">Arduino 相關</h3>
+<ul>
+<li>Arduino Uno 工作電壓：<strong>5V</strong></li>
+<li>Arduino 的 GPIO 腳位輸出：<strong>5V (HIGH) 或 0V (LOW)</strong></li>
+<li>有些感測器是 <strong>3.3V</strong>，不能直接接 5V，否則會燒壞！</li>
+</ul>
+<hr />
+<h2 id="current">二、電流 (Current)</h2>
+<h3 id="_5">什麼是電流？</h3>
+<p><strong>電流就像「水流量」</strong>。</p>
+<ul>
+<li>水管裡每秒流過多少水 = 水流量</li>
+<li>電線裡每秒流過多少電子 = 電流</li>
+</ul>
+<h3 id="_6">單位</h3>
+<ul>
+<li><strong>安培 (A, Ampere)</strong></li>
+<li>常用較小單位：<strong>毫安培 (mA)</strong> = 0.001A</li>
+</ul>
+<h3 id="_7">生活比喻</h3>
+<pre><code>水流量 = 電流
+水流量大 → 能帶動大水車
+電流大 → 能驅動大馬達
+</code></pre>
+<h3 id="_8">常見電流值</h3>
+<table>
+<thead>
+<tr>
+<th>元件</th>
+<th>電流</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LED</td>
+<td>10-20 mA</td>
+</tr>
+<tr>
+<td>Arduino Uno 整體</td>
+<td>約 50 mA</td>
+</tr>
+<tr>
+<td>小馬達</td>
+<td>100-300 mA</td>
+</tr>
+<tr>
+<td>步進馬達 28BYJ-48</td>
+<td>200-300 mA</td>
+</tr>
+</tbody>
+</table>
+<h3 id="arduino_2">Arduino 相關</h3>
+<ul>
+<li><strong>每個 GPIO 腳位最大電流：40mA</strong>（建議不超過 20mA）</li>
+<li><strong>整個板子最大電流：200mA</strong></li>
+<li>如果需要驅動大電流元件（馬達、繼電器），要用外部電源！</li>
+</ul>
+<hr />
+<h2 id="resistance">三、電阻 (Resistance)</h2>
+<h3 id="_9">什麼是電阻？</h3>
+<p><strong>電阻就像「水管的粗細」</strong>。</p>
+<ul>
+<li>水管越細，水越難流過去</li>
+<li>電阻越大，電流越難通過</li>
+</ul>
+<h3 id="_10">單位</h3>
+<ul>
+<li><strong>歐姆 (Ω, Ohm)</strong></li>
+<li>常用較大單位：<strong>千歐姆 (kΩ)</strong> = 1000Ω</li>
+</ul>
+<h3 id="_11">生活比喻</h3>
+<pre><code>水管粗細 = 電阻
+水管越細 → 水流越小
+電阻越大 → 電流越小
+</code></pre>
+<h3 id="_12">電阻的用途</h3>
+<h4 id="1">1. 限流（保護元件）</h4>
+<p>LED 不能直接接電源，需要電阻來限制電流：</p>
+<pre><code>5V → 電阻 (220Ω) → LED → GND
+</code></pre>
+<h4 id="2">2. 分壓（降低電壓）</h4>
+<p>把 5V 變成 3.3V：</p>
+<pre><code>5V → R1 (1kΩ) → 輸出點 (3.3V) → R2 (2kΩ) → GND
+</code></pre>
+<h4 id="3">3. 上拉/下拉電阻</h4>
+<p>確保輸入腳位有明確的 HIGH 或 LOW 狀態。</p>
+<hr />
+<h2 id="_13">四、歐姆定律 ⭐</h2>
+<h3 id="_14">最重要的公式</h3>
+<pre><code>V = I × R
+
+電壓 (V) = 電流 (I) × 電阻 (R)
+</code></pre>
+<h3 id="_15">變形公式</h3>
+<pre><code>I = V / R    （已知電壓和電阻，求電流）
+R = V / I    （已知電壓和電流，求電阻）
+</code></pre>
+<h3 id="led">實際計算範例：LED 限流電阻</h3>
+<p><strong>情境</strong>：用 Arduino 5V 點亮一顆紅色 LED</p>
+<p><strong>已知</strong>：</p>
+<ul>
+<li>電源電壓：5V</li>
+<li>LED 工作電壓：約 2V</li>
+<li>LED 建議電流：15mA (0.015A)</li>
+</ul>
+<p><strong>計算</strong>：</p>
+<pre><code>電阻需要承受的電壓 = 5V - 2V = 3V
+電阻值 = 3V / 0.015A = 200Ω
+
+→ 選用 220Ω 電阻（常見規格）
+</code></pre>
+<h3 id="_16">水流比喻理解歐姆定律</h3>
+<pre><code>水壓 (V) = 水流量 (I) × 水管阻力 (R)
+
+- 水壓固定時，水管越細 (R大)，水流越小 (I小)
+- 水管固定時，水壓越大 (V大)，水流越大 (I大)
+</code></pre>
+<hr />
+<h2 id="capacitance">五、電容 (Capacitance)</h2>
+<h3 id="_17">什麼是電容？</h3>
+<p><strong>電容就像「蓄水池」或「小水桶」</strong>。</p>
+<ul>
+<li>可以暫時儲存水，需要時再放出來</li>
+<li>電容可以暫時儲存電能，需要時再釋放</li>
+</ul>
+<h3 id="_18">單位</h3>
+<ul>
+<li><strong>法拉 (F, Farad)</strong></li>
+<li>常用較小單位：</li>
+<li><strong>微法拉 (µF)</strong> = 0.000001F</li>
+<li><strong>奈法拉 (nF)</strong> = 0.000000001F</li>
+<li><strong>皮法拉 (pF)</strong> = 0.000000000001F</li>
+</ul>
+<h3 id="_19">電容的用途</h3>
+<h4 id="1-decoupling">1. 濾波/去耦 (Decoupling)</h4>
+<p>穩定電源，過濾雜訊：</p>
+<pre><code>電源 VCC ──┬── 電容 (0.1µF) ──┬── GND
+           │                  │
+           └── IC 晶片電源 ───┘
+</code></pre>
+<p><strong>比喻</strong>：就像水塔旁邊加一個小水桶，當水壓不穩時，小水桶可以補充或吸收多餘的水。</p>
+<h4 id="2_1">2. 儲能</h4>
+<p>暫時儲存電能，在電源中斷時維持短暫供電。</p>
+<h4 id="3_1">3. 計時電路</h4>
+<p>配合電阻可以產生延遲效果。</p>
+<h3 id="arduino_3">Arduino 相關</h3>
+<ul>
+<li>IC 晶片旁邊常會放 <strong>0.1µF (100nF)</strong> 的去耦電容</li>
+<li>電源輸入端常會放 <strong>10µF ~ 100µF</strong> 的濾波電容</li>
+</ul>
+<hr />
+<h2 id="power">六、功率 (Power)</h2>
+<h3 id="_20">什麼是功率？</h3>
+<p><strong>功率就像「做事的速度」</strong>。</p>
+<ul>
+<li>同樣搬 100 箱貨物，1 小時搬完比 2 小時搬完「功率」更大</li>
+<li>電器消耗能量的速度就是功率</li>
+</ul>
+<h3 id="_21">公式</h3>
+<pre><code>P = V × I
+
+功率 (W) = 電壓 (V) × 電流 (I)
+</code></pre>
+<h3 id="_22">單位</h3>
+<ul>
+<li><strong>瓦特 (W, Watt)</strong></li>
+<li>1W = 1V × 1A</li>
+</ul>
+<h3 id="_23">實際計算範例</h3>
+<p><strong>情境</strong>：Arduino Uno 的耗電功率</p>
+<pre><code>電壓：5V
+電流：50mA = 0.05A
+功率 = 5V × 0.05A = 0.25W
+</code></pre>
+<h3 id="_24">為什麼要知道功率？</h3>
+<ol>
+<li><strong>選擇電源</strong>：電源供應器要能提供足夠的功率</li>
+<li><strong>電阻發熱</strong>：電阻會把能量轉換成熱，功率越大越燙</li>
+<li><strong>電池續航</strong>：功率越大，電池越快沒電</li>
+</ol>
+<hr />
+<h2 id="_25">七、實際應用情境</h2>
+<h3 id="1-led">情境 1：為什麼 LED 要串聯電阻？</h3>
+<p><strong>問題</strong>：LED 直接接 5V 會怎樣？</p>
+<pre><code>錯誤接法：5V → LED → GND
+結果：LED 瞬間燒壞！
+</code></pre>
+<p><strong>原因</strong>：LED 內部電阻很小，直接接電源會產生巨大電流。</p>
+<p><strong>正確接法</strong>：</p>
+<pre><code>5V → 220Ω 電阻 → LED → GND
+</code></pre>
+<p>電阻限制了電流在安全範圍內 (約 15mA)。</p>
+<hr />
+<h3 id="2_2">情境 2：為什麼馬達要用外部電源？</h3>
+<p><strong>問題</strong>：小馬達直接接 Arduino 腳位會怎樣？</p>
+<pre><code>錯誤接法：Arduino D3 → 馬達 → GND
+結果：Arduino 可能重啟或燒壞！
+</code></pre>
+<p><strong>原因</strong>：</p>
+<ul>
+<li>馬達需要 200-500mA 電流</li>
+<li>Arduino GPIO 最大只能提供 40mA</li>
+</ul>
+<p><strong>正確接法</strong>：</p>
+<pre><code>Arduino D3 → 電晶體/繼電器 → 馬達 → 外部電源
+</code></pre>
+<p>用小電流控制大電流，就像用小開關控制大水閥。</p>
+<hr />
+<h3 id="3-esp-01-33v-arduino-5v">情境 3：為什麼 ESP-01 (3.3V) 不能直接接 Arduino (5V)？</h3>
+<p><strong>問題</strong>：Arduino TX (5V) 直接接 ESP-01 RX 會怎樣？</p>
+<pre><code>錯誤接法：Arduino TX (5V) → ESP-01 RX
+結果：ESP-01 可能燒壞！
+</code></pre>
+<p><strong>原因</strong>：ESP-01 是 3.3V 設備，無法承受 5V 訊號。</p>
+<p><strong>解決方案 - 分壓電路</strong>：</p>
+<pre><code>Arduino TX ── R1 (1kΩ) ──┬── ESP-01 RX
+                         │
+                    R2 (2kΩ)
+                         │
+                        GND
+
+輸出電壓 = 5V × 2kΩ / (1kΩ + 2kΩ) = 3.3V ✓
+</code></pre>
+<hr />
+<h3 id="4">情境 4：按鈕為什麼需要上拉/下拉電阻？</h3>
+<p><strong>問題</strong>：按鈕沒按下時，輸入腳位讀到什麼？</p>
+<pre><code>錯誤接法：
+按鈕一端接 5V，另一端接 Arduino 輸入腳位
+→ 按下時讀到 HIGH，沒按時讀到...？不確定！（浮動狀態）
+</code></pre>
+<p><strong>正確接法 - 下拉電阻</strong>：</p>
+<pre><code>        5V
+        │
+      [按鈕]
+        │
+Arduino ─┴── 10kΩ ── GND
+
+按下 → 讀到 HIGH (5V)
+放開 → 讀到 LOW (被電阻拉到 GND)
+</code></pre>
+<hr />
+<h2 id="arduino_4">八、Arduino 電氣規格速查表</h2>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>數值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工作電壓</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>輸入電壓 (DC 插孔)</td>
+<td>7-12V (建議 9V)</td>
+</tr>
+<tr>
+<td>GPIO 輸出電壓</td>
+<td>5V (HIGH) / 0V (LOW)</td>
+</tr>
+<tr>
+<td>GPIO 最大電流 (單腳)</td>
+<td>40mA (建議 20mA)</td>
+</tr>
+<tr>
+<td>GPIO 總電流上限</td>
+<td>200mA</td>
+</tr>
+<tr>
+<td>類比輸入範圍</td>
+<td>0-5V → 0-1023</td>
+</tr>
+<tr>
+<td>PWM 輸出範圍</td>
+<td>0-255 (對應 0-5V)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_26">九、常用元件電氣特性</h2>
+<table>
+<thead>
+<tr>
+<th>元件</th>
+<th>工作電壓</th>
+<th>工作電流</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>紅色 LED</td>
+<td>1.8-2.2V</td>
+<td>10-20mA</td>
+</tr>
+<tr>
+<td>綠色/藍色 LED</td>
+<td>3.0-3.4V</td>
+<td>10-20mA</td>
+</tr>
+<tr>
+<td>DHT11 溫濕度</td>
+<td>3.3-5V</td>
+<td>&lt; 2.5mA</td>
+</tr>
+<tr>
+<td>HC-SR04 超音波</td>
+<td>5V</td>
+<td>15mA</td>
+</tr>
+<tr>
+<td>SG90 舵機</td>
+<td>4.8-6V</td>
+<td>100-250mA</td>
+</tr>
+<tr>
+<td>28BYJ-48 步進馬達</td>
+<td>5V</td>
+<td>200-300mA</td>
+</tr>
+<tr>
+<td>繼電器模組</td>
+<td>5V</td>
+<td>50-80mA</td>
+</tr>
+<tr>
+<td>ESP-01 WiFi</td>
+<td><strong>3.3V</strong></td>
+<td>70-200mA</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_27">十、總結與口訣</h2>
+<h3 id="_28">水流比喻總整理</h3>
+<pre><code>電壓 = 水壓 (推動力)
+電流 = 水流量 (流動的多寡)
+電阻 = 水管粗細 (阻礙流動)
+電容 = 蓄水池 (暫存能量)
+功率 = 做事速度 (消耗能量的快慢)
+</code></pre>
+<h3 id="_29">歐姆定律口訣</h3>
+<pre><code>    V
+   ───
+  I × R
+
+蓋住想求的，剩下的就是公式：
+- 蓋住 V → V = I × R
+- 蓋住 I → I = V / R
+- 蓋住 R → R = V / I
+</code></pre>
+<h3 id="_30">安全守則</h3>
+<ol>
+<li><strong>先斷電再接線</strong></li>
+<li><strong>確認電壓相容</strong> (5V vs 3.3V)</li>
+<li><strong>LED 一定要串電阻</strong></li>
+<li><strong>大電流元件用外部電源</strong></li>
+<li><strong>電容注意正負極</strong> (電解電容)</li>
+</ol>
+<hr />
+<h2 id="_31">延伸學習資源</h2>
+<ul>
+<li><a href="https://www.ohmslawcalculator.com/">Ohm&#39;s Law Calculator</a></li>
+<li><a href="https://www.digikey.com/en/resources/conversion-calculators/conversion-calculator-led-series-resistor">LED 電阻計算器</a></li>
+<li><a href="https://www.arduino.cc/reference/en/">Arduino 官方文件</a></li>
+</ul>
+<hr />
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

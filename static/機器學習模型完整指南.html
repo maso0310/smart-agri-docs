@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>機器學習模型完整指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #764ba2;
+        }
+
+        h3 {
+            color: #2c3e50;
+            font-size: 1.5em;
+            margin: 30px 0 15px 0;
+        }
+
+        h4 {
+            color: #4b5563;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%);
+            padding: 30px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .intro-section p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .model-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .model-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .model-card h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .model-type {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .model-type.supervised {
+            background: #10b981;
+        }
+
+        .model-type.unsupervised {
+            background: #f59e0b;
+        }
+
+        .model-type.deep {
+            background: #ef4444;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .comparison-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .pros, .cons {
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .pros {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left: 5px solid #10b981;
+        }
+
+        .cons {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-left: 5px solid #ef4444;
+        }
+
+        .pros h5, .cons h5 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .pros h5 {
+            color: #065f46;
+        }
+
+        .cons h5 {
+            color: #991b1b;
+        }
+
+        code {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            display: block;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #f59e0b;
+        }
+
+        .highlight-box h4 {
+            color: #92400e;
+            margin-bottom: 15px;
+        }
+
+        .tips {
+            background: #dbeafe;
+            border-left: 5px solid #3b82f6;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+
+        .tips h4 {
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+
+        .use-case-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .use-case-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .use-case-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .use-case-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .use-case-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .algorithm-flow {
+            background: #f8fafc;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .flow-step {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 5px;
+        }
+
+        .flow-arrow {
+            display: inline-block;
+            color: #667eea;
+            font-size: 1.5em;
+            margin: 0 10px;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        ul {
+            margin-left: 25px;
+            margin-top: 10px;
+        }
+
+        ul li {
+            margin: 8px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #ef4444;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .badge.new {
+            background: #10b981;
+        }
+
+        .badge.popular {
+            background: #f59e0b;
+        }
+
+        @media (max-width: 768px) {
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 機器學習模型完整指南</h1>
+            <p>從傳統演算法到深度學習，完整掌握常用模型與特性</p>
+        </header>
+
+        <div class="content">
+            <!-- 簡介 -->
+            <section>
+                <h2>📚 機器學習模型概述</h2>
+                <div class="intro-section">
+                    <p><strong>機器學習（Machine Learning）</strong>是人工智慧的核心技術，透過演算法讓電腦從資料中學習規律，而不需要明確編程。在智慧農業領域，機器學習廣泛應用於作物病害檢測、產量預測、品質分級等任務。</p>
+                    <p>本指南將介紹常用的機器學習模型，包括它們的原理、特性、優缺點，以及在農業領域的實際應用。</p>
+                </div>
+
+                <h3>📊 機器學習的分類</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>類型</th>
+                            <th>定義</th>
+                            <th>需要標註資料</th>
+                            <th>常見應用</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>監督式學習</strong></td>
+                            <td>從有標籤的訓練資料學習輸入與輸出的映射關係</td>
+                            <td>✅ 是</td>
+                            <td>分類、迴歸、物件偵測</td>
+                        </tr>
+                        <tr>
+                            <td><strong>非監督式學習</strong></td>
+                            <td>從無標籤資料中發現隱藏的結構或模式</td>
+                            <td>❌ 否</td>
+                            <td>聚類、降維、異常檢測</td>
+                        </tr>
+                        <tr>
+                            <td><strong>半監督式學習</strong></td>
+                            <td>結合少量標註資料和大量未標註資料進行學習</td>
+                            <td>⚠️ 部分</td>
+                            <td>標註成本高的任務</td>
+                        </tr>
+                        <tr>
+                            <td><strong>強化學習</strong></td>
+                            <td>通過與環境互動，根據獎勵訊號學習最優策略</td>
+                            <td>⚠️ 獎勵訊號</td>
+                            <td>遊戲AI、機器人控制</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 監督式學習模型 -->
+            <section>
+                <h2>🎯 監督式學習模型</h2>
+
+                <!-- 線性迴歸 -->
+                <div class="model-card">
+                    <h4>1. 線性迴歸（Linear Regression）<span class="model-type supervised">監督式</span></h4>
+
+                    <p><strong>原理：</strong>假設輸入變數與輸出之間存在線性關係，通過最小化預測值與實際值的誤差來找到最佳直線。</p>
+
+                    <p><strong>數學公式：</strong></p>
+                    <pre><code>y = β₀ + β₁x₁ + β₂x₂ + ... + βₙxₙ + ε
+
+其中：
+- y：預測值（目標變數）
+- x₁, x₂, ..., xₙ：特徵（自變數）
+- β₀, β₁, ..., βₙ：係數（權重）
+- ε：誤差項</code></pre>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>✅ 優點</h5>
+                            <ul>
+                                <li>簡單易懂，可解釋性強</li>
+                                <li>訓練速度快，計算成本低</li>
+                                <li>適合小型資料集</li>
+                                <li>可識別特徵重要性</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>❌ 缺點</h5>
+                            <ul>
+                                <li>只能處理線性關係</li>
+                                <li>對離群值敏感</li>
+                                <li>假設資料符合常態分佈</li>
+                                <li>特徵間不能有強共線性</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p><strong>農業應用範例：</strong></p>
+                    <ul>
+                        <li>根據氣溫、降雨量預測作物產量</li>
+                        <li>分析施肥量與作物生長速度的關係</li>
+                        <li>預測土壤濕度變化趨勢</li>
+                    </ul>
+
+                    <pre><code># Python 範例
+from sklearn.linear_model import LinearRegression
+import numpy as np
+
+# 特徵：氣溫、降雨量、施肥量
+X = np.array([[25, 100, 50], [28, 120, 60], [22, 90, 40]])
+# 目標：產量 (kg)
+y = np.array([500, 550, 480])
+
+model = LinearRegression()
+model.fit(X, y)
+
+# 預測新資料
+new_data = np.array([[26, 110, 55]])
+prediction = model.predict(new_data)
+print(f"預測產量: {prediction[0]:.2f} kg")</code></pre>
+                </div>
+
+                <!-- 邏輯迴歸 -->
+                <div class="model-card">
+                    <h4>2. 邏輯迴歸（Logistic Regression）<span class="model-type supervised">監督式</span></h4>
+
+                    <p><strong>原理：</strong>雖名為迴歸，實際用於分類問題。使用 Sigmoid 函數將線性迴歸的輸出轉換為 0-1 之間的機率值。</p>
+
+                    <p><strong>數學公式：</strong></p>
+                    <pre><code>P(y=1|x) = 1 / (1 + e^(-(β₀ + β₁x₁ + ... + βₙxₙ)))
+
+輸出：樣本屬於類別 1 的機率（0-1 之間）</code></pre>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>✅ 優點</h5>
+                            <ul>
+                                <li>輸出具有機率意義，易於解釋</li>
+                                <li>訓練速度快，效率高</li>
+                                <li>不需要假設特徵的分佈</li>
+                                <li>可處理多分類問題（One-vs-Rest）</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>❌ 缺點</h5>
+                            <ul>
+                                <li>只能處理線性可分問題</li>
+                                <li>容易欠擬合（underfitting）</li>
+                                <li>對特徵縮放敏感</li>
+                                <li>不適合複雜的非線性關係</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p><strong>農業應用範例：</strong></p>
+                    <ul>
+                        <li>根據葉片特徵判斷是否有病害（二分類）</li>
+                        <li>預測種子發芽成功率</li>
+                        <li>判斷水果是否成熟</li>
+                    </ul>
+
+                    <pre><code># Python 範例
+from sklearn.linear_model import LogisticRegression
+
+# 特徵：葉片顏色值、斑點大小
+X = [[120, 5], [130, 8], [200, 0], [210, 1]]
+# 標籤：0=健康, 1=病害
+y = [1, 1, 0, 0]
+
+model = LogisticRegression()
+model.fit(X, y)
+
+# 預測
+new_leaf = [[125, 6]]
+prob = model.predict_proba(new_leaf)[0]
+print(f"健康機率: {prob[0]:.2%}, 病害機率: {prob[1]:.2%}")</code></pre>
+                </div>
+
+                <!-- 決策樹 -->
+                <div class="model-card">
+                    <h4>3. 決策樹（Decision Tree）<span class="model-type supervised">監督式</span><span class="badge popular">熱門</span></h4>
+
+                    <p><strong>原理：</strong>通過一系列 if-then-else 規則，將資料集遞迴地分割成更小的子集，最終形成樹狀結構。每個內部節點代表一個特徵的判斷，葉節點代表分類結果或預測值。</p>
+
+                    <div class="algorithm-flow">
+                        <div class="flow-step">選擇最佳特徵</div>
+                        <span class="flow-arrow">→</span>
+                        <div class="flow-step">分割資料</div>
+                        <span class="flow-arrow">→</span>
+                        <div class="flow-step">遞迴建立子樹</div>
+                        <span class="flow-arrow">→</span>
+                        <div class="flow-step">達到停止條件</div>
+                    </div>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>✅ 優點</h5>
+                            <ul>
+                                <li>易於理解和視覺化</li>
+                                <li>不需要特徵縮放或標準化</li>
+                                <li>可處理數值和類別特徵</li>
+                                <li>可處理非線性關係</li>
+                                <li>自動進行特徵選擇</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>❌ 缺點</h5>
+                            <ul>
+                                <li>容易過擬合（overfitting）</li>
+                                <li>對訓練資料的小變化敏感</li>
+                                <li>難以捕捉特徵間的複雜關係</li>
+                                <li>偏向選擇有較多類別的特徵</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p><strong>農業應用範例：</strong></p>
+                    <ul>
+                        <li>根據土壤特性和氣候選擇適合的作物</li>
+                        <li>多層級病害診斷系統</li>
+                        <li>水果品質分級</li>
+                    </ul>
+
+                    <pre><code># Python 範例
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import tree
+import matplotlib.pyplot as plt
+
+# 特徵：pH值, 氮含量, 磷含量
+X = [[6.5, 20, 10], [7.0, 25, 15], [5.5, 15, 8], [6.0, 18, 12]]
+# 標籤：適合種植的作物（0=稻米, 1=玉米, 2=蔬菜）
+y = [0, 1, 2, 0]
+
+model = DecisionTreeClassifier(max_depth=3)
+model.fit(X, y)
+
+# 視覺化決策樹
+plt.figure(figsize=(12, 8))
+tree.plot_tree(model, feature_names=['pH', '氮', '磷'],
+               class_names=['稻米', '玉米', '蔬菜'], filled=True)
+plt.show()</code></pre>
+                </div>
+
+                <!-- 隨機森林 -->
+                <div class="model-card">
+                    <h4>4. 隨機森林（Random Forest）<span class="model-type supervised">監督式</span><span class="badge popular">熱門</span></h4>
+
+                    <p><strong>原理：</strong>集成學習（Ensemble Learning）方法，建立多個決策樹並將它們的預測結果進行投票或平均。每棵樹使用隨機抽樣的資料和隨機選擇的特徵子集進行訓練。</p>
+
+                    <div class="highlight-box">
+                        <h4>💡 Bagging（Bootstrap Aggregating）</h4>
+                        <p>隨機森林使用 Bagging 技術：</p>
+                        <ol>
+                            <li><strong>Bootstrap 抽樣：</strong>從原始資料集中有放回地隨機抽取 n 個樣本</li>
+                            <li><strong>建立決策樹：</strong>對每個抽樣資料集訓練一棵決策樹</li>
+                            <li><strong>隨機特徵：</strong>每次分割時只考慮隨機選擇的 k 個特徵</li>
+                            <li><strong>聚合預測：</strong>分類問題用多數投票，迴歸問題取平均值</li>
+                        </ol>
+                    </div>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>✅ 優點</h5>
+                            <ul>
+                                <li>精度高，效能穩定</li>
+                                <li>不易過擬合（相比單一決策樹）</li>
+                                <li>可處理高維度資料</li>
+                                <li>可評估特徵重要性</li>
+                                <li>對缺失值和離群值有一定容忍度</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>❌ 缺點</h5>
+                            <ul>
+                                <li>訓練和預測速度較慢</li>
+                                <li>模型較大，佔用記憶體多</li>
+                                <li>可解釋性較差（黑箱模型）</li>
+                                <li>對不平衡資料集表現較差</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p><strong>農業應用範例：</strong></p>
+                    <ul>
+                        <li>作物病害多分類識別</li>
+                        <li>產量預測（結合多種環境因子）</li>
+                        <li>水果品質綜合評估</li>
+                    </ul>
+
+                    <pre><code># Python 範例
+from sklearn.ensemble import RandomForestClassifier
+import numpy as np
+
+# 特徵：溫度、濕度、光照強度、葉片顏色、斑點數量
+X = np.array([
+    [25, 70, 5000, 120, 0],
+    [28, 85, 4500, 100, 5],
+    [22, 60, 5500, 130, 0],
+    [26, 80, 4800, 95, 8]
+])
+# 標籤：0=健康, 1=輕微病害, 2=嚴重病害
+y = np.array([0, 1, 0, 2])
+
+model = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42)
+model.fit(X, y)
+
+# 特徵重要性
+feature_names = ['溫度', '濕度', '光照', '葉色', '斑點']
+importances = model.feature_importances_
+for name, importance in zip(feature_names, importances):
+    print(f"{name}: {importance:.3f}")
+
+# 預測
+new_plant = np.array([[27, 75, 4900, 110, 3]])
+prediction = model.predict(new_plant)
+probability = model.predict_proba(new_plant)
+print(f"預測類別: {prediction[0]}, 機率: {probability[0]}")</code></pre>
+                </div>
+
+                <!-- SVM -->
+                <div class="model-card">
+                    <h4>5. 支援向量機（Support Vector Machine, SVM）<span class="model-type supervised">監督式</span></h4>
+
+                    <p><strong>原理：</strong>尋找一個最佳超平面（hyperplane）將不同類別的資料點分開，並最大化兩類資料點到超平面的最小距離（間隔，margin）。</p>
+
+                    <p><strong>核心概念：</strong></p>
+                    <ul>
+                        <li><strong>支援向量：</strong>距離超平面最近的資料點，決定了超平面的位置</li>
+                        <li><strong>核函數（Kernel）：</strong>將資料映射到高維空間，處理非線性問題</li>
+                        <li><strong>間隔最大化：</strong>目標是找到間隔最大的超平面</li>
+                    </ul>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>核函數</th>
+                                <th>適用場景</th>
+                                <th>特點</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>線性核（Linear）</td>
+                                <td>線性可分資料</td>
+                                <td>速度快，適合高維稀疏資料</td>
+                            </tr>
+                            <tr>
+                                <td>多項式核（Polynomial）</td>
+                                <td>非線性問題</td>
+                                <td>可調整階數，靈活性高</td>
+                            </tr>
+                            <tr>
+                                <td>RBF 高斯核（Radial Basis Function）</td>
+                                <td>非線性問題（最常用）</td>
+                                <td>效果好，但需調整參數</td>
+                            </tr>
+                            <tr>
+                                <td>Sigmoid 核</td>
+                                <td>類神經網路</td>
+                                <td>較少使用</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>✅ 優點</h5>
+                            <ul>
+                                <li>在高維空間表現優異</li>
+                                <li>記憶體效率高（只需儲存支援向量）</li>
+                                <li>適合小樣本學習</li>
+                                <li>通過核函數處理非線性問題</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>❌ 缺點</h5>
+                            <ul>
+                                <li>訓練時間長（大規模資料）</li>
+                                <li>對參數和核函數選擇敏感</li>
+                                <li>不直接提供機率估計</li>
+                                <li>對雜訊和重疊資料敏感</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p><strong>農業應用範例：</strong></p>
+                    <ul>
+                        <li>高精度病害分類（樣本數量有限時）</li>
+                        <li>土壤類型分類</li>
+                        <li>作物品種識別</li>
+                    </ul>
+
+                    <pre><code># Python 範例
+from sklearn.svm import SVC
+from sklearn.preprocessing import StandardScaler
+
+# 特徵標準化（SVM 對特徵尺度敏感）
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# 使用 RBF 核的 SVM
+model = SVC(kernel='rbf', C=1.0, gamma='scale', probability=True)
+model.fit(X_scaled, y)
+
+# 查看支援向量
+print(f"支援向量數量: {len(model.support_vectors_)}")
+print(f"每類支援向量數: {model.n_support_}")
+
+# 預測
+new_data_scaled = scaler.transform(new_data)
+prediction = model.predict(new_data_scaled)
+probability = model.predict_proba(new_data_scaled)</code></pre>
+                </div>
+
+                <!-- KNN -->
+                <div class="model-card">
+                    <h4>6. K-近鄰演算法（K-Nearest Neighbors, KNN）<span class="model-type supervised">監督式</span></h4>
+
+                    <p><strong>原理：</strong>基於「物以類聚」的思想，透過計算待預測樣本與訓練集中所有樣本的距離，找出最近的 K 個鄰居，然後根據這 K 個鄰居的標籤進行投票或平均。</p>
+
+                    <div class="algorithm-flow">
+                        <div class="flow-step">計算距離</div>
+                        <span class="flow-arrow">→</span>
+                        <div class="flow-step">找出 K 個最近鄰</div>
+                        <span class="flow-arrow">→</span>
+                        <div class="flow-step">投票/平均</div>
+                        <span class="flow-arrow">→</span>
+                        <div class="flow-step">輸出預測</div>
+                    </div>
+
+                    <p><strong>距離度量方式：</strong></p>
+                    <pre><code># 常用距離公式
+1. 歐氏距離（Euclidean Distance）：
+   d = √(Σ(xi - yi)²)
+
+2. 曼哈頓距離（Manhattan Distance）：
+   d = Σ|xi - yi|
+
+3. 閔可夫斯基距離（Minkowski Distance）：
+   d = (Σ|xi - yi|^p)^(1/p)</code></pre>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>✅ 優點</h5>
+                            <ul>
+                                <li>原理簡單，易於理解</li>
+                                <li>無需訓練（懶惰學習）</li>
+                                <li>適合多分類問題</li>
+                                <li>對異常值不敏感</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>❌ 缺點</h5>
+                            <ul>
+                                <li>預測速度慢（需計算所有距離）</li>
+                                <li>記憶體需求大（需儲存全部訓練資料）</li>
+                                <li>對特徵縮放敏感</li>
+                                <li>在高維空間表現差（維度災難）</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p><strong>農業應用範例：</strong></p>
+                    <ul>
+                        <li>根據歷史資料預測新地區適合種植的作物</li>
+                        <li>水果成熟度分類</li>
+                        <li>病蟲害識別（基於相似案例）</li>
+                    </ul>
+
+                    <pre><code># Python 範例
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
+
+# 標準化特徵
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# K=5 的 KNN 分類器
+model = KNeighborsClassifier(n_neighbors=5, weights='distance', metric='euclidean')
+model.fit(X_scaled, y)
+
+# 找出最近的鄰居
+new_data_scaled = scaler.transform(new_data)
+distances, indices = model.kneighbors(new_data_scaled)
+print(f"最近的 5 個鄰居索引: {indices[0]}")
+print(f"距離: {distances[0]}")
+
+# 預測
+prediction = model.predict(new_data_scaled)</code></pre>
+                </div>
+
+                <!-- 梯度提升樹 -->
+                <div class="model-card">
+                    <h4>7. 梯度提升樹（Gradient Boosting）<span class="model-type supervised">監督式</span><span class="badge new">強大</span></h4>
+
+                    <p><strong>原理：</strong>另一種集成學習方法，與隨機森林不同，它採用「提升」（Boosting）策略：按順序建立多棵決策樹，每棵樹都試圖修正前一棵樹的錯誤。</p>
+
+                    <div class="highlight-box">
+                        <h4>💡 Boosting vs Bagging</h4>
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>特性</th>
+                                    <th>Bagging（隨機森林）</th>
+                                    <th>Boosting（梯度提升）</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>訓練方式</td>
+                                    <td>並行訓練多個模型</td>
+                                    <td>順序訓練，後者修正前者錯誤</td>
+                                </tr>
+                                <tr>
+                                    <td>樹的深度</td>
+                                    <td>深樹（高變異）</td>
+                                    <td>淺樹（低變異）</td>
+                                </tr>
+                                <tr>
+                                    <td>目標</td>
+                                    <td>降低變異（variance）</td>
+                                    <td>降低偏差（bias）</td>
+                                </tr>
+                                <tr>
+                                    <td>過擬合風險</td>
+                                    <td>較低</td>
+                                    <td>較高（需調參）</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p><strong>主流實現：</strong></p>
+                    <ul>
+                        <li><strong>XGBoost</strong>（Extreme Gradient Boosting）：最受歡迎，效能優異</li>
+                        <li><strong>LightGBM</strong>（Light Gradient Boosting Machine）：訓練速度快，記憶體占用少</li>
+                        <li><strong>CatBoost</strong>（Categorical Boosting）：自動處理類別特徵</li>
+                    </ul>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>✅ 優點</h5>
+                            <ul>
+                                <li>預測精度極高（Kaggle 競賽常勝軍）</li>
+                                <li>可處理各種類型的資料</li>
+                                <li>內建特徵重要性評估</li>
+                                <li>支援缺失值處理</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>❌ 缺點</h5>
+                            <ul>
+                                <li>訓練時間較長</li>
+                                <li>容易過擬合（需仔細調參）</li>
+                                <li>參數多，調參困難</li>
+                                <li>可解釋性較差</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p><strong>農業應用範例：</strong></p>
+                    <ul>
+                        <li>精準產量預測（結合氣象、土壤、管理等多維資料）</li>
+                        <li>病害嚴重程度預測</li>
+                        <li>水果品質綜合評分</li>
+                    </ul>
+
+                    <pre><code># Python 範例（使用 XGBoost）
+import xgboost as xgb
+from sklearn.model_selection import train_test_split
+
+# 分割資料
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 建立 XGBoost 模型
+model = xgb.XGBClassifier(
+    n_estimators=100,      # 樹的數量
+    max_depth=5,           # 樹的深度
+    learning_rate=0.1,     # 學習率
+    subsample=0.8,         # 樣本抽樣比例
+    colsample_bytree=0.8,  # 特徵抽樣比例
+    random_state=42
+)
+
+model.fit(X_train, y_train)
+
+# 評估
+train_score = model.score(X_train, y_train)
+test_score = model.score(X_test, y_test)
+print(f"訓練集準確率: {train_score:.3f}")
+print(f"測試集準確率: {test_score:.3f}")
+
+# 特徵重要性
+import matplotlib.pyplot as plt
+xgb.plot_importance(model, max_num_features=10)
+plt.show()</code></pre>
+                </div>
+
+            </section>
+
+            <!-- 非監督式學習模型 -->
+            <section>
+                <h2>🔍 非監督式學習模型</h2>
+
+                <!-- K-Means -->
+                <div class="model-card">
+                    <h4>1. K-Means 聚類<span class="model-type unsupervised">非監督式</span></h4>
+
+                    <p><strong>原理：</strong>將資料分成 K 個群組（cluster），使得同一群組內的資料點盡可能相似，不同群組的資料點盡可能不同。</p>
+
+                    <div class="algorithm-flow">
+                        <div class="flow-step">隨機初始化 K 個中心點</div>
+                        <span class="flow-arrow">→</span>
+                        <div class="flow-step">分配資料點到最近的中心</div>
+                        <span class="flow-arrow">→</span>
+                        <div class="flow-step">更新中心點位置</div>
+                        <span class="flow-arrow">→</span>
+                        <div class="flow-step">重複直到收斂</div>
+                    </div>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>✅ 優點</h5>
+                            <ul>
+                                <li>簡單快速，易於實現</li>
+                                <li>可擴展到大型資料集</li>
+                                <li>結果易於解釋</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>❌ 缺點</h5>
+                            <ul>
+                                <li>需要預先指定 K 值</li>
+                                <li>對初始中心點敏感</li>
+                                <li>只能發現球形聚類</li>
+                                <li>對離群值敏感</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p><strong>農業應用範例：</strong></p>
+                    <ul>
+                        <li>將田地分區管理（基於土壤特性）</li>
+                        <li>客戶分群（農產品銷售）</li>
+                        <li>作物生長狀態分群</li>
+                    </ul>
+
+                    <pre><code># Python 範例
+from sklearn.cluster import KMeans
+import numpy as np
+
+# 土壤樣本：pH值, 氮含量, 磷含量
+soil_samples = np.array([
+    [6.5, 20, 10], [6.8, 22, 12], [5.5, 15, 8],
+    [5.2, 14, 7], [7.0, 25, 15], [7.2, 27, 16]
+])
+
+# K-Means 聚類（分成 3 組）
+kmeans = KMeans(n_clusters=3, random_state=42)
+clusters = kmeans.fit_predict(soil_samples)
+
+print(f"聚類中心:\n{kmeans.cluster_centers_}")
+print(f"每個樣本的群組: {clusters}")</code></pre>
+                </div>
+
+                <!-- PCA -->
+                <div class="model-card">
+                    <h4>2. 主成分分析（PCA）<span class="model-type unsupervised">非監督式</span></h4>
+
+                    <p><strong>原理：</strong>降維技術，將高維度資料投影到低維度空間，同時保留最多的變異資訊。找出資料中方差最大的方向作為主成分。</p>
+
+                    <p><strong>應用場景：</strong></p>
+                    <ul>
+                        <li>資料視覺化（降到 2D 或 3D）</li>
+                        <li>降低計算複雜度</li>
+                        <li>去除特徵間的相關性</li>
+                        <li>噪音過濾</li>
+                    </ul>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>✅ 優點</h5>
+                            <ul>
+                                <li>減少特徵數量，加速訓練</li>
+                                <li>去除多重共線性</li>
+                                <li>視覺化高維資料</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>❌ 缺點</h5>
+                            <ul>
+                                <li>降低可解釋性</li>
+                                <li>可能損失重要資訊</li>
+                                <li>對特徵縮放敏感</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p><strong>農業應用範例：</strong></p>
+                    <ul>
+                        <li>多光譜影像降維分析</li>
+                        <li>土壤多指標綜合評估</li>
+                        <li>作物生長資料視覺化</li>
+                    </ul>
+
+                    <pre><code># Python 範例
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+# 標準化
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# PCA 降維（保留 2 個主成分）
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+
+print(f"解釋變異比例: {pca.explained_variance_ratio_}")
+print(f"累積解釋變異: {pca.explained_variance_ratio_.sum():.2%}")</code></pre>
+                </div>
+            </section>
+
+            <!-- 深度學習模型 -->
+            <section>
+                <h2>🧠 深度學習模型</h2>
+
+                <!-- CNN -->
+                <div class="model-card">
+                    <h4>1. 卷積神經網路（CNN）<span class="model-type deep">深度學習</span><span class="badge popular">熱門</span></h4>
+
+                    <p><strong>原理：</strong>專門用於處理網格結構資料（如影像）的神經網路，通過卷積層自動學習特徵，無需手動設計特徵。</p>
+
+                    <p><strong>核心組件：</strong></p>
+                    <ul>
+                        <li><strong>卷積層（Convolution Layer）：</strong>使用濾波器掃描影像，提取局部特徵</li>
+                        <li><strong>池化層（Pooling Layer）：</strong>降低特徵維度，增強魯棒性</li>
+                        <li><strong>全連接層（Fully Connected Layer）：</strong>整合特徵，進行最終分類</li>
+                    </ul>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>✅ 優點</h5>
+                            <ul>
+                                <li>影像任務表現極佳</li>
+                                <li>自動學習特徵，無需手工設計</li>
+                                <li>具有平移不變性</li>
+                                <li>參數共享，效率高</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>❌ 缺點</h5>
+                            <ul>
+                                <li>需要大量標註資料</li>
+                                <li>訓練時間長，需要 GPU</li>
+                                <li>可解釋性差</li>
+                                <li>容易過擬合（小資料集）</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p><strong>農業應用範例：</strong></p>
+                    <ul>
+                        <li>作物病害影像識別</li>
+                        <li>水果品質自動分級</li>
+                        <li>雜草識別</li>
+                        <li>無人機影像分析</li>
+                    </ul>
+
+                    <pre><code># Python 範例（使用 PyTorch）
+import torch
+import torch.nn as nn
+
+class SimpleCNN(nn.Module):
+    def __init__(self, num_classes=10):
+        super(SimpleCNN, self).__init__()
+
+        # 卷積層
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.pool = nn.MaxPool2d(2, 2)
+
+        # 全連接層
+        self.fc1 = nn.Linear(64 * 56 * 56, 512)
+        self.fc2 = nn.Linear(512, num_classes)
+
+        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(0.5)
+
+    def forward(self, x):
+        # 第一個卷積塊
+        x = self.pool(self.relu(self.conv1(x)))
+        # 第二個卷積塊
+        x = self.pool(self.relu(self.conv2(x)))
+
+        # 展平
+        x = x.view(x.size(0), -1)
+
+        # 全連接層
+        x = self.dropout(self.relu(self.fc1(x)))
+        x = self.fc2(x)
+
+        return x
+
+# 建立模型
+model = SimpleCNN(num_classes=5)  # 5 種病害類別
+print(model)</code></pre>
+                </div>
+
+                <!-- YOLO -->
+                <div class="model-card">
+                    <h4>2. YOLO（You Only Look Once）<span class="model-type deep">深度學習</span><span class="badge new">最新</span></h4>
+
+                    <p><strong>原理：</strong>即時物件偵測演算法，將偵測問題轉換為單一迴歸問題，一次性預測多個邊界框和類別機率。</p>
+
+                    <p><strong>版本演進：</strong></p>
+                    <ul>
+                        <li><strong>YOLOv1-v4：</strong>逐步改進準確度和速度</li>
+                        <li><strong>YOLOv5：</strong>易用性提升，PyTorch 實現</li>
+                        <li><strong>YOLOv6-v7：</strong>工業級應用優化</li>
+                        <li><strong>YOLOv8：</strong>最新版本（2023），效能與易用性兼具</li>
+                    </ul>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>✅ 優點</h5>
+                            <ul>
+                                <li>速度極快，可達即時檢測</li>
+                                <li>端到端訓練，架構簡潔</li>
+                                <li>全局資訊，背景錯誤少</li>
+                                <li>泛化能力強</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>❌ 缺點</h5>
+                            <ul>
+                                <li>小物體檢測較弱</li>
+                                <li>密集物體檢測困難</li>
+                                <li>對寬高比特殊的物體敏感</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p><strong>農業應用範例：</strong></p>
+                    <ul>
+                        <li>果實即時計數</li>
+                        <li>害蟲自動偵測</li>
+                        <li>採收機器人視覺系統</li>
+                        <li>畜牧動物行為監測</li>
+                    </ul>
+
+                    <pre><code># Python 範例（使用 Ultralytics YOLOv8）
+from ultralytics import YOLO
+
+# 載入預訓練模型
+model = YOLO('yolov8n.pt')  # n=nano, s=small, m=medium, l=large, x=xlarge
+
+# 訓練自訂資料集
+results = model.train(
+    data='apple_disease.yaml',  # 資料集設定檔
+    epochs=100,
+    imgsz=640,
+    batch=16,
+    name='apple_detector'
+)
+
+# 推論
+results = model.predict(
+    source='apple_farm.jpg',
+    conf=0.5,  # 信心度閾值
+    save=True
+)
+
+# 顯示結果
+for result in results:
+    boxes = result.boxes
+    for box in boxes:
+        print(f"類別: {box.cls}, 信心度: {box.conf:.2f}, 座標: {box.xyxy}")</code></pre>
+                </div>
+            </section>
+
+            <!-- 模型選擇指南 -->
+            <section>
+                <h2>🎯 模型選擇指南</h2>
+
+                <div class="tips">
+                    <h4>💡 如何選擇合適的模型？</h4>
+                    <p>選擇模型時需考慮以下因素：</p>
+                </div>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>場景</th>
+                            <th>資料特性</th>
+                            <th>推薦模型</th>
+                            <th>原因</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>小資料集（< 1000 樣本）</td>
+                            <td>表格資料</td>
+                            <td>邏輯迴歸、決策樹、SVM</td>
+                            <td>簡單模型，不易過擬合</td>
+                        </tr>
+                        <tr>
+                            <td>中大型資料集</td>
+                            <td>表格資料</td>
+                            <td>隨機森林、XGBoost</td>
+                            <td>效能好，魯棒性強</td>
+                        </tr>
+                        <tr>
+                            <td>影像分類</td>
+                            <td>影像資料</td>
+                            <td>CNN（ResNet, EfficientNet）</td>
+                            <td>專為影像設計</td>
+                        </tr>
+                        <tr>
+                            <td>物件偵測</td>
+                            <td>影像資料</td>
+                            <td>YOLO, Faster R-CNN</td>
+                            <td>即時性與準確度</td>
+                        </tr>
+                        <tr>
+                            <td>需要可解釋性</td>
+                            <td>任何</td>
+                            <td>決策樹、線性模型</td>
+                            <td>規則清晰，易於解釋</td>
+                        </tr>
+                        <tr>
+                            <td>即時預測</td>
+                            <td>任何</td>
+                            <td>避免深度學習，選輕量模型</td>
+                            <td>推理速度快</td>
+                        </tr>
+                        <tr>
+                            <td>無標註資料</td>
+                            <td>任何</td>
+                            <td>K-Means, PCA, 自編碼器</td>
+                            <td>非監督式學習</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="highlight-box">
+                    <h4>🌾 智慧農業常見任務的模型建議</h4>
+                    <div class="use-case-grid">
+                        <div class="use-case-card">
+                            <div class="icon">🍎</div>
+                            <h4>水果品質分級</h4>
+                            <p><strong>推薦：</strong>隨機森林 或 XGBoost</p>
+                            <p><strong>理由：</strong>結合顏色、大小、瑕疵等多維特徵，表格資料處理效果好</p>
+                        </div>
+
+                        <div class="use-case-card">
+                            <div class="icon">🦠</div>
+                            <h4>作物病害識別</h4>
+                            <p><strong>推薦：</strong>CNN（ResNet, EfficientNet）</p>
+                            <p><strong>理由：</strong>影像分類任務，深度學習效果最佳</p>
+                        </div>
+
+                        <div class="use-case-card">
+                            <div class="icon">📊</div>
+                            <h4>產量預測</h4>
+                            <p><strong>推薦：</strong>XGBoost 或 隨機森林</p>
+                            <p><strong>理由：</strong>處理氣象、土壤等結構化資料，準確度高</p>
+                        </div>
+
+                        <div class="use-case-card">
+                            <div class="icon">🌾</div>
+                            <h4>果實計數</h4>
+                            <p><strong>推薦：</strong>YOLO</p>
+                            <p><strong>理由：</strong>即時物件偵測，速度快準確度高</p>
+                        </div>
+
+                        <div class="use-case-card">
+                            <div class="icon">🗺️</div>
+                            <h4>田區分區管理</h4>
+                            <p><strong>推薦：</strong>K-Means</p>
+                            <p><strong>理由：</strong>根據土壤特性自動分群，無需標註</p>
+                        </div>
+
+                        <div class="use-case-card">
+                            <div class="icon">🌱</div>
+                            <h4>雜草識別</h4>
+                            <p><strong>推薦：</strong>CNN + Transfer Learning</p>
+                            <p><strong>理由：</strong>利用預訓練模型，減少標註需求</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 實作建議 -->
+            <section>
+                <h2>⚙️ 實作最佳實踐</h2>
+
+                <div class="model-card">
+                    <h4>1. 資料前處理</h4>
+                    <ul>
+                        <li><strong>特徵縮放：</strong>SVM、KNN、神經網路需要標準化或正規化</li>
+                        <li><strong>處理缺失值：</strong>刪除、填充（均值/中位數/模式）、預測填充</li>
+                        <li><strong>類別編碼：</strong>One-Hot Encoding、Label Encoding</li>
+                        <li><strong>異常值處理：</strong>IQR 方法、Z-score 方法</li>
+                    </ul>
+
+                    <pre><code># 資料前處理範例
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.impute import SimpleImputer
+import pandas as pd
+
+# 處理缺失值
+imputer = SimpleImputer(strategy='mean')
+X_imputed = imputer.fit_transform(X)
+
+# 特徵縮放
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X_imputed)
+
+# 類別編碼
+le = LabelEncoder()
+y_encoded = le.fit_transform(y)</code></pre>
+                </div>
+
+                <div class="model-card">
+                    <h4>2. 模型評估</h4>
+                    <p><strong>分類任務指標：</strong></p>
+                    <ul>
+                        <li><strong>準確率（Accuracy）：</strong>整體正確比例</li>
+                        <li><strong>精確率（Precision）：</strong>預測為正的樣本中實際為正的比例</li>
+                        <li><strong>召回率（Recall）：</strong>實際為正的樣本中被正確預測的比例</li>
+                        <li><strong>F1-Score：</strong>精確率和召回率的調和平均</li>
+                        <li><strong>混淆矩陣（Confusion Matrix）：</strong>詳細的分類結果</li>
+                    </ul>
+
+                    <p><strong>迴歸任務指標：</strong></p>
+                    <ul>
+                        <li><strong>MAE（Mean Absolute Error）：</strong>平均絕對誤差</li>
+                        <li><strong>MSE（Mean Squared Error）：</strong>均方誤差</li>
+                        <li><strong>RMSE（Root Mean Squared Error）：</strong>均方根誤差</li>
+                        <li><strong>R²（R-squared）：</strong>決定係數（0-1，越接近 1 越好）</li>
+                    </ul>
+
+                    <pre><code># 評估範例
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+
+# 分類評估
+y_pred = model.predict(X_test)
+print(f"準確率: {accuracy_score(y_test, y_pred):.3f}")
+print(f"精確率: {precision_score(y_test, y_pred, average='macro'):.3f}")
+print(f"召回率: {recall_score(y_test, y_pred, average='macro'):.3f}")
+print(f"F1分數: {f1_score(y_test, y_pred, average='macro'):.3f}")
+print(f"混淆矩陣:\n{confusion_matrix(y_test, y_pred)}")</code></pre>
+                </div>
+
+                <div class="model-card">
+                    <h4>3. 交叉驗證</h4>
+                    <p>避免過擬合，更可靠地評估模型效能：</p>
+
+                    <pre><code># K-Fold 交叉驗證
+from sklearn.model_selection import cross_val_score
+
+scores = cross_val_score(model, X, y, cv=5, scoring='accuracy')
+print(f"交叉驗證分數: {scores}")
+print(f"平均準確率: {scores.mean():.3f} (+/- {scores.std() * 2:.3f})")</code></pre>
+                </div>
+
+                <div class="model-card">
+                    <h4>4. 超參數調整</h4>
+                    <p>使用網格搜尋或隨機搜尋找到最佳參數：</p>
+
+                    <pre><code># 網格搜尋範例
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {
+    'n_estimators': [50, 100, 200],
+    'max_depth': [3, 5, 7],
+    'min_samples_split': [2, 5, 10]
+}
+
+grid_search = GridSearchCV(
+    RandomForestClassifier(),
+    param_grid,
+    cv=5,
+    scoring='accuracy',
+    n_jobs=-1
+)
+
+grid_search.fit(X_train, y_train)
+print(f"最佳參數: {grid_search.best_params_}")
+print(f"最佳分數: {grid_search.best_score_:.3f}")</code></pre>
+                </div>
+            </section>
+
+            <!-- 總結 -->
+            <section>
+                <h2>📝 總結</h2>
+                <div class="intro-section">
+                    <h4>🎯 機器學習模型選擇的黃金法則</h4>
+                    <ol>
+                        <li><strong>從簡單開始：</strong>先嘗試簡單模型（邏輯迴歸、決策樹），建立基準</li>
+                        <li><strong>理解資料：</strong>資料類型（表格/影像/文字）決定模型類別</li>
+                        <li><strong>考慮資源：</strong>評估訓練時間、推理速度、記憶體需求</li>
+                        <li><strong>重視評估：</strong>使用交叉驗證，避免過擬合</li>
+                        <li><strong>迭代改進：</strong>嘗試不同模型，調整超參數，集成學習</li>
+                    </ol>
+
+                    <h4>🌾 智慧農業的特殊考量</h4>
+                    <ul>
+                        <li><strong>資料稀缺：</strong>優先考慮遷移學習、資料增強</li>
+                        <li><strong>即時性需求：</strong>選擇輕量級模型或模型壓縮</li>
+                        <li><strong>可解釋性：</strong>農業決策需要可信度，避免純黑箱模型</li>
+                        <li><strong>環境變化：</strong>模型需定期更新，適應季節和環境變化</li>
+                    </ul>
+
+                    <h4>🚀 持續學習建議</h4>
+                    <ul>
+                        <li>實作經典資料集（Iris、MNIST、CIFAR-10）</li>
+                        <li>參加 Kaggle 競賽，學習頂尖方案</li>
+                        <li>關注最新論文和開源專案</li>
+                        <li>建立自己的農業資料集和模型庫</li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+
+        <footer>
+            <p>&copy; 2025 智慧農業課程 | 本文件僅供教學使用</p>
+            <p>最後更新：2025 年 12 月</p>
+        </footer>
+    </div>
+</body>
+</html>

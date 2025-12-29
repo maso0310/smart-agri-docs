@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於光達與雷達的差異</title>
+
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        .comparison-box { display: flex; gap: 20px; margin: 20px 0; }
+        .comparison-item { flex: 1; background-color: rgba(45, 55, 72, 0.4); padding: 15px; border-radius: 8px; }
+        .lidar-color { border-left: 4px solid #48bb78; }
+        .radar-color { border-left: 4px solid #ed8936; }
+
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* ===== 淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 { color: #2b6cb0 !important; border-bottom-color: #4fd1c5 !important; }
+        [data-theme="light"] h2 { color: #2c5282 !important; border-bottom-color: #90cdf4 !important; }
+        [data-theme="light"] h3 { color: #2b6cb0 !important; }
+        [data-theme="light"] h4 { color: #3182ce !important; }
+        [data-theme="light"] p, [data-theme="light"] li, [data-theme="light"] td { color: #4a5568 !important; }
+        [data-theme="light"] th { background-color: rgba(79, 209, 197, 0.25) !important; color: #2d3748 !important; }
+        [data-theme="light"] table { background-color: rgba(255, 255, 255, 0.9) !important; }
+        [data-theme="light"] tr:nth-child(even) { background-color: rgba(79, 209, 197, 0.08) !important; }
+        [data-theme="light"] tr:hover { background-color: rgba(79, 209, 197, 0.15) !important; }
+        [data-theme="light"] code { background-color: rgba(79, 209, 197, 0.2) !important; color: #2b6cb0 !important; }
+        [data-theme="light"] pre { background-color: #f7fafc !important; border: 1px solid rgba(79, 209, 197, 0.3) !important; }
+        [data-theme="light"] pre code { background-color: transparent !important; color: #2d3748 !important; }
+        [data-theme="light"] blockquote { background-color: rgba(79, 209, 197, 0.15) !important; color: #2d3748 !important; }
+        [data-theme="light"] a { color: #3182ce !important; }
+        [data-theme="light"] strong { color: #d69e2e !important; }
+        [data-theme="light"] hr { border-top-color: rgba(79, 209, 197, 0.3) !important; }
+        [data-theme="light"] .comparison-item { background-color: rgba(255, 255, 255, 0.8) !important; }
+    </style>
+
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+    <h1>關於光達與雷達的差異</h1>
+    <p>光達（LiDAR）和雷達（Radar）都是主動式遙測技術，透過發射電磁波並接收反射訊號來偵測目標。兩者在智慧農業、自動駕駛、地形測量等領域都有廣泛應用，但各有其特點與適用場景。</p>
+    <hr />
+
+    <h2>一、基本概念</h2>
+
+    <h3>LiDAR - 光達</h3>
+    <p><strong>LiDAR</strong>（Light Detection and Ranging，光學雷達）使用<strong>雷射光</strong>進行測距：</p>
+    <ul>
+        <li>發射雷射脈衝（通常為近紅外光）</li>
+        <li>測量光線往返時間（Time of Flight, ToF）</li>
+        <li>計算距離：<code>距離 = (光速 × 時間) / 2</code></li>
+        <li>透過掃描機構或多光束產生 3D 點雲</li>
+    </ul>
+
+    <h3>Radar - 雷達</h3>
+    <p><strong>Radar</strong>（Radio Detection and Ranging，無線電探測測距）使用<strong>無線電波</strong>進行偵測：</p>
+    <ul>
+        <li>發射微波或毫米波脈衝</li>
+        <li>測量電波往返時間</li>
+        <li>可測量目標的距離、速度、角度</li>
+        <li>利用都卜勒效應偵測移動物體</li>
+    </ul>
+
+    <blockquote>
+        <strong>核心差異</strong>：LiDAR 使用光波（波長：nm ~ μm 級），Radar 使用無線電波（波長：mm ~ cm 級）
+    </blockquote>
+    <hr />
+
+    <h2>二、技術規格比較</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>項目</th>
+                <th>LiDAR（光達）</th>
+                <th>Radar（雷達）</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>使用波長</strong></td>
+                <td>905 nm / 1550 nm（近紅外）</td>
+                <td>24 GHz / 77 GHz（毫米波）</td>
+            </tr>
+            <tr>
+                <td><strong>距離精度</strong></td>
+                <td>±1-3 cm</td>
+                <td>±5-50 cm</td>
+            </tr>
+            <tr>
+                <td><strong>角度解析度</strong></td>
+                <td>0.1° ~ 0.5°（高）</td>
+                <td>1° ~ 5°（較低）</td>
+            </tr>
+            <tr>
+                <td><strong>探測距離</strong></td>
+                <td>100-300 m（一般車用）</td>
+                <td>150-300+ m</td>
+            </tr>
+            <tr>
+                <td><strong>資料密度</strong></td>
+                <td>高（數十萬點/秒）</td>
+                <td>低（稀疏點）</td>
+            </tr>
+            <tr>
+                <td><strong>速度偵測</strong></td>
+                <td>需多幀計算</td>
+                <td>直接測量（都卜勒）</td>
+            </tr>
+            <tr>
+                <td><strong>天候影響</strong></td>
+                <td>受雨、霧、雪影響大</td>
+                <td>穿透力強，受影響小</td>
+            </tr>
+            <tr>
+                <td><strong>光線條件</strong></td>
+                <td>不受日夜影響</td>
+                <td>不受日夜影響</td>
+            </tr>
+            <tr>
+                <td><strong>成本</strong></td>
+                <td>中高（持續下降中）</td>
+                <td>低至中</td>
+            </tr>
+            <tr>
+                <td><strong>體積</strong></td>
+                <td>中等</td>
+                <td>小巧</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>三、工作原理詳解</h2>
+
+    <h3>LiDAR 掃描方式</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>類型</th>
+                <th>原理</th>
+                <th>特點</th>
+                <th>應用</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>機械旋轉式</td>
+                <td>旋轉鏡面掃描</td>
+                <td>360°視野、成熟穩定</td>
+                <td>自駕車、測量</td>
+            </tr>
+            <tr>
+                <td>MEMS 微振鏡</td>
+                <td>微機電振鏡偏轉</td>
+                <td>體積小、成本低</td>
+                <td>車用、消費電子</td>
+            </tr>
+            <tr>
+                <td>固態相控陣</td>
+                <td>電子控制光束方向</td>
+                <td>無機械件、高可靠</td>
+                <td>先進車用</td>
+            </tr>
+            <tr>
+                <td>Flash LiDAR</td>
+                <td>一次照射整個視野</td>
+                <td>無掃描、瞬間成像</td>
+                <td>短距離、工業</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Radar 技術類型</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>類型</th>
+                <th>頻段</th>
+                <th>特點</th>
+                <th>應用</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>脈衝雷達</td>
+                <td>各種</td>
+                <td>傳統方式、長距離</td>
+                <td>航空、氣象</td>
+            </tr>
+            <tr>
+                <td>FMCW 雷達</td>
+                <td>24/77 GHz</td>
+                <td>調頻連續波、可測距+測速</td>
+                <td>車用、工業</td>
+            </tr>
+            <tr>
+                <td>相位陣列雷達</td>
+                <td>77 GHz</td>
+                <td>電子掃描、高性能</td>
+                <td>先進車用、軍事</td>
+            </tr>
+            <tr>
+                <td>SAR 雷達</td>
+                <td>L/C/X 頻段</td>
+                <td>合成孔徑、高解析</td>
+                <td>衛星遙測</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>波長與穿透特性</h3>
+    <pre><code>電磁波譜（與穿透能力關係）
+
+← 高能量、短波長          低能量、長波長 →
+← 穿透力弱               穿透力強 →
+
+    光達                      雷達
+    ↓                        ↓
+┌─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+│ UV  │ 可見 │ 近IR │ 中IR │ 遠IR │ 微波 │ 無線 │
+│     │ 光   │      │      │      │      │ 電波 │
+└─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+  nm     μm                  mm      cm     m
+
+雷射光達：905nm / 1550nm（近紅外）
+毫米波雷達：77GHz ≈ 3.9mm / 24GHz ≈ 12.5mm
+</code></pre>
+    <hr />
+
+    <h2>四、優缺點分析</h2>
+
+    <h3>LiDAR 優勢</h3>
+    <ul>
+        <li><strong>高精度 3D 建模</strong>：產生密集點雲，精確描繪物體輪廓</li>
+        <li><strong>高角度解析度</strong>：可清晰區分相鄰物體</li>
+        <li><strong>直接測量距離</strong>：無需複雜演算法即可獲得精確距離</li>
+        <li><strong>細節豐富</strong>：可辨識物體形狀、邊緣</li>
+        <li><strong>不受光線影響</strong>：日夜均可工作</li>
+    </ul>
+
+    <h3>LiDAR 劣勢</h3>
+    <ul>
+        <li><strong>天候敏感</strong>：雨、霧、雪、沙塵會衰減訊號</li>
+        <li><strong>成本較高</strong>：尤其是高性能機械式</li>
+        <li><strong>無法直接測速</strong>：需多幀比對計算</li>
+        <li><strong>對透明物體困難</strong>：玻璃、水面反射特性不同</li>
+    </ul>
+
+    <h3>Radar 優勢</h3>
+    <ul>
+        <li><strong>全天候工作</strong>：雨、霧、雪、沙塵影響小</li>
+        <li><strong>直接測速</strong>：都卜勒效應可測移動目標速度</li>
+        <li><strong>成本低</strong>：技術成熟、量產規模大</li>
+        <li><strong>體積小巧</strong>：易於整合</li>
+        <li><strong>穿透能力</strong>：可穿透部分遮蔽物</li>
+    </ul>
+
+    <h3>Radar 劣勢</h3>
+    <ul>
+        <li><strong>解析度較低</strong>：難以精確描繪物體形狀</li>
+        <li><strong>點雲稀疏</strong>：資料密度遠低於 LiDAR</li>
+        <li><strong>多路徑干擾</strong>：金屬表面反射造成假目標</li>
+        <li><strong>分類困難</strong>：難以僅憑雷達區分物體類型</li>
+    </ul>
+    <hr />
+
+    <h2>五、農業應用比較</h2>
+
+    <h3>LiDAR 農業應用</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>應用領域</th>
+                <th>說明</th>
+                <th>優勢</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>地形測量</td>
+                <td>高精度 DEM/DTM 建立</td>
+                <td>穿透植被測量地面</td>
+            </tr>
+            <tr>
+                <td>作物高度測量</td>
+                <td>植株生長監測</td>
+                <td>精確的高度資訊</td>
+            </tr>
+            <tr>
+                <td>冠層結構分析</td>
+                <td>樹木、果園 3D 建模</td>
+                <td>詳細的結構資訊</td>
+            </tr>
+            <tr>
+                <td>生物量估算</td>
+                <td>森林碳匯、作物產量</td>
+                <td>體積測量準確</td>
+            </tr>
+            <tr>
+                <td>精準噴灑</td>
+                <td>辨識作物位置與高度</td>
+                <td>適應複雜地形</td>
+            </tr>
+            <tr>
+                <td>障礙物偵測</td>
+                <td>自駕農機避障</td>
+                <td>高精度環境感知</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Radar 農業應用</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>應用領域</th>
+                <th>說明</th>
+                <th>優勢</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>土壤濕度監測</td>
+                <td>SAR 衛星監測大範圍</td>
+                <td>穿透雲層、全天候</td>
+            </tr>
+            <tr>
+                <td>作物生長監測</td>
+                <td>利用後向散射係數</td>
+                <td>時序監測、不受雲影響</td>
+            </tr>
+            <tr>
+                <td>水稻監測</td>
+                <td>淹水田區偵測</td>
+                <td>對水面敏感</td>
+            </tr>
+            <tr>
+                <td>農機避障</td>
+                <td>偵測前方障礙物</td>
+                <td>全天候工作、成本低</td>
+            </tr>
+            <tr>
+                <td>灌溉監測</td>
+                <td>偵測田間水位變化</td>
+                <td>穿透植被</td>
+            </tr>
+            <tr>
+                <td>風速測量</td>
+                <td>都卜勒雷達測風</td>
+                <td>氣象預警</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>應用場景選擇指南</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>需求</th>
+                <th>建議選擇</th>
+                <th>原因</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>精確 3D 測量</td>
+                <td>LiDAR</td>
+                <td>高精度點雲</td>
+            </tr>
+            <tr>
+                <td>惡劣天候作業</td>
+                <td>Radar</td>
+                <td>穿透雨霧</td>
+            </tr>
+            <tr>
+                <td>移動物體偵測</td>
+                <td>Radar</td>
+                <td>都卜勒測速</td>
+            </tr>
+            <tr>
+                <td>細節物體辨識</td>
+                <td>LiDAR</td>
+                <td>高解析度</td>
+            </tr>
+            <tr>
+                <td>成本敏感</td>
+                <td>Radar</td>
+                <td>價格較低</td>
+            </tr>
+            <tr>
+                <td>穿透植被測地形</td>
+                <td>LiDAR</td>
+                <td>多重回波技術</td>
+            </tr>
+            <tr>
+                <td>大範圍衛星監測</td>
+                <td>SAR Radar</td>
+                <td>全天候覆蓋</td>
+            </tr>
+            <tr>
+                <td>最佳效果</td>
+                <td>兩者融合</td>
+                <td>互補優勢</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>六、感測器融合</h2>
+    <p>現代智慧農業和自動駕駛系統常採用<strong>多感測器融合</strong>策略：</p>
+
+    <h3>融合架構</h3>
+    <pre><code>
+┌─────────────┐   ┌─────────────┐   ┌─────────────┐
+│   LiDAR     │   │    Radar    │   │   Camera    │
+│  高精度3D   │   │  測速+全天候 │   │  顏色+紋理  │
+└──────┬──────┘   └──────┬──────┘   └──────┬──────┘
+       │                 │                 │
+       └────────────────┬┴─────────────────┘
+                        │
+                ┌───────▼───────┐
+                │   資料融合    │
+                │  Data Fusion  │
+                └───────┬───────┘
+                        │
+          ┌─────────────┼─────────────┐
+          ▼             ▼             ▼
+    ┌─────────┐   ┌─────────┐   ┌─────────┐
+    │物體偵測 │   │場景理解 │   │決策規劃 │
+    └─────────┘   └─────────┘   └─────────┘
+</code></pre>
+
+    <h3>融合方式</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>融合層級</th>
+                <th>說明</th>
+                <th>特點</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>早期融合（資料層）</td>
+                <td>直接合併原始資料</td>
+                <td>資訊完整、計算量大</td>
+            </tr>
+            <tr>
+                <td>中期融合（特徵層）</td>
+                <td>各自提取特徵後融合</td>
+                <td>平衡效能與資訊量</td>
+            </tr>
+            <tr>
+                <td>晚期融合（決策層）</td>
+                <td>各自決策後投票/加權</td>
+                <td>計算效率高、資訊損失</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>融合優勢</h3>
+    <ul>
+        <li><strong>互補性</strong>：LiDAR 提供精確距離，Radar 提供速度，Camera 提供顏色</li>
+        <li><strong>冗餘性</strong>：單一感測器失效時仍可運作</li>
+        <li><strong>全天候</strong>：不同天候條件下互相補充</li>
+        <li><strong>提升準確率</strong>：多源資訊交叉驗證</li>
+    </ul>
+    <hr />
+
+    <h2>七、常見產品與規格</h2>
+
+    <h3>農用 LiDAR</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>品牌/型號</th>
+                <th>類型</th>
+                <th>測距範圍</th>
+                <th>應用</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Velodyne VLP-16</td>
+                <td>16 線機械式</td>
+                <td>100 m</td>
+                <td>自駕農機、測量</td>
+            </tr>
+            <tr>
+                <td>Livox Mid-70</td>
+                <td>固態非重複掃描</td>
+                <td>260 m</td>
+                <td>車用、無人機</td>
+            </tr>
+            <tr>
+                <td>Ouster OS1</td>
+                <td>數位式固態</td>
+                <td>120 m</td>
+                <td>自駕、農機</td>
+            </tr>
+            <tr>
+                <td>RIEGL VUX-1</td>
+                <td>航測級</td>
+                <td>920 m</td>
+                <td>航測、林業</td>
+            </tr>
+            <tr>
+                <td>DJI Zenmuse L1</td>
+                <td>無人機整合</td>
+                <td>450 m</td>
+                <td>航測</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>農用 Radar</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>品牌/型號</th>
+                <th>頻段</th>
+                <th>測距範圍</th>
+                <th>應用</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Continental ARS441</td>
+                <td>77 GHz</td>
+                <td>250 m</td>
+                <td>車用、農機</td>
+            </tr>
+            <tr>
+                <td>Texas Instruments IWR1443</td>
+                <td>77 GHz</td>
+                <td>80 m</td>
+                <td>開發、研究</td>
+            </tr>
+            <tr>
+                <td>Ainstein US-D1</td>
+                <td>77 GHz</td>
+                <td>50 m</td>
+                <td>無人機避障</td>
+            </tr>
+            <tr>
+                <td>Bosch LRR4</td>
+                <td>77 GHz</td>
+                <td>250 m</td>
+                <td>車用 ACC</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>八、資料處理與分析</h2>
+
+    <h3>LiDAR 點雲處理</h3>
+    <pre><code class="language-python">import numpy as np
+import open3d as o3d
+
+# 讀取點雲資料
+pcd = o3d.io.read_point_cloud("farm_scan.pcd")
+print(f"點數量: {len(pcd.points)}")
+
+# 下採樣（減少點數）
+pcd_down = pcd.voxel_down_sample(voxel_size=0.1)
+
+# 移除離群點
+pcd_clean, ind = pcd_down.remove_statistical_outlier(
+    nb_neighbors=20,
+    std_ratio=2.0
+)
+
+# 地面分割（使用 RANSAC）
+plane_model, inliers = pcd_clean.segment_plane(
+    distance_threshold=0.1,
+    ransac_n=3,
+    num_iterations=1000
+)
+ground = pcd_clean.select_by_index(inliers)
+non_ground = pcd_clean.select_by_index(inliers, invert=True)
+
+# 計算作物高度
+ground_height = np.mean(np.asarray(ground.points)[:, 2])
+crop_points = np.asarray(non_ground.points)
+crop_heights = crop_points[:, 2] - ground_height
+print(f"平均作物高度: {np.mean(crop_heights):.2f} m")
+print(f"最大作物高度: {np.max(crop_heights):.2f} m")
+
+# 視覺化
+ground.paint_uniform_color([0.5, 0.3, 0])  # 褐色
+non_ground.paint_uniform_color([0, 0.8, 0])  # 綠色
+o3d.visualization.draw_geometries([ground, non_ground])
+</code></pre>
+
+    <h3>Radar 資料處理</h3>
+    <pre><code class="language-python">import numpy as np
+import matplotlib.pyplot as plt
+
+class RadarProcessor:
+    """毫米波雷達資料處理"""
+
+    def __init__(self, num_chirps=128, num_samples=256):
+        self.num_chirps = num_chirps
+        self.num_samples = num_samples
+
+    def range_fft(self, raw_data):
+        """距離維 FFT"""
+        return np.fft.fft(raw_data, axis=1)
+
+    def doppler_fft(self, range_data):
+        """都卜勒維 FFT（測速度）"""
+        return np.fft.fftshift(
+            np.fft.fft(range_data, axis=0),
+            axes=0
+        )
+
+    def cfar_detection(self, rd_map, guard_cells=2, train_cells=4, threshold=10):
+        """
+        CFAR 目標偵測
+        Constant False Alarm Rate
+        """
+        detections = []
+        rows, cols = rd_map.shape
+
+        for i in range(train_cells + guard_cells, rows - train_cells - guard_cells):
+            for j in range(train_cells + guard_cells, cols - train_cells - guard_cells):
+                # 計算訓練區平均值
+                train_sum = 0
+                train_count = 0
+                for di in range(-train_cells - guard_cells, train_cells + guard_cells + 1):
+                    for dj in range(-train_cells - guard_cells, train_cells + guard_cells + 1):
+                        if abs(di) > guard_cells or abs(dj) > guard_cells:
+                            train_sum += rd_map[i + di, j + dj]
+                            train_count += 1
+
+                noise_level = train_sum / train_count
+
+                if rd_map[i, j] > noise_level * threshold:
+                    detections.append({
+                        'range_idx': j,
+                        'doppler_idx': i,
+                        'amplitude': rd_map[i, j]
+                    })
+
+        return detections
+
+# 使用範例
+processor = RadarProcessor()
+# raw_data = 從雷達獲取原始資料
+# range_data = processor.range_fft(raw_data)
+# rd_map = np.abs(processor.doppler_fft(range_data))
+# targets = processor.cfar_detection(rd_map)
+</code></pre>
+
+    <h3>LiDAR + Radar 融合範例</h3>
+    <pre><code class="language-python">import numpy as np
+
+class SensorFusion:
+    """簡單的 LiDAR-Radar 融合"""
+
+    def __init__(self):
+        # 感測器外參（相對位置）
+        self.lidar_to_vehicle = np.eye(4)
+        self.radar_to_vehicle = np.eye(4)
+
+    def associate_detections(self, lidar_objects, radar_objects, max_distance=2.0):
+        """
+        關聯 LiDAR 和 Radar 偵測結果
+        使用最近鄰匹配
+        """
+        associations = []
+
+        for lid_obj in lidar_objects:
+            lid_pos = np.array(lid_obj['position'])
+            min_dist = float('inf')
+            best_match = None
+
+            for rad_obj in radar_objects:
+                rad_pos = np.array(rad_obj['position'])
+                dist = np.linalg.norm(lid_pos[:2] - rad_pos[:2])  # 2D 距離
+
+                if dist < min_dist and dist < max_distance:
+                    min_dist = dist
+                    best_match = rad_obj
+
+            if best_match:
+                # 融合：LiDAR 提供位置，Radar 提供速度
+                fused = {
+                    'position': lid_obj['position'],  # 使用 LiDAR 位置（更精確）
+                    'velocity': best_match.get('velocity', 0),  # 使用 Radar 速度
+                    'size': lid_obj.get('size'),  # 使用 LiDAR 尺寸
+                    'confidence': (lid_obj['confidence'] + best_match['confidence']) / 2
+                }
+                associations.append(fused)
+            else:
+                # 只有 LiDAR 偵測到
+                associations.append(lid_obj)
+
+        return associations
+</code></pre>
+    <hr />
+
+    <h2>九、成本比較</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>等級</th>
+                <th>LiDAR 價格範圍</th>
+                <th>Radar 價格範圍</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>入門級（學習用）</td>
+                <td>$300-800 USD</td>
+                <td>$50-200 USD</td>
+            </tr>
+            <tr>
+                <td>中階（商用）</td>
+                <td>$1,000-4,000 USD</td>
+                <td>$200-800 USD</td>
+            </tr>
+            <tr>
+                <td>高階（專業）</td>
+                <td>$5,000-20,000 USD</td>
+                <td>$1,000-3,000 USD</td>
+            </tr>
+            <tr>
+                <td>航測/專業級</td>
+                <td>$50,000+ USD</td>
+                <td>-</td>
+            </tr>
+        </tbody>
+    </table>
+    <blockquote>
+        <strong>趨勢</strong>：LiDAR 價格正快速下降，固態 LiDAR 已降至數百美元級別。
+    </blockquote>
+    <hr />
+
+    <h2>十、選擇建議</h2>
+
+    <h3>選 LiDAR 的情況</h3>
+    <ul>
+        <li>需要精確的 3D 環境建模</li>
+        <li>作物結構、高度測量</li>
+        <li>複雜環境的障礙物偵測</li>
+        <li>精準定位與導航</li>
+        <li>主要在良好天候下作業</li>
+    </ul>
+
+    <h3>選 Radar 的情況</h3>
+    <ul>
+        <li>需要全天候作業能力</li>
+        <li>預算有限</li>
+        <li>主要偵測移動物體</li>
+        <li>簡單的距離偵測需求</li>
+        <li>惡劣環境（雨、霧、灰塵）</li>
+    </ul>
+
+    <h3>最佳方案：融合系統</h3>
+    <p>對於高要求的自動駕駛農機，建議採用多感測器融合：</p>
+    <ul>
+        <li>LiDAR：提供精確 3D 感知</li>
+        <li>Radar：全天候偵測與測速</li>
+        <li>Camera：物體分類與細節識別</li>
+        <li>GNSS/RTK：絕對定位</li>
+        <li>IMU：姿態與運動估計</li>
+    </ul>
+    <hr />
+
+    <p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

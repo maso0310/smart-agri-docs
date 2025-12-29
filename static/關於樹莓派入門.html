@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於樹莓派入門</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="raspberry-pi">關於樹莓派（Raspberry Pi）入門</h1>
+<h2 id="_1">為什麼要認識樹莓派？</h2>
+<p>在智慧農業專案中，當我們需要：</p>
+<ul>
+<li>執行複雜的資料處理與分析</li>
+<li>架設本地端伺服器或資料庫</li>
+<li>運行機器學習模型（如植物病蟲害辨識）</li>
+<li>同時控制多個 Arduino 或感測器</li>
+<li>建立完整的物聯網閘道器（IoT Gateway）</li>
+</ul>
+<p>這時候 Arduino 的運算能力就不夠用了，我們需要<strong>樹莓派</strong>！</p>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                  智慧農業系統架構                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│                        ┌─────────────┐                         │
+│                        │   雲端平台   │                         │
+│                        │  資料儲存    │                         │
+│                        └──────┬──────┘                         │
+│                               │                                 │
+│                          網際網路                               │
+│                               │                                 │
+│                        ┌──────┴──────┐                         │
+│                        │  樹莓派     │                         │
+│                        │ ─────────── │                         │
+│                        │ • 資料彙整  │                         │
+│                        │ • 本地運算  │                         │
+│                        │ • 網頁伺服器│                         │
+│                        │ • AI 推論   │                         │
+│                        └──────┬──────┘                         │
+│                               │                                 │
+│           ┌───────────────────┼───────────────────┐            │
+│           │                   │                   │            │
+│    ┌──────┴──────┐     ┌──────┴──────┐     ┌──────┴──────┐     │
+│    │  Arduino 1  │     │  Arduino 2  │     │  Arduino 3  │     │
+│    │  溫室 A     │     │  溫室 B     │     │  溫室 C     │     │
+│    └─────────────┘     └─────────────┘     └─────────────┘     │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_2">樹莓派是什麼？</h2>
+<p>樹莓派（Raspberry Pi）是一款<strong>信用卡大小的單板電腦</strong>，由英國樹莓派基金會開發。它是一台完整的電腦，可以運行 Linux 作業系統，執行各種程式。</p>
+<h3 id="raspberry-pi-4b">外觀介紹（以 Raspberry Pi 4B 為例）</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    Raspberry Pi 4 Model B                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │ ○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○ │ ← GPIO 40pin  │
+│   ├─────────────────────────────────────────────────────────┤   │
+│   │                                                         │   │
+│   │   ┌───────┐                              ┌─────────┐   │   │
+│   │   │ PoE   │    ┌──────────────────┐     │  USB 3  │   │   │
+│   │   │ 接頭  │    │                  │     │ ═══════ │   │   │
+│   │   └───────┘    │    BCM2711      │     │ ═══════ │   │   │
+│   │                │    四核心        │     ├─────────┤   │   │
+│   │   ┌───────┐    │    1.5GHz       │     │  USB 2  │   │   │
+│   │   │ 網路  │    │                  │     │ ═══════ │   │   │
+│   │   │ RJ45  │    └──────────────────┘     │ ═══════ │   │   │
+│   │   │ ════  │                             └─────────┘   │   │
+│   │   └───────┘    ┌────┐  ┌────┐                        │   │
+│   │                │RAM │  │WiFi│                        │   │
+│   │   ┌───────┐    └────┘  └────┘    ┌──────────────┐   │   │
+│   │   │ HDMI  │                      │   電源       │   │   │
+│   │   │ ═══   │    ┌─────────────┐   │   USB-C     │   │   │
+│   │   │ ═══   │    │  microSD    │   │   ●         │   │   │
+│   │   └───────┘    │  卡槽 ▄▄▄   │   └──────────────┘   │   │
+│   │                └─────────────┘                       │   │
+│   └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+│   實際尺寸：85.6mm x 56.5mm（約信用卡大小）                     │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="arduino-vs">Arduino vs 樹莓派</h2>
+<p>這是初學者最常問的問題：該用 Arduino 還是樹莓派？</p>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                   Arduino vs 樹莓派 比較                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│                Arduino                    樹莓派                │
+│              ┌─────────┐              ┌─────────────┐          │
+│              │ ▓▓▓▓▓▓▓ │              │ ○○○○○○○○○○○ │          │
+│              │ ▓     ▓ │              │ ┌─────────┐ │          │
+│              │ ▓ MCU ▓ │              │ │   CPU   │ │          │
+│              │ ▓     ▓ │              │ │   RAM   │ │          │
+│              │ ▓▓▓▓▓▓▓ │              │ └─────────┘ │          │
+│              └─────────┘              └─────────────┘          │
+│                                                                 │
+│   類型：     微控制器                  微型電腦                 │
+│   本質：     執行單一程式              完整作業系統             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="_3">詳細比較表</h3>
+<pre><code>┌──────────────────┬─────────────────────┬─────────────────────┐
+│ 特性             │ Arduino Uno         │ Raspberry Pi 4B     │
+├──────────────────┼─────────────────────┼─────────────────────┤
+│ 處理器           │ ATmega328P (8-bit)  │ BCM2711 (64-bit)    │
+│ 時脈             │ 16 MHz              │ 1.5 GHz (四核心)    │
+│ RAM              │ 2 KB                │ 2/4/8 GB            │
+│ 儲存空間         │ 32 KB Flash         │ microSD (可達 TB)   │
+│ 作業系統         │ 無（裸機程式）      │ Linux               │
+│ 程式語言         │ C/C++ (Arduino)     │ Python, C, Java...  │
+│ GPIO             │ 14 數位 + 6 類比    │ 40 pin (數位)       │
+│ 類比輸入         │ 有 (ADC 內建)       │ 無 (需外接 ADC)     │
+│ 即時控制         │ 優秀                │ 較差                │
+│ 開機時間         │ 瞬間                │ 約 30 秒            │
+│ 功耗             │ ~50 mA              │ ~600 mA (閒置)      │
+│ 價格             │ ~NT$ 200-400        │ ~NT$ 1,200-2,500    │
+│ 網路             │ 需外接模組          │ 內建 WiFi + 乙太網  │
+│ USB              │ 無（僅供電/燒錄）   │ 4 個 USB 埠         │
+│ 影音輸出         │ 無                  │ 雙 HDMI             │
+└──────────────────┴─────────────────────┴─────────────────────┘
+</code></pre>
+<h3 id="arduino">什麼時候用 Arduino？</h3>
+<pre><code>適合 Arduino 的情境：
+✓ 簡單的感測器讀取與控制
+✓ 需要精確時序控制（如 PWM、伺服馬達）
+✓ 低功耗應用（電池供電）
+✓ 即時反應需求高
+✓ 成本敏感的專案
+✓ 類比訊號處理（ADC 內建）
+✓ 24/7 穩定運行的簡單任務
+
+範例：
+- 溫濕度感測器讀取
+- LED 燈條控制
+- 馬達驅動
+- 按鈕輸入處理
+</code></pre>
+<h3 id="_4">什麼時候用樹莓派？</h3>
+<pre><code>適合樹莓派的情境：
+✓ 需要運行完整作業系統
+✓ 網路服務（Web Server、MQTT Broker）
+✓ 資料庫操作
+✓ 影像處理與機器學習
+✓ 多工處理
+✓ 圖形介面應用
+✓ 複雜的資料分析
+
+範例：
+- 物聯網閘道器
+- 網頁儀表板伺服器
+- 攝影機影像辨識
+- 資料彙整與儲存
+- 遠端監控中心
+</code></pre>
+<h3 id="_5">最佳實踐：兩者搭配使用</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                     最佳搭配架構                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │                      樹莓派                              │   │
+│   │  • 資料收集與儲存                                       │   │
+│   │  • 網頁介面 / API 伺服器                                │   │
+│   │  • 複雜運算 / 機器學習                                  │   │
+│   │  • 網路通訊 (MQTT, HTTP)                                │   │
+│   └───────────────────────┬─────────────────────────────────┘   │
+│                           │                                     │
+│              UART / I2C / SPI / USB                             │
+│                           │                                     │
+│   ┌───────────────────────┴─────────────────────────────────┐   │
+│   │                      Arduino                             │   │
+│   │  • 即時感測器讀取                                       │   │
+│   │  • 精確時序控制                                         │   │
+│   │  • 類比訊號處理                                         │   │
+│   │  • 硬體保護與隔離                                       │   │
+│   └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_6">樹莓派型號介紹</h2>
+<h3 id="_7">主流型號比較</h3>
+<pre><code>┌──────────────────┬────────────┬────────────┬────────────┬────────────┐
+│ 型號             │ Pi 3B+     │ Pi 4B      │ Pi 5       │ Pi Zero 2W │
+├──────────────────┼────────────┼────────────┼────────────┼────────────┤
+│ 發布年份         │ 2018       │ 2019       │ 2023       │ 2021       │
+│ CPU              │ 4核 1.4GHz │ 4核 1.5GHz │ 4核 2.4GHz │ 4核 1GHz   │
+│ RAM              │ 1 GB       │ 2/4/8 GB   │ 4/8 GB     │ 512 MB     │
+│ USB              │ 4x USB 2.0 │ 2x3.0+2x2.0│ 2x3.0+2x2.0│ 1x micro   │
+│ 網路             │ WiFi+乙太  │ WiFi+Gbit  │ WiFi+Gbit  │ WiFi       │
+│ 視訊輸出         │ 1x HDMI    │ 2x microHDMI│ 2x microHDMI│ miniHDMI  │
+│ 電源             │ microUSB   │ USB-C      │ USB-C      │ microUSB   │
+│ GPIO             │ 40 pin     │ 40 pin     │ 40 pin     │ 40 pin     │
+│ 尺寸             │ 標準       │ 標準       │ 標準       │ 超小型     │
+│ 適合用途         │ 入門學習   │ 通用首選   │ 高效能     │ 嵌入式     │
+│ 參考價格(NT$)    │ ~1,000     │ 1,200-2,500│ 2,000-3,500│ ~600       │
+└──────────────────┴────────────┴────────────┴────────────┴────────────┘
+</code></pre>
+<h3 id="_8">選購建議</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                        選購建議                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  入門學習 / 教學用途：                                          │
+│  → Raspberry Pi 4B (2GB) - 價格實惠，效能足夠                   │
+│                                                                 │
+│  通用專案 / 伺服器應用：                                        │
+│  → Raspberry Pi 4B (4GB) - 最佳性價比，推薦首選                 │
+│                                                                 │
+│  機器學習 / 複雜運算：                                          │
+│  → Raspberry Pi 4B (8GB) 或 Pi 5 - 大記憶體需求                 │
+│                                                                 │
+│  嵌入式 / 空間受限：                                            │
+│  → Raspberry Pi Zero 2 W - 體積小、功耗低                       │
+│                                                                 │
+│  工業應用 / 長期運行：                                          │
+│  → Raspberry Pi CM4 (Compute Module) - 模組化設計               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="gpio">GPIO 腳位說明</h2>
+<p>GPIO（General Purpose Input/Output）是樹莓派與外部硬體溝通的介面。</p>
+<h3 id="40-pin-gpio">40 Pin GPIO 腳位圖</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    Raspberry Pi GPIO 腳位圖                      │
+│                   （從 USB 端看，GPIO 在左上方）                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│          3.3V  (1) ●  ● (2)  5V                                │
+│    SDA1/GPIO2  (3) ●  ● (4)  5V                                │
+│    SCL1/GPIO3  (5) ●  ● (6)  GND                               │
+│         GPIO4  (7) ●  ● (8)  GPIO14/TXD                        │
+│           GND  (9) ●  ● (10) GPIO15/RXD                        │
+│        GPIO17 (11) ●  ● (12) GPIO18/PWM0                       │
+│        GPIO27 (13) ●  ● (14) GND                               │
+│        GPIO22 (15) ●  ● (16) GPIO23                            │
+│          3.3V (17) ●  ● (18) GPIO24                            │
+│   MOSI/GPIO10 (19) ●  ● (20) GND                               │
+│   MISO/GPIO9  (21) ●  ● (22) GPIO25                            │
+│   SCLK/GPIO11 (23) ●  ● (24) GPIO8/CE0                         │
+│           GND (25) ●  ● (26) GPIO7/CE1                         │
+│   ID_SD/GPIO0 (27) ●  ● (28) ID_SC/GPIO1                       │
+│         GPIO5 (29) ●  ● (30) GND                               │
+│         GPIO6 (31) ●  ● (32) GPIO12/PWM0                       │
+│   PWM1/GPIO13 (33) ●  ● (34) GND                               │
+│        GPIO19 (35) ●  ● (36) GPIO16                            │
+│        GPIO26 (37) ●  ● (38) GPIO20                            │
+│           GND (39) ●  ● (40) GPIO21                            │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+腳位類型：
+┌────────────────┬─────────────────────────────────────────────────┐
+│ 電源           │ 3.3V (Pin 1, 17)、5V (Pin 2, 4)                │
+│ 接地           │ GND (Pin 6, 9, 14, 20, 25, 30, 34, 39)         │
+│ 通用 GPIO      │ GPIO2-27 (可程式控制輸入/輸出)                 │
+│ I2C            │ SDA1 (Pin 3)、SCL1 (Pin 5)                     │
+│ SPI            │ MOSI (Pin 19)、MISO (Pin 21)、SCLK (Pin 23)    │
+│ UART           │ TXD (Pin 8)、RXD (Pin 10)                      │
+│ PWM            │ GPIO12, 13, 18, 19 (硬體 PWM)                  │
+└────────────────┴─────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="gpio-arduino">GPIO 與 Arduino 的差異</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                  GPIO 使用注意事項                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ⚠️ 重要差異：                                                  │
+│                                                                 │
+│  1. 電壓等級                                                    │
+│     - 樹莓派 GPIO 是 3.3V（不是 5V！）                          │
+│     - 接入 5V 訊號會損壞樹莓派                                  │
+│     - 需要電平轉換器與 5V 設備溝通                              │
+│                                                                 │
+│  2. 沒有類比輸入                                                │
+│     - 樹莓派沒有內建 ADC                                        │
+│     - 需要外接 ADC 晶片（如 MCP3008）讀取類比訊號               │
+│                                                                 │
+│  3. 電流限制                                                    │
+│     - 單一 GPIO 最大 16mA                                       │
+│     - 全部 GPIO 總和最大 50mA                                   │
+│     - 驅動 LED 需要限流電阻                                     │
+│                                                                 │
+│  4. 非即時系統                                                  │
+│     - Linux 不是即時作業系統                                    │
+│     - 精確時序控制不如 Arduino                                  │
+│     - 需要即時控制時，建議搭配 Arduino                          │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_9">作業系統安裝</h2>
+<h3 id="_10">步驟一：準備材料</h3>
+<pre><code>需要準備：
+□ microSD 卡（建議 16GB 以上，Class 10）
+□ SD 卡讀卡機
+□ 電腦（用於燒錄系統）
+□ 電源供應器（5V 3A，USB-C 或 microUSB）
+□ HDMI 線（首次設定用）
+□ 鍵盤、滑鼠（首次設定用）
+□ 螢幕（首次設定用）
+</code></pre>
+<h3 id="raspberry-pi-imager">步驟二：下載 Raspberry Pi Imager</h3>
+<pre><code>1. 前往官網下載 Raspberry Pi Imager
+   https://www.raspberrypi.com/software/
+
+2. 安裝並開啟 Raspberry Pi Imager
+
+3. 介面說明：
+   ┌─────────────────────────────────────────┐
+   │         Raspberry Pi Imager             │
+   ├─────────────────────────────────────────┤
+   │                                         │
+   │  ┌─────────────────────────────────┐   │
+   │  │     選擇作業系統 (CHOOSE OS)    │   │
+   │  └─────────────────────────────────┘   │
+   │                                         │
+   │  ┌─────────────────────────────────┐   │
+   │  │  選擇儲存裝置 (CHOOSE STORAGE)  │   │
+   │  └─────────────────────────────────┘   │
+   │                                         │
+   │  ┌─────────────────────────────────┐   │
+   │  │          寫入 (WRITE)           │   │
+   │  └─────────────────────────────────┘   │
+   │                                         │
+   └─────────────────────────────────────────┘
+</code></pre>
+<h3 id="_11">步驟三：燒錄系統</h3>
+<pre><code>1. 點擊「選擇作業系統」
+   → Raspberry Pi OS (64-bit)  ← 推薦
+
+2. 點擊「選擇儲存裝置」
+   → 選擇你的 SD 卡
+
+3. 點擊齒輪圖示 ⚙️ 進行進階設定（重要！）
+
+   ┌─────────────────────────────────────────┐
+   │           進階設定選項                   │
+   ├─────────────────────────────────────────┤
+   │                                         │
+   │  ☑ Set hostname: raspberrypi           │
+   │                                         │
+   │  ☑ Enable SSH                          │
+   │    ○ Use password authentication       │
+   │                                         │
+   │  ☑ Set username and password           │
+   │    Username: pi                        │
+   │    Password: ********                  │
+   │                                         │
+   │  ☑ Configure wireless LAN              │
+   │    SSID: 你的WiFi名稱                  │
+   │    Password: WiFi密碼                  │
+   │    Wireless LAN country: TW            │
+   │                                         │
+   │  ☑ Set locale settings                 │
+   │    Time zone: Asia/Taipei              │
+   │    Keyboard layout: us                 │
+   │                                         │
+   └─────────────────────────────────────────┘
+
+4. 點擊「寫入」，等待完成（約 5-15 分鐘）
+</code></pre>
+<h3 id="_12">步驟四：首次開機</h3>
+<pre><code>1. 將 SD 卡插入樹莓派
+2. 連接螢幕、鍵盤、滑鼠
+3. 接上電源
+4. 等待開機（首次約 1-2 分鐘）
+5. 進入桌面環境
+
+如果在 Imager 設定了 WiFi 和 SSH：
+- 可以不接螢幕，直接用 SSH 連線
+- 開機後等待 1-2 分鐘
+- 從路由器查詢樹莓派的 IP 位址
+- 使用 SSH 連線
+</code></pre>
+<hr />
+<h2 id="ssh">SSH 遠端連線</h2>
+<h3 id="windows">Windows 連線方式</h3>
+<pre><code>方法一：使用 PowerShell 或命令提示字元
+
+1. 開啟 PowerShell
+2. 輸入：ssh pi@192.168.x.x
+   （將 192.168.x.x 替換成樹莓派的 IP）
+3. 首次連線會詢問是否信任，輸入 yes
+4. 輸入密碼
+
+方法二：使用 PuTTY
+
+1. 下載並安裝 PuTTY
+2. Host Name: 192.168.x.x
+3. Port: 22
+4. Connection type: SSH
+5. 點擊 Open
+6. 輸入帳號密碼
+</code></pre>
+<h3 id="ip">查詢樹莓派 IP 位址</h3>
+<pre><code>方法一：從路由器管理頁面查看
+
+方法二：使用 hostname（如果設定了）
+  ping raspberrypi.local
+
+方法三：在樹莓派上查看（如有螢幕）
+  終端機輸入：hostname -I
+</code></pre>
+<h3 id="linux">基本 Linux 指令</h3>
+<pre><code class="language-bash"># 系統資訊
+uname -a              # 查看系統資訊
+cat /etc/os-release   # 查看 OS 版本
+vcgencmd measure_temp # 查看 CPU 溫度
+
+# 檔案操作
+ls                    # 列出檔案
+cd /home/pi           # 切換目錄
+pwd                   # 顯示當前目錄
+mkdir folder          # 建立資料夾
+rm file               # 刪除檔案
+cp source dest        # 複製檔案
+mv source dest        # 移動/重新命名
+
+# 編輯檔案
+nano filename         # 使用 nano 編輯器
+vim filename          # 使用 vim 編輯器
+
+# 權限
+sudo command          # 以管理員權限執行
+chmod +x script.py    # 加入執行權限
+
+# 套件管理
+sudo apt update       # 更新套件清單
+sudo apt upgrade      # 升級已安裝套件
+sudo apt install pkg  # 安裝套件
+
+# 系統控制
+sudo reboot           # 重新開機
+sudo shutdown now     # 關機
+</code></pre>
+<hr />
+<h2 id="python-gpio">Python GPIO 控制</h2>
+<p>樹莓派最常用 Python 來控制 GPIO。</p>
+<h3 id="gpio_1">安裝 GPIO 函式庫</h3>
+<pre><code class="language-bash"># RPi.GPIO（傳統，大多數教學使用）
+sudo apt install python3-rpi.gpio
+
+# gpiozero（較新，語法更簡潔）
+sudo apt install python3-gpiozero
+
+# 確認安裝
+python3 -c &quot;import RPi.GPIO; print('RPi.GPIO OK')&quot;
+python3 -c &quot;import gpiozero; print('gpiozero OK')&quot;
+</code></pre>
+<h3 id="led-rpigpio">範例一：LED 閃爍（RPi.GPIO）</h3>
+<pre><code class="language-python">#!/usr/bin/env python3
+&quot;&quot;&quot;
+LED 閃爍範例 - 使用 RPi.GPIO
+接線：GPIO17 (Pin 11) → 電阻 (220Ω) → LED → GND
+&quot;&quot;&quot;
+
+import RPi.GPIO as GPIO
+import time
+
+# 設定
+LED_PIN = 17
+
+# 初始化
+GPIO.setmode(GPIO.BCM)  # 使用 BCM 編號
+GPIO.setup(LED_PIN, GPIO.OUT)
+
+print(&quot;LED 閃爍開始，按 Ctrl+C 停止&quot;)
+
+try:
+    while True:
+        GPIO.output(LED_PIN, GPIO.HIGH)  # LED 亮
+        print(&quot;LED ON&quot;)
+        time.sleep(1)
+
+        GPIO.output(LED_PIN, GPIO.LOW)   # LED 滅
+        print(&quot;LED OFF&quot;)
+        time.sleep(1)
+
+except KeyboardInterrupt:
+    print(&quot;\n程式結束&quot;)
+
+finally:
+    GPIO.cleanup()  # 清理 GPIO 設定
+</code></pre>
+<h3 id="led-gpiozero">範例二：LED 閃爍（gpiozero）</h3>
+<pre><code class="language-python">#!/usr/bin/env python3
+&quot;&quot;&quot;
+LED 閃爍範例 - 使用 gpiozero（更簡潔）
+&quot;&quot;&quot;
+
+from gpiozero import LED
+from time import sleep
+
+led = LED(17)
+
+print(&quot;LED 閃爍開始，按 Ctrl+C 停止&quot;)
+
+try:
+    while True:
+        led.on()
+        print(&quot;LED ON&quot;)
+        sleep(1)
+
+        led.off()
+        print(&quot;LED OFF&quot;)
+        sleep(1)
+
+except KeyboardInterrupt:
+    print(&quot;\n程式結束&quot;)
+</code></pre>
+<h3 id="_13">範例三：按鈕輸入</h3>
+<pre><code class="language-python">#!/usr/bin/env python3
+&quot;&quot;&quot;
+按鈕控制 LED
+接線：
+- GPIO17 → LED → GND
+- GPIO27 → 按鈕 → GND（使用內部上拉電阻）
+&quot;&quot;&quot;
+
+from gpiozero import LED, Button
+from signal import pause
+
+led = LED(17)
+button = Button(27)  # 預設使用內部上拉電阻
+
+# 按下按鈕時 LED 亮，放開時滅
+button.when_pressed = led.on
+button.when_released = led.off
+
+print(&quot;按下按鈕控制 LED，按 Ctrl+C 停止&quot;)
+pause()
+</code></pre>
+<h3 id="pwm-led">範例四：PWM 控制 LED 亮度</h3>
+<pre><code class="language-python">#!/usr/bin/env python3
+&quot;&quot;&quot;
+PWM 控制 LED 亮度（呼吸燈效果）
+&quot;&quot;&quot;
+
+from gpiozero import PWMLED
+from time import sleep
+
+led = PWMLED(17)
+
+print(&quot;LED 呼吸燈效果，按 Ctrl+C 停止&quot;)
+
+try:
+    while True:
+        # 漸亮
+        for brightness in range(0, 101, 5):
+            led.value = brightness / 100
+            sleep(0.05)
+
+        # 漸暗
+        for brightness in range(100, -1, -5):
+            led.value = brightness / 100
+            sleep(0.05)
+
+except KeyboardInterrupt:
+    print(&quot;\n程式結束&quot;)
+</code></pre>
+<h3 id="dht11">範例五：讀取 DHT11 感測器</h3>
+<pre><code class="language-bash"># 先安裝函式庫
+pip3 install adafruit-circuitpython-dht
+sudo apt install libgpiod2
+</code></pre>
+<pre><code class="language-python">#!/usr/bin/env python3
+&quot;&quot;&quot;
+讀取 DHT11 溫濕度感測器
+接線：DHT11 Data → GPIO4 (Pin 7)
+&quot;&quot;&quot;
+
+import adafruit_dht
+import board
+import time
+
+# 初始化 DHT11
+dht = adafruit_dht.DHT11(board.D4)
+
+print(&quot;讀取 DHT11 溫濕度，按 Ctrl+C 停止&quot;)
+
+try:
+    while True:
+        try:
+            temperature = dht.temperature
+            humidity = dht.humidity
+
+            print(f&quot;溫度: {temperature}°C  濕度: {humidity}%&quot;)
+
+        except RuntimeError as e:
+            # DHT 讀取偶爾會失敗，這是正常的
+            print(f&quot;讀取失敗: {e}&quot;)
+
+        time.sleep(2)
+
+except KeyboardInterrupt:
+    print(&quot;\n程式結束&quot;)
+
+finally:
+    dht.exit()
+</code></pre>
+<h3 id="mcp3008">範例六：使用 MCP3008 讀取類比訊號</h3>
+<pre><code class="language-bash"># 安裝 SPI 函式庫
+pip3 install spidev
+pip3 install gpiozero
+</code></pre>
+<pre><code class="language-python">#!/usr/bin/env python3
+&quot;&quot;&quot;
+使用 MCP3008 ADC 讀取類比感測器
+MCP3008 透過 SPI 連接樹莓派
+&quot;&quot;&quot;
+
+from gpiozero import MCP3008
+from time import sleep
+
+# MCP3008 通道 0 連接土壤濕度感測器
+soil_sensor = MCP3008(channel=0)
+
+print(&quot;讀取土壤濕度，按 Ctrl+C 停止&quot;)
+
+try:
+    while True:
+        # value 範圍 0.0 - 1.0
+        raw_value = soil_sensor.value
+        percentage = (1 - raw_value) * 100  # 轉換為百分比
+
+        print(f&quot;土壤濕度: {percentage:.1f}%&quot;)
+        sleep(1)
+
+except KeyboardInterrupt:
+    print(&quot;\n程式結束&quot;)
+</code></pre>
+<hr />
+<h2 id="arduino_1">樹莓派與 Arduino 通訊</h2>
+<h3 id="uart">方法一：UART 序列通訊</h3>
+<pre><code>接線：
+┌────────────┐         ┌────────────┐
+│ 樹莓派     │         │  Arduino   │
+│            │         │            │
+│  TX (GPIO14)├────────┤ RX         │
+│  RX (GPIO15)├────────┤ TX         │
+│  GND       ├─────────┤ GND        │
+└────────────┘         └────────────┘
+
+注意：樹莓派是 3.3V，Arduino 是 5V
+      RX 線需要分壓或電平轉換
+</code></pre>
+<p><strong>樹莓派端 Python 程式：</strong></p>
+<pre><code class="language-python">#!/usr/bin/env python3
+&quot;&quot;&quot;
+樹莓派透過 UART 與 Arduino 通訊
+&quot;&quot;&quot;
+
+import serial
+import time
+
+# 開啟序列埠
+ser = serial.Serial('/dev/serial0', 9600, timeout=1)
+time.sleep(2)  # 等待連接穩定
+
+print(&quot;開始與 Arduino 通訊&quot;)
+
+try:
+    while True:
+        # 發送指令給 Arduino
+        ser.write(b'GET_DATA\n')
+
+        # 讀取 Arduino 回應
+        if ser.in_waiting &gt; 0:
+            response = ser.readline().decode('utf-8').strip()
+            print(f&quot;Arduino 回應: {response}&quot;)
+
+        time.sleep(2)
+
+except KeyboardInterrupt:
+    print(&quot;\n程式結束&quot;)
+
+finally:
+    ser.close()
+</code></pre>
+<p><strong>Arduino 端程式：</strong></p>
+<pre><code class="language-cpp">/*
+ * Arduino 端 - 與樹莓派 UART 通訊
+ */
+
+#include &lt;DHT.h&gt;
+
+#define DHT_PIN 2
+DHT dht(DHT_PIN, DHT11);
+
+void setup() {
+    Serial.begin(9600);
+    dht.begin();
+}
+
+void loop() {
+    if (Serial.available() &gt; 0) {
+        String command = Serial.readStringUntil('\n');
+        command.trim();
+
+        if (command == &quot;GET_DATA&quot;) {
+            float temp = dht.readTemperature();
+            float humi = dht.readHumidity();
+
+            Serial.print(&quot;TEMP:&quot;);
+            Serial.print(temp);
+            Serial.print(&quot;,HUMI:&quot;);
+            Serial.println(humi);
+        }
+    }
+}
+</code></pre>
+<h3 id="i2c">方法二：I2C 通訊</h3>
+<pre><code>接線：
+┌────────────┐         ┌────────────┐
+│ 樹莓派     │         │  Arduino   │
+│            │         │            │
+│  SDA (GPIO2)├────────┤ SDA (A4)   │
+│  SCL (GPIO3)├────────┤ SCL (A5)   │
+│  GND       ├─────────┤ GND        │
+└────────────┘         └────────────┘
+
+樹莓派為 Master，Arduino 為 Slave
+</code></pre>
+<hr />
+<h2 id="_14">智慧農業應用範例</h2>
+<h3 id="_15">範例：溫室監控伺服器</h3>
+<pre><code class="language-python">#!/usr/bin/env python3
+&quot;&quot;&quot;
+智慧溫室監控伺服器
+功能：
+- 讀取感測器資料
+- 提供 Web API
+- 儲存歷史資料
+&quot;&quot;&quot;
+
+from flask import Flask, jsonify, render_template_string
+import adafruit_dht
+import board
+from gpiozero import MCP3008, OutputDevice
+from datetime import datetime
+import threading
+import time
+
+app = Flask(__name__)
+
+# 感測器初始化
+dht = adafruit_dht.DHT11(board.D4)
+soil_sensor = MCP3008(channel=0)
+
+# 繼電器（控制風扇和水泵）
+fan_relay = OutputDevice(17, active_high=False)
+pump_relay = OutputDevice(27, active_high=False)
+
+# 資料儲存
+sensor_data = {
+    'temperature': 0,
+    'humidity': 0,
+    'soil_moisture': 0,
+    'fan_status': False,
+    'pump_status': False,
+    'last_update': ''
+}
+
+history = []
+
+# 感測器讀取執行緒
+def sensor_thread():
+    global sensor_data
+    while True:
+        try:
+            sensor_data['temperature'] = dht.temperature or 0
+            sensor_data['humidity'] = dht.humidity or 0
+            sensor_data['soil_moisture'] = int((1 - soil_sensor.value) * 100)
+            sensor_data['last_update'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+            # 加入歷史記錄
+            history.append({
+                'time': sensor_data['last_update'],
+                'temp': sensor_data['temperature'],
+                'humi': sensor_data['humidity'],
+                'soil': sensor_data['soil_moisture']
+            })
+
+            # 只保留最近 100 筆
+            if len(history) &gt; 100:
+                history.pop(0)
+
+        except Exception as e:
+            print(f&quot;感測器錯誤: {e}&quot;)
+
+        time.sleep(5)
+
+# API 路由
+@app.route('/api/sensors')
+def get_sensors():
+    return jsonify(sensor_data)
+
+@app.route('/api/history')
+def get_history():
+    return jsonify(history[-20:])  # 返回最近 20 筆
+
+@app.route('/api/control/&lt;device&gt;/&lt;action&gt;')
+def control_device(device, action):
+    if device == 'fan':
+        if action == 'on':
+            fan_relay.on()
+            sensor_data['fan_status'] = True
+        else:
+            fan_relay.off()
+            sensor_data['fan_status'] = False
+
+    elif device == 'pump':
+        if action == 'on':
+            pump_relay.on()
+            sensor_data['pump_status'] = True
+        else:
+            pump_relay.off()
+            sensor_data['pump_status'] = False
+
+    return jsonify({'success': True, 'device': device, 'status': action})
+
+# 簡單的網頁介面
+@app.route('/')
+def index():
+    html = '''
+    &lt;!DOCTYPE html&gt;
+    &lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;智慧溫室監控&lt;/title&gt;
+        &lt;meta charset=&quot;UTF-8&quot;&gt;
+        &lt;meta http-equiv=&quot;refresh&quot; content=&quot;5&quot;&gt;
+        &lt;style&gt;
+            body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
+            .card { background: #f5f5f5; padding: 20px; margin: 10px 0; border-radius: 10px; }
+            .value { font-size: 32px; font-weight: bold; }
+            button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+            .on { background: #4CAF50; color: white; }
+            .off { background: #ccc; }
+        &lt;/style&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;智慧溫室監控系統&lt;/h1&gt;
+        &lt;div class=&quot;card&quot;&gt;
+            &lt;h3&gt;溫度&lt;/h3&gt;
+            &lt;div class=&quot;value&quot;&gt;{{ data.temperature }}°C&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;card&quot;&gt;
+            &lt;h3&gt;濕度&lt;/h3&gt;
+            &lt;div class=&quot;value&quot;&gt;{{ data.humidity }}%&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;card&quot;&gt;
+            &lt;h3&gt;土壤濕度&lt;/h3&gt;
+            &lt;div class=&quot;value&quot;&gt;{{ data.soil_moisture }}%&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;card&quot;&gt;
+            &lt;h3&gt;設備控制&lt;/h3&gt;
+            &lt;div&gt;
+                風扇:
+                &lt;a href=&quot;/api/control/fan/on&quot;&gt;&lt;button class=&quot;{{ 'on' if data.fan_status else 'off' }}&quot;&gt;開啟&lt;/button&gt;&lt;/a&gt;
+                &lt;a href=&quot;/api/control/fan/off&quot;&gt;&lt;button class=&quot;{{ 'off' if data.fan_status else 'on' }}&quot;&gt;關閉&lt;/button&gt;&lt;/a&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+                水泵:
+                &lt;a href=&quot;/api/control/pump/on&quot;&gt;&lt;button class=&quot;{{ 'on' if data.pump_status else 'off' }}&quot;&gt;開啟&lt;/button&gt;&lt;/a&gt;
+                &lt;a href=&quot;/api/control/pump/off&quot;&gt;&lt;button class=&quot;{{ 'off' if data.pump_status else 'on' }}&quot;&gt;關閉&lt;/button&gt;&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;p&gt;最後更新: {{ data.last_update }}&lt;/p&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+    '''
+    return render_template_string(html, data=sensor_data)
+
+if __name__ == '__main__':
+    # 啟動感測器執行緒
+    t = threading.Thread(target=sensor_thread, daemon=True)
+    t.start()
+
+    # 啟動網頁伺服器
+    print(&quot;伺服器啟動於 http://0.0.0.0:5000&quot;)
+    app.run(host='0.0.0.0', port=5000)
+</code></pre>
+<hr />
+<h2 id="_16">常見問題與排除</h2>
+<h3 id="_17">問題一：無法開機</h3>
+<pre><code>症狀：接上電源後沒有反應，或紅燈閃爍
+
+檢查項目：
+□ 電源供應器是否足夠（5V 3A）
+□ SD 卡是否正確插入
+□ SD 卡系統是否正確燒錄
+□ SD 卡是否損壞
+
+解決方案：
+1. 使用官方電源供應器
+2. 重新燒錄系統到 SD 卡
+3. 嘗試不同的 SD 卡
+</code></pre>
+<h3 id="wifi">問題二：無法連接 WiFi</h3>
+<pre><code>症狀：找不到 WiFi 或無法連線
+
+檢查項目：
+□ WiFi 名稱和密碼是否正確
+□ 是否使用 2.4GHz WiFi（Pi 3B 不支援 5GHz）
+□ WiFi 國家設定是否正確
+
+解決方案：
+1. 在 Imager 重新設定 WiFi
+2. 或編輯 /etc/wpa_supplicant/wpa_supplicant.conf
+</code></pre>
+<h3 id="ssh_1">問題三：SSH 無法連線</h3>
+<pre><code>症狀：連線被拒絕或超時
+
+檢查項目：
+□ SSH 是否已啟用
+□ IP 位址是否正確
+□ 防火牆設定
+
+解決方案：
+1. 在 SD 卡 boot 分區建立空白的 ssh 檔案
+2. 確認樹莓派已連接網路
+3. 使用 ping 測試連通性
+</code></pre>
+<h3 id="gpio_2">問題四：GPIO 沒有反應</h3>
+<pre><code>症狀：程式執行但 GPIO 沒有輸出
+
+檢查項目：
+□ 接線是否正確
+□ GPIO 編號是否正確（BCM vs BOARD）
+□ 是否有足夠權限
+
+解決方案：
+1. 確認使用正確的 GPIO 編號
+2. 使用 sudo 執行程式
+3. 檢查是否有其他程式佔用 GPIO
+</code></pre>
+<h3 id="_18">問題五：溫度過高</h3>
+<pre><code>症狀：系統變慢或自動降頻
+
+檢查項目：
+□ 是否有足夠散熱
+□ 環境溫度是否過高
+
+解決方案：
+1. 安裝散熱片
+2. 使用散熱風扇
+3. 使用金屬外殼（導熱）
+4. 避免放在密閉空間
+</code></pre>
+<hr />
+<h2 id="_19">快速參考</h2>
+<h3 id="_20">常用指令速查</h3>
+<pre><code class="language-bash"># 系統
+sudo raspi-config      # 系統設定工具
+vcgencmd measure_temp  # CPU 溫度
+free -h                # 記憶體使用
+df -h                  # 磁碟使用
+htop                   # 系統監控（需安裝）
+
+# GPIO
+gpio readall           # 查看所有 GPIO 狀態（需安裝 wiringpi）
+pinout                 # 顯示腳位圖
+
+# 網路
+hostname -I            # 查看 IP
+ifconfig               # 網路介面資訊
+ping google.com        # 測試網路連通
+
+# Python
+python3 script.py      # 執行 Python 腳本
+pip3 install package   # 安裝 Python 套件
+pip3 list              # 列出已安裝套件
+</code></pre>
+<h3 id="gpio-gpiozero">GPIO 常用函式（gpiozero）</h3>
+<pre><code class="language-python"># 數位輸出
+from gpiozero import LED, OutputDevice
+led = LED(17)
+led.on() / led.off() / led.toggle()
+
+# 數位輸入
+from gpiozero import Button
+button = Button(27)
+button.is_pressed
+button.when_pressed = callback
+
+# PWM 輸出
+from gpiozero import PWMLED
+led = PWMLED(17)
+led.value = 0.5  # 50% 亮度
+
+# ADC（需 MCP3008）
+from gpiozero import MCP3008
+sensor = MCP3008(channel=0)
+value = sensor.value  # 0.0 - 1.0
+</code></pre>
+<hr />
+<h2 id="_21">延伸學習</h2>
+<ul>
+<li><a href="關於Arduino程式常用語法.md">關於Arduino程式常用語法</a> - Arduino 基礎</li>
+<li><a href="關於序列埠通訊.md">關於序列埠通訊</a> - UART 通訊原理</li>
+<li><a href="關於資料通訊方式.md">關於資料通訊方式</a> - I2C/SPI 協定</li>
+<li><a href="關於MQTT訊息.md">關於MQTT訊息</a> - 物聯網通訊協定</li>
+<li><a href="關於網頁前端三巨頭.md">關於網頁前端三巨頭</a> - 網頁介面開發</li>
+</ul>
+<h3 id="_22">線上資源</h3>
+<ul>
+<li><strong>官方文件</strong>：https://www.raspberrypi.com/documentation/</li>
+<li><strong>gpiozero 文件</strong>：https://gpiozero.readthedocs.io/</li>
+<li><strong>Raspberry Pi 論壇</strong>：https://forums.raspberrypi.com/</li>
+</ul>
+<hr />
+<h2 id="_23">本文件適用於</h2>
+<ul>
+<li>想了解樹莓派與 Arduino 差異的學員</li>
+<li>需要建立物聯網閘道器的專案</li>
+<li>進階智慧農業系統開發</li>
+</ul>
+<hr />
+<blockquote>
+<p>提示：樹莓派是完整的電腦，學習曲線比 Arduino 稍陡，但功能更強大。建議先熟悉 Arduino 後再學習樹莓派，兩者搭配使用效果最佳！</p>
+</blockquote>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

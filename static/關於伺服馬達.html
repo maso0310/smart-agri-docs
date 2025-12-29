@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於伺服馬達</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="_1">關於伺服馬達</h1>
+<h2 id="_2">前言：伺服馬達能做什麼？</h2>
+<p>伺服馬達（Servo Motor）是一種可以<strong>精確控制角度</strong>的馬達，廣泛應用於：</p>
+<ul>
+<li>機器手臂的關節</li>
+<li>遙控車的轉向機構</li>
+<li>機器人的頭部/眼睛</li>
+<li>智慧溫室的通風窗控制</li>
+<li>自動門鎖、閘門</li>
+</ul>
+<p>和一般馬達不同，伺服馬達不是「轉不停」，而是「轉到你要的角度就停住」！</p>
+<hr />
+<h2 id="_3">一、伺服馬達是什麼？</h2>
+<h3 id="_4">一句話解釋</h3>
+<blockquote>
+<p>伺服馬達是一種可以精確轉動到指定角度並保持在該位置的馬達。</p>
+</blockquote>
+<h3 id="_5">生活比喻</h3>
+<pre><code>想像伺服馬達是一個「聽話的門把」：
+
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│  你：「轉到 90 度！」                                │
+│                                                     │
+│  門把：「好的！」  ──→  轉到 90 度，然後固定住       │
+│                                                     │
+│  你：「轉到 45 度！」                                │
+│                                                     │
+│  門把：「好的！」  ──→  轉到 45 度，然後固定住       │
+│                                                     │
+│  不管外力怎麼推，它都會努力維持在你指定的角度！      │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="_6">伺服馬達外觀</h3>
+<pre><code>常見的 SG90 伺服馬達：
+
+        擺臂（Horn）
+          ╱╲
+         ╱  ╲
+    ════╪════        ← 可更換不同形狀
+        │
+   ┌────┴────┐
+   │  SERVO  │       ← 馬達本體
+   │  SG90   │          （藍色或黑色塑膠殼）
+   │         │
+   └────┬────┘
+        │
+   ═════╧═════       ← 固定耳
+        │
+    ┌───┴───┐
+    │ │ │   │        ← 三條線
+    橙 紅 棕
+    訊 電 接
+    號 源 地
+</code></pre>
+<hr />
+<h2 id="_7">二、伺服馬達的工作原理</h2>
+<h3 id="_8">內部結構</h3>
+<pre><code>伺服馬達內部組成：
+
+┌─────────────────────────────────────┐
+│                                     │
+│   ┌─────┐                           │
+│   │馬達 │──→ 提供轉動力            │
+│   └──┬──┘                           │
+│      │                              │
+│   ┌──┴──┐                           │
+│   │齒輪組│──→ 減速增加扭力          │
+│   └──┬──┘                           │
+│      │                              │
+│   ┌──┴──┐                           │
+│   │電位器│──→ 感測目前角度          │
+│   └──┬──┘                           │
+│      │                              │
+│   ┌──┴──┐                           │
+│   │控制板│──→ 比較目標與現在角度    │
+│   └─────┘      調整馬達轉動          │
+│                                     │
+└─────────────────────────────────────┘
+</code></pre>
+<h3 id="pwm">PWM 控制原理</h3>
+<pre><code>伺服馬達使用 PWM（脈衝寬度調變）訊號控制角度：
+
+週期：20ms（50Hz）
+
+0 度位置（脈衝寬度 1ms）：
+    ┌─┐                   ┌─┐
+    │ │                   │ │
+────┘ └───────────────────┘ └─────
+    1ms      19ms          1ms
+    ←──────20ms──────→
+
+90 度位置（脈衝寬度 1.5ms）：
+    ┌──┐                  ┌──┐
+    │  │                  │  │
+────┘  └──────────────────┘  └────
+   1.5ms    18.5ms        1.5ms
+
+180 度位置（脈衝寬度 2ms）：
+    ┌───┐                 ┌───┐
+    │   │                 │   │
+────┘   └─────────────────┘   └───
+    2ms      18ms          2ms
+
+脈衝寬度與角度對應：
+┌────────────┬────────────┐
+│  脈衝寬度   │    角度    │
+├────────────┼────────────┤
+│   1.0 ms   │    0°      │
+│   1.5 ms   │   90°      │
+│   2.0 ms   │   180°     │
+└────────────┴────────────┘
+</code></pre>
+<h3 id="_9">控制迴路</h3>
+<pre><code>伺服馬達控制流程：
+
+                    ┌─────────────┐
+  PWM 訊號 ────────→│   控制板    │
+  （目標角度）       │             │
+                    │  比較器     │────→ 馬達轉動
+                    │   ↑   ↓    │
+                    │   │   │    │
+                    └───┼───┼────┘
+                        │   │
+                    ┌───┴───┴────┐
+                    │   電位器    │
+                    │ （目前角度）│
+                    └────────────┘
+
+當目標角度 ≠ 目前角度 → 馬達轉動
+當目標角度 = 目前角度 → 馬達停止並保持
+</code></pre>
+<hr />
+<h2 id="_10">三、常見伺服馬達型號</h2>
+<h3 id="_11">規格比較表</h3>
+<table>
+<thead>
+<tr>
+<th>型號</th>
+<th>尺寸</th>
+<th>扭力</th>
+<th>速度</th>
+<th>電壓</th>
+<th>齒輪</th>
+<th>價格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SG90</strong></td>
+<td>迷你</td>
+<td>1.8 kg·cm</td>
+<td>0.1s/60°</td>
+<td>4.8-6V</td>
+<td>塑膠</td>
+<td>~30元</td>
+</tr>
+<tr>
+<td><strong>MG90S</strong></td>
+<td>迷你</td>
+<td>2.2 kg·cm</td>
+<td>0.08s/60°</td>
+<td>4.8-6V</td>
+<td>金屬</td>
+<td>~60元</td>
+</tr>
+<tr>
+<td><strong>MG996R</strong></td>
+<td>標準</td>
+<td>13 kg·cm</td>
+<td>0.17s/60°</td>
+<td>4.8-7.2V</td>
+<td>金屬</td>
+<td>~100元</td>
+</tr>
+<tr>
+<td><strong>DS3218</strong></td>
+<td>標準</td>
+<td>21 kg·cm</td>
+<td>0.16s/60°</td>
+<td>4.8-6.8V</td>
+<td>金屬</td>
+<td>~200元</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_12">如何選擇？</h3>
+<pre><code>選擇建議：
+
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│  初學練習 / 輕負載（如指示器、小機構）              │
+│  ────────────────────────────────────               │
+│  → SG90（便宜、輕巧、Arduino 可直接驅動）           │
+│                                                     │
+│  需要較高耐用度 / 中等負載                          │
+│  ──────────────────────────────                     │
+│  → MG90S（金屬齒輪較耐用）                          │
+│                                                     │
+│  機器人手臂 / 重負載應用                            │
+│  ────────────────────────────                       │
+│  → MG996R 或更大扭力型號                            │
+│  → 需要獨立電源供應！                               │
+│                                                     │
+│  智慧溫室通風窗控制                                 │
+│  ────────────────────                               │
+│  → SG90 足夠（控制小型模型窗戶）                    │
+│  → 實際大窗戶需用更大扭力馬達                       │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="_13">外觀尺寸比較</h3>
+<pre><code>SG90（迷你）          MG996R（標準）
+   ┌────┐               ┌──────────┐
+   │    │               │          │
+   │    │               │          │
+   └────┘               │          │
+   23x12x               │          │
+   29mm                 └──────────┘
+                        40x20x43mm
+
+SG90 重量：約 9g
+MG996R 重量：約 55g
+</code></pre>
+<hr />
+<h2 id="_14">四、接線方式</h2>
+<h3 id="sg90">SG90 線材顏色</h3>
+<pre><code>不同廠牌的線材顏色可能不同：
+
+標準配色：
+┌─────────────────────────────────────┐
+│  橙/黃色 ─── 訊號線（PWM）          │
+│  紅色   ─── 電源正極（VCC, 5V）     │
+│  棕/黑色 ─── 電源負極（GND）        │
+└─────────────────────────────────────┘
+
+其他常見配色：
+┌─────────────────────────────────────┐
+│  白色   ─── 訊號線                  │
+│  紅色   ─── VCC                     │
+│  黑色   ─── GND                     │
+└─────────────────────────────────────┘
+</code></pre>
+<h3 id="arduino-sg90">Arduino 接線（單顆 SG90）</h3>
+<pre><code>Arduino 與 SG90 接線：
+
+    Arduino UNO              SG90 伺服馬達
+    ┌─────────┐              ┌─────────┐
+    │         │              │  ┌───┐  │
+    │      5V ├──────────────┤──│紅 │  │
+    │         │              │  │   │  │
+    │      D9 ├──────────────┤──│橙 │  │ ← PWM 腳位
+    │         │              │  │   │  │
+    │     GND ├──────────────┤──│棕 │  │
+    │         │              │  └───┘  │
+    └─────────┘              └─────────┘
+
+    ⚠️ SG90 可直接由 Arduino 5V 供電
+       但同時接多顆或使用大型馬達時需外接電源
+</code></pre>
+<h3 id="_15">多顆伺服馬達（需外接電源）</h3>
+<pre><code>多顆伺服馬達接線：
+
+    Arduino              外接電源 5-6V         伺服馬達
+    ┌───────┐           ┌───────────┐        ┌────────┐
+    │       │           │    (+)────┼────────┤ VCC    │
+    │    D9 ├───────────┼───────────┼────────┤ 訊號1  │
+    │   D10 ├───────────┼───────────┼───┐    └────────┘
+    │   D11 ├───────────┼───────────┼─┐ │    ┌────────┐
+    │       │           │           │ │ └────┤ 訊號2  │
+    │   GND ├───────────┤    (-)────┼─┼──────┤ GND    │
+    │       │           └───────────┘ │      └────────┘
+    └───────┘                  │      │      ┌────────┐
+         │                     │      └──────┤ 訊號3  │
+         └─────────────────────┘             └────────┘
+                共地！
+
+    ⚠️ 重要：Arduino GND 必須與外接電源 GND 連接（共地）
+</code></pre>
+<h3 id="_16">電源需求計算</h3>
+<pre><code>電源計算範例：
+
+SG90 規格：
+- 空載電流：約 100mA
+- 負載電流：約 300-400mA
+- 堵轉電流：約 600-700mA
+
+Arduino 5V 腳位最大輸出：約 500mA
+
+計算：
+- 1 顆 SG90：300mA → Arduino 可直接供電 ✓
+- 2 顆 SG90：600mA → 超過限制，需外接電源 ✗
+- 3 顆以上：絕對需要外接電源 ✗
+
+建議：
+- 單顆 SG90 輕負載 → 可用 Arduino 5V
+- 其他情況 → 使用 5V 2A 以上的外接電源
+</code></pre>
+<hr />
+<h2 id="arduino-servo">五、Arduino Servo 程式庫</h2>
+<h3 id="_17">程式庫介紹</h3>
+<pre><code>Arduino 內建 Servo 程式庫：
+
+優點：
+- 不需額外安裝，Arduino IDE 內建
+- 使用簡單，一行程式碼設定角度
+- 自動處理 PWM 時序
+
+限制：
+- 最多同時控制 12 顆伺服馬達（Uno）
+- 使用時會停用 D9、D10 的 PWM 功能（analogWrite）
+</code></pre>
+<h3 id="_18">基本用法</h3>
+<pre><code class="language-cpp">#include &lt;Servo.h&gt;
+
+Servo myServo;  // 建立 Servo 物件
+
+void setup() {
+  myServo.attach(9);  // 連接到 D9 腳位
+}
+
+void loop() {
+  myServo.write(0);    // 轉到 0 度
+  delay(1000);
+
+  myServo.write(90);   // 轉到 90 度
+  delay(1000);
+
+  myServo.write(180);  // 轉到 180 度
+  delay(1000);
+}
+</code></pre>
+<h3 id="servo">Servo 程式庫函數</h3>
+<table>
+<thead>
+<tr>
+<th>函數</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>attach(pin)</code></td>
+<td>連接伺服馬達到指定腳位</td>
+<td><code>servo.attach(9);</code></td>
+</tr>
+<tr>
+<td><code>attach(pin, min, max)</code></td>
+<td>連接並設定脈衝範圍（微秒）</td>
+<td><code>servo.attach(9, 544, 2400);</code></td>
+</tr>
+<tr>
+<td><code>write(angle)</code></td>
+<td>設定角度（0-180）</td>
+<td><code>servo.write(90);</code></td>
+</tr>
+<tr>
+<td><code>writeMicroseconds(us)</code></td>
+<td>直接設定脈衝寬度（微秒）</td>
+<td><code>servo.writeMicroseconds(1500);</code></td>
+</tr>
+<tr>
+<td><code>read()</code></td>
+<td>讀取目前角度設定值</td>
+<td><code>int pos = servo.read();</code></td>
+</tr>
+<tr>
+<td><code>attached()</code></td>
+<td>檢查是否已連接</td>
+<td><code>if(servo.attached())</code></td>
+</tr>
+<tr>
+<td><code>detach()</code></td>
+<td>斷開連接（釋放腳位）</td>
+<td><code>servo.detach();</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="arduino">六、Arduino 程式範例</h2>
+<h3 id="1">範例 1：基本角度控制</h3>
+<pre><code class="language-cpp">/*
+ * 伺服馬達基本控制
+ * 依序轉動到 0°、90°、180°
+ */
+
+#include &lt;Servo.h&gt;
+
+Servo myServo;
+const int SERVO_PIN = 9;
+
+void setup() {
+  myServo.attach(SERVO_PIN);
+  Serial.begin(9600);
+  Serial.println(&quot;伺服馬達測試&quot;);
+}
+
+void loop() {
+  Serial.println(&quot;轉到 0 度&quot;);
+  myServo.write(0);
+  delay(1000);
+
+  Serial.println(&quot;轉到 90 度&quot;);
+  myServo.write(90);
+  delay(1000);
+
+  Serial.println(&quot;轉到 180 度&quot;);
+  myServo.write(180);
+  delay(1000);
+}
+</code></pre>
+<h3 id="2">範例 2：平滑轉動（掃描）</h3>
+<pre><code class="language-cpp">/*
+ * 伺服馬達平滑掃描
+ * 從 0 度慢慢轉到 180 度，再轉回來
+ */
+
+#include &lt;Servo.h&gt;
+
+Servo myServo;
+const int SERVO_PIN = 9;
+
+void setup() {
+  myServo.attach(SERVO_PIN);
+}
+
+void loop() {
+  // 從 0 度轉到 180 度
+  for (int angle = 0; angle &lt;= 180; angle++) {
+    myServo.write(angle);
+    delay(15);  // 調整此值改變轉速
+  }
+
+  // 從 180 度轉回 0 度
+  for (int angle = 180; angle &gt;= 0; angle--) {
+    myServo.write(angle);
+    delay(15);
+  }
+}
+</code></pre>
+<h3 id="3">範例 3：電位器控制角度</h3>
+<pre><code class="language-cpp">/*
+ * 使用電位器控制伺服馬達角度
+ * 旋轉電位器 → 伺服馬達跟著轉
+ */
+
+#include &lt;Servo.h&gt;
+
+Servo myServo;
+const int SERVO_PIN = 9;
+const int POT_PIN = A0;
+
+void setup() {
+  myServo.attach(SERVO_PIN);
+  Serial.begin(9600);
+}
+
+void loop() {
+  // 讀取電位器值（0-1023）
+  int potValue = analogRead(POT_PIN);
+
+  // 對應到角度（0-180）
+  int angle = map(potValue, 0, 1023, 0, 180);
+
+  // 設定伺服馬達角度
+  myServo.write(angle);
+
+  // 顯示數值
+  Serial.print(&quot;電位器：&quot;);
+  Serial.print(potValue);
+  Serial.print(&quot;  角度：&quot;);
+  Serial.println(angle);
+
+  delay(20);
+}
+</code></pre>
+<h3 id="4">範例 4：按鈕控制開關門</h3>
+<pre><code class="language-cpp">/*
+ * 按鈕控制伺服馬達開關
+ * 模擬門或閘門的開關動作
+ */
+
+#include &lt;Servo.h&gt;
+
+Servo doorServo;
+const int SERVO_PIN = 9;
+const int BUTTON_PIN = 2;
+
+const int ANGLE_CLOSED = 0;    // 關閉角度
+const int ANGLE_OPEN = 90;     // 開啟角度
+
+bool doorOpen = false;
+bool lastButtonState = HIGH;
+
+void setup() {
+  doorServo.attach(SERVO_PIN);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+
+  doorServo.write(ANGLE_CLOSED);  // 初始為關閉
+  Serial.begin(9600);
+  Serial.println(&quot;門控制系統&quot;);
+}
+
+void loop() {
+  bool currentButtonState = digitalRead(BUTTON_PIN);
+
+  // 偵測按鈕按下
+  if (lastButtonState == HIGH &amp;&amp; currentButtonState == LOW) {
+    delay(50);  // 消除彈跳
+
+    doorOpen = !doorOpen;  // 切換狀態
+
+    if (doorOpen) {
+      // 開門（平滑轉動）
+      Serial.println(&quot;開門中...&quot;);
+      for (int a = ANGLE_CLOSED; a &lt;= ANGLE_OPEN; a++) {
+        doorServo.write(a);
+        delay(15);
+      }
+      Serial.println(&quot;門已開啟&quot;);
+    } else {
+      // 關門（平滑轉動）
+      Serial.println(&quot;關門中...&quot;);
+      for (int a = ANGLE_OPEN; a &gt;= ANGLE_CLOSED; a--) {
+        doorServo.write(a);
+        delay(15);
+      }
+      Serial.println(&quot;門已關閉&quot;);
+    }
+  }
+
+  lastButtonState = currentButtonState;
+}
+</code></pre>
+<h3 id="5">範例 5：紅外線遙控伺服馬達</h3>
+<pre><code class="language-cpp">/*
+ * 使用紅外線遙控器控制伺服馬達
+ * 按 + 增加角度，按 - 減少角度
+ */
+
+#include &lt;Servo.h&gt;
+#include &lt;IRremote.h&gt;
+
+Servo myServo;
+const int SERVO_PIN = 9;
+const int IR_PIN = 11;
+
+int currentAngle = 90;  // 初始角度
+const int STEP = 10;    // 每次增減角度
+
+// 定義遙控器按鍵碼（需根據你的遙控器調整）
+#define IR_BUTTON_PLUS  0xFFA857   // + 按鈕
+#define IR_BUTTON_MINUS 0xFFE01F   // - 按鈕
+#define IR_BUTTON_OK    0xFF02FD   // OK 按鈕（回中心）
+
+void setup() {
+  myServo.attach(SERVO_PIN);
+  myServo.write(currentAngle);
+
+  IrReceiver.begin(IR_PIN, ENABLE_LED_FEEDBACK);
+
+  Serial.begin(9600);
+  Serial.println(&quot;紅外線遙控伺服馬達&quot;);
+  Serial.println(&quot;+ : 增加角度&quot;);
+  Serial.println(&quot;- : 減少角度&quot;);
+  Serial.println(&quot;OK: 回到 90 度&quot;);
+}
+
+void loop() {
+  if (IrReceiver.decode()) {
+    uint32_t code = IrReceiver.decodedIRData.decodedRawData;
+
+    switch (code) {
+      case IR_BUTTON_PLUS:
+        currentAngle = min(currentAngle + STEP, 180);
+        Serial.print(&quot;增加角度：&quot;);
+        break;
+
+      case IR_BUTTON_MINUS:
+        currentAngle = max(currentAngle - STEP, 0);
+        Serial.print(&quot;減少角度：&quot;);
+        break;
+
+      case IR_BUTTON_OK:
+        currentAngle = 90;
+        Serial.print(&quot;回到中心：&quot;);
+        break;
+    }
+
+    myServo.write(currentAngle);
+    Serial.println(currentAngle);
+
+    IrReceiver.resume();
+  }
+}
+</code></pre>
+<h3 id="6">範例 6：溫度控制通風窗</h3>
+<pre><code class="language-cpp">/*
+ * 智慧溫室通風窗控制
+ * 根據溫度自動調整通風窗開度
+ */
+
+#include &lt;Servo.h&gt;
+#include &lt;DHT.h&gt;
+
+#define DHT_PIN 2
+#define DHT_TYPE DHT11
+#define SERVO_PIN 9
+
+DHT dht(DHT_PIN, DHT_TYPE);
+Servo ventServo;
+
+// 溫度與通風窗開度對應
+// 25°C 以下：關閉（0°）
+// 25-28°C：微開（45°）
+// 28-32°C：半開（90°）
+// 32°C 以上：全開（180°）
+
+const float TEMP_LOW = 25.0;
+const float TEMP_MID = 28.0;
+const float TEMP_HIGH = 32.0;
+
+int currentAngle = 0;
+int targetAngle = 0;
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+  ventServo.attach(SERVO_PIN);
+  ventServo.write(0);
+
+  Serial.println(&quot;=== 智慧通風窗控制 ===&quot;);
+}
+
+void loop() {
+  float temperature = dht.readTemperature();
+
+  if (isnan(temperature)) {
+    Serial.println(&quot;感測器錯誤！&quot;);
+    delay(2000);
+    return;
+  }
+
+  // 根據溫度決定目標角度
+  if (temperature &lt; TEMP_LOW) {
+    targetAngle = 0;    // 關閉
+  } else if (temperature &lt; TEMP_MID) {
+    targetAngle = 45;   // 微開
+  } else if (temperature &lt; TEMP_HIGH) {
+    targetAngle = 90;   // 半開
+  } else {
+    targetAngle = 180;  // 全開
+  }
+
+  // 平滑轉動到目標角度
+  if (currentAngle != targetAngle) {
+    moveServoSmooth(currentAngle, targetAngle);
+    currentAngle = targetAngle;
+  }
+
+  // 顯示狀態
+  Serial.print(&quot;溫度：&quot;);
+  Serial.print(temperature, 1);
+  Serial.print(&quot;°C  通風窗：&quot;);
+  Serial.print(currentAngle);
+  Serial.print(&quot;°（&quot;);
+  if (targetAngle == 0) Serial.print(&quot;關閉&quot;);
+  else if (targetAngle == 45) Serial.print(&quot;微開&quot;);
+  else if (targetAngle == 90) Serial.print(&quot;半開&quot;);
+  else Serial.print(&quot;全開&quot;);
+  Serial.println(&quot;）&quot;);
+
+  delay(5000);  // 每 5 秒檢查一次
+}
+
+// 平滑轉動函數
+void moveServoSmooth(int from, int to) {
+  if (from &lt; to) {
+    for (int a = from; a &lt;= to; a++) {
+      ventServo.write(a);
+      delay(20);
+    }
+  } else {
+    for (int a = from; a &gt;= to; a--) {
+      ventServo.write(a);
+      delay(20);
+    }
+  }
+}
+</code></pre>
+<h3 id="7">範例 7：多顆伺服馬達控制</h3>
+<pre><code class="language-cpp">/*
+ * 控制多顆伺服馬達
+ * 例如：機器手臂的多個關節
+ */
+
+#include &lt;Servo.h&gt;
+
+// 建立多個 Servo 物件
+Servo servo1;  // 底座旋轉
+Servo servo2;  // 手臂上下
+Servo servo3;  // 夾爪開合
+
+const int SERVO1_PIN = 9;
+const int SERVO2_PIN = 10;
+const int SERVO3_PIN = 11;
+
+void setup() {
+  servo1.attach(SERVO1_PIN);
+  servo2.attach(SERVO2_PIN);
+  servo3.attach(SERVO3_PIN);
+
+  // 初始位置
+  servo1.write(90);   // 底座朝前
+  servo2.write(45);   // 手臂抬起
+  servo3.write(0);    // 夾爪張開
+
+  Serial.begin(9600);
+  Serial.println(&quot;多軸伺服控制&quot;);
+}
+
+void loop() {
+  Serial.println(&quot;動作：向左轉並夾取&quot;);
+
+  // 底座向左轉
+  for (int a = 90; a &lt;= 135; a++) {
+    servo1.write(a);
+    delay(20);
+  }
+
+  // 手臂下降
+  for (int a = 45; a &gt;= 20; a--) {
+    servo2.write(a);
+    delay(20);
+  }
+
+  // 夾爪閉合
+  for (int a = 0; a &lt;= 60; a++) {
+    servo3.write(a);
+    delay(20);
+  }
+
+  delay(2000);
+
+  Serial.println(&quot;動作：抬起並歸位&quot;);
+
+  // 手臂抬起
+  for (int a = 20; a &lt;= 45; a++) {
+    servo2.write(a);
+    delay(20);
+  }
+
+  // 底座歸位
+  for (int a = 135; a &gt;= 90; a--) {
+    servo1.write(a);
+    delay(20);
+  }
+
+  // 夾爪張開
+  for (int a = 60; a &gt;= 0; a--) {
+    servo3.write(a);
+    delay(20);
+  }
+
+  delay(2000);
+}
+</code></pre>
+<hr />
+<h2 id="_19">七、進階技巧</h2>
+<h3 id="writemicroseconds">使用 writeMicroseconds() 精確控制</h3>
+<pre><code class="language-cpp">/*
+ * 使用微秒精確控制
+ * 比 write() 更精確（write 只能整數度）
+ */
+
+#include &lt;Servo.h&gt;
+
+Servo myServo;
+
+void setup() {
+  myServo.attach(9);
+}
+
+void loop() {
+  // 標準脈衝範圍：544-2400 微秒
+  // 對應角度：0-180 度
+
+  myServo.writeMicroseconds(544);   // 約 0 度
+  delay(1000);
+
+  myServo.writeMicroseconds(1472);  // 約 90 度
+  delay(1000);
+
+  myServo.writeMicroseconds(2400);  // 約 180 度
+  delay(1000);
+
+  // 可以控制到小數點角度
+  // 例如 45.5 度 ≈ 1008 微秒
+  myServo.writeMicroseconds(1008);
+  delay(1000);
+}
+</code></pre>
+<h3 id="_20">校正伺服馬達範圍</h3>
+<pre><code class="language-cpp">/*
+ * 有些伺服馬達的實際角度範圍不是標準的 0-180
+ * 可以使用 attach() 的額外參數來校正
+ */
+
+#include &lt;Servo.h&gt;
+
+Servo myServo;
+
+void setup() {
+  // 預設值：attach(pin, 544, 2400)
+  // 如果你的伺服馬達範圍不對，可以調整
+
+  // 例如：實測 0 度時需要 600μs，180 度時需要 2300μs
+  myServo.attach(9, 600, 2300);
+
+  // 這樣 write(0) 會輸出 600μs
+  // write(180) 會輸出 2300μs
+}
+
+void loop() {
+  myServo.write(0);
+  delay(1000);
+  myServo.write(180);
+  delay(1000);
+}
+</code></pre>
+<h3 id="_21">避免抖動的技巧</h3>
+<pre><code class="language-cpp">/*
+ * 伺服馬達有時會在靜止時抖動
+ * 可以用 detach() 來停止訊號
+ */
+
+#include &lt;Servo.h&gt;
+
+Servo myServo;
+const int SERVO_PIN = 9;
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  // 需要動作時才 attach
+  myServo.attach(SERVO_PIN);
+
+  myServo.write(90);
+  delay(500);  // 等待到達位置
+
+  // 到達後 detach 可減少抖動和耗電
+  myServo.detach();
+
+  Serial.println(&quot;已到達 90 度，停止訊號&quot;);
+  delay(3000);
+
+  // 再次動作
+  myServo.attach(SERVO_PIN);
+  myServo.write(0);
+  delay(500);
+  myServo.detach();
+
+  Serial.println(&quot;已到達 0 度，停止訊號&quot;);
+  delay(3000);
+}
+</code></pre>
+<hr />
+<h2 id="_22">八、常見問題排解</h2>
+<h3 id="1_1">問題 1：伺服馬達不動</h3>
+<pre><code>檢查步驟：
+
+□ 1. 電源有接嗎？（VCC 和 GND）
+□ 2. 訊號線有接到 PWM 腳位嗎？
+□ 3. 程式有呼叫 attach() 嗎？
+□ 4. 有足夠電流嗎？（多顆馬達需外接電源）
+□ 5. 馬達是否損壞？（聽聽看有沒有聲音）
+□ 6. 嘗試用 writeMicroseconds(1500) 測試
+</code></pre>
+<h3 id="2_1">問題 2：伺服馬達抖動</h3>
+<pre><code>可能原因與解決方法：
+
+1. 電源不穩定
+   → 加電容穩壓（100μF）
+   → 使用外接穩定電源
+
+2. PWM 訊號干擾
+   → 訊號線不要太長
+   → 遠離馬達和電源線
+
+3. 機械負載過重
+   → 減輕負載或使用更大扭力馬達
+
+4. 程式不斷發送 write()
+   → 只在需要改變角度時發送
+   → 到位後用 detach() 停止訊號
+
+5. 馬達品質問題
+   → 更換品質較好的馬達
+</code></pre>
+<h3 id="3_1">問題 3：角度不準確</h3>
+<pre><code>可能原因與解決方法：
+
+1. 伺服馬達個體差異
+   → 使用 attach(pin, min, max) 校正範圍
+   → 實測後調整脈衝寬度參數
+
+2. 機械間隙（齒輪磨損）
+   → 正常現象，塑膠齒輪較明顯
+   → 高精度需求請用金屬齒輪款
+
+3. 超出可動範圍
+   → 確認馬達規格（有些只能 0-120°）
+   → 不要超出實際可動範圍
+
+4. 負載過重導致無法到位
+   → 減輕負載或更換大扭力馬達
+</code></pre>
+<h3 id="4arduino">問題 4：Arduino 重啟或不穩定</h3>
+<pre><code>原因：伺服馬達瞬間電流過大
+
+解決方法：
+
+1. 使用外接電源供應伺服馬達
+   ┌──────────┐
+   │外接電源5V ├──→ 伺服馬達 VCC
+   │    GND   ├──→ 伺服馬達 GND ←─┬─ Arduino GND
+   └──────────┘                   │
+                                  共地！
+
+2. 在電源端加大電容（470μF~1000μF）
+
+3. 避免多顆馬達同時啟動
+   → 程式中加入延遲，逐一啟動
+</code></pre>
+<hr />
+<h2 id="360">九、360 度連續旋轉伺服馬達</h2>
+<h3 id="_23">與標準伺服馬達的差異</h3>
+<pre><code>┌──────────────────────┬───────────────────────┐
+│    標準伺服馬達       │  360度連續旋轉伺服     │
+├──────────────────────┼───────────────────────┤
+│ 控制角度（0-180°）   │ 控制轉速和方向         │
+│ 轉到位置後停止       │ 持續旋轉               │
+│ 用於精確定位         │ 用於輪子、風扇等       │
+└──────────────────────┴───────────────────────┘
+</code></pre>
+<h3 id="360_1">360 度伺服的控制方式</h3>
+<pre><code class="language-cpp">/*
+ * 360 度連續旋轉伺服馬達控制
+ * write(90) = 停止
+ * write(0) = 全速順時針
+ * write(180) = 全速逆時針
+ */
+
+#include &lt;Servo.h&gt;
+
+Servo contServo;
+
+void setup() {
+  contServo.attach(9);
+  Serial.begin(9600);
+}
+
+void loop() {
+  Serial.println(&quot;順時針旋轉&quot;);
+  contServo.write(0);     // 全速順時針
+  delay(2000);
+
+  Serial.println(&quot;停止&quot;);
+  contServo.write(90);    // 停止
+  delay(1000);
+
+  Serial.println(&quot;逆時針旋轉&quot;);
+  contServo.write(180);   // 全速逆時針
+  delay(2000);
+
+  Serial.println(&quot;停止&quot;);
+  contServo.write(90);    // 停止
+  delay(1000);
+
+  Serial.println(&quot;慢速順時針&quot;);
+  contServo.write(80);    // 慢速順時針
+  delay(2000);
+
+  contServo.write(90);    // 停止
+  delay(1000);
+}
+</code></pre>
+<hr />
+<h2 id="_24">十、接線速查表</h2>
+<h3 id="sg90_1">SG90 接線</h3>
+<table>
+<thead>
+<tr>
+<th>SG90 線材</th>
+<th>顏色</th>
+<th>接到 Arduino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VCC</td>
+<td>紅色</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>棕色/黑色</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>Signal</td>
+<td>橙色/黃色/白色</td>
+<td>D9（或其他 PWM 腳位）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="arduino-uno-pwm">Arduino Uno PWM 腳位</h3>
+<pre><code>Arduino Uno 可用於伺服馬達的腳位：
+
+建議使用：D9、D10（Servo 程式庫優先使用）
+
+其他可用：D3、D5、D6、D11
+
+注意：使用 Servo 程式庫後，D9、D10 的 analogWrite() 會失效
+</code></pre>
+<hr />
+<h2 id="_25">程式速查表</h2>
+<pre><code class="language-cpp">#include &lt;Servo.h&gt;
+
+Servo myServo;           // 建立物件
+
+// 基本操作
+myServo.attach(9);       // 連接到 D9
+myServo.write(90);       // 轉到 90 度
+myServo.read();          // 讀取目前角度
+myServo.detach();        // 斷開連接
+
+// 進階操作
+myServo.attach(9, 600, 2400);      // 指定脈衝範圍
+myServo.writeMicroseconds(1500);   // 直接指定脈衝寬度
+myServo.attached();                 // 檢查是否連接
+
+// 常用數值
+// 0 度 ≈ 544μs（預設最小值）
+// 90 度 ≈ 1472μs
+// 180 度 ≈ 2400μs（預設最大值）
+</code></pre>
+<hr />
+<h2 id="_26">延伸學習</h2>
+<ul>
+<li><strong>關於步進馬達.md</strong> - 另一種精確控制馬達的選擇</li>
+<li><strong>關於紅外線遙控.md</strong> - 用遙控器控制伺服馬達</li>
+<li><strong>關於電源供應.md</strong> - 多顆馬達的電源規劃</li>
+<li><strong>關於繼電器模組.md</strong> - 控制更大型的馬達</li>
+</ul>
+<hr />
+<blockquote>
+<p>伺服馬達是實現機械動作控制的入門首選，掌握它就能讓你的專案「動起來」！</p>
+</blockquote>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

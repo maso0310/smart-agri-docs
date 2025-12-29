@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於Arduino程式常用語法</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="arduino">Arduino 程式常用語法</h1>
+<h2 id="_1">程式基本結構</h2>
+<p>每個 Arduino 程式都有兩個必要的函數：</p>
+<pre><code class="language-cpp">void setup() {
+  // 初始化程式碼
+  // 只會執行一次（開機時）
+}
+
+void loop() {
+  // 主程式碼
+  // 會不斷重複執行
+}
+</code></pre>
+<h3 id="_2">執行流程</h3>
+<pre><code>開機 → setup() 執行一次 → loop() 不斷重複
+                              ↑________|
+</code></pre>
+<h3 id="_3">範例</h3>
+<pre><code class="language-cpp">void setup() {
+  pinMode(13, OUTPUT);     // 設定 pin 13 為輸出
+  Serial.begin(9600);      // 初始化序列埠
+}
+
+void loop() {
+  digitalWrite(13, HIGH);  // LED 亮
+  delay(1000);             // 等 1 秒
+  digitalWrite(13, LOW);   // LED 滅
+  delay(1000);             // 等 1 秒
+}
+</code></pre>
+<hr />
+<h2 id="_4">變數類型</h2>
+<h3 id="_5">常用變數類型一覽</h3>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>說明</th>
+<th>範圍</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>int</code></td>
+<td>整數</td>
+<td>-32,768 ~ 32,767</td>
+<td><code>int count = 10;</code></td>
+</tr>
+<tr>
+<td><code>long</code></td>
+<td>長整數</td>
+<td>±21 億</td>
+<td><code>long bigNum = 1000000;</code></td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td>浮點數（小數）</td>
+<td>±3.4e38</td>
+<td><code>float temp = 25.5;</code></td>
+</tr>
+<tr>
+<td><code>double</code></td>
+<td>雙精度浮點</td>
+<td>同 float (Arduino)</td>
+<td><code>double pi = 3.14159;</code></td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td>布林值</td>
+<td>true / false</td>
+<td><code>bool isOn = true;</code></td>
+</tr>
+<tr>
+<td><code>char</code></td>
+<td>單一字元</td>
+<td>-128 ~ 127</td>
+<td><code>char letter = 'A';</code></td>
+</tr>
+<tr>
+<td><code>String</code></td>
+<td>字串</td>
+<td>-</td>
+<td><code>String name = "Arduino";</code></td>
+</tr>
+<tr>
+<td><code>byte</code></td>
+<td>位元組</td>
+<td>0 ~ 255</td>
+<td><code>byte data = 255;</code></td>
+</tr>
+<tr>
+<td><code>unsigned int</code></td>
+<td>無號整數</td>
+<td>0 ~ 65,535</td>
+<td><code>unsigned int pos = 100;</code></td>
+</tr>
+<tr>
+<td><code>unsigned long</code></td>
+<td>無號長整數</td>
+<td>0 ~ 42 億</td>
+<td><code>unsigned long ms = millis();</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_6">變數宣告</h3>
+<pre><code class="language-cpp">// 基本宣告
+int count;              // 宣告但不初始化
+int count = 0;          // 宣告並初始化
+
+// 常數（不可修改）
+const int LED_PIN = 13;
+#define BUTTON_PIN 2    // 另一種定義常數的方式
+
+// 全域變數 vs 區域變數
+int globalVar = 10;     // 全域：整個程式都能用
+
+void setup() {
+  int localVar = 5;     // 區域：只在 setup() 內有效
+}
+</code></pre>
+<h3 id="_7">類型選擇建議</h3>
+<table>
+<thead>
+<tr>
+<th>用途</th>
+<th>建議類型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>腳位編號</td>
+<td><code>int</code> 或 <code>const int</code></td>
+</tr>
+<tr>
+<td>計數器</td>
+<td><code>int</code> 或 <code>unsigned int</code></td>
+</tr>
+<tr>
+<td>時間 (millis)</td>
+<td><code>unsigned long</code></td>
+</tr>
+<tr>
+<td>溫度、濕度</td>
+<td><code>float</code></td>
+</tr>
+<tr>
+<td>開關狀態</td>
+<td><code>bool</code></td>
+</tr>
+<tr>
+<td>感測器原始值</td>
+<td><code>int</code> (0-1023)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="digital-io">數位輸入輸出 (Digital I/O)</h2>
+<h3 id="pinmode-">pinMode() - 設定腳位模式</h3>
+<pre><code class="language-cpp">pinMode(pin, mode);
+
+// mode 可以是：
+// INPUT    - 輸入模式
+// OUTPUT   - 輸出模式
+// INPUT_PULLUP - 輸入模式（內建上拉電阻）
+</code></pre>
+<p><strong>範例</strong>：</p>
+<pre><code class="language-cpp">void setup() {
+  pinMode(13, OUTPUT);       // LED 腳位設為輸出
+  pinMode(2, INPUT);         // 按鈕腳位設為輸入
+  pinMode(3, INPUT_PULLUP);  // 按鈕使用內建上拉電阻
+}
+</code></pre>
+<h3 id="digitalwrite-">digitalWrite() - 數位輸出</h3>
+<pre><code class="language-cpp">digitalWrite(pin, value);
+
+// value 可以是：
+// HIGH - 高電位 (5V)
+// LOW  - 低電位 (0V)
+</code></pre>
+<p><strong>範例</strong>：</p>
+<pre><code class="language-cpp">digitalWrite(13, HIGH);  // pin 13 輸出 5V（LED 亮）
+digitalWrite(13, LOW);   // pin 13 輸出 0V（LED 滅）
+</code></pre>
+<h3 id="digitalread-">digitalRead() - 數位輸入</h3>
+<pre><code class="language-cpp">int value = digitalRead(pin);
+
+// 回傳值：
+// HIGH (1) - 高電位
+// LOW  (0) - 低電位
+</code></pre>
+<p><strong>範例</strong>：</p>
+<pre><code class="language-cpp">int buttonState = digitalRead(2);
+
+if (buttonState == HIGH) {
+  Serial.println(&quot;按鈕被按下&quot;);
+}
+</code></pre>
+<hr />
+<h2 id="analog-io">類比輸入輸出 (Analog I/O)</h2>
+<h3 id="analogread-">analogRead() - 類比輸入</h3>
+<p>讀取類比腳位 (A0-A5) 的電壓值。</p>
+<pre><code class="language-cpp">int value = analogRead(pin);
+
+// 回傳值：0 ~ 1023
+// 對應電壓：0V ~ 5V
+</code></pre>
+<p><strong>範例</strong>：</p>
+<pre><code class="language-cpp">int lightValue = analogRead(A0);  // 讀取光敏電阻
+int voltage = map(lightValue, 0, 1023, 0, 5000);  // 轉換為 mV
+</code></pre>
+<h3 id="analogwrite-pwm">analogWrite() - PWM 輸出</h3>
+<p>輸出 PWM 訊號（模擬類比輸出）。只能用在有 <code>~</code> 標記的腳位 (3, 5, 6, 9, 10, 11)。</p>
+<pre><code class="language-cpp">analogWrite(pin, value);
+
+// value：0 ~ 255
+// 0   = 0% duty cycle (全暗)
+// 127 = 50% duty cycle (半亮)
+// 255 = 100% duty cycle (全亮)
+</code></pre>
+<p><strong>範例</strong>：</p>
+<pre><code class="language-cpp">// LED 漸亮
+for (int brightness = 0; brightness &lt;= 255; brightness++) {
+  analogWrite(9, brightness);
+  delay(10);
+}
+</code></pre>
+<hr />
+<h2 id="_8">控制結構</h2>
+<h3 id="if-else-">if / else - 條件判斷</h3>
+<pre><code class="language-cpp">if (條件) {
+  // 條件成立時執行
+}
+
+if (條件) {
+  // 條件成立
+} else {
+  // 條件不成立
+}
+
+if (條件1) {
+  // 條件1 成立
+} else if (條件2) {
+  // 條件2 成立
+} else {
+  // 都不成立
+}
+</code></pre>
+<p><strong>範例</strong>：</p>
+<pre><code class="language-cpp">int temp = 30;
+
+if (temp &gt; 35) {
+  Serial.println(&quot;太熱了！&quot;);
+  digitalWrite(FAN_PIN, HIGH);
+} else if (temp &lt; 20) {
+  Serial.println(&quot;太冷了！&quot;);
+} else {
+  Serial.println(&quot;溫度正常&quot;);
+}
+</code></pre>
+<h3 id="_9">比較運算子</h3>
+<table>
+<thead>
+<tr>
+<th>運算子</th>
+<th>意義</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>==</code></td>
+<td>等於</td>
+<td><code>if (a == b)</code></td>
+</tr>
+<tr>
+<td><code>!=</code></td>
+<td>不等於</td>
+<td><code>if (a != b)</code></td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td>大於</td>
+<td><code>if (a &gt; b)</code></td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td>小於</td>
+<td><code>if (a &lt; b)</code></td>
+</tr>
+<tr>
+<td><code>&gt;=</code></td>
+<td>大於等於</td>
+<td><code>if (a &gt;= b)</code></td>
+</tr>
+<tr>
+<td><code>&lt;=</code></td>
+<td>小於等於</td>
+<td><code>if (a &lt;= b)</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">邏輯運算子</h3>
+<table>
+<thead>
+<tr>
+<th>運算子</th>
+<th>意義</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&amp;&amp;</code></td>
+<td>AND（且）</td>
+<td><code>if (a &gt; 0 &amp;&amp; b &gt; 0)</code></td>
+</tr>
+<tr>
+<td><code>\|\|</code></td>
+<td>OR（或）</td>
+<td><code>if (a &gt; 0 \|\| b &gt; 0)</code></td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td>NOT（非）</td>
+<td><code>if (!isReady)</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="for-">for 迴圈 - 重複執行固定次數</h3>
+<pre><code class="language-cpp">for (初始值; 條件; 遞增) {
+  // 重複執行的程式碼
+}
+</code></pre>
+<p><strong>範例</strong>：</p>
+<pre><code class="language-cpp">// 數 0 到 9
+for (int i = 0; i &lt; 10; i++) {
+  Serial.println(i);
+}
+
+// LED 閃爍 5 次
+for (int i = 0; i &lt; 5; i++) {
+  digitalWrite(13, HIGH);
+  delay(200);
+  digitalWrite(13, LOW);
+  delay(200);
+}
+</code></pre>
+<h3 id="while-">while 迴圈 - 條件成立時重複執行</h3>
+<pre><code class="language-cpp">while (條件) {
+  // 條件成立時重複執行
+}
+</code></pre>
+<p><strong>範例</strong>：</p>
+<pre><code class="language-cpp">// 等待按鈕被按下
+while (digitalRead(BUTTON_PIN) == LOW) {
+  // 什麼都不做，持續等待
+}
+Serial.println(&quot;按鈕被按下了！&quot;);
+</code></pre>
+<h3 id="switch-case-">switch / case - 多重條件判斷</h3>
+<pre><code class="language-cpp">switch (變數) {
+  case 值1:
+    // 變數 == 值1 時執行
+    break;
+  case 值2:
+    // 變數 == 值2 時執行
+    break;
+  default:
+    // 都不符合時執行
+    break;
+}
+</code></pre>
+<p><strong>範例</strong>：</p>
+<pre><code class="language-cpp">int mode = cyclic;
+
+switch (mode) {
+  case 0:
+    Serial.println(&quot;模式 0：待機&quot;);
+    break;
+  case 1:
+    Serial.println(&quot;模式 1：運轉&quot;);
+    break;
+  case 2:
+    Serial.println(&quot;模式 2：停止&quot;);
+    break;
+  default:
+    Serial.println(&quot;未知模式&quot;);
+    break;
+}
+</code></pre>
+<hr />
+<h2 id="_11">函數定義</h2>
+<h3 id="_12">基本語法</h3>
+<pre><code class="language-cpp">回傳類型 函數名稱(參數) {
+  // 函數內容
+  return 回傳值;  // 如果有回傳值
+}
+</code></pre>
+<h3 id="_13">無回傳值的函數</h3>
+<pre><code class="language-cpp">void blinkLED(int times) {
+  for (int i = 0; i &lt; times; i++) {
+    digitalWrite(13, HIGH);
+    delay(200);
+    digitalWrite(13, LOW);
+    delay(200);
+  }
+}
+
+void loop() {
+  blinkLED(3);  // 呼叫函數，LED 閃 3 次
+}
+</code></pre>
+<h3 id="_14">有回傳值的函數</h3>
+<pre><code class="language-cpp">float celsiusToFahrenheit(float celsius) {
+  float fahrenheit = celsius * 9.0 / 5.0 + 32.0;
+  return fahrenheit;
+}
+
+void loop() {
+  float tempC = 25.0;
+  float tempF = celsiusToFahrenheit(tempC);
+  Serial.println(tempF);  // 輸出 77.0
+}
+</code></pre>
+<h3 id="_15">有多個參數的函數</h3>
+<pre><code class="language-cpp">int calculateSum(int a, int b, int c) {
+  return a + b + c;
+}
+
+void loop() {
+  int result = calculateSum(10, 20, 30);
+  Serial.println(result);  // 輸出 60
+}
+</code></pre>
+<hr />
+<h2 id="_16">常用內建函數</h2>
+<h3 id="_17">時間相關</h3>
+<table>
+<thead>
+<tr>
+<th>函數</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>delay(ms)</code></td>
+<td>暫停執行（毫秒）</td>
+<td><code>delay(1000);</code> // 暫停 1 秒</td>
+</tr>
+<tr>
+<td><code>delayMicroseconds(us)</code></td>
+<td>暫停執行（微秒）</td>
+<td><code>delayMicroseconds(100);</code></td>
+</tr>
+<tr>
+<td><code>millis()</code></td>
+<td>取得開機後經過的毫秒數</td>
+<td><code>unsigned long t = millis();</code></td>
+</tr>
+<tr>
+<td><code>micros()</code></td>
+<td>取得開機後經過的微秒數</td>
+<td><code>unsigned long t = micros();</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="millis-delay">使用 millis() 取代 delay()</h4>
+<p><code>delay()</code> 會阻塞程式，無法同時做其他事。使用 <code>millis()</code> 可以實現非阻塞式計時：</p>
+<pre><code class="language-cpp">unsigned long previousTime = 0;
+const long interval = 1000;  // 間隔 1 秒
+
+void loop() {
+  unsigned long currentTime = millis();
+
+  if (currentTime - previousTime &gt;= interval) {
+    previousTime = currentTime;
+
+    // 每秒執行一次
+    Serial.println(&quot;1 秒到了！&quot;);
+  }
+
+  // 這裡可以同時做其他事情
+}
+</code></pre>
+<h3 id="_18">數學相關</h3>
+<table>
+<thead>
+<tr>
+<th>函數</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>min(a, b)</code></td>
+<td>取較小值</td>
+<td><code>min(10, 5)</code> → 5</td>
+</tr>
+<tr>
+<td><code>max(a, b)</code></td>
+<td>取較大值</td>
+<td><code>max(10, 5)</code> → 10</td>
+</tr>
+<tr>
+<td><code>abs(x)</code></td>
+<td>絕對值</td>
+<td><code>abs(-5)</code> → 5</td>
+</tr>
+<tr>
+<td><code>pow(base, exp)</code></td>
+<td>次方</td>
+<td><code>pow(2, 3)</code> → 8</td>
+</tr>
+<tr>
+<td><code>sqrt(x)</code></td>
+<td>平方根</td>
+<td><code>sqrt(16)</code> → 4</td>
+</tr>
+<tr>
+<td><code>map(value, fromLow, fromHigh, toLow, toHigh)</code></td>
+<td>數值映射</td>
+<td>見下方說明</td>
+</tr>
+<tr>
+<td><code>constrain(value, min, max)</code></td>
+<td>限制範圍</td>
+<td>見下方說明</td>
+</tr>
+</tbody>
+</table>
+<h4 id="map-">map() - 數值映射（非常常用！）</h4>
+<p>將一個範圍的數值轉換到另一個範圍。</p>
+<pre><code class="language-cpp">int result = map(value, fromLow, fromHigh, toLow, toHigh);
+</code></pre>
+<p><strong>範例</strong>：</p>
+<pre><code class="language-cpp">// 將類比讀值 (0-1023) 轉換成百分比 (0-100)
+int sensorValue = analogRead(A0);
+int percent = map(sensorValue, 0, 1023, 0, 100);
+
+// 將類比讀值轉換成 PWM 值 (0-255)
+int brightness = map(sensorValue, 0, 1023, 0, 255);
+</code></pre>
+<h4 id="constrain-">constrain() - 限制範圍</h4>
+<p>將數值限制在指定範圍內。</p>
+<pre><code class="language-cpp">int result = constrain(value, min, max);
+</code></pre>
+<p><strong>範例</strong>：</p>
+<pre><code class="language-cpp">int speed = 150;
+speed = constrain(speed, 0, 100);  // speed 變成 100
+
+int temp = -5;
+temp = constrain(temp, 0, 50);     // temp 變成 0
+</code></pre>
+<h3 id="_19">隨機數</h3>
+<pre><code class="language-cpp">randomSeed(analogRead(A0));  // 用類比腳位的雜訊當隨機種子
+int r = random(100);         // 0 ~ 99 的隨機數
+int r = random(10, 50);      // 10 ~ 49 的隨機數
+</code></pre>
+<hr />
+<h2 id="serial">Serial 序列埠通訊</h2>
+<h3 id="_20">初始化</h3>
+<pre><code class="language-cpp">void setup() {
+  Serial.begin(9600);  // 設定鮑率 9600
+}
+</code></pre>
+<h3 id="_21">輸出</h3>
+<table>
+<thead>
+<tr>
+<th>函數</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Serial.print()</code></td>
+<td>輸出（不換行）</td>
+<td><code>Serial.print("Hello");</code></td>
+</tr>
+<tr>
+<td><code>Serial.println()</code></td>
+<td>輸出（換行）</td>
+<td><code>Serial.println("Hello");</code></td>
+</tr>
+<tr>
+<td><code>Serial.write()</code></td>
+<td>輸出原始位元組</td>
+<td><code>Serial.write(65);</code> → 'A'</td>
+</tr>
+</tbody>
+</table>
+<p><strong>範例</strong>：</p>
+<pre><code class="language-cpp">int value = 123;
+float temp = 25.5;
+
+Serial.print(&quot;Value: &quot;);
+Serial.println(value);        // 輸出: Value: 123
+
+Serial.print(&quot;Temp: &quot;);
+Serial.print(temp);
+Serial.println(&quot; C&quot;);         // 輸出: Temp: 25.5 C
+
+// 格式化輸出（小數位數）
+Serial.println(temp, 2);      // 輸出: 25.50
+</code></pre>
+<h3 id="_22">輸入</h3>
+<table>
+<thead>
+<tr>
+<th>函數</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Serial.available()</code></td>
+<td>檢查是否有資料可讀</td>
+</tr>
+<tr>
+<td><code>Serial.read()</code></td>
+<td>讀取一個位元組</td>
+</tr>
+<tr>
+<td><code>Serial.readString()</code></td>
+<td>讀取字串</td>
+</tr>
+<tr>
+<td><code>Serial.parseInt()</code></td>
+<td>讀取整數</td>
+</tr>
+<tr>
+<td><code>Serial.parseFloat()</code></td>
+<td>讀取浮點數</td>
+</tr>
+</tbody>
+</table>
+<p><strong>範例</strong>：</p>
+<pre><code class="language-cpp">void loop() {
+  if (Serial.available() &gt; 0) {
+    String input = Serial.readString();
+    input.trim();  // 移除換行符號
+
+    Serial.print(&quot;你輸入了: &quot;);
+    Serial.println(input);
+
+    if (input == &quot;on&quot;) {
+      digitalWrite(13, HIGH);
+    } else if (input == &quot;off&quot;) {
+      digitalWrite(13, LOW);
+    }
+  }
+}
+</code></pre>
+<hr />
+<h2 id="array">陣列 (Array)</h2>
+<h3 id="_23">宣告與初始化</h3>
+<pre><code class="language-cpp">// 宣告陣列
+int values[5];                    // 5 個整數的陣列
+
+// 宣告並初始化
+int pins[] = {2, 3, 4, 5, 6};     // 自動計算大小
+int data[5] = {10, 20, 30, 40, 50};
+
+// 字元陣列（C 風格字串）
+char message[] = &quot;Hello&quot;;
+</code></pre>
+<h3 id="_24">存取陣列元素</h3>
+<pre><code class="language-cpp">int pins[] = {2, 3, 4, 5, 6};
+
+// 讀取（索引從 0 開始）
+int firstPin = pins[0];   // 2
+int thirdPin = pins[2];   // 4
+
+// 修改
+pins[0] = 10;
+
+// 取得陣列長度
+int length = sizeof(pins) / sizeof(pins[0]);  // 5
+</code></pre>
+<h3 id="_25">陣列與迴圈</h3>
+<pre><code class="language-cpp">int leds[] = {3, 5, 6, 9, 10, 11};
+int numLeds = sizeof(leds) / sizeof(leds[0]);
+
+void setup() {
+  // 設定所有 LED 腳位為輸出
+  for (int i = 0; i &lt; numLeds; i++) {
+    pinMode(leds[i], OUTPUT);
+  }
+}
+
+void loop() {
+  // 依序點亮 LED
+  for (int i = 0; i &lt; numLeds; i++) {
+    digitalWrite(leds[i], HIGH);
+    delay(100);
+    digitalWrite(leds[i], LOW);
+  }
+}
+</code></pre>
+<hr />
+<h2 id="string">字串處理 (String)</h2>
+<h3 id="string_1">String 物件</h3>
+<pre><code class="language-cpp">String text = &quot;Hello Arduino&quot;;
+
+// 常用方法
+int len = text.length();           // 長度: 13
+char c = text.charAt(0);           // 第一個字元: 'H'
+String upper = text.toUpperCase(); // 轉大寫
+String lower = text.toLowerCase(); // 轉小寫
+
+// 字串連接
+String greeting = &quot;Hello, &quot; + String(&quot;World!&quot;);
+
+// 數字轉字串
+int num = 123;
+String str = String(num);          // &quot;123&quot;
+
+// 字串轉數字
+String numStr = &quot;456&quot;;
+int value = numStr.toInt();        // 456
+
+// 字串比較
+if (text == &quot;Hello Arduino&quot;) {
+  Serial.println(&quot;相同&quot;);
+}
+
+// 搜尋
+int pos = text.indexOf(&quot;Arduino&quot;); // 6 (位置)
+bool found = text.indexOf(&quot;xyz&quot;) &gt;= 0;  // false
+
+// 子字串
+String sub = text.substring(0, 5); // &quot;Hello&quot;
+
+// 修剪空白
+String input = &quot;  text  &quot;;
+input.trim();                      // &quot;text&quot;
+</code></pre>
+<hr />
+<h2 id="_26">常用程式模式</h2>
+<h3 id="1-debounce">模式 1：按鈕去彈跳 (Debounce)</h3>
+<p>按鈕按下時會產生雜訊，需要去彈跳處理：</p>
+<pre><code class="language-cpp">const int BUTTON_PIN = 2;
+int lastButtonState = LOW;
+unsigned long lastDebounceTime = 0;
+const unsigned long debounceDelay = 50;
+
+void loop() {
+  int reading = digitalRead(BUTTON_PIN);
+
+  if (reading != lastButtonState) {
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) &gt; debounceDelay) {
+    // 狀態穩定，可以使用
+    if (reading == HIGH) {
+      Serial.println(&quot;按鈕被按下&quot;);
+    }
+  }
+
+  lastButtonState = reading;
+}
+</code></pre>
+<h3 id="2-state-machine">模式 2：狀態機 (State Machine)</h3>
+<p>管理多個狀態的程式架構：</p>
+<pre><code class="language-cpp">enum State {
+  IDLE,
+  RUNNING,
+  PAUSED,
+  ERROR
+};
+
+State currentState = IDLE;
+
+void loop() {
+  switch (currentState) {
+    case IDLE:
+      // 待機狀態的處理
+      if (buttonPressed()) {
+        currentState = RUNNING;
+      }
+      break;
+
+    case RUNNING:
+      // 運行狀態的處理
+      runMotor();
+      if (errorDetected()) {
+        currentState = ERROR;
+      }
+      break;
+
+    case PAUSED:
+      // 暫停狀態的處理
+      break;
+
+    case ERROR:
+      // 錯誤狀態的處理
+      stopAll();
+      break;
+  }
+}
+</code></pre>
+<h3 id="3">模式 3：非阻塞式多工</h3>
+<p>同時執行多個任務：</p>
+<pre><code class="language-cpp">unsigned long lastLedTime = 0;
+unsigned long lastSensorTime = 0;
+const long ledInterval = 500;
+const long sensorInterval = 2000;
+
+void loop() {
+  unsigned long currentTime = millis();
+
+  // 任務 1：每 500ms 閃爍 LED
+  if (currentTime - lastLedTime &gt;= ledInterval) {
+    lastLedTime = currentTime;
+    toggleLED();
+  }
+
+  // 任務 2：每 2000ms 讀取感測器
+  if (currentTime - lastSensorTime &gt;= sensorInterval) {
+    lastSensorTime = currentTime;
+    readSensor();
+  }
+
+  // 任務 3：持續檢查按鈕（不需要計時）
+  checkButton();
+}
+</code></pre>
+<hr />
+<h2 id="_27">常用函式庫</h2>
+<h3 id="_28">引入函式庫</h3>
+<pre><code class="language-cpp">#include &lt;Wire.h&gt;           // I2C 通訊
+#include &lt;SPI.h&gt;            // SPI 通訊
+#include &lt;Servo.h&gt;          // 伺服馬達
+#include &lt;LiquidCrystal_I2C.h&gt;  // I2C LCD
+#include &lt;DHT.h&gt;            // DHT 溫濕度感測器
+#include &lt;IRremote.h&gt;       // 紅外線遙控
+</code></pre>
+<h3 id="servo">Servo（伺服馬達）</h3>
+<pre><code class="language-cpp">#include &lt;Servo.h&gt;
+
+Servo myServo;
+
+void setup() {
+  myServo.attach(9);  // 連接到 pin 9
+}
+
+void loop() {
+  myServo.write(0);    // 轉到 0 度
+  delay(1000);
+  myServo.write(90);   // 轉到 90 度
+  delay(1000);
+  myServo.write(180);  // 轉到 180 度
+  delay(1000);
+}
+</code></pre>
+<h3 id="wirei2c">Wire（I2C 通訊）</h3>
+<pre><code class="language-cpp">#include &lt;Wire.h&gt;
+
+void setup() {
+  Wire.begin();  // 初始化 I2C（作為主機）
+}
+
+void loop() {
+  Wire.beginTransmission(0x27);  // 開始傳輸到地址 0x27
+  Wire.write(0x00);              // 寫入資料
+  Wire.endTransmission();        // 結束傳輸
+}
+</code></pre>
+<hr />
+<h2 id="_29">除錯技巧</h2>
+<h3 id="1-serial">1. 使用 Serial 輸出除錯</h3>
+<pre><code class="language-cpp">void loop() {
+  int value = analogRead(A0);
+
+  // 印出變數值來除錯
+  Serial.print(&quot;Sensor value: &quot;);
+  Serial.println(value);
+
+  // 印出程式執行位置
+  Serial.println(&quot;&gt;&gt;&gt; 進入 if 判斷&quot;);
+
+  if (value &gt; 500) {
+    Serial.println(&quot;&gt;&gt;&gt; 條件成立&quot;);
+    // ...
+  }
+}
+</code></pre>
+<h3 id="2-led">2. LED 指示燈除錯</h3>
+<pre><code class="language-cpp">// 用 LED 表示程式狀態
+digitalWrite(13, HIGH);  // 表示進入某段程式
+// ... 執行程式 ...
+digitalWrite(13, LOW);   // 表示離開
+</code></pre>
+<h3 id="3_1">3. 條件編譯</h3>
+<pre><code class="language-cpp">#define DEBUG 1  // 設為 0 可關閉除錯訊息
+
+void loop() {
+  #if DEBUG
+    Serial.println(&quot;除錯模式開啟&quot;);
+  #endif
+}
+</code></pre>
+<hr />
+<h2 id="_30">常見錯誤與解決</h2>
+<table>
+<thead>
+<tr>
+<th>錯誤</th>
+<th>原因</th>
+<th>解決方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>expected ';'</code></td>
+<td>少了分號</td>
+<td>檢查上一行結尾</td>
+</tr>
+<tr>
+<td><code>was not declared</code></td>
+<td>變數未宣告</td>
+<td>確認變數名稱和宣告位置</td>
+</tr>
+<tr>
+<td><code>expected '}'</code></td>
+<td>括號不配對</td>
+<td>檢查大括號配對</td>
+</tr>
+<tr>
+<td><code>invalid conversion</code></td>
+<td>類型不符</td>
+<td>檢查變數類型</td>
+</tr>
+<tr>
+<td><code>redefinition</code></td>
+<td>重複定義</td>
+<td>移除重複的宣告</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_31">快速參考表</h2>
+<h3 id="_32">腳位功能速查</h3>
+<table>
+<thead>
+<tr>
+<th>腳位</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0, 1</td>
+<td>Serial (TX, RX) - 避免使用</td>
+</tr>
+<tr>
+<td>2, 3</td>
+<td>外部中斷</td>
+</tr>
+<tr>
+<td>3, 5, 6, 9, 10, 11</td>
+<td>PWM 輸出 (~)</td>
+</tr>
+<tr>
+<td>A0 - A5</td>
+<td>類比輸入</td>
+</tr>
+<tr>
+<td>A4, A5</td>
+<td>I2C (SDA, SCL)</td>
+</tr>
+<tr>
+<td>10, 11, 12, 13</td>
+<td>SPI</td>
+</tr>
+<tr>
+<td>13</td>
+<td>內建 LED</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_33">常用數值</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>數值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>HIGH</code></td>
+<td>1 (5V)</td>
+</tr>
+<tr>
+<td><code>LOW</code></td>
+<td>0 (0V)</td>
+</tr>
+<tr>
+<td><code>analogRead</code> 範圍</td>
+<td>0 - 1023</td>
+</tr>
+<tr>
+<td><code>analogWrite</code> 範圍</td>
+<td>0 - 255</td>
+</tr>
+<tr>
+<td><code>int</code> 最大值</td>
+<td>32767</td>
+</tr>
+<tr>
+<td><code>unsigned long</code> 最大值</td>
+<td>4,294,967,295</td>
+</tr>
+</tbody>
+</table>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於AI的近代發展史</title>
+
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+
+        }
+        @media (max-width: 768px) {
+
+            body {  }
+        }
+
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+
+        /* 時間軸樣式 */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 20px 0;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #4fd1c5, #63b3ed, #9f7aea);
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(45, 55, 72, 0.4);
+            border-radius: 8px;
+            border-left: 3px solid #4fd1c5;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: #4fd1c5;
+            border-radius: 50%;
+            border: 3px solid #1a1a2e;
+        }
+        .timeline-year {
+            color: #4fd1c5;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        [data-theme="light"] .timeline-item {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .timeline-item::before {
+            border-color: #f5f7fa !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="ai-history">人工智慧（AI）的近代發展史</h1>
+
+<blockquote>
+<p>「我們正處於人類歷史上最重要的技術革命之一。人工智慧將重新定義我們工作、生活和思考的方式。」</p>
+</blockquote>
+
+<h2 id="overview">概述：什麼是人工智慧？</h2>
+
+<p>人工智慧（Artificial Intelligence，AI）是電腦科學的一個分支，致力於創造能夠執行通常需要人類智慧才能完成的任務的機器。這些任務包括學習、推理、問題解決、感知、語言理解等。</p>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                     人工智慧技術層次架構                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │                人工智慧 (AI)                             │   │
+│   │     使機器展現類似人類智慧行為的技術總稱                   │   │
+│   │  ┌─────────────────────────────────────────────────┐    │   │
+│   │  │            機器學習 (ML)                         │    │   │
+│   │  │      讓機器從數據中學習而非明確編程               │    │   │
+│   │  │  ┌─────────────────────────────────────────┐    │    │   │
+│   │  │  │          深度學習 (DL)                   │    │    │   │
+│   │  │  │    使用多層神經網路處理複雜模式           │    │    │   │
+│   │  │  │  ┌─────────────────────────────────┐    │    │    │   │
+│   │  │  │  │    生成式 AI (Generative AI)    │    │    │    │   │
+│   │  │  │  │   能夠創造新內容的 AI 系統       │    │    │    │   │
+│   │  │  │  │   (文字、圖像、音樂、程式碼)     │    │    │    │   │
+│   │  │  │  └─────────────────────────────────┘    │    │    │   │
+│   │  │  └─────────────────────────────────────────┘    │    │   │
+│   │  └─────────────────────────────────────────────────┘    │   │
+│   └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+
+<h2 id="early-history">第一章：AI 的誕生與早期發展（1943-1969）</h2>
+
+<h3 id="foundations">1.1 理論基礎的奠定</h3>
+
+<p>人工智慧的概念根植於數學、邏輯學和早期計算機科學的發展。</p>
+
+<div class="timeline">
+    <div class="timeline-item">
+        <span class="timeline-year">1943 年</span>
+        <p><strong>McCulloch-Pitts 神經元模型</strong></p>
+        <p>Warren McCulloch 和 Walter Pitts 發表了第一個數學化的人工神經元模型，這是神經網路的理論起點。他們證明了簡單的神經元網路可以計算任何可計算的函數。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">1950 年</span>
+        <p><strong>圖靈測試的提出</strong></p>
+        <p>英國數學家 Alan Turing 發表了劃時代的論文《計算機器與智能》（Computing Machinery and Intelligence），提出了著名的「圖靈測試」：如果一台機器能夠在對話中讓人類無法分辨它是機器還是人類，那麼這台機器就可以被認為具有智能。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">1956 年</span>
+        <p><strong>達特茅斯會議 - AI 正式誕生</strong></p>
+        <p>John McCarthy、Marvin Minsky、Claude Shannon 和 Nathaniel Rochester 在達特茅斯學院組織了一場為期兩個月的研討會。會議上，「人工智慧」（Artificial Intelligence）這個術語被正式提出並被學術界採納。這場會議被視為 AI 作為獨立學科的誕生。</p>
+    </div>
+</div>
+
+<h3 id="golden-age">1.2 早期黃金時代（1956-1969）</h3>
+
+<p>達特茅斯會議後，AI 研究進入了一個樂觀的時期，研究者們相信通用人工智慧即將實現。</p>
+
+<table>
+<tr>
+<th>年份</th>
+<th>成就</th>
+<th>研究者</th>
+<th>重要性</th>
+</tr>
+<tr>
+<td>1957</td>
+<td>感知器（Perceptron）</td>
+<td>Frank Rosenblatt</td>
+<td>第一個可學習的人工神經網路</td>
+</tr>
+<tr>
+<td>1958</td>
+<td>LISP 程式語言</td>
+<td>John McCarthy</td>
+<td>AI 研究的主要程式語言，至今仍在使用</td>
+</tr>
+<tr>
+<td>1959</td>
+<td>「機器學習」術語</td>
+<td>Arthur Samuel</td>
+<td>創造了這個術語，開發了西洋跳棋程式</td>
+</tr>
+<tr>
+<td>1964</td>
+<td>ELIZA</td>
+<td>Joseph Weizenbaum</td>
+<td>第一個聊天機器人，模擬心理治療師</td>
+</tr>
+<tr>
+<td>1966</td>
+<td>Shakey 機器人</td>
+<td>SRI International</td>
+<td>第一個通用移動機器人</td>
+</tr>
+</table>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    感知器（Perceptron）原理                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│     輸入                權重              加權和       輸出      │
+│   ┌─────┐                                                       │
+│   │ x₁  │───── w₁ ────┐                                         │
+│   └─────┘              │                                        │
+│   ┌─────┐              ▼    ┌──────────┐    ┌──────────┐        │
+│   │ x₂  │───── w₂ ───→ Σ ──→│ 激活函數 │───→│  輸出 y  │        │
+│   └─────┘              ▲    └──────────┘    └──────────┘        │
+│   ┌─────┐              │                                        │
+│   │ x₃  │───── w₃ ────┘                                         │
+│   └─────┘                                                       │
+│                                                                 │
+│   y = f(w₁x₁ + w₂x₂ + w₃x₃ + b)                                │
+│                                                                 │
+│   這是現代深度學習神經網路的基礎單元                              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+
+<h2 id="ai-winter">第二章：AI 寒冬時期（1970-1993）</h2>
+
+<h3 id="first-winter">2.1 第一次 AI 寒冬（1974-1980）</h3>
+
+<p>1969 年，Marvin Minsky 和 Seymour Papert 出版了《感知器》一書，數學上證明了單層感知器無法解決 XOR（互斥或）等非線性問題。這一發現對神經網路研究造成了毀滅性打擊。</p>
+
+<pre><code>╔══════════════════════════════════════════════════════════════════╗
+║  感知器的限制：XOR 問題                                           ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║   XOR 真值表：                    圖形表示：                      ║
+║   ┌─────┬─────┬─────────┐                                        ║
+║   │  A  │  B  │ A XOR B │        B                               ║
+║   ├─────┼─────┼─────────┤        │                               ║
+║   │  0  │  0  │    0    │      1 │  ●           ○                ║
+║   │  0  │  1  │    1    │        │     無法用                    ║
+║   │  1  │  0  │    1    │        │     一條直線                  ║
+║   │  1  │  1  │    0    │      0 │  ○           ●                ║
+║   └─────┴─────┴─────────┘        └──────────────── A             ║
+║                                      0           1               ║
+║                                                                  ║
+║   單層感知器只能學習線性可分的問題，                              ║
+║   XOR 問題需要非線性分界，因此無法解決                            ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+</code></pre>
+
+<p><strong>寒冬的原因：</strong></p>
+<ul>
+<li>計算能力嚴重不足</li>
+<li>數據量太少</li>
+<li>早期 AI 研究者過度樂觀的承諾未能兌現</li>
+<li>英國 Lighthill 報告批評 AI 研究缺乏實際成果</li>
+<li>美國和英國政府大幅削減 AI 研究經費</li>
+</ul>
+
+<h3 id="expert-systems">2.2 專家系統的興起與衰落（1980-1987）</h3>
+
+<p>1980 年代，AI 研究轉向了「專家系統」（Expert Systems），這種基於規則的系統試圖將人類專家的知識編碼成電腦可以使用的形式。</p>
+
+<table>
+<tr>
+<th>專家系統</th>
+<th>年份</th>
+<th>應用領域</th>
+<th>特點</th>
+</tr>
+<tr>
+<td>MYCIN</td>
+<td>1972-1980</td>
+<td>醫療診斷</td>
+<td>診斷細菌感染，準確率超過許多醫生</td>
+</tr>
+<tr>
+<td>DENDRAL</td>
+<td>1965-1983</td>
+<td>化學分析</td>
+<td>分析質譜數據，確定分子結構</td>
+</tr>
+<tr>
+<td>XCON/R1</td>
+<td>1980</td>
+<td>電腦配置</td>
+<td>為 DEC 公司節省數千萬美元</td>
+</tr>
+<tr>
+<td>Cyc</td>
+<td>1984-</td>
+<td>常識推理</td>
+<td>試圖編碼人類常識知識</td>
+</tr>
+</table>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                      專家系統架構                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────────┐          ┌─────────────────┐                  │
+│   │   使用者    │ ←─────── │    使用者介面    │                  │
+│   └─────────────┘          └────────┬────────┘                  │
+│                                     │                           │
+│                                     ▼                           │
+│                            ┌────────────────┐                   │
+│                            │   推理引擎     │                   │
+│                            │  (Inference    │                   │
+│                            │   Engine)      │                   │
+│                            └───────┬────────┘                   │
+│                                    │                            │
+│                     ┌──────────────┼──────────────┐             │
+│                     ▼              ▼              ▼             │
+│              ┌───────────┐  ┌───────────┐  ┌───────────┐        │
+│              │  知識庫   │  │  規則庫   │  │  事實庫   │        │
+│              │ Knowledge │  │   Rules   │  │   Facts   │        │
+│              └───────────┘  └───────────┘  └───────────┘        │
+│                                                                 │
+│   範例規則：                                                     │
+│   IF 病人有發燒 AND 病人有咳嗽 AND 白血球偏高                     │
+│   THEN 可能是細菌感染 (信心度 0.8)                               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="second-winter">2.3 第二次 AI 寒冬（1987-1993）</h3>
+
+<p>專家系統最終也遇到了瓶頸：</p>
+<ul>
+<li><strong>知識獲取瓶頸</strong>：將專家知識轉化為規則極其耗時且昂貴</li>
+<li><strong>維護困難</strong>：規則庫龐大且相互依賴，難以更新</li>
+<li><strong>缺乏學習能力</strong>：無法從新數據中自動學習</li>
+<li><strong>脆弱性</strong>：面對規則庫之外的情況會完全失效</li>
+</ul>
+
+<p>1987 年，專用 AI 硬體市場崩潰，許多 AI 公司倒閉，AI 再次進入寒冬。</p>
+
+<hr />
+
+<h2 id="ml-rise">第三章：機器學習的興起（1990-2011）</h2>
+
+<h3 id="ml-foundations">3.1 統計學習方法的復興</h3>
+
+<p>1990 年代，研究者們開始轉向基於統計的機器學習方法，這些方法能夠從數據中自動學習，而不需要手動編寫規則。</p>
+
+<div class="timeline">
+    <div class="timeline-item">
+        <span class="timeline-year">1986 年</span>
+        <p><strong>反向傳播算法的普及</strong></p>
+        <p>David Rumelhart、Geoffrey Hinton 和 Ronald Williams 重新發現並推廣了反向傳播算法（Backpropagation），使得多層神經網路的訓練成為可能，解決了 XOR 問題。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">1989 年</span>
+        <p><strong>卷積神經網路（CNN）</strong></p>
+        <p>Yann LeCun 開發了 LeNet，用於手寫數字識別。這是第一個成功的卷積神經網路，為現代電腦視覺奠定了基礎。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">1995 年</span>
+        <p><strong>支持向量機（SVM）</strong></p>
+        <p>Vladimir Vapnik 和 Corinna Cortes 發表了支持向量機算法，在許多任務上超越了神經網路，成為 1990-2000 年代的主流方法。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">1997 年</span>
+        <p><strong>深藍擊敗西洋棋世界冠軍</strong></p>
+        <p>IBM 的深藍（Deep Blue）超級電腦擊敗了世界西洋棋冠軍 Garry Kasparov。雖然主要依賴暴力搜索而非學習，但這是 AI 的重要里程碑。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">1997 年</span>
+        <p><strong>長短期記憶網路（LSTM）</strong></p>
+        <p>Sepp Hochreiter 和 Jurgen Schmidhuber 發明了 LSTM，解決了循環神經網路的梯度消失問題，使得處理長序列數據成為可能。</p>
+    </div>
+</div>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                      反向傳播算法原理                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   前向傳播：計算輸出                                             │
+│   ────────────────────────────────────────────→                 │
+│                                                                 │
+│   輸入層        隱藏層 1       隱藏層 2        輸出層            │
+│   ┌───┐        ┌───┐          ┌───┐          ┌───┐             │
+│   │ ● │───────→│ ● │─────────→│ ● │─────────→│ ● │── 預測      │
+│   │ ● │───────→│ ● │─────────→│ ● │─────────→│ ● │             │
+│   │ ● │───────→│ ● │─────────→│ ● │─────────→└───┘             │
+│   └───┘        └───┘          └───┘             │               │
+│                                                 ▼               │
+│   ←────────────────────────────────────────────                 │
+│   反向傳播：計算梯度，更新權重                  損失函數          │
+│                                              (預測 vs 實際)     │
+│                                                                 │
+│   關鍵公式：                                                     │
+│   ∂Loss/∂w = ∂Loss/∂output × ∂output/∂w  （鏈式法則）          │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="practical-ml">3.2 機器學習的實際應用</h3>
+
+<table>
+<tr>
+<th>應用領域</th>
+<th>技術</th>
+<th>代表性應用</th>
+</tr>
+<tr>
+<td>語音識別</td>
+<td>隱馬爾可夫模型（HMM）</td>
+<td>Dragon NaturallySpeaking（1997）</td>
+</tr>
+<tr>
+<td>推薦系統</td>
+<td>協同過濾</td>
+<td>Amazon 產品推薦（1998）</td>
+</tr>
+<tr>
+<td>搜尋引擎</td>
+<td>PageRank + ML</td>
+<td>Google 搜尋（1998）</td>
+</tr>
+<tr>
+<td>垃圾郵件過濾</td>
+<td>貝葉斯分類器</td>
+<td>Gmail（2004）</td>
+</tr>
+<tr>
+<td>人臉識別</td>
+<td>特徵臉 + SVM</td>
+<td>Facebook 相片標記（2010）</td>
+</tr>
+</table>
+
+<hr />
+
+<h2 id="deep-learning">第四章：深度學習革命（2012-2017）</h2>
+
+<h3 id="imagenet-moment">4.1 ImageNet 時刻：深度學習的突破</h3>
+
+<p><strong>2012 年是 AI 歷史上的轉折點。</strong></p>
+
+<p>在 ImageNet 大規模視覺識別挑戰賽（ILSVRC）中，Geoffrey Hinton 的學生 Alex Krizhevsky 使用深度卷積神經網路 AlexNet，以 15.3% 的錯誤率大幅領先第二名（26.2%），震驚了整個電腦視覺領域。</p>
+
+<pre><code>╔══════════════════════════════════════════════════════════════════╗
+║  ImageNet 挑戰賽錯誤率演進                                        ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  錯誤率 (%)                                                      ║
+║  30 ┤                                                            ║
+║     │  ████                                                      ║
+║  25 ┤  ████ 傳統方法                                             ║
+║     │  ████  26.2%                                               ║
+║  20 ┤  ████                                                      ║
+║     │  ████                                                      ║
+║  15 ┤  ████  ████ AlexNet                                        ║
+║     │  ████  ████  15.3%                                         ║
+║  10 ┤  ████  ████        ████ VGG                                ║
+║     │  ████  ████        ████ 7.3%                               ║
+║   5 ┤  ████  ████        ████       ████ ResNet                  ║
+║     │  ████  ████        ████       ████ 3.6%                    ║
+║   0 ┼──────────────────────────────────────────────              ║
+║        2011   2012        2014       2015                        ║
+║                                                                  ║
+║  2015 年 ResNet 的錯誤率已低於人類水平（約 5%）                   ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+</code></pre>
+
+<h3 id="dl-breakthroughs">4.2 深度學習的關鍵技術突破</h3>
+
+<table>
+<tr>
+<th>技術</th>
+<th>年份</th>
+<th>發明者</th>
+<th>貢獻</th>
+</tr>
+<tr>
+<td>Dropout</td>
+<td>2012</td>
+<td>Hinton 團隊</td>
+<td>防止過擬合的正則化技術</td>
+</tr>
+<tr>
+<td>ReLU 激活函數</td>
+<td>2012</td>
+<td>Krizhevsky</td>
+<td>解決梯度消失問題</td>
+</tr>
+<tr>
+<td>Batch Normalization</td>
+<td>2015</td>
+<td>Ioffe, Szegedy</td>
+<td>加速訓練，穩定網路</td>
+</tr>
+<tr>
+<td>殘差網路（ResNet）</td>
+<td>2015</td>
+<td>何愷明</td>
+<td>使超深網路訓練成為可能</td>
+</tr>
+<tr>
+<td>生成對抗網路（GAN）</td>
+<td>2014</td>
+<td>Ian Goodfellow</td>
+<td>開創生成式 AI 的新範式</td>
+</tr>
+</table>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    生成對抗網路（GAN）原理                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌───────────────┐                    ┌───────────────┐        │
+│   │    隨機噪聲    │                    │   真實圖像    │        │
+│   │  (100 維向量)  │                    │   (訓練資料)  │        │
+│   └───────┬───────┘                    └───────┬───────┘        │
+│           │                                    │                │
+│           ▼                                    │                │
+│   ┌───────────────┐                            │                │
+│   │    生成器 G    │                            │                │
+│   │  (Generator)  │                            │                │
+│   │   生成假圖像   │                            │                │
+│   └───────┬───────┘                            │                │
+│           │                                    │                │
+│           │      ┌──────────────────┐          │                │
+│           └─────→│    判別器 D      │←─────────┘                │
+│                  │ (Discriminator) │                           │
+│                  │  判斷真假        │                           │
+│                  └────────┬─────────┘                           │
+│                           │                                     │
+│                           ▼                                     │
+│                    真 or 假？                                   │
+│                                                                 │
+│   訓練目標：                                                     │
+│   - G 想要生成足以騙過 D 的假圖像                                │
+│   - D 想要正確區分真假圖像                                       │
+│   - 兩者相互對抗，共同進步                                       │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="dl-applications">4.3 深度學習的廣泛應用</h3>
+
+<div class="timeline">
+    <div class="timeline-item">
+        <span class="timeline-year">2014 年</span>
+        <p><strong>DeepFace</strong></p>
+        <p>Facebook 發布 DeepFace，在人臉驗證任務上達到 97.35% 的準確率，接近人類水平（97.53%）。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">2014 年</span>
+        <p><strong>神經機器翻譯</strong></p>
+        <p>Google 開始使用序列到序列（Seq2Seq）模型進行機器翻譯，大幅提升翻譯品質。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">2015 年</span>
+        <p><strong>語音助理普及</strong></p>
+        <p>Amazon Echo（Alexa）、Google Home 等智慧音箱開始普及，語音識別準確率突破 95%。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">2016 年</span>
+        <p><strong>AlphaGo 擊敗李世乭</strong></p>
+        <p>DeepMind 的 AlphaGo 以 4:1 擊敗圍棋世界冠軍李世乭。圍棋的複雜度遠超西洋棋，這被認為是 AI 的重大突破。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">2016 年</span>
+        <p><strong>WaveNet</strong></p>
+        <p>DeepMind 發布 WaveNet，能夠生成極其逼真的人聲，為語音合成帶來革命性進步。</p>
+    </div>
+</div>
+
+<hr />
+
+<h2 id="transformer-era">第五章：Transformer 與大型語言模型（2017-2022）</h2>
+
+<h3 id="attention">5.1 注意力機制與 Transformer</h3>
+
+<p><strong>2017 年 6 月，Google 發表了劃時代的論文《Attention Is All You Need》，提出了 Transformer 架構。</strong></p>
+
+<p>這個架構完全基於「自注意力機制」（Self-Attention），捨棄了之前主流的循環神經網路（RNN）和卷積神經網路（CNN）結構。</p>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    Transformer 架構簡圖                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│            輸入序列                        輸出序列              │
+│        "我 愛 人工智慧"                  "I love AI"            │
+│               │                              ▲                  │
+│               ▼                              │                  │
+│   ┌───────────────────────┐    ┌───────────────────────┐       │
+│   │       編碼器          │    │       解碼器          │       │
+│   │      (Encoder)        │    │      (Decoder)        │       │
+│   │                       │    │                       │       │
+│   │  ┌─────────────────┐  │    │  ┌─────────────────┐  │       │
+│   │  │  自注意力層 ×6  │  │───→│  │ 交叉注意力層 ×6│  │       │
+│   │  └─────────────────┘  │    │  └─────────────────┘  │       │
+│   │  ┌─────────────────┐  │    │  ┌─────────────────┐  │       │
+│   │  │  前饋神經網路   │  │    │  │  前饋神經網路   │  │       │
+│   │  └─────────────────┘  │    │  └─────────────────┘  │       │
+│   │                       │    │                       │       │
+│   └───────────────────────┘    └───────────────────────┘       │
+│                                                                 │
+│   關鍵創新：                                                     │
+│   1. 自注意力機制：每個位置可以直接關注所有其他位置               │
+│   2. 位置編碼：使模型能理解序列順序                              │
+│   3. 多頭注意力：同時從不同角度分析輸入                          │
+│   4. 高度並行：訓練速度比 RNN 快數倍                             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="bert-gpt">5.2 BERT 與 GPT：兩種預訓練範式</h3>
+
+<p>Transformer 催生了兩個重要的預訓練模型系列：</p>
+
+<table>
+<tr>
+<th>特性</th>
+<th>BERT（Google，2018）</th>
+<th>GPT（OpenAI，2018）</th>
+</tr>
+<tr>
+<td>全名</td>
+<td>Bidirectional Encoder Representations from Transformers</td>
+<td>Generative Pre-trained Transformer</td>
+</tr>
+<tr>
+<td>架構</td>
+<td>只使用 Transformer 編碼器</td>
+<td>只使用 Transformer 解碼器</td>
+</tr>
+<tr>
+<td>訓練方式</td>
+<td>遮罩語言模型（填空）</td>
+<td>自迴歸（預測下一個詞）</td>
+</tr>
+<tr>
+<td>方向性</td>
+<td>雙向（同時看前後文）</td>
+<td>單向（從左到右）</td>
+</tr>
+<tr>
+<td>優勢任務</td>
+<td>理解類：分類、問答、NER</td>
+<td>生成類：文本生成、對話</td>
+</tr>
+</table>
+
+<pre><code>╔══════════════════════════════════════════════════════════════════╗
+║  BERT vs GPT 訓練方式對比                                        ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  BERT（遮罩語言模型）：                                          ║
+║  ┌─────────────────────────────────────────────┐                 ║
+║  │ 輸入：The [MASK] sat on the [MASK]          │                 ║
+║  │ 輸出：The  cat  sat on the  mat             │                 ║
+║  │                                             │                 ║
+║  │ 模型需要根據上下文填補被遮蓋的詞            │                 ║
+║  └─────────────────────────────────────────────┘                 ║
+║                                                                  ║
+║  GPT（自迴歸語言模型）：                                         ║
+║  ┌─────────────────────────────────────────────┐                 ║
+║  │ 輸入：The cat sat                           │                 ║
+║  │ 預測：           on → the → mat → ...       │                 ║
+║  │                                             │                 ║
+║  │ 模型需要預測序列中的下一個詞                │                 ║
+║  └─────────────────────────────────────────────┘                 ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+</code></pre>
+
+<h3 id="scaling-laws">5.3 規模法則：越大越強</h3>
+
+<p>OpenAI 在 2020 年發現了著名的「規模法則」（Scaling Laws）：模型的性能與模型大小、數據量和計算量呈現可預測的冪律關係。</p>
+
+<table>
+<tr>
+<th>模型</th>
+<th>發布時間</th>
+<th>參數量</th>
+<th>訓練數據</th>
+</tr>
+<tr>
+<td>GPT-1</td>
+<td>2018.06</td>
+<td>1.17 億</td>
+<td>約 5GB 文本</td>
+</tr>
+<tr>
+<td>GPT-2</td>
+<td>2019.02</td>
+<td>15 億</td>
+<td>40GB（WebText）</td>
+</tr>
+<tr>
+<td>GPT-3</td>
+<td>2020.06</td>
+<td>1750 億</td>
+<td>570GB（多來源）</td>
+</tr>
+<tr>
+<td>PaLM</td>
+<td>2022.04</td>
+<td>5400 億</td>
+<td>780GB</td>
+</tr>
+<tr>
+<td>GPT-4</td>
+<td>2023.03</td>
+<td>推測 1.8 兆</td>
+<td>未公開</td>
+</tr>
+</table>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    語言模型參數量演進                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  參數量（對數刻度）                                              │
+│                                                                 │
+│  1兆 ─┤                                              ████       │
+│       │                                              ████ GPT-4 │
+│       │                                              ████       │
+│ 100B ─┤                              ████            ████       │
+│       │                              ████ GPT-3      ████       │
+│       │                              ████            ████       │
+│  10B ─┤              ████            ████            ████       │
+│       │              ████ GPT-2      ████            ████       │
+│       │              ████            ████            ████       │
+│   1B ─┤  ████        ████            ████            ████       │
+│       │  ████ GPT-1  ████            ████            ████       │
+│       │  ████        ████            ████            ████       │
+│       ┼────────────────────────────────────────────────────     │
+│          2018        2019            2020            2023       │
+│                                                                 │
+│  每一代模型的參數量增長約 10-100 倍                              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="llm-capabilities">5.4 大型語言模型的湧現能力</h3>
+
+<p>當模型規模超過一定閾值後，會突然展現出訓練時未明確教導的「湧現能力」（Emergent Abilities）：</p>
+
+<ul>
+<li><strong>少樣本學習（Few-shot Learning）</strong>：僅憑幾個例子就能學會新任務</li>
+<li><strong>思維鏈推理（Chain-of-Thought）</strong>：逐步推理解決複雜問題</li>
+<li><strong>程式碼生成</strong>：理解自然語言描述並生成功能正確的程式碼</li>
+<li><strong>多語言翻譯</strong>：即使某些語言對訓練數據很少</li>
+<li><strong>常識推理</strong>：理解隱含的背景知識</li>
+</ul>
+
+<hr />
+
+<h2 id="chatgpt-era">第六章：ChatGPT 與生成式 AI 時代（2022-2024）</h2>
+
+<h3 id="chatgpt-launch">6.1 ChatGPT：AI 的「iPhone 時刻」</h3>
+
+<p><strong>2022 年 11 月 30 日，OpenAI 發布了 ChatGPT，這是 AI 歷史上最重要的產品發布之一。</strong></p>
+
+<div class="timeline">
+    <div class="timeline-item">
+        <span class="timeline-year">2022.11.30</span>
+        <p><strong>ChatGPT 發布</strong></p>
+        <p>基於 GPT-3.5，使用人類反饋強化學習（RLHF）微調。5 天內用戶突破 100 萬，2 個月達到 1 億用戶，成為史上成長最快的消費者應用。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">2023.02</span>
+        <p><strong>Microsoft Bing 整合 GPT</strong></p>
+        <p>微軟將 GPT-4 整合到 Bing 搜尋引擎，引發搜尋引擎的 AI 革命。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">2023.03.14</span>
+        <p><strong>GPT-4 發布</strong></p>
+        <p>多模態大型語言模型，能夠處理圖像輸入，在多項專業考試中超越大多數人類（如律師考試前 10%）。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">2023.03.21</span>
+        <p><strong>Google Bard 發布</strong></p>
+        <p>Google 推出基於 LaMDA/PaLM 的對話 AI，後更名為 Gemini。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">2023.07</span>
+        <p><strong>Meta Llama 2 開源</strong></p>
+        <p>Meta 開源 Llama 2，參數量達 700 億，推動開源 LLM 社群發展。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">2023.11</span>
+        <p><strong>GPT-4 Turbo 與 GPTs</strong></p>
+        <p>OpenAI 發布 GPT-4 Turbo（128K 上下文）和 GPTs（自訂 AI 助手平台）。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">2024.02</span>
+        <p><strong>Sora 影片生成</strong></p>
+        <p>OpenAI 發布 Sora，能夠根據文字描述生成長達 60 秒的高品質影片。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">2024.03</span>
+        <p><strong>Claude 3 Opus</strong></p>
+        <p>Anthropic 發布 Claude 3 系列，Opus 模型在多項基準測試中超越 GPT-4。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">2024.05</span>
+        <p><strong>GPT-4o</strong></p>
+        <p>OpenAI 發布 GPT-4o（omni），實現原生多模態，能夠即時處理文字、語音、圖像。</p>
+    </div>
+    <div class="timeline-item">
+        <span class="timeline-year">2024.12</span>
+        <p><strong>Google Gemini 2.0</strong></p>
+        <p>Google 發布 Gemini 2.0，專為 AI 代理（Agent）時代設計，具備原生工具使用能力。</p>
+    </div>
+</div>
+
+<h3 id="rlhf">6.2 RLHF：讓 AI 更有幫助、更安全</h3>
+
+<p>ChatGPT 成功的關鍵技術之一是「人類反饋強化學習」（Reinforcement Learning from Human Feedback, RLHF）。</p>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                      RLHF 訓練流程                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  第一階段：監督微調（SFT）                                       │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  人類標註員撰寫高品質的問答對                            │    │
+│  │  用這些數據微調預訓練模型                                │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                              │                                  │
+│                              ▼                                  │
+│  第二階段：訓練獎勵模型（RM）                                    │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  模型對同一問題生成多個回答                              │    │
+│  │  人類對回答進行排序（哪個更好）                          │    │
+│  │  訓練一個模型來預測人類的偏好                            │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                              │                                  │
+│                              ▼                                  │
+│  第三階段：強化學習優化（PPO）                                   │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  使用獎勵模型的評分作為獎勵信號                          │    │
+│  │  通過強化學習優化語言模型                                │    │
+│  │  使模型生成人類更喜歡的回答                              │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                 │
+│  結果：模型變得更有幫助、更誠實、更無害                          │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="image-generation">6.3 圖像生成：DALL-E、Midjourney、Stable Diffusion</h3>
+
+<p>2022 年也是 AI 圖像生成爆發的一年：</p>
+
+<table>
+<tr>
+<th>模型</th>
+<th>公司</th>
+<th>發布時間</th>
+<th>特點</th>
+</tr>
+<tr>
+<td>DALL-E 2</td>
+<td>OpenAI</td>
+<td>2022.04</td>
+<td>高品質文字轉圖像，支援圖像編輯</td>
+</tr>
+<tr>
+<td>Midjourney</td>
+<td>Midjourney</td>
+<td>2022.07</td>
+<td>藝術風格強烈，社群驅動</td>
+</tr>
+<tr>
+<td>Stable Diffusion</td>
+<td>Stability AI</td>
+<td>2022.08</td>
+<td>開源，可本地運行，社群生態豐富</td>
+</tr>
+<tr>
+<td>DALL-E 3</td>
+<td>OpenAI</td>
+<td>2023.10</td>
+<td>更好的文字理解，整合 ChatGPT</td>
+</tr>
+<tr>
+<td>Midjourney v6</td>
+<td>Midjourney</td>
+<td>2024.01</td>
+<td>逼真度大幅提升，支援文字渲染</td>
+</tr>
+</table>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    擴散模型（Diffusion Model）原理               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   前向過程：逐步添加噪聲                                         │
+│   ─────────────────────────────────────────────────────→        │
+│                                                                 │
+│   ┌─────┐    ┌─────┐    ┌─────┐    ┌─────┐    ┌─────┐          │
+│   │ 🖼️  │ → │ 🌫️  │ → │ 🌫️  │ → │ 🌫️  │ → │ ⬜  │          │
+│   │清晰  │    │輕微  │    │中度  │    │嚴重  │    │純噪  │          │
+│   │圖像  │    │噪聲  │    │噪聲  │    │噪聲  │    │聲    │          │
+│   └─────┘    └─────┘    └─────┘    └─────┘    └─────┘          │
+│                                                                 │
+│   ←─────────────────────────────────────────────────────        │
+│   反向過程：逐步去噪（神經網路學習）                              │
+│                                                                 │
+│   生成時：                                                       │
+│   1. 從純噪聲開始                                               │
+│   2. 神經網路預測噪聲                                           │
+│   3. 減去預測的噪聲                                             │
+│   4. 重複直到得到清晰圖像                                       │
+│   5. 文字提示用於引導去噪方向                                   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+
+<h2 id="current-landscape">第七章：當前 AI 格局（2024-2025）</h2>
+
+<h3 id="major-players">7.1 主要參與者</h3>
+
+<table>
+<tr>
+<th>公司/組織</th>
+<th>代表模型</th>
+<th>特點</th>
+</tr>
+<tr>
+<td>OpenAI</td>
+<td>GPT-4, GPT-4o, o1, Sora</td>
+<td>產品化領先，ChatGPT 用戶最多</td>
+</tr>
+<tr>
+<td>Anthropic</td>
+<td>Claude 3.5, Claude 4</td>
+<td>強調 AI 安全，長上下文能力強</td>
+</tr>
+<tr>
+<td>Google DeepMind</td>
+<td>Gemini 2.0, AlphaFold</td>
+<td>多模態原生，科學研究突破</td>
+</tr>
+<tr>
+<td>Meta</td>
+<td>Llama 3.3, SAM 2</td>
+<td>開源策略，推動社群發展</td>
+</tr>
+<tr>
+<td>Microsoft</td>
+<td>Copilot, Phi</td>
+<td>企業整合，小型高效模型</td>
+</tr>
+<tr>
+<td>xAI</td>
+<td>Grok</td>
+<td>Elon Musk 創立，整合 X 平台</td>
+</tr>
+<tr>
+<td>Mistral AI</td>
+<td>Mistral, Mixtral</td>
+<td>歐洲開源，效率優先</td>
+</tr>
+<tr>
+<td>阿里巴巴</td>
+<td>通義千問 Qwen</td>
+<td>中國領先，多語言能力強</td>
+</tr>
+<tr>
+<td>百度</td>
+<td>文心一言 ERNIE</td>
+<td>中文優化，搜尋整合</td>
+</tr>
+</table>
+
+<h3 id="ai-agents">7.2 AI 代理（AI Agents）</h3>
+
+<p>2024-2025 年的重要趨勢是從「對話式 AI」走向「代理式 AI」：</p>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    AI 代理架構                                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│                        ┌─────────────────┐                      │
+│                        │    使用者目標    │                      │
+│                        │ "幫我規劃旅行"  │                      │
+│                        └────────┬────────┘                      │
+│                                 │                               │
+│                                 ▼                               │
+│                    ┌────────────────────────┐                   │
+│                    │      AI 代理核心       │                   │
+│                    │  ┌──────────────────┐  │                   │
+│                    │  │   推理與規劃     │  │                   │
+│                    │  │   (LLM 驅動)     │  │                   │
+│                    │  └──────────────────┘  │                   │
+│                    │  ┌──────────────────┐  │                   │
+│                    │  │     記憶系統     │  │                   │
+│                    │  │  (短期/長期)     │  │                   │
+│                    │  └──────────────────┘  │                   │
+│                    └───────────┬────────────┘                   │
+│                                │                                │
+│              ┌─────────────────┼─────────────────┐              │
+│              ▼                 ▼                 ▼              │
+│       ┌───────────┐     ┌───────────┐     ┌───────────┐        │
+│       │  網頁搜尋  │     │  訂票API  │     │  日曆整合  │        │
+│       │   工具     │     │   工具    │     │   工具     │        │
+│       └───────────┘     └───────────┘     └───────────┘        │
+│                                                                 │
+│   代理能夠：                                                     │
+│   - 自主分解複雜任務                                            │
+│   - 選擇並使用適當工具                                          │
+│   - 處理錯誤並調整策略                                          │
+│   - 記住上下文並持續學習                                        │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="multimodal">7.3 多模態 AI</h3>
+
+<p>現代 AI 模型越來越走向「多模態」—— 能夠同時處理和生成多種類型的數據：</p>
+
+<ul>
+<li><strong>文字</strong>：理解和生成自然語言</li>
+<li><strong>圖像</strong>：理解圖片內容，生成圖像</li>
+<li><strong>音訊</strong>：語音識別、語音合成、音樂生成</li>
+<li><strong>影片</strong>：影片理解、影片生成</li>
+<li><strong>程式碼</strong>：理解和生成程式碼</li>
+<li><strong>3D</strong>：3D 模型理解和生成</li>
+</ul>
+
+<h3 id="reasoning">7.4 推理能力的突破</h3>
+
+<p>2024 年 9 月，OpenAI 發布了 o1 系列模型，展示了 AI 在複雜推理任務上的重大進步：</p>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    傳統 LLM vs o1 模型                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  傳統 LLM（System 1 思維）：                                     │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  問題 ──────────────────────────────────→ 答案          │    │
+│  │        快速、直覺式回應                                  │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                 │
+│  o1 模型（System 2 思維）：                                      │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  問題 → 思考 → 思考 → 思考 → ... → 思考 → 答案         │    │
+│  │        │      │      │            │                     │    │
+│  │        ▼      ▼      ▼            ▼                     │    │
+│  │      分解   嘗試   驗證        反思                     │    │
+│  │      問題   方法   結果        調整                     │    │
+│  │                                                         │    │
+│  │  花費更多時間「思考」，產生更準確的答案                  │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                 │
+│  o1 在競賽數學、程式設計、科學推理等任務上大幅超越 GPT-4         │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+
+<h2 id="ai-for-science">第八章：AI 在科學研究中的突破</h2>
+
+<h3 id="alphafold">8.1 AlphaFold：解決蛋白質折疊問題</h3>
+
+<p>2020 年，DeepMind 的 AlphaFold 2 解決了困擾生物學界 50 年的「蛋白質折疊問題」。</p>
+
+<blockquote>
+<p>蛋白質折疊問題：給定蛋白質的氨基酸序列，預測其 3D 結構。這對理解疾病機制、藥物開發至關重要。</p>
+</blockquote>
+
+<table>
+<tr>
+<th>成就</th>
+<th>說明</th>
+</tr>
+<tr>
+<td>CASP14 競賽</td>
+<td>AlphaFold 2 在 2020 年 CASP14 競賽中達到 92.4 GDT 分數，接近實驗精度</td>
+</tr>
+<tr>
+<td>蛋白質結構資料庫</td>
+<td>2022 年發布 2 億個蛋白質結構預測，覆蓋幾乎所有已知蛋白質</td>
+</tr>
+<tr>
+<td>諾貝爾化學獎</td>
+<td>2024 年，Demis Hassabis 和 John Jumper 因 AlphaFold 獲得諾貝爾化學獎</td>
+</tr>
+<tr>
+<td>AlphaFold 3</td>
+<td>2024 年發布，能預測蛋白質與 DNA、RNA、小分子的複合結構</td>
+</tr>
+</table>
+
+<h3 id="other-science">8.2 其他科學領域的 AI 應用</h3>
+
+<ul>
+<li><strong>數學</strong>：AlphaProof 和 AlphaGeometry 在國際數學奧林匹克競賽題目上達到銀牌水平</li>
+<li><strong>材料科學</strong>：GNoME 發現 220 萬種新穩定材料</li>
+<li><strong>天氣預報</strong>：GraphCast 提供比傳統方法更準確的 10 天天氣預報</li>
+<li><strong>核融合</strong>：AI 用於控制托卡馬克反應器中的等離子體</li>
+<li><strong>藥物發現</strong>：AI 加速藥物分子的設計和篩選</li>
+</ul>
+
+<hr />
+
+<h2 id="challenges">第九章：挑戰與風險</h2>
+
+<h3 id="technical-challenges">9.1 技術挑戰</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    當前 AI 的主要技術限制                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  1. 幻覺（Hallucination）                                       │
+│     └─ AI 會自信地生成錯誤或虛構的資訊                          │
+│                                                                 │
+│  2. 推理能力有限                                                │
+│     └─ 在需要深度邏輯推理的任務上仍有困難                       │
+│                                                                 │
+│  3. 缺乏真正的理解                                              │
+│     └─ AI 是否真正「理解」仍有爭議（中文房間論證）              │
+│                                                                 │
+│  4. 數據依賴                                                    │
+│     └─ 需要大量高品質數據，且可能反映訓練數據的偏見             │
+│                                                                 │
+│  5. 計算成本                                                    │
+│     └─ 訓練和運行大型模型需要巨大的計算資源和能源               │
+│                                                                 │
+│  6. 可解釋性                                                    │
+│     └─ 難以理解 AI 為什麼做出特定決策（黑箱問題）               │
+│                                                                 │
+│  7. 泛化能力                                                    │
+│     └─ 在訓練分佈之外的情況下表現可能急劇下降                   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="societal-risks">9.2 社會風險</h3>
+
+<table>
+<tr>
+<th>風險類別</th>
+<th>說明</th>
+<th>現實案例</th>
+</tr>
+<tr>
+<td>深度偽造</td>
+<td>AI 生成的逼真假影片/音訊</td>
+<td>政治人物假影片、詐騙電話</td>
+</tr>
+<tr>
+<td>工作取代</td>
+<td>自動化可能取代某些職業</td>
+<td>客服、翻譯、初級編程</td>
+</tr>
+<tr>
+<td>隱私侵犯</td>
+<td>AI 增強的監控和數據分析</td>
+<td>人臉識別、行為預測</td>
+</tr>
+<tr>
+<td>偏見放大</td>
+<td>AI 可能放大訓練數據中的偏見</td>
+<td>招聘系統、貸款審批</td>
+</tr>
+<tr>
+<td>資訊操控</td>
+<td>大規模生成虛假內容</td>
+<td>假新聞、輿論操控</td>
+</tr>
+<tr>
+<td>權力集中</td>
+<td>AI 能力集中在少數公司</td>
+<td>頭部效應加劇</td>
+</tr>
+</table>
+
+<h3 id="alignment">9.3 對齊問題（Alignment Problem）</h3>
+
+<p>如何確保 AI 系統的目標與人類價值觀一致？</p>
+
+<pre><code>╔══════════════════════════════════════════════════════════════════╗
+║  對齊問題的核心挑戰                                               ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  目標錯位（Misaligned Goals）：                                   ║
+║  ┌────────────────────────────────────────────────────────┐      ║
+║  │  人類意圖：「最大化用戶滿意度」                          │      ║
+║  │     │                                                   │      ║
+║  │     ▼                                                   │      ║
+║  │  AI 解讀：「讓用戶不停使用，不管是否對用戶有益」         │      ║
+║  │     │                                                   │      ║
+║  │     ▼                                                   │      ║
+║  │  結果：設計成癮性功能，損害用戶身心健康                  │      ║
+║  └────────────────────────────────────────────────────────┘      ║
+║                                                                  ║
+║  主要研究方向：                                                   ║
+║  - 人類反饋強化學習（RLHF）                                       ║
+║  - 憲法 AI（Constitutional AI）                                   ║
+║  - 可擴展監督（Scalable Oversight）                               ║
+║  - 機械可解釋性（Mechanistic Interpretability）                   ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+</code></pre>
+
+<hr />
+
+<h2 id="future">第十章：未來展望</h2>
+
+<h3 id="near-future">10.1 近期趨勢（2025-2027）</h3>
+
+<ul>
+<li><strong>AI 代理生態系統</strong>：能夠自主完成複雜任務的 AI 代理將更加普及</li>
+<li><strong>個人化 AI 助理</strong>：長期記憶、深度個人化的 AI 助手</li>
+<li><strong>多模態整合</strong>：文字、圖像、語音、影片的無縫整合</li>
+<li><strong>AI 硬體專用化</strong>：更多為 AI 優化的專用晶片</li>
+<li><strong>小型高效模型</strong>：在手機和邊緣設備上運行的高效模型</li>
+<li><strong>AI 監管框架</strong>：各國將建立更完善的 AI 法規</li>
+</ul>
+
+<h3 id="agi-debate">10.2 通用人工智慧（AGI）的爭論</h3>
+
+<p>AGI（Artificial General Intelligence）指的是在所有智力任務上達到或超越人類水平的 AI 系統。</p>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    AGI 時間表預測（業界觀點）                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  樂觀派（2-5 年）：                                             │
+│  - Sam Altman (OpenAI)：「AGI 可能比大多數人想像的更近」        │
+│  - Elon Musk：「2025-2026 年可能出現比人類更聰明的 AI」         │
+│  - Ray Kurzweil：「2029 年 AI 將達到人類水平」                  │
+│                                                                 │
+│  中立派（10-20 年）：                                           │
+│  - Demis Hassabis (DeepMind)：「可能需要 10 年或更長」          │
+│  - Yann LeCun (Meta)：「當前方法不足以達到 AGI」                │
+│                                                                 │
+│  謹慎派（20+ 年或不確定）：                                     │
+│  - Gary Marcus：「我們離 AGI 還很遠」                           │
+│  - 許多學者認為需要根本性的新突破                               │
+│                                                                 │
+│  注意：AGI 的定義本身就存在爭議                                  │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="key-questions">10.3 關鍵問題</h3>
+
+<blockquote>
+<p>「預測未來的最好方法就是創造它。」—— Alan Kay</p>
+</blockquote>
+
+<p>AI 的未來發展將取決於我們如何回答以下問題：</p>
+
+<ol>
+<li><strong>治理</strong>：如何在促進創新和管控風險之間取得平衡？</li>
+<li><strong>公平</strong>：如何確保 AI 的好處被廣泛分享，而非加劇不平等？</li>
+<li><strong>安全</strong>：如何確保越來越強大的 AI 系統保持安全和可控？</li>
+<li><strong>倫理</strong>：AI 應該遵循什麼樣的道德準則？</li>
+<li><strong>人機協作</strong>：人類和 AI 如何最好地協同工作？</li>
+</ol>
+
+<hr />
+
+<h2 id="summary">總結</h2>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                      AI 發展史重要里程碑                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  1943  McCulloch-Pitts 神經元模型                               │
+│    │                                                            │
+│  1950  圖靈測試提出                                             │
+│    │                                                            │
+│  1956  達特茅斯會議，「人工智慧」術語誕生                        │
+│    │                                                            │
+│  1957  感知器發明                                               │
+│    │                                                            │
+│  1969  感知器限制被揭示，第一次 AI 寒冬開始                      │
+│    │                                                            │
+│  1980s 專家系統興起與衰落                                       │
+│    │                                                            │
+│  1986  反向傳播算法普及                                         │
+│    │                                                            │
+│  1997  深藍擊敗西洋棋世界冠軍                                   │
+│    │                                                            │
+│  2012  AlexNet 在 ImageNet 競賽中勝出，深度學習革命開始         │
+│    │                                                            │
+│  2014  GAN 發明                                                 │
+│    │                                                            │
+│  2016  AlphaGo 擊敗圍棋世界冠軍                                 │
+│    │                                                            │
+│  2017  Transformer 架構發表                                     │
+│    │                                                            │
+│  2018  BERT 和 GPT 發布                                         │
+│    │                                                            │
+│  2020  GPT-3 展示少樣本學習能力                                 │
+│    │                                                            │
+│  2020  AlphaFold 2 解決蛋白質折疊問題                           │
+│    │                                                            │
+│  2022  ChatGPT 發布，AI 進入大眾視野                            │
+│    │                                                            │
+│  2023  GPT-4、Claude、Llama 2 等多模態大模型                    │
+│    │                                                            │
+│  2024  Sora、Gemini 2.0、o1 推理模型、AI 代理                   │
+│    │                                                            │
+│  2025  ？？？                                                   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<p>人工智慧已經從一個學術研究領域，發展成為改變人類社會的關鍵技術。我們正站在一個歷史性的轉折點上，AI 的發展速度和影響力都在加速。</p>
+
+<p>理解 AI 的歷史，能幫助我們更好地理解當前的技術，並為未來做好準備。無論是作為開發者、使用者，還是公民，我們都需要積極參與塑造 AI 的未來，確保這項強大的技術能夠造福全人類。</p>
+
+<hr />
+
+<h2 id="references">延伸閱讀</h2>
+
+<ul>
+<li>《人工智慧的未來》（Life 3.0）- Max Tegmark</li>
+<li>《深度學習》（Deep Learning）- Ian Goodfellow, Yoshua Bengio, Aaron Courville</li>
+<li>《人工智慧：一種現代方法》（Artificial Intelligence: A Modern Approach）- Stuart Russell, Peter Norvig</li>
+<li>《注意力就是你所需要的》（Attention Is All You Need）- Vaswani et al., 2017</li>
+<li>Anthropic、OpenAI、DeepMind 等公司的技術博客</li>
+</ul>
+
+<hr />
+
+<p style="text-align: center; color: #718096; font-size: 0.9em;">
+    最後更新：2024 年 12 月
+</p>
+
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

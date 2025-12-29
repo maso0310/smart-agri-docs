@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於步進馬達</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="_1">關於步進馬達</h1>
+<h2 id="_2">前言：步進馬達能做什麼？</h2>
+<p>步進馬達（Stepper Motor）是一種可以<strong>精確控制旋轉步數</strong>的馬達，廣泛應用於：</p>
+<ul>
+<li>3D 列印機的 XYZ 軸移動</li>
+<li>CNC 雕刻機</li>
+<li>自動窗簾/遮陽棚</li>
+<li>監視器雲台旋轉</li>
+<li>精密定位設備</li>
+</ul>
+<p>和伺服馬達不同，步進馬達可以<strong>360 度連續旋轉</strong>，同時保持精確的位置控制！</p>
+<hr />
+<h2 id="_3">一、步進馬達是什麼？</h2>
+<h3 id="_4">一句話解釋</h3>
+<blockquote>
+<p>步進馬達是一種每次轉動固定角度（一步）的馬達，透過控制步數來精確控制旋轉角度和位置。</p>
+</blockquote>
+<h3 id="_5">與其他馬達的比較</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                    馬達類型比較                              │
+├─────────────┬─────────────┬─────────────┬───────────────────┤
+│    特性     │   DC 馬達   │  伺服馬達   │    步進馬達       │
+├─────────────┼─────────────┼─────────────┼───────────────────┤
+│  旋轉方式   │  連續旋轉   │ 0-180° 範圍 │   連續旋轉        │
+│  位置控制   │    無法     │   可以      │    可以           │
+│  精確度     │    低       │    中       │     高            │
+│  速度控制   │  電壓控制   │  受限       │   精確控制        │
+│  保持扭力   │    無       │    有       │     有            │
+│  控制複雜度 │    簡單     │   簡單      │    較複雜         │
+│  典型應用   │ 風扇、玩具  │ 機器手臂    │ 3D印表機、CNC     │
+└─────────────┴─────────────┴─────────────┴───────────────────┘
+</code></pre>
+<h3 id="_6">生活比喻</h3>
+<pre><code>想像步進馬達是一個「時鐘的秒針」：
+
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│  每「滴答」一下，秒針就轉動固定角度（6度）                  │
+│                                                             │
+│      12                                                     │
+│       │                                                     │
+│   9 ──┼── 3     每一步 = 固定角度                          │
+│       │         走 60 步 = 轉一圈                           │
+│       6                                                     │
+│                                                             │
+│  步進馬達也是這樣：                                         │
+│  - 每發送一個脈衝，馬達轉動一「步」                         │
+│  - 步數決定旋轉角度                                         │
+│  - 脈衝頻率決定旋轉速度                                     │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_7">二、步進馬達的工作原理</h2>
+<h3 id="_8">基本結構</h3>
+<pre><code>步進馬達內部結構（簡化）：
+
+              定子（固定不動）
+                 線圈 A
+                   ║
+            ╔══════╬══════╗
+            ║      ║      ║
+   線圈 D ══╣   ┌──┴──┐   ╠══ 線圈 B
+            ║   │ N S │   ║
+            ║   │ 轉子│   ║   ← 轉子（會轉動）
+            ║   │ S N │   ║      永久磁鐵
+            ║   └──┬──┘   ║
+            ╚══════╬══════╝
+                   ║
+                 線圈 C
+
+原理：
+- 定子上有多組線圈
+- 轉子是永久磁鐵
+- 依序對線圈通電，產生磁場
+- 磁場吸引/排斥轉子，使其轉動
+</code></pre>
+<h3 id="_9">步進順序（全步驅動）</h3>
+<pre><code>四相步進馬達的步進順序：
+
+步驟 1：線圈 A 通電
+        ┌───┐
+        │ A │← ON
+        └───┘
+    ┌───┐   ┌───┐
+    │ D │   │ B │
+    └───┘   └───┘
+        ┌───┐
+        │ C │
+        └───┘
+    轉子 N 極被 A 吸引
+
+步驟 2：線圈 B 通電
+        ┌───┐
+        │ A │
+        └───┘
+    ┌───┐   ┌───┐
+    │ D │   │ B │← ON
+    └───┘   └───┘
+        ┌───┐
+        │ C │
+        └───┘
+    轉子順時針轉 90°
+
+步驟 3：線圈 C 通電
+步驟 4：線圈 D 通電
+步驟 5：回到線圈 A...（循環）
+
+每完成 4 步 = 轉子轉 1/4 圈（示意，實際步數更多）
+</code></pre>
+<h3 id="_10">驅動模式比較</h3>
+<pre><code>┌───────────────┬─────────────┬─────────────┬─────────────┐
+│    驅動模式    │   全步模式   │   半步模式   │   微步模式   │
+├───────────────┼─────────────┼─────────────┼─────────────┤
+│  每步角度     │    大       │    中       │    小       │
+│  步數/圈      │    少       │    多       │    很多     │
+│  運轉平滑度   │    較頓     │    較滑順   │    最滑順   │
+│  扭力        │    最大     │    中       │    較小     │
+│  控制複雜度   │    簡單     │    中等     │    複雜     │
+└───────────────┴─────────────┴─────────────┴─────────────┘
+
+28BYJ-48 步進馬達：
+- 全步模式：2048 步/圈
+- 半步模式：4096 步/圈
+</code></pre>
+<hr />
+<h2 id="_11">三、常見步進馬達介紹</h2>
+<h3 id="28byj-48-uln2003">28BYJ-48 + ULN2003（入門首選）</h3>
+<pre><code>28BYJ-48 步進馬達（最常見的入門款）：
+
+      ┌─────────────────┐
+      │    ┌─────┐      │
+      │    │     │      │  ← 馬達本體
+      │    │  M  │      │
+      │    │     │      │
+      │    └──┬──┘      │
+      └───────┼─────────┘
+              │
+         ═════╧═════     ← 減速齒輪箱
+              │
+        ┌─────┴─────┐
+        │ │ │ │ │   │    ← 5 條線（接到 ULN2003）
+        └───────────┘
+
+規格：
+- 工作電壓：5V DC
+- 相數：4 相
+- 減速比：1:64
+- 步距角：5.625°/64（減速後）
+- 每圈步數：4096 步（半步模式）或 2048 步（全步模式）
+- 價格：約 50-80 元（含驅動板）
+</code></pre>
+<h3 id="uln2003">ULN2003 驅動板</h3>
+<pre><code>ULN2003 驅動板：
+
+    ┌─────────────────────────────────────┐
+    │                                     │
+    │   [LED1] [LED2] [LED3] [LED4]       │  ← 狀態指示燈
+    │                                     │
+    │   ┌─────────────────────────┐       │
+    │   │      ULN2003A           │       │  ← 達靈頓陣列 IC
+    │   └─────────────────────────┘       │
+    │                                     │
+    │   IN1 IN2 IN3 IN4    (+) (-)        │
+    │    ○   ○   ○   ○      ○   ○        │
+    │    │   │   │   │      │   │        │
+    └────┼───┼───┼───┼──────┼───┼────────┘
+         │   │   │   │      │   │
+         ↓   ↓   ↓   ↓      ↓   ↓
+      接 Arduino        接電源 5V
+      D8 D9 D10 D11     (可用 Arduino 5V
+                         或外接電源)
+
+為什麼需要驅動板？
+- Arduino 腳位電流太小（40mA），無法直接驅動馬達
+- ULN2003 可以放大電流（每通道 500mA）
+- 內建保護二極體，防止反電動勢損壞 Arduino
+</code></pre>
+<h3 id="nema-17">NEMA 17 步進馬達（進階）</h3>
+<pre><code>NEMA 17（3D印表機常用）：
+
+    ┌─────────────────┐
+    │  ○           ○  │  ← 固定孔
+    │    ┌───────┐    │
+    │    │       │    │
+    │    │   M   │    │  ← 42mm x 42mm
+    │    │       │    │
+    │    └───────┘    │
+    │  ○           ○  │
+    └────────┬────────┘
+             │
+        ┌────┴────┐
+        │ │ │ │   │      ← 4 條線（雙極性）
+        A A B B
+        + - + -
+
+規格：
+- 步距角：1.8°（200 步/圈）
+- 工作電壓：12V 以上
+- 電流：1-2A
+- 需要專用驅動器（A4988、DRV8825、TMC2209）
+- 價格：約 150-300 元
+</code></pre>
+<hr />
+<h2 id="_12">四、接線方式</h2>
+<h3 id="28byj-48-uln2003_1">28BYJ-48 + ULN2003 接線</h3>
+<pre><code>Arduino 與 28BYJ-48 接線：
+
+    Arduino UNO          ULN2003 驅動板         28BYJ-48
+    ┌─────────┐         ┌─────────────┐        ┌───────┐
+    │         │         │             │        │       │
+    │      5V ├─────────┤ (+)         │        │       │
+    │         │         │        [馬達接口] ════╡   M   │
+    │     GND ├─────────┤ (-)         │        │       │
+    │         │         │             │        │       │
+    │      D8 ├─────────┤ IN1         │        └───────┘
+    │      D9 ├─────────┤ IN2         │
+    │     D10 ├─────────┤ IN3         │
+    │     D11 ├─────────┤ IN4         │
+    │         │         │             │
+    └─────────┘         └─────────────┘
+
+    馬達接口：直接插入，有防呆設計
+</code></pre>
+<h3 id="_13">接線圖解</h3>
+<pre><code>麵包板接線範例：
+
+         Arduino                    ULN2003 驅動板
+    ┌───────────────┐              ┌─────────────────┐
+    │               │              │ ●●●● LED        │
+    │           5V ─┼──────────────┼─(+)             │
+    │          GND ─┼──────────────┼─(-)       ┌───┐ │
+    │               │              │           │   │ │
+    │           D8 ─┼──────────────┼─IN1       │ M ├═╡
+    │           D9 ─┼──────────────┼─IN2       │   │ │
+    │          D10 ─┼──────────────┼─IN3       └───┘ │
+    │          D11 ─┼──────────────┼─IN4             │
+    │               │              └─────────────────┘
+    └───────────────┘
+
+    ⚠️ 馬達線直接插入驅動板的白色接口
+</code></pre>
+<h3 id="_14">使用外接電源（推薦）</h3>
+<pre><code>使用外接 5V 電源（更穩定）：
+
+    Arduino          ULN2003           外接電源
+    ┌───────┐       ┌─────────┐       ┌─────────┐
+    │       │       │         │       │  5V 1A  │
+    │    D8 ├───────┤ IN1     │       │   (+)───┼───┐
+    │    D9 ├───────┤ IN2     │       │         │   │
+    │   D10 ├───────┤ IN3     │       │   (-)───┼─┐ │
+    │   D11 ├───────┤ IN4     │       └─────────┘ │ │
+    │       │       │         │                   │ │
+    │   GND ├───────┼─(-)─────┼───────────────────┘ │
+    │       │       │   (+)───┼─────────────────────┘
+    └───────┘       └─────────┘
+
+    ⚠️ 重要：Arduino GND 必須與外接電源 GND 連接！
+</code></pre>
+<hr />
+<h2 id="arduino">五、Arduino 程式庫</h2>
+<h3 id="stepper">內建 Stepper 程式庫</h3>
+<pre><code>Arduino 內建 Stepper 程式庫：
+
+優點：
+- 不需額外安裝
+- 使用簡單
+
+缺點：
+- 功能較基本
+- 會阻塞程式（等待馬達轉完）
+</code></pre>
+<h3 id="accelstepper">AccelStepper 程式庫（推薦）</h3>
+<pre><code>AccelStepper 程式庫：
+
+優點：
+- 支援加速/減速
+- 非阻塞式控制（可同時做其他事）
+- 支援多顆馬達
+- 功能更完整
+
+安裝方式：
+1. Arduino IDE → 草稿碼 → 匯入程式庫 → 管理程式庫
+2. 搜尋「AccelStepper」
+3. 安裝 by Mike McCauley
+</code></pre>
+<hr />
+<h2 id="arduino_1">六、Arduino 程式範例</h2>
+<h3 id="1stepper">範例 1：基本旋轉（Stepper 程式庫）</h3>
+<pre><code class="language-cpp">/*
+ * 28BYJ-48 基本旋轉
+ * 使用 Arduino 內建 Stepper 程式庫
+ */
+
+#include &lt;Stepper.h&gt;
+
+// 28BYJ-48 每圈步數（全步模式）
+const int STEPS_PER_REV = 2048;
+
+// 建立 Stepper 物件（步數, IN1, IN3, IN2, IN4）
+// 注意：28BYJ-48 的線序是 IN1-IN3-IN2-IN4
+Stepper myStepper(STEPS_PER_REV, 8, 10, 9, 11);
+
+void setup() {
+  // 設定轉速（RPM）
+  myStepper.setSpeed(10);  // 10 RPM
+
+  Serial.begin(9600);
+  Serial.println(&quot;步進馬達測試&quot;);
+}
+
+void loop() {
+  Serial.println(&quot;順時針轉一圈&quot;);
+  myStepper.step(STEPS_PER_REV);  // 正值 = 順時針
+  delay(1000);
+
+  Serial.println(&quot;逆時針轉一圈&quot;);
+  myStepper.step(-STEPS_PER_REV); // 負值 = 逆時針
+  delay(1000);
+}
+</code></pre>
+<h3 id="2">範例 2：轉動指定角度</h3>
+<pre><code class="language-cpp">/*
+ * 轉動指定角度
+ */
+
+#include &lt;Stepper.h&gt;
+
+const int STEPS_PER_REV = 2048;
+Stepper myStepper(STEPS_PER_REV, 8, 10, 9, 11);
+
+void setup() {
+  myStepper.setSpeed(10);
+  Serial.begin(9600);
+}
+
+void loop() {
+  // 轉 90 度
+  Serial.println(&quot;轉 90 度&quot;);
+  rotateAngle(90);
+  delay(1000);
+
+  // 轉 180 度
+  Serial.println(&quot;轉 180 度&quot;);
+  rotateAngle(180);
+  delay(1000);
+
+  // 轉 -90 度（反方向）
+  Serial.println(&quot;轉 -90 度&quot;);
+  rotateAngle(-90);
+  delay(1000);
+
+  // 轉 -180 度
+  Serial.println(&quot;轉 -180 度&quot;);
+  rotateAngle(-180);
+  delay(1000);
+}
+
+// 角度轉換成步數並執行
+void rotateAngle(float angle) {
+  int steps = (angle / 360.0) * STEPS_PER_REV;
+  myStepper.step(steps);
+}
+</code></pre>
+<h3 id="3-accelstepper">範例 3：使用 AccelStepper（加減速）</h3>
+<pre><code class="language-cpp">/*
+ * 使用 AccelStepper 程式庫
+ * 支援平滑加速和減速
+ */
+
+#include &lt;AccelStepper.h&gt;
+
+// 定義馬達接線模式
+// FULL4WIRE = 4 線全步模式
+AccelStepper stepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
+
+void setup() {
+  // 設定最高速度（步/秒）
+  stepper.setMaxSpeed(1000);
+
+  // 設定加速度（步/秒²）
+  stepper.setAcceleration(500);
+
+  Serial.begin(9600);
+  Serial.println(&quot;AccelStepper 測試&quot;);
+}
+
+void loop() {
+  // 移動到位置 2048（順時針一圈）
+  Serial.println(&quot;移動到 +2048&quot;);
+  stepper.moveTo(2048);
+
+  // 執行移動（非阻塞，需要在 loop 中持續呼叫）
+  while (stepper.distanceToGo() != 0) {
+    stepper.run();
+  }
+
+  delay(1000);
+
+  // 移動到位置 0（回到原點）
+  Serial.println(&quot;移動回 0&quot;);
+  stepper.moveTo(0);
+
+  while (stepper.distanceToGo() != 0) {
+    stepper.run();
+  }
+
+  delay(1000);
+}
+</code></pre>
+<h3 id="4">範例 4：電位器控制位置</h3>
+<pre><code class="language-cpp">/*
+ * 使用電位器控制步進馬達位置
+ * 旋轉電位器 → 馬達跟著轉
+ */
+
+#include &lt;AccelStepper.h&gt;
+
+AccelStepper stepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
+const int POT_PIN = A0;
+
+void setup() {
+  stepper.setMaxSpeed(1000);
+  stepper.setAcceleration(500);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+  // 讀取電位器（0-1023）
+  int potValue = analogRead(POT_PIN);
+
+  // 對應到步數（0-2048，一圈）
+  int targetPosition = map(potValue, 0, 1023, 0, 2048);
+
+  // 移動到目標位置
+  stepper.moveTo(targetPosition);
+  stepper.run();
+
+  // 顯示狀態（每 100ms）
+  static unsigned long lastPrint = 0;
+  if (millis() - lastPrint &gt; 100) {
+    Serial.print(&quot;電位器：&quot;);
+    Serial.print(potValue);
+    Serial.print(&quot;  目標位置：&quot;);
+    Serial.print(targetPosition);
+    Serial.print(&quot;  目前位置：&quot;);
+    Serial.println(stepper.currentPosition());
+    lastPrint = millis();
+  }
+}
+</code></pre>
+<h3 id="5">範例 5：按鈕控制正反轉</h3>
+<pre><code class="language-cpp">/*
+ * 按鈕控制步進馬達
+ * 按鈕 A：順時針轉 90 度
+ * 按鈕 B：逆時針轉 90 度
+ */
+
+#include &lt;AccelStepper.h&gt;
+
+AccelStepper stepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
+
+const int BUTTON_CW = 2;   // 順時針按鈕
+const int BUTTON_CCW = 3;  // 逆時針按鈕
+const int STEPS_90 = 512;  // 90 度 = 2048/4
+
+void setup() {
+  stepper.setMaxSpeed(800);
+  stepper.setAcceleration(400);
+
+  pinMode(BUTTON_CW, INPUT_PULLUP);
+  pinMode(BUTTON_CCW, INPUT_PULLUP);
+
+  Serial.begin(9600);
+  Serial.println(&quot;按鈕控制步進馬達&quot;);
+  Serial.println(&quot;按鈕 A（D2）：順時針 90 度&quot;);
+  Serial.println(&quot;按鈕 B（D3）：逆時針 90 度&quot;);
+}
+
+void loop() {
+  // 檢查順時針按鈕
+  if (digitalRead(BUTTON_CW) == LOW) {
+    Serial.println(&quot;順時針 90 度&quot;);
+    stepper.move(STEPS_90);
+    delay(200);  // 消除彈跳
+  }
+
+  // 檢查逆時針按鈕
+  if (digitalRead(BUTTON_CCW) == LOW) {
+    Serial.println(&quot;逆時針 90 度&quot;);
+    stepper.move(-STEPS_90);
+    delay(200);
+  }
+
+  // 執行移動
+  stepper.run();
+}
+</code></pre>
+<h3 id="6">範例 6：自動窗簾控制</h3>
+<pre><code class="language-cpp">/*
+ * 智慧窗簾控制
+ * 使用光敏電阻感測光線
+ * 天亮自動開窗簾，天黑自動關窗簾
+ */
+
+#include &lt;AccelStepper.h&gt;
+
+AccelStepper stepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
+
+const int LDR_PIN = A0;
+const int LIGHT_THRESHOLD_HIGH = 700;  // 高於此值 = 天亮
+const int LIGHT_THRESHOLD_LOW = 300;   // 低於此值 = 天黑
+
+const int CURTAIN_OPEN_STEPS = 4096;   // 開窗簾步數（兩圈）
+const int CURTAIN_CLOSE_STEPS = 0;     // 關窗簾位置
+
+bool curtainOpen = false;
+
+void setup() {
+  stepper.setMaxSpeed(800);
+  stepper.setAcceleration(200);
+  stepper.setCurrentPosition(0);  // 假設開機時窗簾是關的
+
+  Serial.begin(9600);
+  Serial.println(&quot;=== 智慧窗簾控制 ===&quot;);
+}
+
+void loop() {
+  int lightLevel = analogRead(LDR_PIN);
+
+  // 顯示光線值
+  Serial.print(&quot;光線值：&quot;);
+  Serial.print(lightLevel);
+
+  // 天亮且窗簾關著 → 開窗簾
+  if (lightLevel &gt; LIGHT_THRESHOLD_HIGH &amp;&amp; !curtainOpen) {
+    Serial.println(&quot; → 天亮了，開窗簾&quot;);
+    stepper.moveTo(CURTAIN_OPEN_STEPS);
+    curtainOpen = true;
+  }
+  // 天黑且窗簾開著 → 關窗簾
+  else if (lightLevel &lt; LIGHT_THRESHOLD_LOW &amp;&amp; curtainOpen) {
+    Serial.println(&quot; → 天黑了，關窗簾&quot;);
+    stepper.moveTo(CURTAIN_CLOSE_STEPS);
+    curtainOpen = false;
+  }
+  else {
+    Serial.print(&quot; → 窗簾狀態：&quot;);
+    Serial.println(curtainOpen ? &quot;開&quot; : &quot;關&quot;);
+  }
+
+  // 執行馬達移動
+  stepper.run();
+
+  delay(1000);
+}
+</code></pre>
+<h3 id="7-delay">範例 7：定時旋轉（不使用 delay）</h3>
+<pre><code class="language-cpp">/*
+ * 使用 millis() 實現非阻塞定時旋轉
+ * 每 5 秒旋轉 90 度
+ */
+
+#include &lt;AccelStepper.h&gt;
+
+AccelStepper stepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
+
+unsigned long lastRotateTime = 0;
+const unsigned long ROTATE_INTERVAL = 5000;  // 5 秒
+const int STEPS_90 = 512;
+
+void setup() {
+  stepper.setMaxSpeed(800);
+  stepper.setAcceleration(400);
+
+  Serial.begin(9600);
+  Serial.println(&quot;每 5 秒旋轉 90 度&quot;);
+}
+
+void loop() {
+  // 檢查是否到達旋轉時間
+  if (millis() - lastRotateTime &gt;= ROTATE_INTERVAL) {
+    // 只有在馬達停止時才執行下一次旋轉
+    if (stepper.distanceToGo() == 0) {
+      Serial.print(&quot;旋轉！目前位置：&quot;);
+      Serial.println(stepper.currentPosition());
+
+      stepper.move(STEPS_90);  // 相對移動 90 度
+      lastRotateTime = millis();
+    }
+  }
+
+  // 持續執行馬達控制
+  stepper.run();
+
+  // 這裡可以同時執行其他任務
+  // 例如讀取感測器、控制 LED 等
+}
+</code></pre>
+<h3 id="8">範例 8：多顆步進馬達控制</h3>
+<pre><code class="language-cpp">/*
+ * 控制兩顆步進馬達
+ * 例如：XY 平台移動
+ */
+
+#include &lt;AccelStepper.h&gt;
+
+// X 軸馬達（D2, D3, D4, D5）
+AccelStepper stepperX(AccelStepper::FULL4WIRE, 2, 4, 3, 5);
+
+// Y 軸馬達（D8, D9, D10, D11）
+AccelStepper stepperY(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
+
+void setup() {
+  // X 軸設定
+  stepperX.setMaxSpeed(800);
+  stepperX.setAcceleration(400);
+
+  // Y 軸設定
+  stepperY.setMaxSpeed(800);
+  stepperY.setAcceleration(400);
+
+  Serial.begin(9600);
+  Serial.println(&quot;XY 平台控制&quot;);
+}
+
+void loop() {
+  // 移動到 (1024, 512)
+  Serial.println(&quot;移動到 (1024, 512)&quot;);
+  moveTo(1024, 512);
+
+  delay(1000);
+
+  // 移動到 (0, 2048)
+  Serial.println(&quot;移動到 (0, 2048)&quot;);
+  moveTo(0, 2048);
+
+  delay(1000);
+
+  // 回到原點
+  Serial.println(&quot;回到原點&quot;);
+  moveTo(0, 0);
+
+  delay(1000);
+}
+
+// 移動到指定 XY 座標
+void moveTo(int x, int y) {
+  stepperX.moveTo(x);
+  stepperY.moveTo(y);
+
+  // 同時執行兩軸移動
+  while (stepperX.distanceToGo() != 0 || stepperY.distanceToGo() != 0) {
+    stepperX.run();
+    stepperY.run();
+  }
+}
+</code></pre>
+<hr />
+<h2 id="_15">七、步數與角度換算</h2>
+<h3 id="28byj-48">28BYJ-48 計算公式</h3>
+<pre><code>28BYJ-48 規格：
+- 步距角：5.625°
+- 減速比：1:64
+- 實際步距角：5.625° / 64 = 0.087890625°
+
+計算：
+┌────────────────────────────────────────────────┐
+│                                                │
+│  全步模式（每步 4 個脈衝）：                    │
+│  每圈步數 = 360° / (5.625° / 64) / 4           │
+│          = 360 / 0.3515625                     │
+│          = 2048 步                             │
+│                                                │
+│  半步模式（每步 8 個脈衝）：                    │
+│  每圈步數 = 360° / (5.625° / 64) / 8           │
+│          = 4096 步                             │
+│                                                │
+└────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="_16">角度轉步數函數</h3>
+<pre><code class="language-cpp">// 28BYJ-48 常數
+const int STEPS_PER_REV = 2048;  // 全步模式
+
+// 角度轉步數
+int angleToSteps(float angle) {
+  return (int)(angle / 360.0 * STEPS_PER_REV);
+}
+
+// 步數轉角度
+float stepsToAngle(int steps) {
+  return (float)steps / STEPS_PER_REV * 360.0;
+}
+
+// 使用範例
+int steps90 = angleToSteps(90);    // = 512
+int steps45 = angleToSteps(45);    // = 256
+float angle = stepsToAngle(1024);  // = 180.0
+</code></pre>
+<h3 id="_17">速度計算</h3>
+<pre><code>轉速計算（RPM）：
+
+RPM = (步/秒) × 60 / 每圈步數
+
+範例：
+- 設定 stepper.setMaxSpeed(500) = 500 步/秒
+- RPM = 500 × 60 / 2048 ≈ 14.6 RPM
+
+28BYJ-48 建議最高轉速：約 15 RPM（太快會失步）
+</code></pre>
+<hr />
+<h2 id="_18">八、常見問題排解</h2>
+<h3 id="1">問題 1：馬達不動</h3>
+<pre><code>檢查步驟：
+
+□ 1. 電源有接嗎？驅動板 LED 有亮嗎？
+□ 2. IN1-IN4 接線正確嗎？
+□ 3. 馬達線有插好嗎？
+□ 4. 程式中腳位設定正確嗎？
+□ 5. 驅動板上的 LED 會依序閃爍嗎？
+     （如果不會，檢查程式）
+□ 6. 試著用手轉動馬達軸心，有阻力嗎？
+     （如果沒有，馬達可能沒通電）
+</code></pre>
+<h3 id="2_1">問題 2：馬達只會振動不會轉</h3>
+<pre><code>可能原因與解決方法：
+
+1. 腳位順序錯誤
+   → 28BYJ-48 正確順序：IN1, IN3, IN2, IN4
+   → Stepper(2048, 8, 10, 9, 11) 注意順序！
+
+2. 速度設定太快
+   → 降低 setSpeed() 或 setMaxSpeed() 的值
+   → 28BYJ-48 建議不超過 15 RPM
+
+3. 負載太重
+   → 減輕負載
+   → 使用更大扭力的馬達
+</code></pre>
+<h3 id="3">問題 3：馬達發熱嚴重</h3>
+<pre><code>這是正常現象！
+
+步進馬達即使不動也會持續通電以保持位置。
+
+降溫方法：
+1. 不需要保持位置時，關閉馬達電源
+   stepper.disableOutputs();  // AccelStepper
+
+2. 降低供電電壓（在規格範圍內）
+
+3. 加裝散熱片（大型馬達）
+
+4. 使用間歇性運轉
+</code></pre>
+<h3 id="4_1">問題 4：轉動不精確（失步）</h3>
+<pre><code>可能原因與解決方法：
+
+1. 速度太快
+   → 降低速度
+   → 增加加速度緩衝
+
+2. 加速太快
+   → 降低 setAcceleration() 值
+
+3. 負載慣性太大
+   → 使用更大扭力馬達
+   → 增加減速比
+
+4. 電源電流不足
+   → 使用外接電源
+   → 確保電源電流 &gt; 500mA
+</code></pre>
+<hr />
+<h2 id="_19">九、省電技巧</h2>
+<h3 id="_20">運轉完畢後斷電</h3>
+<pre><code class="language-cpp">#include &lt;AccelStepper.h&gt;
+
+AccelStepper stepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
+
+void setup() {
+  stepper.setMaxSpeed(800);
+  stepper.setAcceleration(400);
+}
+
+void loop() {
+  // 移動到目標位置
+  stepper.moveTo(2048);
+
+  while (stepper.distanceToGo() != 0) {
+    stepper.run();
+  }
+
+  // 到達後關閉輸出（省電、降溫）
+  stepper.disableOutputs();
+
+  delay(5000);
+
+  // 下次移動前重新啟用
+  stepper.enableOutputs();
+  stepper.moveTo(0);
+
+  while (stepper.distanceToGo() != 0) {
+    stepper.run();
+  }
+
+  stepper.disableOutputs();
+  delay(5000);
+}
+</code></pre>
+<hr />
+<h2 id="_21">十、接線與程式速查</h2>
+<h3 id="28byj-48-uln2003_2">28BYJ-48 + ULN2003 接線速查</h3>
+<table>
+<thead>
+<tr>
+<th>ULN2003</th>
+<th>Arduino Uno</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IN1</td>
+<td>D8</td>
+</tr>
+<tr>
+<td>IN2</td>
+<td>D9</td>
+</tr>
+<tr>
+<td>IN3</td>
+<td>D10</td>
+</tr>
+<tr>
+<td>IN4</td>
+<td>D11</td>
+</tr>
+<tr>
+<td>(+)</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>(-)</td>
+<td>GND</td>
+</tr>
+</tbody>
+</table>
+<h3 id="stepper_1">Stepper 程式庫速查</h3>
+<pre><code class="language-cpp">#include &lt;Stepper.h&gt;
+
+// 建立物件（注意腳位順序：IN1, IN3, IN2, IN4）
+Stepper motor(2048, 8, 10, 9, 11);
+
+motor.setSpeed(10);     // 設定轉速（RPM）
+motor.step(2048);       // 轉動步數（正=順時針）
+motor.step(-2048);      // 轉動步數（負=逆時針）
+</code></pre>
+<h3 id="accelstepper_1">AccelStepper 程式庫速查</h3>
+<pre><code class="language-cpp">#include &lt;AccelStepper.h&gt;
+
+// 建立物件
+AccelStepper stepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
+
+// 設定
+stepper.setMaxSpeed(1000);      // 最高速度（步/秒）
+stepper.setAcceleration(500);   // 加速度（步/秒²）
+stepper.setSpeed(500);          // 固定速度
+
+// 移動
+stepper.moveTo(2048);           // 移動到絕對位置
+stepper.move(512);              // 相對移動
+stepper.run();                  // 執行移動（需持續呼叫）
+stepper.runSpeed();             // 以固定速度運轉
+
+// 狀態
+stepper.currentPosition();      // 目前位置
+stepper.distanceToGo();         // 剩餘距離
+stepper.isRunning();            // 是否在移動中
+
+// 其他
+stepper.setCurrentPosition(0);  // 設定目前位置為原點
+stepper.stop();                 // 減速停止
+stepper.disableOutputs();       // 關閉輸出（省電）
+stepper.enableOutputs();        // 開啟輸出
+</code></pre>
+<h3 id="28byj-48_1">28BYJ-48 常用數值</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>數值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>每圈步數（全步）</td>
+<td>2048</td>
+</tr>
+<tr>
+<td>每圈步數（半步）</td>
+<td>4096</td>
+</tr>
+<tr>
+<td>90 度步數</td>
+<td>512</td>
+</tr>
+<tr>
+<td>45 度步數</td>
+<td>256</td>
+</tr>
+<tr>
+<td>建議最高轉速</td>
+<td>15 RPM</td>
+</tr>
+<tr>
+<td>建議 MaxSpeed</td>
+<td>800 步/秒</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_22">延伸學習</h2>
+<ul>
+<li><strong>關於伺服馬達.md</strong> - 另一種角度控制馬達</li>
+<li><strong>關於繼電器模組.md</strong> - 控制馬達電源開關</li>
+<li><strong>關於電源供應.md</strong> - 馬達電源規劃</li>
+<li><strong>關於紅外線遙控.md</strong> - 遙控控制馬達</li>
+</ul>
+<hr />
+<blockquote>
+<p>步進馬達是精密位置控制的好幫手，掌握它就能打造自動窗簾、CNC 設備等精準機械裝置！</p>
+</blockquote>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

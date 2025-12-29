@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於DHT溫溼度感測器</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="dht">關於 DHT 溫溼度感測器</h1>
+<h2 id="_1">前言：為什麼需要溫溼度感測器？</h2>
+<p>在智慧農業應用中，溫度和濕度是影響植物生長的關鍵因素：</p>
+<ul>
+<li><strong>溫度過高</strong>：植物蒸散過快、容易枯萎</li>
+<li><strong>溫度過低</strong>：生長緩慢、可能凍傷</li>
+<li><strong>濕度過高</strong>：容易滋生黴菌、病蟲害</li>
+<li><strong>濕度過低</strong>：植物缺水、葉片乾枯</li>
+</ul>
+<p>DHT 系列感測器是最常用的溫溼度感測器，價格便宜、使用簡單，非常適合入門學習！</p>
+<hr />
+<h2 id="dht_1">一、DHT 感測器是什麼？</h2>
+<h3 id="_2">一句話解釋</h3>
+<blockquote>
+<p>DHT 感測器是一個「溫度 + 濕度」二合一的數位感測器，只需要一根訊號線就能同時讀取溫度和濕度。</p>
+</blockquote>
+<h3 id="_3">外觀辨識</h3>
+<pre><code>DHT11（藍色外殼）           DHT22（白色外殼）
+┌─────────────┐            ┌─────────────┐
+│ ┌─────────┐ │            │ ┌─────────┐ │
+│ │ ░░░░░░░ │ │            │ │ ░░░░░░░ │ │
+│ │ ░░░░░░░ │ │            │ │ ░░░░░░░ │ │
+│ │ ░░░░░░░ │ │            │ │ ░░░░░░░ │ │
+│ └─────────┘ │            │ └─────────┘ │
+│   DHT11     │            │   DHT22     │
+│  (藍色)     │            │   AM2302    │
+└──┬──┬──┬──┬─┘            └──┬──┬──┬──┬─┘
+   │  │  │  │                 │  │  │  │
+   1  2  3  4                 1  2  3  4
+
+腳位（由左至右）：
+1 = VCC（電源正極）
+2 = DATA（資料訊號）
+3 = NC（未使用）
+4 = GND（電源負極）
+</code></pre>
+<h3 id="vs">模組版 vs 裸裝版</h3>
+<pre><code>【裸裝版】需要自己加電阻      【模組版】已內建電阻，推薦初學者
+
+    ┌───────┐                   ┌─────────────┐
+    │ DHT11 │                   │  DHT11模組   │
+    └┬─┬─┬─┬┘                   │ ┌───────┐   │
+     │ │ │ │                    │ │ DHT11 │   │
+     │ │ │ │                    │ └───────┘   │
+     1 2 3 4                    │  S  +  -    │
+     │ │   │                    └──┬──┬──┬────┘
+     │ │   │                       │  │  │
+    需加 4.7K~10K                  DATA VCC GND
+    上拉電阻                       (只有3隻腳，更簡單！)
+</code></pre>
+<hr />
+<h2 id="dht11-vs-dht22">二、DHT11 vs DHT22 比較</h2>
+<h3 id="_4">規格比較表</h3>
+<table>
+<thead>
+<tr>
+<th>規格</th>
+<th>DHT11</th>
+<th>DHT22 (AM2302)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>外觀</strong></td>
+<td>藍色</td>
+<td>白色</td>
+</tr>
+<tr>
+<td><strong>溫度範圍</strong></td>
+<td>0°C ~ 50°C</td>
+<td>-40°C ~ 80°C</td>
+</tr>
+<tr>
+<td><strong>溫度精度</strong></td>
+<td>±2°C</td>
+<td>±0.5°C</td>
+</tr>
+<tr>
+<td><strong>濕度範圍</strong></td>
+<td>20% ~ 80% RH</td>
+<td>0% ~ 100% RH</td>
+</tr>
+<tr>
+<td><strong>濕度精度</strong></td>
+<td>±5% RH</td>
+<td>±2% RH</td>
+</tr>
+<tr>
+<td><strong>取樣間隔</strong></td>
+<td>1 秒</td>
+<td>2 秒</td>
+</tr>
+<tr>
+<td><strong>價格</strong></td>
+<td>便宜（約 30-50 元）</td>
+<td>較貴（約 80-150 元）</td>
+</tr>
+<tr>
+<td><strong>適用場景</strong></td>
+<td>室內、一般用途</td>
+<td>精密量測、戶外</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_5">如何選擇？</h3>
+<pre><code>選擇建議：
+
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│  初學練習 / 預算有限 / 室內環境                      │
+│  ────────────────────────────                       │
+│  → 選 DHT11（便宜、夠用）                           │
+│                                                     │
+│  需要較高精度 / 戶外或極端環境 / 專業應用            │
+│  ────────────────────────────────────               │
+│  → 選 DHT22（精度高、範圍廣）                       │
+│                                                     │
+│  智慧溫室課程                                        │
+│  ──────────                                         │
+│  → DHT11 即可滿足需求                               │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_6">三、工作原理</h2>
+<h3 id="_7">濕度感測原理</h3>
+<pre><code>電容式濕度感測：
+
+┌─────────────────────────────────────────┐
+│                                         │
+│   濕度感測元件結構：                     │
+│                                         │
+│      電極 ─────┬─────                   │
+│                │                        │
+│      吸濕材料  █████  ← 會吸收空氣中水分 │
+│                │                        │
+│      電極 ─────┴─────                   │
+│                                         │
+│   原理：                                │
+│   - 吸濕材料吸收水分後，介電常數改變     │
+│   - 電容值隨之改變                       │
+│   - 測量電容值 → 換算成濕度值            │
+│                                         │
+└─────────────────────────────────────────┘
+</code></pre>
+<h3 id="_8">溫度感測原理</h3>
+<pre><code>NTC 熱敏電阻：
+
+     阻值
+      ↑
+      │
+  高  │╲
+      │ ╲
+      │  ╲
+      │   ╲
+  低  │    ╲────
+      └──────────→ 溫度
+        低    高
+
+原理：
+- NTC = Negative Temperature Coefficient（負溫度係數）
+- 溫度升高 → 電阻降低
+- 測量電阻值 → 換算成溫度值
+</code></pre>
+<h3 id="_9">資料傳輸格式</h3>
+<pre><code>DHT 單線通訊協定：
+
+主機（Arduino）發送起始訊號：
+    ____          ____________________
+        |________|                     （拉低 18ms，再拉高）
+
+感測器回應：
+         ____    ____    ____    ____
+    ____|    |__|    |__|    |__|    |__
+
+    回應訊號    資料位元（40 bits）
+
+資料格式（40 bits）：
+┌──────────┬──────────┬──────────┬──────────┬──────────┐
+│ 濕度整數  │ 濕度小數  │ 溫度整數  │ 溫度小數  │  校驗碼   │
+│  8 bits  │  8 bits  │  8 bits  │  8 bits  │  8 bits  │
+└──────────┴──────────┴──────────┴──────────┴──────────┘
+
+校驗碼 = 前四個位元組相加的低 8 位
+</code></pre>
+<hr />
+<h2 id="_10">四、接線方式</h2>
+<h3 id="dht11dht22">DHT11/DHT22 模組版接線（推薦）</h3>
+<pre><code>Arduino 與 DHT 模組接線：
+
+    Arduino UNO              DHT 模組
+    ┌─────────┐            ┌─────────┐
+    │         │            │  DHT11  │
+    │      5V ├────────────┤ VCC (+) │
+    │         │            │         │
+    │      D2 ├────────────┤ DATA(S) │
+    │         │            │         │
+    │     GND ├────────────┤ GND (-) │
+    │         │            │         │
+    └─────────┘            └─────────┘
+
+    只需要 3 條線！
+
+    注意：不同模組的腳位順序可能不同，
+          請看模組上的標示（S、+、-）
+</code></pre>
+<h3 id="dht11dht22_1">DHT11/DHT22 裸裝版接線</h3>
+<pre><code>裸裝 DHT 需要加上拉電阻：
+
+    Arduino UNO              DHT11/22（4腳）
+    ┌─────────┐              ┌───────┐
+    │         │              │       │
+    │      5V ├──────┬───────┤ Pin 1 │ VCC
+    │         │      │       │       │
+    │         │     ┌┴┐      │       │
+    │         │     │ │4.7K  │       │
+    │         │     │ │~10K  │       │
+    │         │     └┬┘      │       │
+    │      D2 ├──────┴───────┤ Pin 2 │ DATA
+    │         │              │       │
+    │         │      ×       │ Pin 3 │ NC（不接）
+    │         │              │       │
+    │     GND ├──────────────┤ Pin 4 │ GND
+    │         │              │       │
+    └─────────┘              └───────┘
+
+    ⚠️ 上拉電阻很重要！沒有的話訊號會不穩定
+</code></pre>
+<h3 id="_11">接線圖解</h3>
+<pre><code>麵包板接線範例（模組版）：
+
+         Arduino
+    ┌───────────────┐
+    │ ○ ○ ○ ... ○ ○ │ ← 數位腳位
+    │               │
+    │    [USB]      │
+    │               │
+    │ ○ ○ ○ ○ ○ ○   │ ← 電源腳位
+    │ 5V    GND     │
+    └─┬──────┬──────┘
+      │      │
+      │      │      DHT 模組
+      │      │     ┌─────────┐
+      │      │     │ + S  -  │
+      │      └─────┼─────●   │
+      └────────────┼─●       │
+           D2 ─────┼───●     │
+                   └─────────┘
+</code></pre>
+<hr />
+<h2 id="_12">五、程式庫安裝</h2>
+<h3 id="dht_2">安裝 DHT 程式庫</h3>
+<pre><code>Arduino IDE 安裝步驟：
+
+1. 開啟 Arduino IDE
+
+2. 點選選單：草稿碼 → 匯入程式庫 → 管理程式庫
+   (Sketch → Include Library → Manage Libraries)
+
+3. 在搜尋框輸入「DHT」
+
+4. 找到「DHT sensor library」by Adafruit
+   ┌────────────────────────────────────────┐
+   │ DHT sensor library                     │
+   │ by Adafruit                            │
+   │ Version: 1.4.x                         │
+   │                          [安裝] ←點這  │
+   └────────────────────────────────────────┘
+
+5. 系統會提示安裝相依程式庫「Adafruit Unified Sensor」
+   → 點選「Install All」全部安裝
+
+6. 安裝完成！
+</code></pre>
+<h3 id="_13">確認安裝成功</h3>
+<pre><code class="language-cpp">// 如果能正常編譯，表示安裝成功
+#include &lt;DHT.h&gt;
+
+void setup() {
+  // 空的也沒關係
+}
+
+void loop() {
+}
+</code></pre>
+<hr />
+<h2 id="arduino">六、Arduino 程式範例</h2>
+<h3 id="1">範例 1：基本讀取</h3>
+<pre><code class="language-cpp">/*
+ * DHT11/DHT22 基本讀取範例
+ * 每 2 秒讀取一次溫溼度並顯示在序列監視器
+ */
+
+#include &lt;DHT.h&gt;
+
+// 設定 DHT 感測器
+#define DHT_PIN 2       // DATA 腳位接 D2
+#define DHT_TYPE DHT11  // 使用 DHT11，若是 DHT22 改成 DHT22
+
+DHT dht(DHT_PIN, DHT_TYPE);
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println(&quot;DHT 溫溼度感測器測試&quot;);
+  Serial.println(&quot;--------------------&quot;);
+
+  dht.begin();  // 初始化感測器
+}
+
+void loop() {
+  // 讀取濕度（相對濕度 %）
+  float humidity = dht.readHumidity();
+
+  // 讀取溫度（攝氏 °C）
+  float temperature = dht.readTemperature();
+
+  // 檢查是否讀取失敗
+  if (isnan(humidity) || isnan(temperature)) {
+    Serial.println(&quot;讀取 DHT 感測器失敗！&quot;);
+    delay(2000);
+    return;
+  }
+
+  // 顯示結果
+  Serial.print(&quot;濕度：&quot;);
+  Serial.print(humidity);
+  Serial.print(&quot; %\t&quot;);
+
+  Serial.print(&quot;溫度：&quot;);
+  Serial.print(temperature);
+  Serial.println(&quot; °C&quot;);
+
+  delay(2000);  // DHT11 最快每秒讀一次，DHT22 每 2 秒
+}
+</code></pre>
+<h3 id="2">範例 2：讀取華氏溫度與體感溫度</h3>
+<pre><code class="language-cpp">/*
+ * 讀取攝氏、華氏溫度與體感溫度（Heat Index）
+ */
+
+#include &lt;DHT.h&gt;
+
+#define DHT_PIN 2
+#define DHT_TYPE DHT11
+
+DHT dht(DHT_PIN, DHT_TYPE);
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println(&quot;溫溼度完整讀取&quot;);
+  dht.begin();
+}
+
+void loop() {
+  float humidity = dht.readHumidity();
+  float tempC = dht.readTemperature();       // 攝氏
+  float tempF = dht.readTemperature(true);   // 華氏
+
+  if (isnan(humidity) || isnan(tempC) || isnan(tempF)) {
+    Serial.println(&quot;讀取失敗！&quot;);
+    delay(2000);
+    return;
+  }
+
+  // 計算體感溫度（Heat Index）
+  float heatIndexC = dht.computeHeatIndex(tempC, humidity, false);
+  float heatIndexF = dht.computeHeatIndex(tempF, humidity);
+
+  Serial.println(&quot;================&quot;);
+  Serial.print(&quot;濕度：&quot;);
+  Serial.print(humidity);
+  Serial.println(&quot; %&quot;);
+
+  Serial.print(&quot;溫度：&quot;);
+  Serial.print(tempC);
+  Serial.print(&quot; °C / &quot;);
+  Serial.print(tempF);
+  Serial.println(&quot; °F&quot;);
+
+  Serial.print(&quot;體感溫度：&quot;);
+  Serial.print(heatIndexC);
+  Serial.print(&quot; °C / &quot;);
+  Serial.print(heatIndexF);
+  Serial.println(&quot; °F&quot;);
+
+  delay(2000);
+}
+</code></pre>
+<h3 id="3">範例 3：溫溼度警報系統</h3>
+<pre><code class="language-cpp">/*
+ * 溫溼度警報系統
+ * - 溫度過高或濕度異常時亮警示燈
+ */
+
+#include &lt;DHT.h&gt;
+
+#define DHT_PIN 2
+#define DHT_TYPE DHT11
+
+#define LED_RED 5     // 紅燈：溫度過高
+#define LED_YELLOW 6  // 黃燈：濕度過低
+#define LED_GREEN 7   // 綠燈：正常
+
+// 警報門檻值
+#define TEMP_HIGH 30.0    // 溫度上限（°C）
+#define HUMIDITY_LOW 40.0 // 濕度下限（%）
+
+DHT dht(DHT_PIN, DHT_TYPE);
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+
+  // 開機測試：所有燈閃一下
+  digitalWrite(LED_RED, HIGH);
+  digitalWrite(LED_YELLOW, HIGH);
+  digitalWrite(LED_GREEN, HIGH);
+  delay(500);
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_YELLOW, LOW);
+  digitalWrite(LED_GREEN, LOW);
+
+  dht.begin();
+  Serial.println(&quot;溫溼度警報系統啟動&quot;);
+}
+
+void loop() {
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature();
+
+  if (isnan(humidity) || isnan(temperature)) {
+    Serial.println(&quot;感測器錯誤！&quot;);
+    // 錯誤時紅燈閃爍
+    digitalWrite(LED_RED, HIGH);
+    delay(200);
+    digitalWrite(LED_RED, LOW);
+    delay(200);
+    return;
+  }
+
+  // 顯示讀數
+  Serial.print(&quot;溫度：&quot;);
+  Serial.print(temperature);
+  Serial.print(&quot;°C  濕度：&quot;);
+  Serial.print(humidity);
+  Serial.print(&quot;%  狀態：&quot;);
+
+  // 判斷狀態並控制 LED
+  bool tempAlert = (temperature &gt; TEMP_HIGH);
+  bool humidityAlert = (humidity &lt; HUMIDITY_LOW);
+
+  if (tempAlert || humidityAlert) {
+    digitalWrite(LED_GREEN, LOW);
+
+    if (tempAlert) {
+      digitalWrite(LED_RED, HIGH);
+      Serial.print(&quot;溫度過高! &quot;);
+    } else {
+      digitalWrite(LED_RED, LOW);
+    }
+
+    if (humidityAlert) {
+      digitalWrite(LED_YELLOW, HIGH);
+      Serial.print(&quot;濕度過低! &quot;);
+    } else {
+      digitalWrite(LED_YELLOW, LOW);
+    }
+    Serial.println();
+  } else {
+    // 正常狀態
+    digitalWrite(LED_RED, LOW);
+    digitalWrite(LED_YELLOW, LOW);
+    digitalWrite(LED_GREEN, HIGH);
+    Serial.println(&quot;正常&quot;);
+  }
+
+  delay(2000);
+}
+</code></pre>
+<h3 id="4-lcd">範例 4：搭配 LCD 顯示</h3>
+<pre><code class="language-cpp">/*
+ * DHT + LCD 顯示溫溼度
+ * LCD 使用 I2C 介面（位址 0x27）
+ */
+
+#include &lt;DHT.h&gt;
+#include &lt;Wire.h&gt;
+#include &lt;LiquidCrystal_I2C.h&gt;
+
+#define DHT_PIN 2
+#define DHT_TYPE DHT11
+
+DHT dht(DHT_PIN, DHT_TYPE);
+LiquidCrystal_I2C lcd(0x27, 16, 2);  // I2C 位址 0x27，16x2 LCD
+
+// 自訂字元：溫度計圖示
+byte thermometer[8] = {
+  B00100,
+  B01010,
+  B01010,
+  B01010,
+  B01110,
+  B11111,
+  B11111,
+  B01110
+};
+
+// 自訂字元：水滴圖示
+byte droplet[8] = {
+  B00100,
+  B00100,
+  B01010,
+  B01010,
+  B10001,
+  B10001,
+  B10001,
+  B01110
+};
+
+void setup() {
+  Serial.begin(9600);
+
+  dht.begin();
+
+  lcd.init();
+  lcd.backlight();
+  lcd.createChar(0, thermometer);
+  lcd.createChar(1, droplet);
+
+  lcd.setCursor(0, 0);
+  lcd.print(&quot;DHT Sensor Ready&quot;);
+  delay(2000);
+  lcd.clear();
+}
+
+void loop() {
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature();
+
+  lcd.setCursor(0, 0);
+
+  if (isnan(humidity) || isnan(temperature)) {
+    lcd.print(&quot;Sensor Error!   &quot;);
+    lcd.setCursor(0, 1);
+    lcd.print(&quot;                &quot;);
+    delay(2000);
+    return;
+  }
+
+  // 第一行：溫度
+  lcd.write(byte(0));  // 溫度計圖示
+  lcd.print(&quot; Temp: &quot;);
+  lcd.print(temperature, 1);
+  lcd.print((char)223);  // 度數符號
+  lcd.print(&quot;C &quot;);
+
+  // 第二行：濕度
+  lcd.setCursor(0, 1);
+  lcd.write(byte(1));  // 水滴圖示
+  lcd.print(&quot; Humi: &quot;);
+  lcd.print(humidity, 1);
+  lcd.print(&quot;%  &quot;);
+
+  delay(2000);
+}
+</code></pre>
+<h3 id="5">範例 5：資料記錄（每分鐘取樣）</h3>
+<pre><code class="language-cpp">/*
+ * 溫溼度資料記錄器
+ * 每分鐘記錄一次，輸出 CSV 格式
+ * 可用序列監視器的「儲存輸出」功能存檔
+ */
+
+#include &lt;DHT.h&gt;
+
+#define DHT_PIN 2
+#define DHT_TYPE DHT11
+
+DHT dht(DHT_PIN, DHT_TYPE);
+
+unsigned long sampleCount = 0;
+unsigned long lastSampleTime = 0;
+const unsigned long SAMPLE_INTERVAL = 60000;  // 60 秒
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+
+  // 輸出 CSV 標題
+  Serial.println(&quot;Sample,Time(s),Temperature(C),Humidity(%)&quot;);
+
+  // 立即取第一筆
+  takeSample();
+}
+
+void loop() {
+  unsigned long currentTime = millis();
+
+  if (currentTime - lastSampleTime &gt;= SAMPLE_INTERVAL) {
+    takeSample();
+    lastSampleTime = currentTime;
+  }
+}
+
+void takeSample() {
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature();
+
+  sampleCount++;
+
+  Serial.print(sampleCount);
+  Serial.print(&quot;,&quot;);
+  Serial.print(millis() / 1000);
+  Serial.print(&quot;,&quot;);
+
+  if (isnan(humidity) || isnan(temperature)) {
+    Serial.println(&quot;ERROR,ERROR&quot;);
+    return;
+  }
+
+  Serial.print(temperature, 1);
+  Serial.print(&quot;,&quot;);
+  Serial.println(humidity, 1);
+}
+</code></pre>
+<h3 id="6">範例 6：智慧溫室控制（完整範例）</h3>
+<pre><code class="language-cpp">/*
+ * 智慧溫室環境控制系統
+ *
+ * 功能：
+ * - 溫度過高（&gt;28°C）→ 開啟風扇
+ * - 溫度降低（&lt;26°C）→ 關閉風扇（遲滯控制）
+ * - 濕度過低（&lt;50%）→ 開啟霧化器
+ * - 濕度足夠（&gt;60%）→ 關閉霧化器（遲滯控制）
+ */
+
+#include &lt;DHT.h&gt;
+
+#define DHT_PIN 2
+#define DHT_TYPE DHT11
+
+#define FAN_RELAY 7       // 風扇繼電器
+#define HUMIDIFIER_RELAY 8 // 霧化器繼電器
+
+// 溫度控制門檻（遲滯控制）
+#define TEMP_HIGH 28.0    // 高於此溫度開風扇
+#define TEMP_LOW 26.0     // 低於此溫度關風扇
+
+// 濕度控制門檻（遲滯控制）
+#define HUMIDITY_LOW 50.0  // 低於此濕度開霧化器
+#define HUMIDITY_HIGH 60.0 // 高於此濕度關霧化器
+
+DHT dht(DHT_PIN, DHT_TYPE);
+
+bool fanState = false;
+bool humidifierState = false;
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(FAN_RELAY, OUTPUT);
+  pinMode(HUMIDIFIER_RELAY, OUTPUT);
+
+  digitalWrite(FAN_RELAY, LOW);
+  digitalWrite(HUMIDIFIER_RELAY, LOW);
+
+  dht.begin();
+
+  Serial.println(&quot;=== 智慧溫室環境控制系統 ===&quot;);
+  Serial.println(&quot;溫度控制：28°C 開風扇，26°C 關風扇&quot;);
+  Serial.println(&quot;濕度控制：50% 開霧化器，60% 關霧化器&quot;);
+  Serial.println(&quot;============================&quot;);
+}
+
+void loop() {
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature();
+
+  if (isnan(humidity) || isnan(temperature)) {
+    Serial.println(&quot;[錯誤] 無法讀取感測器！&quot;);
+    delay(2000);
+    return;
+  }
+
+  // === 溫度控制（遲滯） ===
+  if (temperature &gt;= TEMP_HIGH &amp;&amp; !fanState) {
+    fanState = true;
+    digitalWrite(FAN_RELAY, HIGH);
+    Serial.println(&quot;[動作] 溫度過高，開啟風扇&quot;);
+  }
+  else if (temperature &lt;= TEMP_LOW &amp;&amp; fanState) {
+    fanState = false;
+    digitalWrite(FAN_RELAY, LOW);
+    Serial.println(&quot;[動作] 溫度正常，關閉風扇&quot;);
+  }
+
+  // === 濕度控制（遲滯） ===
+  if (humidity &lt;= HUMIDITY_LOW &amp;&amp; !humidifierState) {
+    humidifierState = true;
+    digitalWrite(HUMIDIFIER_RELAY, HIGH);
+    Serial.println(&quot;[動作] 濕度過低，開啟霧化器&quot;);
+  }
+  else if (humidity &gt;= HUMIDITY_HIGH &amp;&amp; humidifierState) {
+    humidifierState = false;
+    digitalWrite(HUMIDIFIER_RELAY, LOW);
+    Serial.println(&quot;[動作] 濕度足夠，關閉霧化器&quot;);
+  }
+
+  // === 顯示目前狀態 ===
+  Serial.print(&quot;[狀態] &quot;);
+  Serial.print(&quot;溫度：&quot;);
+  Serial.print(temperature, 1);
+  Serial.print(&quot;°C  濕度：&quot;);
+  Serial.print(humidity, 1);
+  Serial.print(&quot;%  風扇：&quot;);
+  Serial.print(fanState ? &quot;ON&quot; : &quot;OFF&quot;);
+  Serial.print(&quot;  霧化器：&quot;);
+  Serial.println(humidifierState ? &quot;ON&quot; : &quot;OFF&quot;);
+
+  delay(2000);
+}
+</code></pre>
+<hr />
+<h2 id="_14">七、進階技巧</h2>
+<h3 id="dht_3">多顆 DHT 感測器</h3>
+<pre><code class="language-cpp">/*
+ * 同時使用多顆 DHT 感測器
+ * 例如：室內、室外各一顆
+ */
+
+#include &lt;DHT.h&gt;
+
+#define DHT_INDOOR_PIN 2
+#define DHT_OUTDOOR_PIN 3
+
+DHT dhtIndoor(DHT_INDOOR_PIN, DHT11);
+DHT dhtOutdoor(DHT_OUTDOOR_PIN, DHT22);  // 戶外用 DHT22 精度較高
+
+void setup() {
+  Serial.begin(9600);
+  dhtIndoor.begin();
+  dhtOutdoor.begin();
+}
+
+void loop() {
+  // 讀取室內
+  float tempIn = dhtIndoor.readTemperature();
+  float humIn = dhtIndoor.readHumidity();
+
+  // 讀取室外
+  float tempOut = dhtOutdoor.readTemperature();
+  float humOut = dhtOutdoor.readHumidity();
+
+  Serial.println(&quot;=== 溫溼度比較 ===&quot;);
+  Serial.print(&quot;室內：&quot;);
+  Serial.print(tempIn);
+  Serial.print(&quot;°C / &quot;);
+  Serial.print(humIn);
+  Serial.println(&quot;%&quot;);
+
+  Serial.print(&quot;室外：&quot;);
+  Serial.print(tempOut);
+  Serial.print(&quot;°C / &quot;);
+  Serial.print(humOut);
+  Serial.println(&quot;%&quot;);
+
+  Serial.print(&quot;溫差：&quot;);
+  Serial.print(tempIn - tempOut);
+  Serial.println(&quot;°C&quot;);
+
+  delay(3000);
+}
+</code></pre>
+<h3 id="_15">平均值濾波（減少雜訊）</h3>
+<pre><code class="language-cpp">/*
+ * 使用移動平均減少讀值跳動
+ */
+
+#include &lt;DHT.h&gt;
+
+#define DHT_PIN 2
+#define DHT_TYPE DHT11
+#define SAMPLE_COUNT 5  // 取 5 次平均
+
+DHT dht(DHT_PIN, DHT_TYPE);
+
+float tempSamples[SAMPLE_COUNT];
+float humiSamples[SAMPLE_COUNT];
+int sampleIndex = 0;
+bool bufferFull = false;
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+
+  // 初始化陣列
+  for (int i = 0; i &lt; SAMPLE_COUNT; i++) {
+    tempSamples[i] = 0;
+    humiSamples[i] = 0;
+  }
+}
+
+void loop() {
+  float temp = dht.readTemperature();
+  float humi = dht.readHumidity();
+
+  if (isnan(temp) || isnan(humi)) {
+    delay(2000);
+    return;
+  }
+
+  // 存入樣本
+  tempSamples[sampleIndex] = temp;
+  humiSamples[sampleIndex] = humi;
+
+  sampleIndex++;
+  if (sampleIndex &gt;= SAMPLE_COUNT) {
+    sampleIndex = 0;
+    bufferFull = true;
+  }
+
+  // 計算平均值
+  if (bufferFull) {
+    float avgTemp = 0, avgHumi = 0;
+    for (int i = 0; i &lt; SAMPLE_COUNT; i++) {
+      avgTemp += tempSamples[i];
+      avgHumi += humiSamples[i];
+    }
+    avgTemp /= SAMPLE_COUNT;
+    avgHumi /= SAMPLE_COUNT;
+
+    Serial.print(&quot;即時值：&quot;);
+    Serial.print(temp, 1);
+    Serial.print(&quot;°C / &quot;);
+    Serial.print(humi, 1);
+    Serial.print(&quot;%  平均值：&quot;);
+    Serial.print(avgTemp, 1);
+    Serial.print(&quot;°C / &quot;);
+    Serial.print(avgHumi, 1);
+    Serial.println(&quot;%&quot;);
+  }
+
+  delay(2000);
+}
+</code></pre>
+<hr />
+<h2 id="_16">八、常見問題排解</h2>
+<h3 id="1-nan">問題 1：讀取失敗（顯示 nan）</h3>
+<pre><code>檢查步驟：
+
+□ 1. 接線正確嗎？VCC、GND、DATA 都有接？
+□ 2. VCC 接的是 5V 還是 3.3V？（建議用 5V）
+□ 3. 裸裝版有加上拉電阻嗎？
+□ 4. 程式中 DHT_TYPE 設定正確嗎？（DHT11 或 DHT22）
+□ 5. 腳位設定正確嗎？
+□ 6. 感測器有損壞嗎？（換一顆試試）
+</code></pre>
+<h3 id="2_1">問題 2：數值不穩定/跳動</h3>
+<pre><code>可能原因與解決方法：
+
+1. 電源不穩
+   → 在 VCC 和 GND 之間加 0.1μF 電容
+
+2. 訊號線太長
+   → 縮短杜邦線長度
+   → 加強上拉電阻（改用 4.7K）
+
+3. 感測器反應時間
+   → DHT11 最快每 1 秒讀一次
+   → DHT22 最快每 2 秒讀一次
+   → 讀太快會得到錯誤值
+
+4. 環境干擾
+   → 遠離馬達、繼電器等產生電磁干擾的元件
+</code></pre>
+<h3 id="3-99-1">問題 3：濕度永遠顯示 99% 或 1%</h3>
+<pre><code>可能原因：
+
+1. 感測器損壞或受潮
+   → 更換新的感測器
+
+2. 接線錯誤（VCC 和 DATA 接反）
+   → 檢查接線
+
+3. 環境極端（如密閉空間）
+   → 確認環境是否正常
+</code></pre>
+<h3 id="4">問題 4：溫度明顯偏差</h3>
+<pre><code>可能原因：
+
+1. DHT11 本身精度只有 ±2°C
+   → 這是正常現象，精度需求高請用 DHT22
+
+2. 感測器靠近發熱元件
+   → 遠離 Arduino、馬達等會發熱的元件
+
+3. 陽光直射
+   → 避免陽光直射感測器
+
+4. 需要校正
+   → 與標準溫度計比較，程式中加減補償值
+
+   float temperature = dht.readTemperature();
+   temperature = temperature - 1.5;  // 補償 -1.5°C
+</code></pre>
+<hr />
+<h2 id="dht_4">九、DHT 感測器腳位速查</h2>
+<h3 id="_17">各版本腳位整理</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                    DHT 感測器腳位速查                        │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  【4 腳裸裝版】DHT11/DHT22                                  │
+│  ┌─────┐                                                    │
+│  │     │  Pin 1 = VCC（3.3V~5V）                           │
+│  │ DHT │  Pin 2 = DATA（需加上拉電阻）                      │
+│  │     │  Pin 3 = NC（不接）                                │
+│  └┬┬┬┬─┘  Pin 4 = GND                                       │
+│   1234                                                      │
+│                                                             │
+│  【3 腳模組版】                                              │
+│  ┌─────┐                                                    │
+│  │ DHT │  標示可能為：                                      │
+│  │模組 │  S / OUT / DATA = 訊號（接 Arduino 數位腳）        │
+│  └─┬┬┬─┘  + / VCC = 電源正（接 5V）                         │
+│    SV-    - / GND = 電源負（接 GND）                        │
+│    或                                                       │
+│    +-S    ⚠️ 注意：不同廠商腳位順序可能不同！               │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_18">十、程式速查表</h2>
+<h3 id="_19">基本用法</h3>
+<pre><code class="language-cpp">#include &lt;DHT.h&gt;
+
+// 1. 定義腳位和型號
+#define DHT_PIN 2
+#define DHT_TYPE DHT11  // 或 DHT22
+
+// 2. 建立物件
+DHT dht(DHT_PIN, DHT_TYPE);
+
+void setup() {
+  // 3. 初始化
+  dht.begin();
+}
+
+void loop() {
+  // 4. 讀取數值
+  float h = dht.readHumidity();        // 濕度 %
+  float t = dht.readTemperature();     // 溫度 °C
+  float f = dht.readTemperature(true); // 溫度 °F
+
+  // 5. 檢查錯誤
+  if (isnan(h) || isnan(t)) {
+    // 讀取失敗
+  }
+
+  // 6. 計算體感溫度
+  float hi = dht.computeHeatIndex(t, h, false); // °C
+}
+</code></pre>
+<h3 id="dht_5">DHT 程式庫常用函數</h3>
+<table>
+<thead>
+<tr>
+<th>函數</th>
+<th>說明</th>
+<th>回傳值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>begin()</code></td>
+<td>初始化感測器</td>
+<td>void</td>
+</tr>
+<tr>
+<td><code>readTemperature()</code></td>
+<td>讀取攝氏溫度</td>
+<td>float (°C)</td>
+</tr>
+<tr>
+<td><code>readTemperature(true)</code></td>
+<td>讀取華氏溫度</td>
+<td>float (°F)</td>
+</tr>
+<tr>
+<td><code>readHumidity()</code></td>
+<td>讀取相對濕度</td>
+<td>float (%)</td>
+</tr>
+<tr>
+<td><code>computeHeatIndex(t, h, false)</code></td>
+<td>計算體感溫度（攝氏）</td>
+<td>float (°C)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_20">延伸學習</h2>
+<ul>
+<li><strong>關於繼電器模組.md</strong> - 用 DHT 讀值控制風扇、霧化器</li>
+<li><strong>關於LCD液晶螢幕.md</strong> - 將溫溼度顯示在螢幕上</li>
+<li><strong>關於MQTT訊息.md</strong> - 將溫溼度資料傳送到雲端</li>
+<li><strong>關於序列埠通訊.md</strong> - 將資料傳送到電腦記錄</li>
+</ul>
+<hr />
+<blockquote>
+<p>DHT 感測器是學習環境監測的最佳入門元件，掌握它之後就能打造各種溫溼度相關的智慧應用！</p>
+</blockquote>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

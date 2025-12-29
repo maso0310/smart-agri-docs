@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet 互動地圖教學</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            line-height: 1.8;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        h1 {
+            text-align: center; font-size: 2.5rem; margin-bottom: 10px;
+            background: linear-gradient(135deg, #199900, #77dd77);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #a0aec0; margin-bottom: 40px; font-size: 1.1rem; }
+        .section {
+            background: rgba(255, 255, 255, 0.05); border-radius: 16px;
+            padding: 30px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h2 { color: #77dd77; font-size: 1.5rem; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid rgba(119, 221, 119, 0.3); }
+        h3 { color: #63b3ed; font-size: 1.2rem; margin: 25px 0 15px 0; }
+        p { margin-bottom: 15px; color: #cbd5e0; }
+        .code-block {
+            background: #0d1117; border-radius: 8px; padding: 20px; margin: 15px 0;
+            overflow-x: auto; border: 1px solid #30363d;
+        }
+        .code-block code { font-family: 'Consolas', monospace; font-size: 0.9rem; color: #e6edf3; white-space: pre; }
+        .keyword { color: #ff7b72; }
+        .string { color: #a5d6ff; }
+        .number { color: #79c0ff; }
+        .function { color: #d2a8ff; }
+        .comment { color: #8b949e; }
+        .tip-box {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.1), rgba(99, 179, 237, 0.1));
+            border-left: 4px solid #4fd1c5; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0;
+        }
+        .tip-box strong { color: #4fd1c5; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px 15px; text-align: left; border: 1px solid rgba(255, 255, 255, 0.1); }
+        th { background: rgba(119, 221, 119, 0.2); color: #77dd77; }
+        tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+        .home-btn {
+            position: fixed; bottom: 30px; right: 30px;
+            background: linear-gradient(135deg, #199900, #77dd77);
+            color: #1a1a2e; padding: 15px 25px; border-radius: 50px;
+            text-decoration: none; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(119, 221, 119, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .home-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(119, 221, 119, 0.4); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗺️ Leaflet 互動地圖教學</h1>
+        <p class="subtitle">建立農業 GIS 視覺化應用</p>
+
+        <div class="section">
+            <h2>📚 什麼是 Leaflet？</h2>
+            <p>Leaflet 是一個輕量級的 JavaScript 地圖函式庫，可以輕鬆建立互動式網頁地圖，適合展示農場位置、感測器分布、作物分區等地理資訊。</p>
+
+            <h3>引入 Leaflet</h3>
+            <div class="code-block">
+<code><span class="comment">&lt;!-- 在 HTML head 中加入 --&gt;</span>
+&lt;link rel=<span class="string">"stylesheet"</span> href=<span class="string">"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"</span>&gt;
+&lt;script src=<span class="string">"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"</span>&gt;&lt;/script&gt;
+
+<span class="comment">&lt;!-- 地圖容器 --&gt;</span>
+&lt;div id=<span class="string">"map"</span> style=<span class="string">"height: 500px;"</span>&gt;&lt;/div&gt;</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🌍 建立基本地圖</h2>
+            <div class="code-block">
+<code><span class="comment">// 建立地圖，中心點設在台灣</span>
+<span class="keyword">const</span> map = L.<span class="function">map</span>(<span class="string">'map'</span>).<span class="function">setView</span>([<span class="number">23.5</span>, <span class="number">121</span>], <span class="number">8</span>);
+
+<span class="comment">// 加入圖磚圖層（底圖）</span>
+L.<span class="function">tileLayer</span>(<span class="string">'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'</span>, {
+    attribution: <span class="string">'&copy; OpenStreetMap'</span>,
+    maxZoom: <span class="number">19</span>
+}).<span class="function">addTo</span>(map);
+
+<span class="comment">// 其他常用圖磚來源</span>
+<span class="comment">// 衛星影像: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'</span>
+<span class="comment">// 地形圖: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'</span></code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📍 標記與彈出視窗</h2>
+            <div class="code-block">
+<code><span class="comment">// 基本標記</span>
+<span class="keyword">const</span> marker = L.<span class="function">marker</span>([<span class="number">25.033</span>, <span class="number">121.565</span>]).<span class="function">addTo</span>(map);
+
+<span class="comment">// 加入彈出視窗</span>
+marker.<span class="function">bindPopup</span>(<span class="string">'&lt;b&gt;農場 A&lt;/b&gt;&lt;br&gt;溫度: 25°C'</span>);
+
+<span class="comment">// 自訂圖示</span>
+<span class="keyword">const</span> sensorIcon = L.<span class="function">icon</span>({
+    iconUrl: <span class="string">'sensor-icon.png'</span>,
+    iconSize: [<span class="number">32</span>, <span class="number">32</span>],
+    iconAnchor: [<span class="number">16</span>, <span class="number">32</span>],
+    popupAnchor: [<span class="number">0</span>, -<span class="number">32</span>]
+});
+
+L.<span class="function">marker</span>([<span class="number">25.0</span>, <span class="number">121.5</span>], { icon: sensorIcon })
+    .<span class="function">bindPopup</span>(<span class="string">'溫度感測器'</span>)
+    .<span class="function">addTo</span>(map);
+
+<span class="comment">// 批次加入多個標記</span>
+<span class="keyword">const</span> sensors = [
+    { lat: <span class="number">25.0</span>, lng: <span class="number">121.5</span>, name: <span class="string">'感測器 A'</span>, temp: <span class="number">25</span> },
+    { lat: <span class="number">25.1</span>, lng: <span class="number">121.6</span>, name: <span class="string">'感測器 B'</span>, temp: <span class="number">28</span> },
+    { lat: <span class="number">24.9</span>, lng: <span class="number">121.4</span>, name: <span class="string">'感測器 C'</span>, temp: <span class="number">22</span> }
+];
+
+sensors.<span class="function">forEach</span>(sensor => {
+    L.<span class="function">marker</span>([sensor.lat, sensor.lng])
+        .<span class="function">bindPopup</span>(<span class="string">`&lt;b&gt;${sensor.name}&lt;/b&gt;&lt;br&gt;溫度: ${sensor.temp}°C`</span>)
+        .<span class="function">addTo</span>(map);
+});</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">🔷 繪製形狀</h2>
+            <div class="code-block">
+<code><span class="comment">// 圓形（標示範圍）</span>
+L.<span class="function">circle</span>([<span class="number">25.0</span>, <span class="number">121.5</span>], {
+    color: <span class="string">'green'</span>,
+    fillColor: <span class="string">'#0f0'</span>,
+    fillOpacity: <span class="number">0.3</span>,
+    radius: <span class="number">500</span>  <span class="comment">// 半徑（公尺）</span>
+}).<span class="function">addTo</span>(map);
+
+<span class="comment">// 多邊形（農田邊界）</span>
+<span class="keyword">const</span> fieldBoundary = [
+    [<span class="number">25.00</span>, <span class="number">121.50</span>],
+    [<span class="number">25.01</span>, <span class="number">121.50</span>],
+    [<span class="number">25.01</span>, <span class="number">121.51</span>],
+    [<span class="number">25.00</span>, <span class="number">121.51</span>]
+];
+
+L.<span class="function">polygon</span>(fieldBoundary, {
+    color: <span class="string">'#228b22'</span>,
+    fillColor: <span class="string">'#90ee90'</span>,
+    fillOpacity: <span class="number">0.5</span>
+}).<span class="function">bindPopup</span>(<span class="string">'水稻田 A 區'</span>).<span class="function">addTo</span>(map);
+
+<span class="comment">// 線條（路徑、水道）</span>
+<span class="keyword">const</span> irrigationPath = [
+    [<span class="number">25.00</span>, <span class="number">121.50</span>],
+    [<span class="number">25.005</span>, <span class="number">121.505</span>],
+    [<span class="number">25.01</span>, <span class="number">121.51</span>]
+];
+
+L.<span class="function">polyline</span>(irrigationPath, {
+    color: <span class="string">'blue'</span>,
+    weight: <span class="number">3</span>,
+    dashArray: <span class="string">'5, 10'</span>  <span class="comment">// 虛線</span>
+}).<span class="function">bindPopup</span>(<span class="string">'灌溉水道'</span>).<span class="function">addTo</span>(map);</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">📊 GeoJSON 資料</h2>
+            <div class="code-block">
+<code><span class="comment">// GeoJSON 格式的農田資料</span>
+<span class="keyword">const</span> farmData = {
+    <span class="string">"type"</span>: <span class="string">"FeatureCollection"</span>,
+    <span class="string">"features"</span>: [
+        {
+            <span class="string">"type"</span>: <span class="string">"Feature"</span>,
+            <span class="string">"properties"</span>: {
+                <span class="string">"name"</span>: <span class="string">"A區水稻田"</span>,
+                <span class="string">"crop"</span>: <span class="string">"水稻"</span>,
+                <span class="string">"ndvi"</span>: <span class="number">0.72</span>
+            },
+            <span class="string">"geometry"</span>: {
+                <span class="string">"type"</span>: <span class="string">"Polygon"</span>,
+                <span class="string">"coordinates"</span>: [[[<span class="number">121.50</span>, <span class="number">25.00</span>], [<span class="number">121.51</span>, <span class="number">25.00</span>], [<span class="number">121.51</span>, <span class="number">25.01</span>], [<span class="number">121.50</span>, <span class="number">25.01</span>], [<span class="number">121.50</span>, <span class="number">25.00</span>]]]
+            }
+        }
+    ]
+};
+
+<span class="comment">// 載入 GeoJSON 並根據屬性設定樣式</span>
+L.<span class="function">geoJSON</span>(farmData, {
+    style: <span class="keyword">function</span>(feature) {
+        <span class="keyword">const</span> ndvi = feature.properties.ndvi;
+        <span class="keyword">return</span> {
+            fillColor: ndvi > <span class="number">0.6</span> ? <span class="string">'#228b22'</span> : ndvi > <span class="number">0.3</span> ? <span class="string">'#ffd700'</span> : <span class="string">'#ff6347'</span>,
+            weight: <span class="number">2</span>,
+            color: <span class="string">'white'</span>,
+            fillOpacity: <span class="number">0.7</span>
+        };
+    },
+    onEachFeature: <span class="keyword">function</span>(feature, layer) {
+        layer.<span class="function">bindPopup</span>(<span class="string">`
+            &lt;b&gt;${feature.properties.name}&lt;/b&gt;&lt;br&gt;
+            作物: ${feature.properties.crop}&lt;br&gt;
+            NDVI: ${feature.properties.ndvi}
+        `</span>);
+    }
+}).<span class="function">addTo</span>(map);</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">🖱️ 互動事件</h2>
+            <div class="code-block">
+<code><span class="comment">// 地圖點擊事件</span>
+map.<span class="function">on</span>(<span class="string">'click'</span>, <span class="keyword">function</span>(e) {
+    <span class="keyword">const</span> { lat, lng } = e.latlng;
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">`點擊座標: ${lat}, ${lng}`</span>);
+
+    <span class="comment">// 在點擊位置加入標記</span>
+    L.<span class="function">marker</span>([lat, lng])
+        .<span class="function">bindPopup</span>(<span class="string">`新增感測器&lt;br&gt;座標: ${lat.toFixed(4)}, ${lng.toFixed(4)}`</span>)
+        .<span class="function">addTo</span>(map)
+        .<span class="function">openPopup</span>();
+});
+
+<span class="comment">// 標記點擊事件</span>
+marker.<span class="function">on</span>(<span class="string">'click'</span>, <span class="keyword">function</span>(e) {
+    <span class="function">fetchSensorData</span>(e.target.options.sensorId);
+});
+
+<span class="comment">// 縮放結束事件</span>
+map.<span class="function">on</span>(<span class="string">'zoomend'</span>, <span class="keyword">function</span>() {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'目前縮放等級:'</span>, map.<span class="function">getZoom</span>());
+});</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">🌾 農業地圖完整範例</h2>
+            <div class="code-block">
+<code><span class="comment">// 農場監控地圖</span>
+<span class="keyword">const</span> FarmMap = {
+    map: <span class="keyword">null</span>,
+    markers: [],
+
+    <span class="function">init</span>() {
+        <span class="keyword">this</span>.map = L.<span class="function">map</span>(<span class="string">'map'</span>).<span class="function">setView</span>([<span class="number">23.5</span>, <span class="number">120.5</span>], <span class="number">12</span>);
+
+        L.<span class="function">tileLayer</span>(<span class="string">'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'</span>, {
+            attribution: <span class="string">'Tiles &copy; Esri'</span>
+        }).<span class="function">addTo</span>(<span class="keyword">this</span>.map);
+
+        <span class="keyword">this</span>.<span class="function">loadSensors</span>();
+        <span class="keyword">this</span>.<span class="function">loadFields</span>();
+    },
+
+    <span class="keyword">async</span> <span class="function">loadSensors</span>() {
+        <span class="keyword">const</span> sensors = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'/api/sensors'</span>).<span class="function">then</span>(r => r.<span class="function">json</span>());
+
+        sensors.<span class="function">forEach</span>(sensor => {
+            <span class="keyword">const</span> color = sensor.temp > <span class="number">30</span> ? <span class="string">'red'</span> : sensor.temp > <span class="number">20</span> ? <span class="string">'orange'</span> : <span class="string">'green'</span>;
+
+            <span class="keyword">const</span> icon = L.<span class="function">divIcon</span>({
+                className: <span class="string">'sensor-marker'</span>,
+                html: <span class="string">`&lt;div style="background:${color}; padding:8px; border-radius:50%;"&gt;${sensor.temp}°&lt;/div&gt;`</span>
+            });
+
+            L.<span class="function">marker</span>([sensor.lat, sensor.lng], { icon })
+                .<span class="function">bindPopup</span>(<span class="string">`
+                    &lt;b&gt;${sensor.name}&lt;/b&gt;&lt;br&gt;
+                    溫度: ${sensor.temp}°C&lt;br&gt;
+                    濕度: ${sensor.humidity}%&lt;br&gt;
+                    更新: ${sensor.lastUpdate}
+                `</span>)
+                .<span class="function">addTo</span>(<span class="keyword">this</span>.map);
+        });
+    },
+
+    <span class="keyword">async</span> <span class="function">loadFields</span>() {
+        <span class="keyword">const</span> fields = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'/api/fields'</span>).<span class="function">then</span>(r => r.<span class="function">json</span>());
+
+        L.<span class="function">geoJSON</span>(fields, {
+            style: feature => ({
+                fillColor: <span class="keyword">this</span>.<span class="function">getNDVIColor</span>(feature.properties.ndvi),
+                weight: <span class="number">2</span>,
+                color: <span class="string">'white'</span>,
+                fillOpacity: <span class="number">0.6</span>
+            }),
+            onEachFeature: (feature, layer) => {
+                layer.<span class="function">bindPopup</span>(<span class="string">`
+                    &lt;b&gt;${feature.properties.name}&lt;/b&gt;&lt;br&gt;
+                    作物: ${feature.properties.crop}&lt;br&gt;
+                    NDVI: ${feature.properties.ndvi}&lt;br&gt;
+                    面積: ${feature.properties.area} 公頃
+                `</span>);
+            }
+        }).<span class="function">addTo</span>(<span class="keyword">this</span>.map);
+    },
+
+    <span class="function">getNDVIColor</span>(ndvi) {
+        <span class="keyword">return</span> ndvi > <span class="number">0.7</span> ? <span class="string">'#006400'</span> :
+               ndvi > <span class="number">0.5</span> ? <span class="string">'#228b22'</span> :
+               ndvi > <span class="number">0.3</span> ? <span class="string">'#ffd700'</span> : <span class="string">'#ff6347'</span>;
+    }
+};
+
+document.<span class="function">addEventListener</span>(<span class="string">'DOMContentLoaded'</span>, () => FarmMap.<span class="function">init</span>());</code>
+            </div>
+        </div>
+
+        <a href="文件索引.html" class="home-btn">🏠 返回首頁</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於 GDAL (Geospatial Data Abstraction Library)</title>
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --text-color: #eee;
+            --card-bg: #16213e;
+            --accent-color: #0f3460;
+            --highlight-color: #e94560;
+            --code-bg: #0d1117;
+            --border-color: #30475e;
+            --link-color: #4da6ff;
+            --table-header: #1f4068;
+            --table-row-even: #1a1a2e;
+            --table-row-odd: #16213e;
+        }
+        .light-mode {
+            --bg-color: #f5f5f5;
+            --text-color: #333;
+            --card-bg: #fff;
+            --accent-color: #e3e3e3;
+            --highlight-color: #d32f2f;
+            --code-bg: #f8f8f8;
+            --border-color: #ddd;
+            --link-color: #1976d2;
+            --table-header: #4a6fa5;
+            --table-row-even: #f0f0f0;
+            --table-row-odd: #fff;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin: 20px 0 30px;
+            color: var(--highlight-color);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 40px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--highlight-color);
+            color: var(--highlight-color);
+            font-size: 1.5rem;
+        }
+        h3 {
+            margin-top: 25px;
+            color: var(--link-color);
+            font-size: 1.2rem;
+        }
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        pre {
+            background-color: var(--code-bg);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid var(--highlight-color);
+        }
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95rem;
+            color: #e6e6e6;
+        }
+        .light-mode code {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+        th {
+            background-color: var(--table-header);
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: var(--table-row-even);
+        }
+        tr:nth-child(odd) {
+            background-color: var(--table-row-odd);
+        }
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .home-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 25px;
+            background-color: var(--highlight-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: transform 0.3s, background-color 0.3s;
+            text-decoration: none;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .home-btn:hover {
+            transform: scale(1.1);
+            background-color: #c82333;
+            text-decoration: none;
+        }
+        .theme-toggle {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: transform 0.3s;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .highlight {
+            background-color: var(--accent-color);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        .tip {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #4caf50;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .warning {
+            background-color: rgba(255, 152, 0, 0.1);
+            border-left: 4px solid #ff9800;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .cmd-box {
+            background-color: #000;
+            color: #0f0;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Consolas', monospace;
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 1.7rem; }
+            pre { padding: 12px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="home-btn" title="返回首頁">🏠</a>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換主題">🌓</button>
+
+    <div class="container">
+        <h1>關於 GDAL (Geospatial Data Abstraction Library)</h1>
+
+        <div class="card">
+            <h2>GDAL 簡介</h2>
+            <p>
+                <strong>GDAL (Geospatial Data Abstraction Library)</strong> 是一個用於讀取和寫入網格地理空間資料格式的
+                開源函式庫。它由 Open Source Geospatial Foundation (OSGeo) 維護，是地理資訊系統 (GIS) 領域中最重要的
+                基礎函式庫之一。
+            </p>
+            <p>
+                GDAL 實際上包含兩個主要組件：
+            </p>
+            <ul>
+                <li><strong>GDAL</strong>：處理網格資料（Raster），如衛星影像、數值高程模型 (DEM)</li>
+                <li><strong>OGR</strong>：處理向量資料（Vector），如 Shapefile、GeoJSON</li>
+            </ul>
+            <p>
+                在智慧農業領域，GDAL 被廣泛用於處理衛星遙測影像、無人機航拍影像、土壤分析圖、地形圖等空間資料。
+            </p>
+        </div>
+
+        <h2>安裝方式</h2>
+
+        <h3>Windows 安裝</h3>
+        <div class="cmd-box">
+# 使用 conda 安裝（推薦）<br>
+conda install -c conda-forge gdal<br><br>
+
+# 使用 pip 安裝<br>
+pip install gdal<br><br>
+
+# 安裝 OSGeo4W（包含完整 GDAL 工具）<br>
+# 下載: https://trac.osgeo.org/osgeo4w/
+        </div>
+
+        <h3>Linux 安裝</h3>
+        <div class="cmd-box">
+# Ubuntu / Debian<br>
+sudo apt-get update<br>
+sudo apt-get install gdal-bin libgdal-dev python3-gdal<br><br>
+
+# CentOS / RHEL<br>
+sudo yum install gdal gdal-devel python3-gdal
+        </div>
+
+        <h3>驗證安裝</h3>
+<pre><code># 命令列驗證
+gdalinfo --version
+
+# Python 驗證
+from osgeo import gdal
+print(gdal.__version__)</code></pre>
+
+        <h2>支援的資料格式</h2>
+
+        <h3>網格格式 (Raster)</h3>
+        <table>
+            <tr>
+                <th>格式名稱</th>
+                <th>副檔名</th>
+                <th>說明</th>
+                <th>農業應用</th>
+            </tr>
+            <tr>
+                <td>GeoTIFF</td>
+                <td>.tif, .tiff</td>
+                <td>最常用的地理影像格式</td>
+                <td>衛星影像、正射影像</td>
+            </tr>
+            <tr>
+                <td>JPEG 2000</td>
+                <td>.jp2</td>
+                <td>高壓縮比影像格式</td>
+                <td>Sentinel-2 衛星資料</td>
+            </tr>
+            <tr>
+                <td>NetCDF</td>
+                <td>.nc</td>
+                <td>多維陣列資料格式</td>
+                <td>氣象資料、時序分析</td>
+            </tr>
+            <tr>
+                <td>HDF4/HDF5</td>
+                <td>.hdf, .h5</td>
+                <td>階層式資料格式</td>
+                <td>MODIS 衛星資料</td>
+            </tr>
+            <tr>
+                <td>ASCII Grid</td>
+                <td>.asc</td>
+                <td>純文字網格格式</td>
+                <td>DEM、土壤資料交換</td>
+            </tr>
+            <tr>
+                <td>ENVI</td>
+                <td>.img, .hdr</td>
+                <td>多光譜影像格式</td>
+                <td>高光譜影像分析</td>
+            </tr>
+            <tr>
+                <td>COG</td>
+                <td>.tif</td>
+                <td>Cloud Optimized GeoTIFF</td>
+                <td>雲端大規模影像</td>
+            </tr>
+        </table>
+
+        <h3>向量格式 (Vector)</h3>
+        <table>
+            <tr>
+                <th>格式名稱</th>
+                <th>副檔名</th>
+                <th>說明</th>
+                <th>農業應用</th>
+            </tr>
+            <tr>
+                <td>Shapefile</td>
+                <td>.shp</td>
+                <td>傳統 GIS 向量格式</td>
+                <td>農地邊界、灌溉設施</td>
+            </tr>
+            <tr>
+                <td>GeoJSON</td>
+                <td>.geojson</td>
+                <td>JSON 格式地理資料</td>
+                <td>Web GIS、API 交換</td>
+            </tr>
+            <tr>
+                <td>GeoPackage</td>
+                <td>.gpkg</td>
+                <td>SQLite 基礎的 GIS 格式</td>
+                <td>現代資料庫儲存</td>
+            </tr>
+            <tr>
+                <td>KML/KMZ</td>
+                <td>.kml, .kmz</td>
+                <td>Google Earth 格式</td>
+                <td>田區標註、規劃展示</td>
+            </tr>
+            <tr>
+                <td>GPS Exchange</td>
+                <td>.gpx</td>
+                <td>GPS 軌跡資料</td>
+                <td>農機軌跡記錄</td>
+            </tr>
+            <tr>
+                <td>CSV/XYZ</td>
+                <td>.csv, .xyz</td>
+                <td>純文字座標資料</td>
+                <td>採樣點、觀測站</td>
+            </tr>
+        </table>
+
+        <h2>GDAL 命令列工具</h2>
+
+        <div class="card">
+            <h3>gdalinfo - 查看影像資訊</h3>
+            <div class="cmd-box">
+# 查看基本資訊<br>
+gdalinfo satellite_image.tif<br><br>
+
+# 查看詳細統計資料<br>
+gdalinfo -stats satellite_image.tif<br><br>
+
+# JSON 格式輸出<br>
+gdalinfo -json satellite_image.tif
+            </div>
+<pre><code># 輸出範例
+Driver: GTiff/GeoTIFF
+Files: satellite_image.tif
+Size is 10980, 10980
+Coordinate System is:
+PROJCRS["WGS 84 / UTM zone 51N",...]
+Origin = (199980.000000000000000,2800020.000000000000000)
+Pixel Size = (10.000000000000000,-10.000000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Band 1 Block=10980x1 Type=UInt16, ColorInterp=Gray
+  Min=0.000 Max=10000.000</code></pre>
+        </div>
+
+        <div class="card">
+            <h3>gdal_translate - 格式轉換與裁剪</h3>
+            <div class="cmd-box">
+# 格式轉換 (TIFF 轉 PNG)<br>
+gdal_translate -of PNG input.tif output.png<br><br>
+
+# 指定輸出範圍裁剪<br>
+gdal_translate -projwin 120.5 25.5 121.0 25.0 input.tif crop.tif<br><br>
+
+# 壓縮輸出<br>
+gdal_translate -co COMPRESS=LZW input.tif compressed.tif<br><br>
+
+# 重新縮放至 8-bit<br>
+gdal_translate -scale -ot Byte input.tif output_8bit.tif<br><br>
+
+# 提取特定波段<br>
+gdal_translate -b 4 -b 3 -b 2 input.tif rgb_output.tif
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>gdalwarp - 重投影與重採樣</h3>
+            <div class="cmd-box">
+# 座標系統轉換 (WGS84 轉 TWD97)<br>
+gdalwarp -t_srs EPSG:3826 input.tif output_twd97.tif<br><br>
+
+# 重採樣至特定解析度<br>
+gdalwarp -tr 10 10 -r bilinear input.tif output_10m.tif<br><br>
+
+# 使用向量邊界裁剪<br>
+gdalwarp -cutline boundary.shp -crop_to_cutline input.tif cropped.tif<br><br>
+
+# 多檔案鑲嵌<br>
+gdalwarp input1.tif input2.tif input3.tif mosaic.tif
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>gdal_calc.py - 網格計算器</h3>
+            <div class="cmd-box">
+# 計算 NDVI<br>
+gdal_calc.py -A nir.tif -B red.tif --outfile=ndvi.tif \<br>
+&nbsp;&nbsp;--calc="(A-B)/(A+B)" --type=Float32<br><br>
+
+# 影像遮罩<br>
+gdal_calc.py -A input.tif -B mask.tif --outfile=masked.tif \<br>
+&nbsp;&nbsp;--calc="A*B"<br><br>
+
+# 條件運算<br>
+gdal_calc.py -A ndvi.tif --outfile=vegetation.tif \<br>
+&nbsp;&nbsp;--calc="where(A>0.3, 1, 0)"
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>ogr2ogr - 向量格式轉換</h3>
+            <div class="cmd-box">
+# Shapefile 轉 GeoJSON<br>
+ogr2ogr -f "GeoJSON" output.geojson input.shp<br><br>
+
+# 座標系統轉換<br>
+ogr2ogr -t_srs EPSG:4326 output.shp input.shp<br><br>
+
+# 空間過濾<br>
+ogr2ogr -spat 120.0 24.0 121.0 25.0 output.shp input.shp<br><br>
+
+# 屬性過濾<br>
+ogr2ogr -where "AREA > 1000" output.shp input.shp
+            </div>
+        </div>
+
+        <h2>Python GDAL 程式設計</h2>
+
+        <h3>讀取網格資料</h3>
+<pre><code>from osgeo import gdal
+import numpy as np
+
+# 開啟影像檔案
+dataset = gdal.Open('satellite_image.tif')
+
+if dataset is None:
+    print("無法開啟檔案")
+else:
+    # 取得基本資訊
+    print(f"驅動程式: {dataset.GetDriver().ShortName}")
+    print(f"影像大小: {dataset.RasterXSize} x {dataset.RasterYSize}")
+    print(f"波段數量: {dataset.RasterCount}")
+
+    # 取得地理轉換參數
+    geotransform = dataset.GetGeoTransform()
+    print(f"左上角座標: ({geotransform[0]}, {geotransform[3]})")
+    print(f"像素大小: {geotransform[1]} x {abs(geotransform[5])}")
+
+    # 取得投影資訊
+    projection = dataset.GetProjection()
+    print(f"座標系統: {projection[:50]}...")
+
+    # 讀取波段資料為 NumPy 陣列
+    band = dataset.GetRasterBand(1)
+    data = band.ReadAsArray()
+    print(f"資料類型: {data.dtype}")
+    print(f"數值範圍: {data.min()} - {data.max()}")
+
+    # 取得 NoData 值
+    nodata = band.GetNoDataValue()
+    print(f"NoData 值: {nodata}")
+
+    # 關閉資料集
+    dataset = None</code></pre>
+
+        <h3>寫入網格資料</h3>
+<pre><code>from osgeo import gdal, osr
+import numpy as np
+
+def create_geotiff(output_path, data, geotransform, epsg_code,
+                   nodata_value=-9999, compress='LZW'):
+    """
+    建立 GeoTIFF 檔案
+
+    Args:
+        output_path: 輸出檔案路徑
+        data: NumPy 陣列 (可為 2D 或 3D)
+        geotransform: 地理轉換參數 (tuple of 6)
+        epsg_code: EPSG 座標系統代碼
+        nodata_value: 無效值
+        compress: 壓縮方式
+    """
+    # 確保資料為 3D
+    if data.ndim == 2:
+        data = data[np.newaxis, :, :]
+
+    bands, rows, cols = data.shape
+
+    # 根據資料類型選擇 GDAL 類型
+    dtype_map = {
+        'uint8': gdal.GDT_Byte,
+        'uint16': gdal.GDT_UInt16,
+        'int16': gdal.GDT_Int16,
+        'uint32': gdal.GDT_UInt32,
+        'int32': gdal.GDT_Int32,
+        'float32': gdal.GDT_Float32,
+        'float64': gdal.GDT_Float64
+    }
+    gdal_type = dtype_map.get(str(data.dtype), gdal.GDT_Float32)
+
+    # 建立輸出檔案
+    driver = gdal.GetDriverByName('GTiff')
+    options = [f'COMPRESS={compress}', 'TILED=YES']
+    dataset = driver.Create(output_path, cols, rows, bands, gdal_type, options)
+
+    # 設定地理轉換
+    dataset.SetGeoTransform(geotransform)
+
+    # 設定投影
+    srs = osr.SpatialReference()
+    srs.ImportFromEPSG(epsg_code)
+    dataset.SetProjection(srs.ExportToWkt())
+
+    # 寫入波段資料
+    for i in range(bands):
+        band = dataset.GetRasterBand(i + 1)
+        band.WriteArray(data[i])
+        band.SetNoDataValue(nodata_value)
+        band.FlushCache()
+
+    # 關閉檔案
+    dataset = None
+    print(f"檔案已儲存: {output_path}")
+
+
+# 使用範例
+# 建立測試資料
+rows, cols = 1000, 1000
+test_data = np.random.rand(rows, cols).astype(np.float32)
+
+# 地理轉換: (左上X, 像素寬, 旋轉, 左上Y, 旋轉, 像素高)
+geotransform = (120.0, 0.0001, 0, 25.0, 0, -0.0001)
+
+# 儲存為 GeoTIFF
+create_geotiff('output.tif', test_data, geotransform, 4326)</code></pre>
+
+        <h3>計算植被指數 NDVI</h3>
+<pre><code>from osgeo import gdal
+import numpy as np
+
+def calculate_ndvi(red_path, nir_path, output_path):
+    """
+    計算 NDVI (Normalized Difference Vegetation Index)
+
+    Args:
+        red_path: 紅光波段影像路徑
+        nir_path: 近紅外波段影像路徑
+        output_path: NDVI 輸出路徑
+    """
+    # 讀取紅光波段
+    red_ds = gdal.Open(red_path)
+    red = red_ds.GetRasterBand(1).ReadAsArray().astype(np.float32)
+
+    # 讀取近紅外波段
+    nir_ds = gdal.Open(nir_path)
+    nir = nir_ds.GetRasterBand(1).ReadAsArray().astype(np.float32)
+
+    # 計算 NDVI
+    # 避免除以零
+    np.seterr(divide='ignore', invalid='ignore')
+    ndvi = (nir - red) / (nir + red)
+
+    # 處理無效值
+    ndvi = np.where(np.isfinite(ndvi), ndvi, -9999)
+    ndvi = np.clip(ndvi, -1, 1)
+
+    # 建立輸出檔案
+    driver = gdal.GetDriverByName('GTiff')
+    rows, cols = ndvi.shape
+    out_ds = driver.Create(output_path, cols, rows, 1, gdal.GDT_Float32,
+                           ['COMPRESS=LZW'])
+
+    # 複製投影與地理轉換
+    out_ds.SetGeoTransform(red_ds.GetGeoTransform())
+    out_ds.SetProjection(red_ds.GetProjection())
+
+    # 寫入 NDVI
+    out_band = out_ds.GetRasterBand(1)
+    out_band.WriteArray(ndvi)
+    out_band.SetNoDataValue(-9999)
+    out_band.FlushCache()
+
+    # 計算統計
+    out_band.ComputeStatistics(False)
+
+    # 關閉檔案
+    red_ds = None
+    nir_ds = None
+    out_ds = None
+
+    # 輸出統計資訊
+    valid_ndvi = ndvi[ndvi != -9999]
+    print(f"NDVI 計算完成: {output_path}")
+    print(f"有效像素數: {len(valid_ndvi)}")
+    print(f"NDVI 範圍: {valid_ndvi.min():.3f} ~ {valid_ndvi.max():.3f}")
+    print(f"NDVI 平均: {valid_ndvi.mean():.3f}")
+
+    return ndvi
+
+
+# 計算其他植被指數
+def calculate_vegetation_indices(band_paths):
+    """
+    計算多種植被指數
+
+    Args:
+        band_paths: 包含各波段路徑的字典
+                   {'blue': ..., 'green': ..., 'red': ..., 'nir': ...}
+
+    Returns:
+        dict: 各植被指數的 NumPy 陣列
+    """
+    # 讀取波段
+    bands = {}
+    for name, path in band_paths.items():
+        ds = gdal.Open(path)
+        bands[name] = ds.GetRasterBand(1).ReadAsArray().astype(np.float32)
+        ds = None
+
+    red = bands.get('red')
+    nir = bands.get('nir')
+    green = bands.get('green')
+    blue = bands.get('blue')
+
+    np.seterr(divide='ignore', invalid='ignore')
+    indices = {}
+
+    # NDVI: 植被健康
+    if red is not None and nir is not None:
+        indices['NDVI'] = (nir - red) / (nir + red)
+
+    # GNDVI: 葉綠素含量
+    if green is not None and nir is not None:
+        indices['GNDVI'] = (nir - green) / (nir + green)
+
+    # NDWI: 水分含量
+    if green is not None and nir is not None:
+        indices['NDWI'] = (green - nir) / (green + nir)
+
+    # EVI: 增強型植被指數
+    if red is not None and nir is not None and blue is not None:
+        indices['EVI'] = 2.5 * (nir - red) / (nir + 6*red - 7.5*blue + 1)
+
+    # SAVI: 土壤調整植被指數
+    if red is not None and nir is not None:
+        L = 0.5  # 土壤調整因子
+        indices['SAVI'] = (nir - red) * (1 + L) / (nir + red + L)
+
+    return indices</code></pre>
+
+        <h3>影像裁剪與重投影</h3>
+<pre><code>from osgeo import gdal, ogr
+
+def clip_raster_by_vector(raster_path, vector_path, output_path,
+                          target_epsg=None, resolution=None):
+    """
+    使用向量邊界裁剪網格資料
+
+    Args:
+        raster_path: 輸入網格路徑
+        vector_path: 裁剪邊界向量路徑
+        output_path: 輸出路徑
+        target_epsg: 目標座標系統 EPSG 代碼
+        resolution: 目標解析度 (x, y)
+    """
+    # 建立裁剪選項
+    warp_options = gdal.WarpOptions(
+        cutlineDSName=vector_path,
+        cropToCutline=True,
+        dstNodata=-9999,
+        format='GTiff',
+        creationOptions=['COMPRESS=LZW', 'TILED=YES']
+    )
+
+    # 設定目標座標系統
+    if target_epsg:
+        warp_options = gdal.WarpOptions(
+            cutlineDSName=vector_path,
+            cropToCutline=True,
+            dstSRS=f'EPSG:{target_epsg}',
+            dstNodata=-9999,
+            format='GTiff',
+            creationOptions=['COMPRESS=LZW', 'TILED=YES']
+        )
+
+    # 設定目標解析度
+    if resolution:
+        warp_options = gdal.WarpOptions(
+            cutlineDSName=vector_path,
+            cropToCutline=True,
+            xRes=resolution[0],
+            yRes=resolution[1],
+            resampleAlg='bilinear',
+            dstNodata=-9999,
+            format='GTiff',
+            creationOptions=['COMPRESS=LZW', 'TILED=YES']
+        )
+
+    # 執行裁剪
+    result = gdal.Warp(output_path, raster_path, options=warp_options)
+
+    if result:
+        print(f"裁剪完成: {output_path}")
+        print(f"輸出大小: {result.RasterXSize} x {result.RasterYSize}")
+        result = None
+    else:
+        print("裁剪失敗")
+
+
+def reproject_raster(input_path, output_path, target_epsg,
+                     resample_method='bilinear'):
+    """
+    重投影網格資料
+
+    Args:
+        input_path: 輸入檔案路徑
+        output_path: 輸出檔案路徑
+        target_epsg: 目標座標系統 EPSG 代碼
+        resample_method: 重採樣方法 (near, bilinear, cubic, etc.)
+    """
+    # 重採樣方法對應
+    resample_alg = {
+        'near': gdal.GRA_NearestNeighbour,
+        'bilinear': gdal.GRA_Bilinear,
+        'cubic': gdal.GRA_Cubic,
+        'cubicspline': gdal.GRA_CubicSpline,
+        'lanczos': gdal.GRA_Lanczos,
+        'average': gdal.GRA_Average,
+        'mode': gdal.GRA_Mode
+    }.get(resample_method, gdal.GRA_Bilinear)
+
+    warp_options = gdal.WarpOptions(
+        dstSRS=f'EPSG:{target_epsg}',
+        resampleAlg=resample_alg,
+        format='GTiff',
+        creationOptions=['COMPRESS=LZW', 'TILED=YES']
+    )
+
+    result = gdal.Warp(output_path, input_path, options=warp_options)
+
+    if result:
+        print(f"重投影完成: {output_path}")
+        result = None
+
+
+# 使用範例
+# 裁剪衛星影像到農場邊界
+clip_raster_by_vector(
+    'sentinel2_rgb.tif',
+    'farm_boundary.shp',
+    'farm_rgb.tif',
+    target_epsg=3826,  # TWD97
+    resolution=(10, 10)  # 10m 解析度
+)</code></pre>
+
+        <h3>向量資料處理</h3>
+<pre><code>from osgeo import ogr, osr
+
+def read_vector_layer(vector_path):
+    """
+    讀取向量圖層資訊
+
+    Args:
+        vector_path: 向量檔案路徑
+    """
+    # 開啟資料來源
+    datasource = ogr.Open(vector_path)
+
+    if datasource is None:
+        print(f"無法開啟: {vector_path}")
+        return
+
+    print(f"驅動程式: {datasource.GetDriver().name}")
+    print(f"圖層數量: {datasource.GetLayerCount()}")
+
+    # 遍歷圖層
+    for i in range(datasource.GetLayerCount()):
+        layer = datasource.GetLayerByIndex(i)
+        print(f"\n圖層 {i}: {layer.GetName()}")
+        print(f"  圖徵數量: {layer.GetFeatureCount()}")
+        print(f"  幾何類型: {ogr.GeometryTypeToName(layer.GetGeomType())}")
+
+        # 取得座標系統
+        srs = layer.GetSpatialRef()
+        if srs:
+            print(f"  座標系統: EPSG:{srs.GetAuthorityCode(None)}")
+
+        # 取得邊界範圍
+        extent = layer.GetExtent()
+        print(f"  範圍: X({extent[0]:.4f}, {extent[1]:.4f}), Y({extent[2]:.4f}, {extent[3]:.4f})")
+
+        # 取得欄位資訊
+        layer_defn = layer.GetLayerDefn()
+        print(f"  欄位:")
+        for j in range(layer_defn.GetFieldCount()):
+            field_defn = layer_defn.GetFieldDefn(j)
+            print(f"    - {field_defn.GetName()} ({field_defn.GetTypeName()})")
+
+    datasource = None
+
+
+def extract_field_statistics(vector_path, raster_path, field_name='id'):
+    """
+    計算每個農田區塊的網格統計值
+
+    Args:
+        vector_path: 農田邊界向量檔案
+        raster_path: 分析用網格檔案（如 NDVI）
+        field_name: 農田識別欄位名稱
+
+    Returns:
+        dict: 每個農田的統計結果
+    """
+    from osgeo import gdal, ogr
+    import numpy as np
+
+    # 開啟網格資料
+    raster_ds = gdal.Open(raster_path)
+    raster_band = raster_ds.GetRasterBand(1)
+    nodata = raster_band.GetNoDataValue()
+    geotransform = raster_ds.GetGeoTransform()
+
+    # 開啟向量資料
+    vector_ds = ogr.Open(vector_path)
+    layer = vector_ds.GetLayer()
+
+    results = {}
+
+    # 遍歷每個圖徵（農田）
+    for feature in layer:
+        field_id = feature.GetField(field_name)
+        geometry = feature.GetGeometryRef()
+
+        # 取得圖徵邊界
+        minx, maxx, miny, maxy = geometry.GetEnvelope()
+
+        # 轉換為像素座標
+        px_min = int((minx - geotransform[0]) / geotransform[1])
+        py_min = int((maxy - geotransform[3]) / geotransform[5])
+        px_max = int((maxx - geotransform[0]) / geotransform[1])
+        py_max = int((miny - geotransform[3]) / geotransform[5])
+
+        # 確保邊界在影像範圍內
+        px_min = max(0, px_min)
+        py_min = max(0, py_min)
+        px_max = min(raster_ds.RasterXSize, px_max)
+        py_max = min(raster_ds.RasterYSize, py_max)
+
+        # 讀取區域資料
+        data = raster_band.ReadAsArray(px_min, py_min,
+                                        px_max - px_min, py_max - py_min)
+
+        if data is not None:
+            # 排除無效值
+            if nodata is not None:
+                valid_data = data[data != nodata]
+            else:
+                valid_data = data.flatten()
+
+            if len(valid_data) > 0:
+                results[field_id] = {
+                    'min': float(np.min(valid_data)),
+                    'max': float(np.max(valid_data)),
+                    'mean': float(np.mean(valid_data)),
+                    'std': float(np.std(valid_data)),
+                    'count': len(valid_data)
+                }
+
+    raster_ds = None
+    vector_ds = None
+
+    return results
+
+
+# 使用範例
+stats = extract_field_statistics('fields.shp', 'ndvi.tif', 'field_id')
+
+print("\n各農田 NDVI 統計:")
+for field_id, values in stats.items():
+    print(f"\n農田 {field_id}:")
+    print(f"  平均 NDVI: {values['mean']:.3f}")
+    print(f"  範圍: {values['min']:.3f} ~ {values['max']:.3f}")
+    print(f"  標準差: {values['std']:.3f}")</code></pre>
+
+        <h2>智慧農業應用範例</h2>
+
+        <div class="card">
+            <h3>建立農田 NDVI 監測報告</h3>
+<pre><code>from osgeo import gdal, ogr
+import numpy as np
+from datetime import datetime
+import json
+
+class FarmNDVIMonitor:
+    """農田 NDVI 監測系統"""
+
+    def __init__(self, farm_boundary_path):
+        """
+        初始化監測系統
+
+        Args:
+            farm_boundary_path: 農田邊界 Shapefile 路徑
+        """
+        self.farm_boundary = farm_boundary_path
+        self.history = []
+
+    def process_satellite_image(self, red_band_path, nir_band_path,
+                                acquisition_date):
+        """
+        處理衛星影像並計算 NDVI
+
+        Args:
+            red_band_path: 紅光波段路徑
+            nir_band_path: 近紅外波段路徑
+            acquisition_date: 影像擷取日期
+        """
+        # 讀取波段
+        red_ds = gdal.Open(red_band_path)
+        nir_ds = gdal.Open(nir_band_path)
+
+        red = red_ds.GetRasterBand(1).ReadAsArray().astype(np.float32)
+        nir = nir_ds.GetRasterBand(1).ReadAsArray().astype(np.float32)
+
+        # 計算 NDVI
+        np.seterr(divide='ignore', invalid='ignore')
+        ndvi = (nir - red) / (nir + red)
+        ndvi = np.where(np.isfinite(ndvi), ndvi, np.nan)
+
+        # 開啟農田邊界
+        vector_ds = ogr.Open(self.farm_boundary)
+        layer = vector_ds.GetLayer()
+
+        # 取得地理轉換參數
+        geotransform = red_ds.GetGeoTransform()
+
+        # 計算每塊農田的統計
+        field_stats = {}
+
+        for feature in layer:
+            field_id = feature.GetField('field_id')
+            field_name = feature.GetField('field_name')
+            geometry = feature.GetGeometryRef()
+
+            # 取得邊界並轉換為像素座標
+            minx, maxx, miny, maxy = geometry.GetEnvelope()
+
+            col_min = int((minx - geotransform[0]) / geotransform[1])
+            row_min = int((maxy - geotransform[3]) / geotransform[5])
+            col_max = int((maxx - geotransform[0]) / geotransform[1])
+            row_max = int((miny - geotransform[3]) / geotransform[5])
+
+            # 提取區域 NDVI
+            field_ndvi = ndvi[row_min:row_max, col_min:col_max]
+            valid_ndvi = field_ndvi[~np.isnan(field_ndvi)]
+
+            if len(valid_ndvi) > 0:
+                stats = {
+                    'field_id': field_id,
+                    'field_name': field_name,
+                    'date': acquisition_date,
+                    'mean_ndvi': float(np.mean(valid_ndvi)),
+                    'min_ndvi': float(np.min(valid_ndvi)),
+                    'max_ndvi': float(np.max(valid_ndvi)),
+                    'std_ndvi': float(np.std(valid_ndvi)),
+                    'pixel_count': len(valid_ndvi),
+                    'health_status': self._classify_health(np.mean(valid_ndvi))
+                }
+                field_stats[field_id] = stats
+
+        # 儲存歷史記錄
+        self.history.append({
+            'date': acquisition_date,
+            'field_stats': field_stats
+        })
+
+        # 關閉資料集
+        red_ds = None
+        nir_ds = None
+        vector_ds = None
+
+        return field_stats
+
+    def _classify_health(self, mean_ndvi):
+        """根據平均 NDVI 分類植被健康狀態"""
+        if mean_ndvi < 0.2:
+            return '極差 - 需立即處理'
+        elif mean_ndvi < 0.4:
+            return '較差 - 需要關注'
+        elif mean_ndvi < 0.6:
+            return '一般 - 持續監測'
+        elif mean_ndvi < 0.8:
+            return '良好'
+        else:
+            return '優秀'
+
+    def generate_report(self, output_path):
+        """產生監測報告"""
+        report = {
+            'generated_at': datetime.now().isoformat(),
+            'farm_boundary': self.farm_boundary,
+            'monitoring_records': self.history,
+            'summary': self._generate_summary()
+        }
+
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(report, f, ensure_ascii=False, indent=2)
+
+        print(f"報告已產生: {output_path}")
+        return report
+
+    def _generate_summary(self):
+        """產生摘要統計"""
+        if not self.history:
+            return None
+
+        latest = self.history[-1]
+        summary = {
+            'latest_date': latest['date'],
+            'total_fields': len(latest['field_stats']),
+            'fields_need_attention': [],
+            'average_ndvi': 0
+        }
+
+        ndvi_values = []
+        for field_id, stats in latest['field_stats'].items():
+            ndvi_values.append(stats['mean_ndvi'])
+            if stats['mean_ndvi'] < 0.4:
+                summary['fields_need_attention'].append({
+                    'field_id': field_id,
+                    'field_name': stats['field_name'],
+                    'mean_ndvi': stats['mean_ndvi'],
+                    'status': stats['health_status']
+                })
+
+        summary['average_ndvi'] = float(np.mean(ndvi_values))
+        return summary
+
+
+# 使用範例
+monitor = FarmNDVIMonitor('farm_fields.shp')
+
+# 處理多期影像
+dates_and_images = [
+    ('2024-03-15', 'sentinel2_20240315_B4.tif', 'sentinel2_20240315_B8.tif'),
+    ('2024-04-01', 'sentinel2_20240401_B4.tif', 'sentinel2_20240401_B8.tif'),
+    ('2024-04-15', 'sentinel2_20240415_B4.tif', 'sentinel2_20240415_B8.tif'),
+]
+
+for date, red_path, nir_path in dates_and_images:
+    stats = monitor.process_satellite_image(red_path, nir_path, date)
+    print(f"\n{date} 監測結果:")
+    for field_id, s in stats.items():
+        print(f"  {s['field_name']}: NDVI={s['mean_ndvi']:.3f} ({s['health_status']})")
+
+# 產生報告
+monitor.generate_report('ndvi_monitoring_report.json')</code></pre>
+        </div>
+
+        <h2>常用 EPSG 代碼</h2>
+
+        <table>
+            <tr>
+                <th>EPSG 代碼</th>
+                <th>座標系統名稱</th>
+                <th>說明</th>
+            </tr>
+            <tr>
+                <td>4326</td>
+                <td>WGS 84</td>
+                <td>全球通用經緯度座標系統</td>
+            </tr>
+            <tr>
+                <td>3826</td>
+                <td>TWD97 / TM2 zone 121</td>
+                <td>台灣本島（121度中央經線）</td>
+            </tr>
+            <tr>
+                <td>3825</td>
+                <td>TWD97 / TM2 zone 119</td>
+                <td>澎湖地區（119度中央經線）</td>
+            </tr>
+            <tr>
+                <td>32651</td>
+                <td>WGS 84 / UTM zone 51N</td>
+                <td>台灣適用的 UTM 區帶</td>
+            </tr>
+            <tr>
+                <td>3857</td>
+                <td>Web Mercator</td>
+                <td>網路地圖投影（Google Maps）</td>
+            </tr>
+        </table>
+
+        <h2>效能優化建議</h2>
+
+        <div class="tip">
+            <strong>處理大型影像的技巧：</strong>
+            <ul>
+                <li>使用 <code>ReadAsArray(x, y, width, height)</code> 分塊讀取</li>
+                <li>啟用 <code>GDAL_CACHEMAX</code> 環境變數增加快取</li>
+                <li>使用 Cloud Optimized GeoTIFF (COG) 格式</li>
+                <li>設定 <code>GDAL_NUM_THREADS=ALL_CPUS</code> 啟用多執行緒</li>
+            </ul>
+        </div>
+
+        <div class="warning">
+            <strong>常見錯誤排除：</strong>
+            <ul>
+                <li>投影資訊遺失：使用 <code>gdal.SetConfigOption('GDAL_FILENAME_IS_UTF8', 'YES')</code></li>
+                <li>記憶體不足：使用分塊處理或調整快取大小</li>
+                <li>中文路徑問題：確保檔案路徑使用 UTF-8 編碼</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>延伸學習資源</h3>
+            <ul>
+                <li><a href="https://gdal.org/documentation.html" target="_blank">GDAL 官方文件</a></li>
+                <li><a href="https://rasterio.readthedocs.io/" target="_blank">Rasterio（GDAL Python 封裝）</a></li>
+                <li><a href="https://geopandas.org/" target="_blank">GeoPandas（向量資料處理）</a></li>
+                <li><a href="https://earthpy.readthedocs.io/" target="_blank">EarthPy（地球科學資料分析）</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        }
+
+        (function() {
+            if (localStorage.getItem('theme') === 'light') {
+                document.body.classList.add('light-mode');
+            }
+        })();
+    </script>
+</body>
+</html>

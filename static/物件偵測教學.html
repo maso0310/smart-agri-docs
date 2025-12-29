@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物件偵測（Object Detection）教學</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1>物件偵測（Object Detection）教學</h1>
+
+    <h2>什麼是物件偵測？</h2>
+    <p>物件偵測是讓電腦「找出圖片中有什麼東西，以及它們在哪裡」的技術。</p>
+
+    <pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                     物件偵測示意圖                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   輸入圖片                        輸出結果                      │
+│   ┌─────────────┐                ┌─────────────┐               │
+│   │             │                │ ┌───────┐   │               │
+│   │   🍎  🍊    │    ────→      │ │ 蘋果  │🍊 │               │
+│   │      🍌    │    偵測        │ └───────┘   │               │
+│   │             │                │    ┌────┐   │               │
+│   │             │                │ 🍎 │香蕉│   │               │
+│   └─────────────┘                │    └────┘   │               │
+│                                  └─────────────┘               │
+│                                                                 │
+│   物件偵測會告訴你：                                            │
+│   1. 圖片中有什麼物體（分類）                                   │
+│   2. 每個物體的位置（邊界框 Bounding Box）                      │
+│   3. 偵測的信心度（Confidence）                                 │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+
+    <h2>農業應用場景</h2>
+    <ul>
+        <li><strong>作物辨識</strong>：辨識不同種類的蔬果</li>
+        <li><strong>病蟲害偵測</strong>：找出葉片上的病斑或害蟲</li>
+        <li><strong>成熟度判斷</strong>：辨識水果的成熟程度</li>
+        <li><strong>雜草偵測</strong>：區分作物與雜草</li>
+        <li><strong>產量估計</strong>：計算樹上果實數量</li>
+    </ul>
+
+    <hr>
+
+    <h2>我們使用的工具：YOLOv8</h2>
+    <p>YOLO（You Only Look Once）是目前最流行的物件偵測模型之一。我們使用最新的 YOLOv8，因為：</p>
+    <ul>
+        <li><strong>速度快</strong>：即時偵測</li>
+        <li><strong>準確度高</strong>：效果優秀</li>
+        <li><strong>易於使用</strong>：幾行程式碼就能完成</li>
+        <li><strong>訓練快速</strong>：小資料集幾分鐘就能訓練完</li>
+    </ul>
+
+    <hr>
+
+    <h2>快速開始</h2>
+
+    <h3>步驟一：安裝套件</h3>
+    <pre><code>pip install ultralytics opencv-python pillow</code></pre>
+
+    <h3>步驟二：執行快速展示</h3>
+    <pre><code>python 01_quick_demo.py</code></pre>
+    <p>這會使用預訓練模型，讓你立即看到物件偵測的效果！</p>
+
+    <hr>
+
+    <h2>程式檔案說明</h2>
+    <pre><code>01_Object_Detection/
+├── README.md                    # 本說明文件
+├── 01_quick_demo.py            # 快速展示（預訓練模型）
+├── 02_prepare_dataset.py       # 準備自己的訓練資料
+├── 03_train_custom_model.py    # 訓練自訂模型
+├── 04_evaluate_model.py        # 評估模型效果
+├── 05_realtime_detection.py    # 即時攝影機偵測
+├── datasets/                   # 資料集目錄
+│   └── sample_fruits/          # 範例：水果資料集
+└── models/                     # 訓練好的模型</code></pre>
+
+    <h3>學習順序建議</h3>
+    <pre><code>1. 01_quick_demo.py          ← 先跑這個看效果！（5分鐘）
+       ↓
+2. 02_prepare_dataset.py     ← 學習如何準備資料（15分鐘）
+       ↓
+3. 03_train_custom_model.py  ← 訓練自己的模型（10-30分鐘）
+       ↓
+4. 04_evaluate_model.py      ← 評估模型好不好（5分鐘）
+       ↓
+5. 05_realtime_detection.py  ← 實際應用！（5分鐘）</code></pre>
+
+    <hr>
+
+    <h2>訓練自己的模型</h2>
+
+    <h3>資料集結構</h3>
+    <p>YOLO 需要特定的資料集格式：</p>
+    <pre><code>datasets/
+└── my_dataset/
+    ├── images/
+    │   ├── train/          # 訓練圖片（80%）
+    │   │   ├── img001.jpg
+    │   │   ├── img002.jpg
+    │   │   └── ...
+    │   └── val/            # 驗證圖片（20%）
+    │       ├── img101.jpg
+    │       └── ...
+    ├── labels/
+    │   ├── train/          # 訓練標註
+    │   │   ├── img001.txt
+    │   │   ├── img002.txt
+    │   │   └── ...
+    │   └── val/            # 驗證標註
+    │       ├── img101.txt
+    │       └── ...
+    └── data.yaml           # 資料集設定檔</code></pre>
+
+    <h3>標註格式</h3>
+    <p>每張圖片對應一個 <code>.txt</code> 標註檔，格式為：</p>
+    <pre><code>&lt;類別編號&gt; &lt;中心x&gt; &lt;中心y&gt; &lt;寬度&gt; &lt;高度&gt;</code></pre>
+    <p>所有座標都是相對於圖片大小的比例（0~1）。</p>
+
+    <p><strong>範例（img001.txt）：</strong></p>
+    <pre><code>0 0.5 0.5 0.3 0.4
+1 0.2 0.3 0.15 0.2</code></pre>
+
+    <p>這表示：</p>
+    <ul>
+        <li>第一個物件：類別 0，在圖片中央，寬 30%、高 40%</li>
+        <li>第二個物件：類別 1，在圖片左上方，寬 15%、高 20%</li>
+    </ul>
+
+    <h3>data.yaml 設定檔</h3>
+    <pre><code># 資料集路徑
+train: datasets/my_dataset/images/train
+val: datasets/my_dataset/images/val
+
+# 類別數量
+nc: 3
+
+# 類別名稱
+names: ['apple', 'banana', 'orange']</code></pre>
+
+    <hr>
+
+    <h2>標註工具推薦</h2>
+
+    <h3>LabelImg（推薦初學者）</h3>
+    <pre><code>pip install labelImg
+labelImg</code></pre>
+
+    <p>使用方式：</p>
+    <ol>
+        <li>開啟圖片資料夾</li>
+        <li>選擇 YOLO 格式</li>
+        <li>畫框標註</li>
+        <li>儲存</li>
+    </ol>
+
+    <h3>Roboflow（線上工具）</h3>
+    <ul>
+        <li>網址：<a href="https://roboflow.com" target="_blank">https://roboflow.com</a></li>
+        <li>優點：線上標註、自動增強、直接匯出 YOLO 格式</li>
+        <li>免費版可標註 1000 張圖片</li>
+    </ul>
+
+    <hr>
+
+    <h2>訓練參數說明</h2>
+    <pre><code>model.train(
+    data='data.yaml',      # 資料集設定檔
+    epochs=50,             # 訓練輪數（小資料集 30-50 就夠）
+    imgsz=640,             # 圖片大小（越大越準但越慢）
+    batch=16,              # 批次大小（記憶體不夠就調小）
+    patience=10,           # 早停耐心值
+    device='cpu',          # 使用 CPU 或 GPU（'0' 表示第一張顯卡）
+)</code></pre>
+
+    <h3>訓練時間參考</h3>
+    <table>
+        <thead>
+            <tr><th>資料集大小</th><th>CPU 訓練時間</th><th>GPU 訓練時間</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>100 張</td><td>5-10 分鐘</td><td>1-2 分鐘</td></tr>
+            <tr><td>500 張</td><td>30-60 分鐘</td><td>5-10 分鐘</td></tr>
+            <tr><td>1000 張</td><td>1-2 小時</td><td>15-30 分鐘</td></tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>常見問題</h2>
+
+    <h3>Q1: 訓練時出現 CUDA out of memory？</h3>
+    <p>把 <code>batch</code> 調小：</p>
+    <pre><code>model.train(data='data.yaml', epochs=50, batch=8)  # 或 batch=4</code></pre>
+
+    <h3>Q2: 偵測效果不好？</h3>
+    <ol>
+        <li>增加訓練圖片數量（建議每類至少 50-100 張）</li>
+        <li>增加訓練輪數（epochs）</li>
+        <li>確認標註正確</li>
+        <li>使用資料增強</li>
+    </ol>
+
+    <h3>Q3: 如何提高速度？</h3>
+    <ol>
+        <li>使用較小的模型：<code>yolov8n.pt</code>（nano）</li>
+        <li>降低輸入圖片大小：<code>imgsz=320</code></li>
+        <li>使用 GPU 訓練</li>
+    </ol>
+
+    <hr>
+
+    <h2>延伸學習</h2>
+    <ul>
+        <li><a href="https://docs.ultralytics.com/" target="_blank">Ultralytics YOLOv8 官方文檔</a></li>
+        <li><a href="https://roboflow.com/learn" target="_blank">Roboflow 教學資源</a></li>
+    </ul>
+
+    <hr>
+
+    <h2>下一步</h2>
+    <p>完成物件偵測學習後，可以前往學習：</p>
+    <ul>
+        <li><a href="語意分割教學.html">語意分割教學</a> - 像素級辨識</li>
+    </ul>
+
+    <div class="footer">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </div>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

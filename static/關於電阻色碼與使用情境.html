@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於電阻色碼與使用情境</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="_1">電阻色碼判讀與使用情境</h1>
+<h2 id="_2">什麼是電阻？</h2>
+<p>電阻是電子電路中最基本的元件之一，用於<strong>限制電流</strong>或<strong>分配電壓</strong>。電阻的單位是歐姆（Ω），常見的單位還有：<br />
+- <strong>KΩ（千歐姆）</strong>：1 KΩ = 1,000 Ω<br />
+- <strong>MΩ（百萬歐姆）</strong>：1 MΩ = 1,000,000 Ω</p>
+<hr />
+<h2 id="_3">電阻色碼系統</h2>
+<p>電阻上的彩色環帶代表其阻值，這套系統稱為「色碼」。常見的有 <strong>4 環電阻</strong>和 <strong>5 環電阻</strong>。</p>
+<h3 id="_4">色碼對照表</h3>
+<table>
+<thead>
+<tr>
+<th>顏色</th>
+<th>數值</th>
+<th>乘數</th>
+<th>誤差（第4/5環）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>黑色</td>
+<td>0</td>
+<td>×1</td>
+<td>-</td>
+</tr>
+<tr>
+<td>棕色</td>
+<td>1</td>
+<td>×10</td>
+<td>±1%</td>
+</tr>
+<tr>
+<td>紅色</td>
+<td>2</td>
+<td>×100</td>
+<td>±2%</td>
+</tr>
+<tr>
+<td>橙色</td>
+<td>3</td>
+<td>×1K</td>
+<td>-</td>
+</tr>
+<tr>
+<td>黃色</td>
+<td>4</td>
+<td>×10K</td>
+<td>-</td>
+</tr>
+<tr>
+<td>綠色</td>
+<td>5</td>
+<td>×100K</td>
+<td>±0.5%</td>
+</tr>
+<tr>
+<td>藍色</td>
+<td>6</td>
+<td>×1M</td>
+<td>±0.25%</td>
+</tr>
+<tr>
+<td>紫色</td>
+<td>7</td>
+<td>×10M</td>
+<td>±0.1%</td>
+</tr>
+<tr>
+<td>灰色</td>
+<td>8</td>
+<td>-</td>
+<td>±0.05%</td>
+</tr>
+<tr>
+<td>白色</td>
+<td>9</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>金色</td>
+<td>-</td>
+<td>×0.1</td>
+<td>±5%</td>
+</tr>
+<tr>
+<td>銀色</td>
+<td>-</td>
+<td>×0.01</td>
+<td>±10%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_5">色碼記憶口訣</h3>
+<blockquote>
+<p><strong>黑棕紅橙黃，綠藍紫灰白</strong></p>
+<p>對應數字 0-9</p>
+</blockquote>
+<p>英文口訣：<strong>B</strong>lack <strong>B</strong>ears <strong>R</strong>un <strong>O</strong>ver <strong>Y</strong>ellow <strong>G</strong>rass <strong>B</strong>ehind <strong>V</strong>iolet <strong>G</strong>ardens <strong>W</strong>ildly<br />
+（黑熊跑過黃草，在紫色花園後面狂奔）</p>
+<hr />
+<h2 id="4">4 環電阻判讀</h2>
+<p>4 環電阻是最常見的類型，判讀方式如下：</p>
+<pre><code>第1環    第2環    第3環（乘數）   第4環（誤差）
+ ↓        ↓           ↓              ↓
+[色環1] [色環2]    [色環3]        [色環4]
+  ↓        ↓           ↓              ↓
+ 十位     個位       乘以多少        精確度
+</code></pre>
+<h3 id="_6">判讀步驟</h3>
+<ol>
+<li><strong>找出誤差環</strong>：金色或銀色通常是誤差環，放在最右邊</li>
+<li><strong>從左往右讀</strong>：第1環×10 + 第2環 = 基本數值</li>
+<li><strong>乘以第3環</strong>：基本數值 × 乘數 = 實際阻值</li>
+</ol>
+<h3 id="_7">實例解析</h3>
+<p><strong>例1：棕黑紅金</strong><br />
+- 第1環（棕）= 1<br />
+- 第2環（黑）= 0<br />
+- 第3環（紅）= ×100<br />
+- 第4環（金）= ±5%<br />
+- 計算：(1×10 + 0) × 100 = <strong>1,000Ω = 1KΩ</strong></p>
+<p><strong>例2：紅紫橙金</strong><br />
+- 第1環（紅）= 2<br />
+- 第2環（紫）= 7<br />
+- 第3環（橙）= ×1,000<br />
+- 第4環（金）= ±5%<br />
+- 計算：(2×10 + 7) × 1,000 = <strong>27,000Ω = 27KΩ</strong></p>
+<p><strong>例3：黃紫金金</strong><br />
+- 第1環（黃）= 4<br />
+- 第2環（紫）= 7<br />
+- 第3環（金）= ×0.1<br />
+- 第4環（金）= ±5%<br />
+- 計算：(4×10 + 7) × 0.1 = <strong>4.7Ω</strong></p>
+<hr />
+<h2 id="5">5 環電阻判讀</h2>
+<p>5 環電阻精確度更高，多一位有效數字：</p>
+<pre><code>第1環    第2環    第3環    第4環（乘數）   第5環（誤差）
+ ↓        ↓        ↓           ↓              ↓
+[色環1] [色環2] [色環3]     [色環4]        [色環5]
+  ↓        ↓        ↓           ↓              ↓
+百位     十位     個位       乘以多少         精確度
+</code></pre>
+<h3 id="_8">實例解析</h3>
+<p><strong>例：棕黑黑紅棕</strong><br />
+- 第1環（棕）= 1<br />
+- 第2環（黑）= 0<br />
+- 第3環（黑）= 0<br />
+- 第4環（紅）= ×100<br />
+- 第5環（棕）= ±1%<br />
+- 計算：(100 + 0 + 0) × 100 = <strong>10,000Ω = 10KΩ</strong></p>
+<hr />
+<h2 id="_9">常見電阻值速查</h2>
+<h3 id="arduino">Arduino 專案常用電阻</h3>
+<table>
+<thead>
+<tr>
+<th>阻值</th>
+<th>色碼（4環）</th>
+<th>常見用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>220Ω</td>
+<td>紅紅棕金</td>
+<td>LED 限流（5V 電源）</td>
+</tr>
+<tr>
+<td>330Ω</td>
+<td>橙橙棕金</td>
+<td>LED 限流（較暗）</td>
+</tr>
+<tr>
+<td>470Ω</td>
+<td>黃紫棕金</td>
+<td>LED 限流（3.3V 電源）</td>
+</tr>
+<tr>
+<td>1KΩ</td>
+<td>棕黑紅金</td>
+<td>通用分壓、限流</td>
+</tr>
+<tr>
+<td>2.2KΩ</td>
+<td>紅紅紅金</td>
+<td>I2C 上拉電阻</td>
+</tr>
+<tr>
+<td>4.7KΩ</td>
+<td>黃紫紅金</td>
+<td>I2C 上拉電阻、下拉電阻</td>
+</tr>
+<tr>
+<td>10KΩ</td>
+<td>棕黑橙金</td>
+<td>分壓電路、上/下拉電阻</td>
+</tr>
+<tr>
+<td>47KΩ</td>
+<td>黃紫橙金</td>
+<td>感測器電路</td>
+</tr>
+<tr>
+<td>100KΩ</td>
+<td>棕黑黃金</td>
+<td>高阻抗電路</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_10">電阻使用情境</h2>
+<h3 id="led">情境一：LED 限流電阻</h3>
+<p><strong>為什麼需要？</strong><br />
+LED 直接接電源會燒毀，需要電阻限制電流。</p>
+<p><strong>計算公式</strong></p>
+<pre><code>R = (電源電壓 - LED 壓降) / LED 工作電流
+
+例：5V 電源，紅色 LED（壓降 2V），工作電流 20mA
+R = (5V - 2V) / 0.02A = 150Ω
+
+實際使用 220Ω（較安全，LED 稍暗但壽命長）
+</code></pre>
+<p><strong>接線方式</strong></p>
+<pre><code>Arduino 5V ──[220Ω]──[LED 長腳(+)]──[LED 短腳(-)]── GND
+</code></pre>
+<h3 id="pull-up">情境二：上拉電阻（Pull-up）</h3>
+<p><strong>為什麼需要？</strong><br />
+按鈕未按下時，輸入腳位會「浮動」（不確定是 HIGH 或 LOW），造成誤判。</p>
+<p><strong>接線方式</strong></p>
+<pre><code>        VCC (5V)
+          │
+        [10KΩ] ← 上拉電阻
+          │
+          ├──────→ Arduino 數位腳位
+          │
+        [按鈕]
+          │
+         GND
+</code></pre>
+<p><strong>工作原理</strong><br />
+- 按鈕未按：腳位透過電阻接到 VCC → 讀取 HIGH<br />
+- 按鈕按下：腳位直接接到 GND → 讀取 LOW</p>
+<h3 id="pull-down">情境三：下拉電阻（Pull-down）</h3>
+<p><strong>接線方式</strong></p>
+<pre><code>         VCC (5V)
+          │
+        [按鈕]
+          │
+          ├──────→ Arduino 數位腳位
+          │
+        [10KΩ] ← 下拉電阻
+          │
+         GND
+</code></pre>
+<p><strong>工作原理</strong><br />
+- 按鈕未按：腳位透過電阻接到 GND → 讀取 LOW<br />
+- 按鈕按下：腳位直接接到 VCC → 讀取 HIGH</p>
+<h3 id="_11">情境四：分壓電路</h3>
+<p><strong>為什麼需要？</strong><br />
+將較高電壓轉換為較低電壓，例如將 5V 訊號轉為 3.3V。</p>
+<p><strong>電路結構</strong></p>
+<pre><code>        Vin (5V)
+          │
+        [R1]
+          │
+          ├──────→ Vout
+          │
+        [R2]
+          │
+         GND
+</code></pre>
+<p><strong>計算公式</strong></p>
+<pre><code>Vout = Vin × R2 / (R1 + R2)
+
+例：5V 轉 3.3V
+Vout = 5V × R2 / (R1 + R2) = 3.3V
+解得 R2/R1 = 2
+
+使用 R1 = 10KΩ, R2 = 20KΩ（或 2 個 10KΩ 串聯）
+實際 Vout = 5V × 20K / 30K = 3.33V
+</code></pre>
+<h3 id="_12">情境五：光敏電阻分壓</h3>
+<p><strong>為什麼需要？</strong><br />
+光敏電阻（LDR）阻值隨光線變化，需要用分壓電路轉換為電壓變化。</p>
+<p><strong>接線方式</strong></p>
+<pre><code>        VCC (5V)
+          │
+        [光敏電阻] ← 隨光線變化（亮時低阻，暗時高阻）
+          │
+          ├──────→ Arduino A0（類比輸入）
+          │
+        [10KΩ] ← 固定電阻
+          │
+         GND
+</code></pre>
+<p><strong>讀取原理</strong><br />
+- 光線強：LDR 阻值低 → A0 電壓高 → analogRead() 值高<br />
+- 光線弱：LDR 阻值高 → A0 電壓低 → analogRead() 值低</p>
+<h3 id="i2c">情境六：I2C 上拉電阻</h3>
+<p><strong>為什麼需要？</strong><br />
+I2C 通訊使用開漏極（Open-drain）架構，需要上拉電阻將訊號拉高。</p>
+<p><strong>接線方式</strong></p>
+<pre><code>      VCC (3.3V 或 5V)
+          │
+    ┌─────┴─────┐
+  [4.7KΩ]    [4.7KΩ]
+    │           │
+   SDA         SCL
+</code></pre>
+<p><strong>常用阻值</strong><br />
+- 標準模式（100kHz）：10KΩ<br />
+- 快速模式（400kHz）：4.7KΩ<br />
+- 高速模式（1MHz+）：2.2KΩ</p>
+<blockquote>
+<p>注意：許多 I2C 模組（如 LCD I2C、OLED）已內建上拉電阻，不需額外添加。</p>
+</blockquote>
+<hr />
+<h2 id="_13">電阻功率</h2>
+<p>電阻會消耗功率並發熱，選用時需注意功率額定。</p>
+<h3 id="_14">常見功率規格</h3>
+<table>
+<thead>
+<tr>
+<th>功率</th>
+<th>外觀尺寸</th>
+<th>適用場合</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/8W (0.125W)</td>
+<td>很小</td>
+<td>低功耗電路</td>
+</tr>
+<tr>
+<td>1/4W (0.25W)</td>
+<td>常見</td>
+<td>一般 Arduino 專案</td>
+</tr>
+<tr>
+<td>1/2W (0.5W)</td>
+<td>較大</td>
+<td>電流較大的電路</td>
+</tr>
+<tr>
+<td>1W</td>
+<td>大</td>
+<td>大功率電路</td>
+</tr>
+<tr>
+<td>2W+</td>
+<td>很大</td>
+<td>功率電路、負載電阻</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_15">功率計算</h3>
+<pre><code>P = I² × R = V² / R
+
+例：220Ω 電阻通過 20mA
+P = 0.02² × 220 = 0.088W
+
+使用 1/4W 電阻即可（有足夠餘量）
+</code></pre>
+<hr />
+<h2 id="_16">電阻選購建議</h2>
+<h3 id="_17">入門套件</h3>
+<p>購買一組「電阻包」最划算，通常包含：<br />
+- E12 系列（每個數量級 12 種阻值）<br />
+- 常見範圍：10Ω ~ 1MΩ<br />
+- 每種 10~20 個<br />
+- 約 400~600 個<br />
+- 價格：約 50~100 元</p>
+<h3 id="_18">常備電阻</h3>
+<p>建議多買一些最常用的：<br />
+- <strong>220Ω</strong> - LED 必備<br />
+- <strong>1KΩ</strong> - 通用限流<br />
+- <strong>10KΩ</strong> - 分壓、上/下拉<br />
+- <strong>4.7KΩ</strong> - I2C 上拉</p>
+<hr />
+<h2 id="_19">常見問題</h2>
+<p><strong>Q: 電阻有方向嗎？</strong><br />
+普通電阻沒有方向，可以任意接。但要注意色碼判讀方向。</p>
+<p><strong>Q: 找不到精確阻值怎麼辦？</strong><br />
+- <strong>串聯</strong>：R總 = R1 + R2（阻值相加）<br />
+- <strong>並聯</strong>：1/R總 = 1/R1 + 1/R2（常用於降低阻值）</p>
+<p><strong>Q: 色環看不清楚怎麼辦？</strong><br />
+1. 用三用電表測量最準確<br />
+2. 調整光線角度<br />
+3. 使用放大鏡</p>
+<p><strong>Q: 電阻燒毀的徵兆？</strong><br />
+- 變色（燒焦）<br />
+- 有焦味<br />
+- 阻值異常（用電表測）<br />
+- 表面有裂痕</p>
+<hr />
+<h2 id="_20">延伸學習</h2>
+<ol>
+<li><strong>可變電阻（電位器）</strong>：可調整阻值的電阻</li>
+<li><strong>熱敏電阻（NTC/PTC）</strong>：阻值隨溫度變化</li>
+<li><strong>光敏電阻（LDR）</strong>：阻值隨光線變化</li>
+<li><strong>壓敏電阻（VDR）</strong>：保護電路用</li>
+<li><strong>SMD 電阻</strong>：表面貼裝，體積小</li>
+</ol>
+<hr />
+<p><em>掌握電阻色碼判讀是電子製作的基本功，多練習幾次就會熟練了！</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

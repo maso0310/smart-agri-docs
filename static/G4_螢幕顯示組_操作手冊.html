@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>G4_螢幕顯示組 操作手冊</title>
+    
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1>第四組：螢幕顯示組 操作手冊</h1>
+<h2>任務說明</h2>
+<p>本組負責智慧溫室的<strong>資訊顯示</strong>功能，包含：
+- 使用 LCD 液晶螢幕顯示文字資訊
+- 使用 LED 點矩陣顯示圖案與動畫
+- 顯示來自其他感測器的資料
+- 製作溫室監控面板</p>
+<p>這是人機介面的重要部分，讓使用者一目了然！</p>
+<hr />
+<h2>材料清單</h2>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>數量</th>
+<th>規格說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arduino UNO</td>
+<td>1</td>
+<td>主控板</td>
+</tr>
+<tr>
+<td>麵包板</td>
+<td>1</td>
+<td>830 孔</td>
+</tr>
+<tr>
+<td>LCD 1602 液晶螢幕</td>
+<td>1</td>
+<td>16x2 字元（含 I2C 背板更佳）</td>
+</tr>
+<tr>
+<td>I2C 轉接板</td>
+<td>1</td>
+<td>PCF8574（如果 LCD 沒有內建）</td>
+</tr>
+<tr>
+<td>8x8 LED 點矩陣模組</td>
+<td>1</td>
+<td>MAX7219 驅動</td>
+</tr>
+<tr>
+<td>電位器</td>
+<td>1</td>
+<td>10KΩ（調整 LCD 對比度，無 I2C 時用）</td>
+</tr>
+<tr>
+<td>杜邦線</td>
+<td>若干</td>
+<td>公對公、公對母</td>
+</tr>
+<tr>
+<td>USB 傳輸線</td>
+<td>1</td>
+<td>Type-A 對 Type-B</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>LCD 1602 介紹</h2>
+<h3>LCD 顯示特性</h3>
+<pre><code>LCD 1602 規格：
+┌────────────────────────────────┐
+│ Line 1: 16 characters          │
+│ Line 2: 16 characters          │
+└────────────────────────────────┘
+
+- 16 欄 x 2 列 = 32 個字元
+- 可顯示英文、數字、符號
+- 可自訂 8 個特殊字元
+- 有背光控制
+</code></pre>
+<h3>I2C vs 平行介面</h3>
+<pre><code>平行介面（傳統）：
+- 需要 6-10 條線
+- 佔用較多 Arduino 腳位
+- 接線複雜
+
+I2C 介面（推薦）：
+- 只需 4 條線（VCC, GND, SDA, SCL）
+- 節省腳位
+- 接線簡單
+- 需要額外函式庫
+</code></pre>
+<hr />
+<h2>腳位對照表</h2>
+<h3>LCD 1602 + I2C（推薦）</h3>
+<table>
+<thead>
+<tr>
+<th>LCD I2C 模組</th>
+<th>Arduino 腳位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VCC</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>SDA</td>
+<td>A4</td>
+</tr>
+<tr>
+<td>SCL</td>
+<td>A5</td>
+</tr>
+</tbody>
+</table>
+<h3>LED 點矩陣（MAX7219）</h3>
+<table>
+<thead>
+<tr>
+<th>MAX7219 模組</th>
+<th>Arduino 腳位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VCC</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>DIN</td>
+<td>D11</td>
+</tr>
+<tr>
+<td>CS</td>
+<td>D10</td>
+</tr>
+<tr>
+<td>CLK</td>
+<td>D13</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>接線圖</h2>
+<h3>LCD I2C 接線</h3>
+<pre><code>LCD 1602 + I2C 背板：
+┌────────────────────┐
+│    LCD 1602        │
+│ ┌────────────────┐ │
+│ │                │ │
+│ │                │ │
+│ └────────────────┘ │
+│ ┌──────┐           │
+│ │ I2C  │           │
+│ │ GND──┼──→ GND    │
+│ │ VCC──┼──→ 5V     │
+│ │ SDA──┼──→ A4     │
+│ │ SCL──┼──→ A5     │
+│ └──────┘           │
+└────────────────────┘
+
+注意：I2C 位址通常是 0x27 或 0x3F
+可用 I2C Scanner 程式掃描確認
+</code></pre>
+<h3>LED 點矩陣接線</h3>
+<pre><code>MAX7219 LED 點矩陣模組：
+┌────────────────────┐
+│ ┌──────────────┐   │
+│ │ ● ● ● ● ● ● ● ● │   │
+│ │ ● ● ● ● ● ● ● ● │   │
+│ │ ● ● ● ● ● ● ● ● │   │
+│ │ ● ● ● ● ● ● ● ● │   │
+│ │ ● ● ● ● ● ● ● ● │   │
+│ │ ● ● ● ● ● ● ● ● │   │
+│ │ ● ● ● ● ● ● ● ● │   │
+│ │ ● ● ● ● ● ● ● ● │   │
+│ └──────────────┘   │
+│                    │
+│ VCC ──→ 5V         │
+│ GND ──→ GND        │
+│ DIN ──→ D11        │
+│ CS  ──→ D10        │
+│ CLK ──→ D13        │
+└────────────────────┘
+</code></pre>
+<hr />
+<h2>安裝必要函式庫</h2>
+<h3>1. LCD I2C 函式庫</h3>
+<ol>
+<li>開啟 Arduino IDE</li>
+<li><code>工具</code> → <code>管理程式庫...</code></li>
+<li>搜尋 <code>LiquidCrystal I2C</code></li>
+<li>安裝 <strong>Frank de Brabander</strong> 版本</li>
+</ol>
+<h3>2. LED 點矩陣函式庫</h3>
+<ol>
+<li><code>工具</code> → <code>管理程式庫...</code></li>
+<li>搜尋 <code>LedControl</code></li>
+<li>安裝 <strong>Eberhard Fahle</strong> 版本</li>
+</ol>
+<p>或搜尋 <code>MD_MAX72XX</code> 和 <code>MD_Parola</code>（功能更強大）</p>
+<hr />
+<h2>程式碼範例</h2>
+<h3>範例 1：LCD 基本顯示 (01_lcd_basic.ino)</h3>
+<p>學習重點：
+- LCD 初始化
+- 顯示文字與數字
+- 游標位置控制</p>
+<h3>範例 2：LCD 動態更新 (02_lcd_dynamic.ino)</h3>
+<p>學習重點：
+- 變數顯示
+- 格式化輸出
+- 畫面更新技巧</p>
+<h3>範例 3：LCD 自訂字元 (03_lcd_custom_char.ino)</h3>
+<p>學習重點：
+- 自訂符號設計
+- 5x8 點陣繪製
+- 特殊符號應用</p>
+<h3>範例 4：LED 點矩陣顯示 (04_led_matrix.ino)</h3>
+<p>學習重點：
+- MAX7219 控制
+- 圖案繪製
+- 簡單動畫</p>
+<h3>範例 5：完整監控面板 (05_monitor_panel.ino)</h3>
+<p>學習重點：
+- 整合 LCD 與點矩陣
+- 模擬接收感測器資料
+- 狀態圖示顯示</p>
+<hr />
+<h2>操作步驟</h2>
+<h3>步驟 1：確認 I2C 位址</h3>
+<ol>
+<li>上傳 I2C Scanner 程式</li>
+<li>開啟序列埠監視器</li>
+<li>記錄顯示的位址（通常 0x27 或 0x3F）</li>
+</ol>
+<h3>步驟 2：LCD 基本測試</h3>
+<ol>
+<li>依照接線圖連接 LCD</li>
+<li>上傳 <code>01_lcd_basic.ino</code></li>
+<li>觀察 LCD 顯示</li>
+<li>如果沒顯示，調整 I2C 背板上的電位器（對比度）</li>
+</ol>
+<h3>步驟 3：動態顯示測試</h3>
+<ol>
+<li>上傳 <code>02_lcd_dynamic.ino</code></li>
+<li>觀察數字計數</li>
+<li>理解 <code>setCursor()</code> 位置控制</li>
+</ol>
+<h3>步驟 4：自訂字元練習</h3>
+<ol>
+<li>上傳 <code>03_lcd_custom_char.ino</code></li>
+<li>觀察自訂符號</li>
+<li>嘗試設計自己的符號</li>
+</ol>
+<h3>步驟 5：點矩陣測試</h3>
+<ol>
+<li>連接 LED 點矩陣模組</li>
+<li>上傳 <code>04_led_matrix.ino</code></li>
+<li>觀察圖案與動畫</li>
+</ol>
+<h3>步驟 6：完整整合</h3>
+<ol>
+<li>上傳 <code>05_monitor_panel.ino</code></li>
+<li>觀察監控面板效果</li>
+<li>思考如何接收真實感測器資料</li>
+</ol>
+<hr />
+<h2>常見問題</h2>
+<h3>Q1：LCD 沒有顯示任何內容</h3>
+<ul>
+<li>檢查電源接線（5V, GND）</li>
+<li>調整 I2C 背板上的對比度電位器</li>
+<li>確認 I2C 位址是否正確</li>
+<li>執行 I2C Scanner 確認裝置連接</li>
+</ul>
+<h3>Q2：LCD 顯示亂碼或方塊</h3>
+<ul>
+<li>檢查 SDA、SCL 接線</li>
+<li>確認函式庫安裝正確</li>
+<li>嘗試不同的 I2C 位址</li>
+</ul>
+<h3>Q3：點矩陣不亮或顯示錯誤</h3>
+<ul>
+<li>檢查 VCC/GND 接線</li>
+<li>確認 DIN/CLK/CS 腳位正確</li>
+<li>確認函式庫初始化參數</li>
+</ul>
+<h3>Q4：顯示閃爍</h3>
+<ul>
+<li>避免在 loop() 中頻繁呼叫 <code>clear()</code></li>
+<li>只更新需要變化的部分</li>
+<li>適當加入 delay</li>
+</ul>
+<hr />
+<h2>知識補充</h2>
+<h3>LCD 座標系統</h3>
+<pre><code>LCD 1602 座標：
+      欄位 (Column): 0-15
+       0 1 2 3 4 5 6 7 8 9 ...15
+    ┌────────────────────────────┐
+行 0│ H e l l o   W o r l d !    │
+    │                            │
+行 1│ T e m p :   2 5 . 5 C      │
+    └────────────────────────────┘
+
+setCursor(col, row):
+- setCursor(0, 0) → 第一行開頭
+- setCursor(0, 1) → 第二行開頭
+- setCursor(6, 0) → 第一行第7個字
+</code></pre>
+<h3>自訂字元設計</h3>
+<pre><code>5x8 點陣圖設計：
+
+例如：笑臉符號
+     0 1 2 3 4  (欄)
+  ┌─────────────┐
+0 │ 0 0 0 0 0   │ = 0b00000 = 0x00
+1 │ 0 1 0 1 0   │ = 0b01010 = 0x0A
+2 │ 0 0 0 0 0   │ = 0b00000 = 0x00
+3 │ 0 0 0 0 0   │ = 0b00000 = 0x00
+4 │ 1 0 0 0 1   │ = 0b10001 = 0x11
+5 │ 0 1 1 1 0   │ = 0b01110 = 0x0E
+6 │ 0 0 0 0 0   │ = 0b00000 = 0x00
+7 │ 0 0 0 0 0   │ = 0b00000 = 0x00
+  └─────────────┘
+
+byte smiley[] = {
+  0x00, 0x0A, 0x00, 0x00,
+  0x11, 0x0E, 0x00, 0x00
+};
+</code></pre>
+<h3>LED 點矩陣圖案設計</h3>
+<pre><code>8x8 LED 點矩陣：
+
+例如：愛心符號
+     0 1 2 3 4 5 6 7
+  ┌─────────────────┐
+0 │ 0 1 1 0 0 1 1 0 │ = 0x66
+1 │ 1 1 1 1 1 1 1 1 │ = 0xFF
+2 │ 1 1 1 1 1 1 1 1 │ = 0xFF
+3 │ 1 1 1 1 1 1 1 1 │ = 0xFF
+4 │ 0 1 1 1 1 1 1 0 │ = 0x7E
+5 │ 0 0 1 1 1 1 0 0 │ = 0x3C
+6 │ 0 0 0 1 1 0 0 0 │ = 0x18
+7 │ 0 0 0 0 0 0 0 0 │ = 0x00
+  └─────────────────┘
+
+byte heart[] = {
+  0x66, 0xFF, 0xFF, 0xFF,
+  0x7E, 0x3C, 0x18, 0x00
+};
+</code></pre>
+<hr />
+<h2>進階挑戰</h2>
+<ol>
+<li><strong>跑馬燈效果</strong>：在 LCD 上製作文字捲動</li>
+<li><strong>進度條</strong>：用自訂字元製作載入動畫</li>
+<li><strong>多頁面切換</strong>：按鈕切換不同的資訊頁面</li>
+<li><strong>動畫圖示</strong>：在點矩陣上製作旋轉動畫</li>
+<li><strong>整合感測器</strong>：顯示真實的溫度、濕度資料</li>
+</ol>
+<hr />
+<h2>與其他組別的整合</h2>
+<ul>
+<li><strong>第一組（光線控制）</strong>：顯示光線強度數值</li>
+<li><strong>第二組（溫溼度控制）</strong>：顯示溫度與濕度</li>
+<li><strong>第三組（土壤水份）</strong>：顯示土壤濕度與灌溉狀態</li>
+<li><strong>第六組（網路控制）</strong>：接收 MQTT 資料並顯示</li>
+</ul>
+<p>思考：如何設計一個儀表板同時顯示所有重要資訊？</p>
+
+<a href="文件索引.html" class="home-btn" title="回到首頁">🏠</a>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

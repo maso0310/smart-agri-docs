@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於Python常用套件</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="python">關於 Python 常用套件</h1>
+<p>Python 擁有豐富的套件生態系，幾乎任何應用都能找到現成的套件。本文整理各領域常用的套件，幫助初學者快速認識 Python 的強大之處。</p>
+<hr />
+<h2 id="_1">一、套件安裝基礎</h2>
+<h3 id="pip">使用 pip 安裝套件</h3>
+<pre><code class="language-bash"># 安裝單一套件
+pip install 套件名稱
+
+# 安裝指定版本
+pip install 套件名稱==1.2.3
+
+# 從 requirements.txt 安裝
+pip install -r requirements.txt
+
+# 查看已安裝套件
+pip list
+
+# 解除安裝
+pip uninstall 套件名稱
+</code></pre>
+<h3 id="vs">內建套件 vs 第三方套件</h3>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>內建套件</td>
+<td>Python 安裝後即有，不需額外安裝</td>
+<td><code>os</code>, <code>sys</code>, <code>time</code>, <code>json</code></td>
+</tr>
+<tr>
+<td>第三方套件</td>
+<td>需用 pip 安裝</td>
+<td><code>requests</code>, <code>numpy</code>, <code>flask</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_2">二、資料處理與分析</h2>
+<h3 id="numpy-">NumPy - 數值運算基礎</h3>
+<pre><code class="language-python">import numpy as np
+
+# 建立陣列
+arr = np.array([1, 2, 3, 4, 5])
+
+# 數學運算
+print(arr.mean())  # 平均值
+print(arr.sum())   # 總和
+print(arr * 2)     # 向量運算
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>高效能數值運算、矩陣操作</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install numpy</code></td>
+</tr>
+<tr>
+<td>常搭配</td>
+<td>pandas, matplotlib, scikit-learn</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pandas-">Pandas - 資料分析神器</h3>
+<pre><code class="language-python">import pandas as pd
+
+# 讀取 CSV
+df = pd.read_csv('data.csv')
+
+# 基本操作
+print(df.head())        # 前5筆
+print(df.describe())    # 統計摘要
+print(df['column'].mean())  # 某欄平均
+
+# 篩選資料
+filtered = df[df['age'] &gt; 18]
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>表格資料處理、資料清洗、分析</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install pandas</code></td>
+</tr>
+<tr>
+<td>支援格式</td>
+<td>CSV, Excel, JSON, SQL, HTML</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_3">三、資料視覺化</h2>
+<h3 id="matplotlib-">Matplotlib - 基礎繪圖</h3>
+<pre><code class="language-python">import matplotlib.pyplot as plt
+
+# 折線圖
+x = [1, 2, 3, 4, 5]
+y = [2, 4, 6, 8, 10]
+plt.plot(x, y)
+plt.title('Line Chart')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.show()
+
+# 長條圖
+plt.bar(['A', 'B', 'C'], [10, 20, 15])
+plt.show()
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>基礎圖表繪製</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install matplotlib</code></td>
+</tr>
+<tr>
+<td>圖表類型</td>
+<td>折線、長條、圓餅、散佈、直方圖等</td>
+</tr>
+</tbody>
+</table>
+<h3 id="seaborn-">Seaborn - 統計視覺化</h3>
+<pre><code class="language-python">import seaborn as sns
+
+# 美化的統計圖表
+sns.histplot(data=df, x='age')
+sns.boxplot(data=df, x='category', y='value')
+sns.heatmap(correlation_matrix)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>統計圖表、更美觀的預設樣式</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install seaborn</code></td>
+</tr>
+<tr>
+<td>特點</td>
+<td>基於 matplotlib，語法更簡潔</td>
+</tr>
+</tbody>
+</table>
+<h3 id="plotly-">Plotly - 互動式圖表</h3>
+<pre><code class="language-python">import plotly.express as px
+
+# 互動式圖表
+fig = px.line(df, x='date', y='value', title='Interactive Chart')
+fig.show()
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>網頁互動式圖表</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install plotly</code></td>
+</tr>
+<tr>
+<td>特點</td>
+<td>可縮放、懸停顯示、匯出 HTML</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_4">四、網頁開發</h2>
+<h3 id="flask-">Flask - 輕量級網頁框架</h3>
+<pre><code class="language-python">from flask import Flask, render_template
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return 'Hello, World!'
+
+@app.route('/data')
+def data():
+    return {'temperature': 25, 'humidity': 60}
+
+if __name__ == '__main__':
+    app.run(debug=True)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>快速建立網頁、API 服務</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install flask</code></td>
+</tr>
+<tr>
+<td>適合</td>
+<td>小型專案、原型開發、IoT 後端</td>
+</tr>
+</tbody>
+</table>
+<h3 id="fastapi-api">FastAPI - 現代 API 框架</h3>
+<pre><code class="language-python">from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get(&quot;/&quot;)
+def read_root():
+    return {&quot;message&quot;: &quot;Hello World&quot;}
+
+@app.get(&quot;/sensor/{sensor_id}&quot;)
+def read_sensor(sensor_id: int):
+    return {&quot;sensor_id&quot;: sensor_id, &quot;value&quot;: 25.5}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>高效能 API 開發</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install fastapi uvicorn</code></td>
+</tr>
+<tr>
+<td>特點</td>
+<td>自動產生 API 文件、型別檢查</td>
+</tr>
+</tbody>
+</table>
+<h3 id="django-">Django - 全功能網頁框架</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>大型網站、內建後台管理</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install django</code></td>
+</tr>
+<tr>
+<td>特點</td>
+<td>功能完整、學習曲線較高</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_5">五、網頁爬蟲</h2>
+<h3 id="requests-http">Requests - HTTP 請求</h3>
+<pre><code class="language-python">import requests
+
+# GET 請求
+response = requests.get('https://api.example.com/data')
+data = response.json()
+
+# POST 請求
+response = requests.post('https://api.example.com/submit',
+                        json={'key': 'value'})
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>發送 HTTP 請求、API 呼叫</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install requests</code></td>
+</tr>
+<tr>
+<td>支援</td>
+<td>GET, POST, PUT, DELETE 等</td>
+</tr>
+</tbody>
+</table>
+<h3 id="beautifulsoup-html">BeautifulSoup - HTML 解析</h3>
+<pre><code class="language-python">from bs4 import BeautifulSoup
+import requests
+
+# 取得網頁
+html = requests.get('https://example.com').text
+soup = BeautifulSoup(html, 'html.parser')
+
+# 解析內容
+title = soup.find('h1').text
+links = soup.find_all('a')
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>解析 HTML、擷取網頁資料</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install beautifulsoup4</code></td>
+</tr>
+<tr>
+<td>搭配</td>
+<td>requests（取得網頁）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="selenium-">Selenium - 瀏覽器自動化</h3>
+<pre><code class="language-python">from selenium import webdriver
+from selenium.webdriver.common.by import By
+
+driver = webdriver.Chrome()
+driver.get('https://example.com')
+
+# 找元素並互動
+button = driver.find_element(By.ID, 'submit')
+button.click()
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>模擬瀏覽器操作、動態網頁爬蟲</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install selenium</code></td>
+</tr>
+<tr>
+<td>需要</td>
+<td>對應瀏覽器的 WebDriver</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="ai">六、機器學習與 AI</h2>
+<h3 id="scikit-learn-">Scikit-learn - 機器學習入門</h3>
+<pre><code class="language-python">from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
+# 分割資料
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+# 訓練模型
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# 預測
+predictions = model.predict(X_test)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>傳統機器學習演算法</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install scikit-learn</code></td>
+</tr>
+<tr>
+<td>包含</td>
+<td>分類、迴歸、分群、降維等</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tensorflow-keras-">TensorFlow / Keras - 深度學習</h3>
+<pre><code class="language-python">import tensorflow as tf
+from tensorflow import keras
+
+# 建立模型
+model = keras.Sequential([
+    keras.layers.Dense(128, activation='relu'),
+    keras.layers.Dense(10, activation='softmax')
+])
+
+model.compile(optimizer='adam', loss='categorical_crossentropy')
+model.fit(X_train, y_train, epochs=10)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>深度學習、神經網路</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install tensorflow</code></td>
+</tr>
+<tr>
+<td>應用</td>
+<td>影像辨識、自然語言處理</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pytorch-">PyTorch - 深度學習研究</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>深度學習研究、動態計算圖</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install torch</code></td>
+</tr>
+<tr>
+<td>特點</td>
+<td>學術界主流、彈性高</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ultralytics-yolov8-">Ultralytics (YOLOv8) - 物件偵測</h3>
+<pre><code class="language-python">from ultralytics import YOLO
+
+# 載入模型
+model = YOLO('yolov8n.pt')
+
+# 預測
+results = model.predict('image.jpg')
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>物件偵測、影像分割</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install ultralytics</code></td>
+</tr>
+<tr>
+<td>特點</td>
+<td>即時偵測、易於使用</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_6">七、影像處理</h2>
+<h3 id="opencv-">OpenCV - 電腦視覺</h3>
+<pre><code class="language-python">import cv2
+
+# 讀取影像
+img = cv2.imread('photo.jpg')
+
+# 轉灰階
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# 邊緣偵測
+edges = cv2.Canny(gray, 50, 150)
+
+# 顯示
+cv2.imshow('Image', img)
+cv2.waitKey(0)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>影像處理、電腦視覺</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install opencv-python</code></td>
+</tr>
+<tr>
+<td>功能</td>
+<td>濾鏡、偵測、追蹤、攝影機</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pillow-pil-">Pillow (PIL) - 影像基本操作</h3>
+<pre><code class="language-python">from PIL import Image, ImageDraw, ImageFont
+
+# 開啟影像
+img = Image.open('photo.jpg')
+
+# 調整大小
+img_resized = img.resize((200, 200))
+
+# 繪製文字
+draw = ImageDraw.Draw(img)
+draw.text((10, 10), &quot;Hello&quot;, fill='white')
+
+# 儲存
+img.save('output.jpg')
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>影像開啟、轉換、簡單處理</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install pillow</code></td>
+</tr>
+<tr>
+<td>適合</td>
+<td>基本影像操作、縮圖產生</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="iot">八、硬體控制與 IoT</h2>
+<h3 id="rpigpio-gpio">RPi.GPIO - 樹莓派 GPIO</h3>
+<pre><code class="language-python">import RPi.GPIO as GPIO
+import time
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(18, GPIO.OUT)
+
+# 閃爍 LED
+while True:
+    GPIO.output(18, GPIO.HIGH)
+    time.sleep(1)
+    GPIO.output(18, GPIO.LOW)
+    time.sleep(1)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>樹莓派 GPIO 控制</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td>樹莓派內建</td>
+</tr>
+<tr>
+<td>限制</td>
+<td>僅限樹莓派使用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gpiozero-gpio">gpiozero - 簡化版 GPIO</h3>
+<pre><code class="language-python">from gpiozero import LED, Button
+from time import sleep
+
+led = LED(17)
+button = Button(2)
+
+button.when_pressed = led.on
+button.when_released = led.off
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>更簡單的 GPIO 控制</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install gpiozero</code></td>
+</tr>
+<tr>
+<td>特點</td>
+<td>物件導向、語法直覺</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pyserial-">PySerial - 串列埠通訊</h3>
+<pre><code class="language-python">import serial
+
+# 開啟串列埠
+ser = serial.Serial('/dev/ttyUSB0', 9600)
+
+# 讀取資料
+data = ser.readline().decode('utf-8')
+
+# 發送資料
+ser.write(b'Hello Arduino')
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>與 Arduino 等設備串列通訊</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install pyserial</code></td>
+</tr>
+<tr>
+<td>應用</td>
+<td>讀取感測器、控制設備</td>
+</tr>
+</tbody>
+</table>
+<h3 id="paho-mqtt-mqtt">paho-mqtt - MQTT 通訊</h3>
+<pre><code class="language-python">import paho.mqtt.client as mqtt
+
+client = mqtt.Client()
+client.connect(&quot;broker.hivemq.com&quot;, 1883)
+
+# 發布訊息
+client.publish(&quot;greenhouse/temperature&quot;, &quot;25.5&quot;)
+
+# 訂閱
+def on_message(client, userdata, msg):
+    print(f&quot;{msg.topic}: {msg.payload.decode()}&quot;)
+
+client.subscribe(&quot;greenhouse/#&quot;)
+client.on_message = on_message
+client.loop_forever()
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>MQTT 物聯網通訊</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install paho-mqtt</code></td>
+</tr>
+<tr>
+<td>應用</td>
+<td>感測器資料傳輸、遠端控制</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pyfirmata-arduino">PyFirmata - Arduino 控制</h3>
+<pre><code class="language-python">from pyfirmata import Arduino, util
+
+board = Arduino('/dev/ttyUSB0')
+
+# 控制 LED
+board.digital[13].write(1)  # 開啟
+board.digital[13].write(0)  # 關閉
+
+# 讀取類比輸入
+it = util.Iterator(board)
+it.start()
+analog_pin = board.get_pin('a:0:i')
+print(analog_pin.read())
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>用 Python 控制 Arduino</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install pyfirmata</code></td>
+</tr>
+<tr>
+<td>需要</td>
+<td>Arduino 燒錄 StandardFirmata</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_7">九、自動化與排程</h2>
+<h3 id="schedule-">Schedule - 定時任務</h3>
+<pre><code class="language-python">import schedule
+import time
+
+def job():
+    print(&quot;執行任務...&quot;)
+
+# 設定排程
+schedule.every(10).minutes.do(job)
+schedule.every().day.at(&quot;10:30&quot;).do(job)
+schedule.every().monday.do(job)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>定時執行任務</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install schedule</code></td>
+</tr>
+<tr>
+<td>適合</td>
+<td>定期備份、資料擷取</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pyautogui-">PyAutoGUI - 桌面自動化</h3>
+<pre><code class="language-python">import pyautogui
+
+# 滑鼠操作
+pyautogui.moveTo(100, 200)
+pyautogui.click()
+pyautogui.doubleClick()
+
+# 鍵盤操作
+pyautogui.write('Hello World')
+pyautogui.press('enter')
+
+# 截圖
+screenshot = pyautogui.screenshot()
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>模擬滑鼠鍵盤操作</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install pyautogui</code></td>
+</tr>
+<tr>
+<td>應用</td>
+<td>自動化測試、重複性操作</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_8">十、文件處理</h2>
+<h3 id="openpyxl-excel">openpyxl - Excel 操作</h3>
+<pre><code class="language-python">from openpyxl import Workbook, load_workbook
+
+# 建立新檔案
+wb = Workbook()
+ws = wb.active
+ws['A1'] = 'Hello'
+ws['B1'] = 'World'
+wb.save('example.xlsx')
+
+# 讀取檔案
+wb = load_workbook('data.xlsx')
+ws = wb.active
+print(ws['A1'].value)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>讀寫 Excel 檔案</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install openpyxl</code></td>
+</tr>
+<tr>
+<td>支援</td>
+<td>.xlsx 格式</td>
+</tr>
+</tbody>
+</table>
+<h3 id="python-docx-word">python-docx - Word 文件</h3>
+<pre><code class="language-python">from docx import Document
+
+doc = Document()
+doc.add_heading('標題', 0)
+doc.add_paragraph('這是一段文字')
+doc.add_table(rows=3, cols=3)
+doc.save('document.docx')
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>建立、編輯 Word 文件</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install python-docx</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="pypdf2-pdf">PyPDF2 - PDF 處理</h3>
+<pre><code class="language-python">from PyPDF2 import PdfReader, PdfWriter
+
+# 讀取 PDF
+reader = PdfReader('document.pdf')
+text = reader.pages[0].extract_text()
+
+# 合併 PDF
+writer = PdfWriter()
+writer.append('file1.pdf')
+writer.append('file2.pdf')
+writer.write('merged.pdf')
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>PDF 讀取、合併、分割</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install pypdf2</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="gui">十一、GUI 圖形介面</h2>
+<h3 id="tkinter-gui">Tkinter - 內建 GUI</h3>
+<pre><code class="language-python">import tkinter as tk
+
+root = tk.Tk()
+root.title(&quot;我的程式&quot;)
+
+label = tk.Label(root, text=&quot;Hello World!&quot;)
+label.pack()
+
+button = tk.Button(root, text=&quot;點我&quot;, command=lambda: print(&quot;Clicked!&quot;))
+button.pack()
+
+root.mainloop()
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>桌面視窗程式</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td>Python 內建</td>
+</tr>
+<tr>
+<td>特點</td>
+<td>簡單易學、跨平台</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pyqt-pyside-gui">PyQt / PySide - 專業 GUI</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>專業級桌面應用</td>
+</tr>
+<tr>
+<td>安裝</td>
+<td><code>pip install pyqt6</code></td>
+</tr>
+<tr>
+<td>特點</td>
+<td>功能豐富、外觀現代</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_9">十二、常用內建套件</h2>
+<h3 id="os-">os - 系統操作</h3>
+<pre><code class="language-python">import os
+
+# 檔案路徑
+current_dir = os.getcwd()
+os.makedirs('new_folder', exist_ok=True)
+
+# 列出檔案
+files = os.listdir('.')
+
+# 環境變數
+home = os.environ.get('HOME')
+</code></pre>
+<h3 id="datetime-">datetime - 日期時間</h3>
+<pre><code class="language-python">from datetime import datetime, timedelta
+
+now = datetime.now()
+print(now.strftime('%Y-%m-%d %H:%M:%S'))
+
+# 時間運算
+tomorrow = now + timedelta(days=1)
+</code></pre>
+<h3 id="json-json">json - JSON 處理</h3>
+<pre><code class="language-python">import json
+
+# 轉 JSON 字串
+data = {'name': 'Alice', 'age': 25}
+json_str = json.dumps(data)
+
+# 解析 JSON
+parsed = json.loads(json_str)
+
+# 讀寫 JSON 檔案
+with open('data.json', 'w') as f:
+    json.dump(data, f)
+</code></pre>
+<h3 id="time-">time - 時間控制</h3>
+<pre><code class="language-python">import time
+
+time.sleep(2)  # 暫停 2 秒
+timestamp = time.time()  # 時間戳
+</code></pre>
+<h3 id="random-">random - 隨機數</h3>
+<pre><code class="language-python">import random
+
+random.randint(1, 100)    # 隨機整數
+random.choice(['a', 'b']) # 隨機選擇
+random.shuffle(my_list)   # 打亂順序
+</code></pre>
+<hr />
+<h2 id="_10">十三、套件速查表</h2>
+<h3 id="_11">依用途分類</h3>
+<table>
+<thead>
+<tr>
+<th>用途</th>
+<th>推薦套件</th>
+<th>安裝指令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>資料分析</td>
+<td>pandas, numpy</td>
+<td><code>pip install pandas numpy</code></td>
+</tr>
+<tr>
+<td>資料視覺化</td>
+<td>matplotlib, seaborn</td>
+<td><code>pip install matplotlib seaborn</code></td>
+</tr>
+<tr>
+<td>網頁開發</td>
+<td>flask, fastapi</td>
+<td><code>pip install flask</code></td>
+</tr>
+<tr>
+<td>網頁爬蟲</td>
+<td>requests, beautifulsoup4</td>
+<td><code>pip install requests beautifulsoup4</code></td>
+</tr>
+<tr>
+<td>機器學習</td>
+<td>scikit-learn</td>
+<td><code>pip install scikit-learn</code></td>
+</tr>
+<tr>
+<td>深度學習</td>
+<td>tensorflow, torch</td>
+<td><code>pip install tensorflow</code></td>
+</tr>
+<tr>
+<td>影像處理</td>
+<td>opencv-python, pillow</td>
+<td><code>pip install opencv-python pillow</code></td>
+</tr>
+<tr>
+<td>物件偵測</td>
+<td>ultralytics</td>
+<td><code>pip install ultralytics</code></td>
+</tr>
+<tr>
+<td>串列通訊</td>
+<td>pyserial</td>
+<td><code>pip install pyserial</code></td>
+</tr>
+<tr>
+<td>MQTT</td>
+<td>paho-mqtt</td>
+<td><code>pip install paho-mqtt</code></td>
+</tr>
+<tr>
+<td>Excel 處理</td>
+<td>openpyxl</td>
+<td><code>pip install openpyxl</code></td>
+</tr>
+<tr>
+<td>定時任務</td>
+<td>schedule</td>
+<td><code>pip install schedule</code></td>
+</tr>
+<tr>
+<td>樹莓派 GPIO</td>
+<td>gpiozero</td>
+<td><code>pip install gpiozero</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_12">智慧農業常用組合</h3>
+<pre><code class="language-bash"># 感測器資料收集
+pip install pyserial paho-mqtt
+
+# 資料分析與視覺化
+pip install pandas matplotlib
+
+# 網頁儀表板
+pip install flask plotly
+
+# 影像辨識
+pip install opencv-python ultralytics
+
+# 樹莓派控制
+pip install gpiozero RPi.GPIO
+</code></pre>
+<hr />
+<h2 id="_13">十四、常見問題</h2>
+<h3 id="q1">Q1：安裝套件出現權限錯誤？</h3>
+<pre><code class="language-bash"># 加上 --user
+pip install --user 套件名稱
+
+# 或使用虛擬環境
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+</code></pre>
+<h3 id="q2">Q2：套件版本衝突怎麼辦？</h3>
+<pre><code class="language-bash"># 使用虛擬環境隔離專案
+python -m venv myproject_env
+</code></pre>
+<h3 id="q3">Q3：如何知道套件怎麼用？</h3>
+<ol>
+<li>官方文件（最準確）</li>
+<li>PyPI 頁面（pypi.org）</li>
+<li>GitHub 專案頁面</li>
+<li>Stack Overflow</li>
+</ol>
+<h3 id="q4requirementstxt">Q4：requirements.txt 怎麼建立？</h3>
+<pre><code class="language-bash"># 匯出目前環境的套件
+pip freeze &gt; requirements.txt
+
+# 安裝 requirements.txt 的套件
+pip install -r requirements.txt
+</code></pre>
+<hr />
+<p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

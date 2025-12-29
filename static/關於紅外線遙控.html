@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於紅外線遙控</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="_1">關於紅外線遙控</h1>
+<h2 id="_2">前言：紅外線遙控能做什麼？</h2>
+<p>紅外線遙控（IR Remote Control）是最常見的無線控制方式之一，你家裡的電視、冷氣、音響遙控器幾乎都是使用紅外線技術。</p>
+<p>在 Arduino 專案中，我們可以：<br />
+- 用現成的遙控器控制 Arduino<br />
+- 讓 Arduino 讀取遙控器訊號<br />
+- 實現遠端控制 LED、馬達、家電等</p>
+<p>成本低廉、使用簡單，是入門無線控制的最佳選擇！</p>
+<hr />
+<h2 id="_3">一、紅外線遙控是什麼？</h2>
+<h3 id="_4">一句話解釋</h3>
+<blockquote>
+<p>紅外線遙控是利用人眼看不見的紅外線光，傳送控制訊號的無線通訊方式。</p>
+</blockquote>
+<h3 id="_5">生活比喻</h3>
+<pre><code>想像紅外線遙控是一種「看不見的手電筒摩斯密碼」：
+
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│  遙控器                              電視                   │
+│  ┌─────┐                            ┌─────┐                │
+│  │     │  ─ ── ─ ─ ── ─ ─ ─ ──→    │     │                │
+│  │ [按] │    紅外線閃爍             │     │                │
+│  │ [鈕] │   （人眼看不見）           │ 接收│                │
+│  └─────┘                            └─────┘                │
+│                                                             │
+│  按下按鈕 → 紅外線 LED 快速閃爍                             │
+│  閃爍的模式（長短）= 不同的指令代碼                         │
+│  接收器解讀閃爍模式 → 執行對應動作                          │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="_6">紅外線的特性</h3>
+<pre><code>紅外線（Infrared, IR）：
+
+可見光譜：
+紫 藍 綠 黃 橙 紅 │ 紅外線
+←────────────────┼────────→
+      可見光      │  不可見
+
+波長：約 700nm ~ 1mm
+遙控器常用：940nm（近紅外線）
+
+特點：
+✓ 人眼看不見（但手機相機可以看到！）
+✓ 傳輸距離短（通常 5-10 公尺）
+✓ 需要直線對準（無法穿牆）
+✓ 不受無線電波干擾
+✓ 成本極低
+</code></pre>
+<hr />
+<h2 id="_7">二、紅外線遙控的工作原理</h2>
+<h3 id="_8">系統組成</h3>
+<pre><code>紅外線遙控系統：
+
+    發射端（遙控器）              接收端（Arduino）
+    ┌─────────────┐              ┌─────────────┐
+    │             │              │             │
+    │  ┌───────┐  │  紅外線      │  ┌───────┐  │
+    │  │按鍵矩陣│  │  ~~~~~~~~→  │  │IR接收器│  │
+    │  └───┬───┘  │              │  └───┬───┘  │
+    │      │      │              │      │      │
+    │  ┌───┴───┐  │              │  ┌───┴───┐  │
+    │  │編碼 IC │  │              │  │解碼程式│  │
+    │  └───┬───┘  │              │  └───┬───┘  │
+    │      │      │              │      │      │
+    │  ┌───┴───┐  │              │  ┌───┴───┐  │
+    │  │IR LED │  │              │  │ 執行   │  │
+    │  └───────┘  │              │  │ 動作   │  │
+    │             │              │  └───────┘  │
+    └─────────────┘              └─────────────┘
+</code></pre>
+<h3 id="38khz">調變原理（38kHz 載波）</h3>
+<pre><code>為什麼需要 38kHz 調變？
+
+問題：環境中有很多紅外線干擾（太陽光、燈光）
+
+解決：用 38kHz 頻率「閃爍」紅外線
+     接收器只接收 38kHz 的訊號，濾除其他干擾
+
+原始訊號：
+    ┌───┐   ┌─┐   ┌───────┐
+    │   │   │ │   │       │
+────┘   └───┘ └───┘       └────
+
+調變後（38kHz 載波）：
+    ┌┬┬┬┐   ┌┬┐   ┌┬┬┬┬┬┬┬┐
+    │││││   │││   │││││││││
+────┘└┴┴└───┘└└───┘└┴┴┴┴┴┴┴└────
+    ↑↑↑↑     ↑↑     ↑↑↑↑↑↑↑
+   38kHz   38kHz    38kHz
+
+接收器輸出（解調後）：
+    ┌───┐   ┌─┐   ┌───────┐
+    │   │   │ │   │       │    ← 和原始訊號相同
+────┘   └───┘ └───┘       └────
+</code></pre>
+<h3 id="_9">常見編碼協定</h3>
+<pre><code>不同廠牌使用不同的編碼協定：
+
+┌────────────┬─────────────┬────────────────────┐
+│   協定     │   常見廠牌   │      特點          │
+├────────────┼─────────────┼────────────────────┤
+│ NEC        │ 通用遙控器  │ 最常見、32位元     │
+│ Sony       │ Sony        │ 12/15/20位元       │
+│ RC5        │ Philips     │ 雙相位編碼         │
+│ RC6        │ Philips     │ RC5 改良版         │
+│ Samsung    │ Samsung     │ 類似 NEC           │
+│ Panasonic  │ Panasonic   │ 48位元             │
+└────────────┴─────────────┴────────────────────┘
+
+Arduino 套件附贈的小遙控器通常使用 NEC 協定
+</code></pre>
+<h3 id="nec">NEC 協定詳解</h3>
+<pre><code>NEC 協定訊號格式：
+
+引導碼        地址碼      地址反碼      命令碼      命令反碼
+┌────────┬────────────┬────────────┬────────────┬────────────┐
+│9ms HIGH│ 8 bits     │ 8 bits     │ 8 bits     │ 8 bits     │
+│4.5ms LOW│           │            │            │            │
+└────────┴────────────┴────────────┴────────────┴────────────┘
+
+位元編碼：
+邏輯 0：562μs HIGH + 562μs LOW（共 1.125ms）
+邏輯 1：562μs HIGH + 1687μs LOW（共 2.25ms）
+
+總長度：約 67.5ms
+重複碼：9ms HIGH + 2.25ms LOW + 562μs HIGH（按住按鈕時發送）
+</code></pre>
+<hr />
+<h2 id="_10">三、紅外線接收器介紹</h2>
+<h3 id="vs1838b">VS1838B（最常用）</h3>
+<pre><code>VS1838B 紅外線接收器：
+
+正面（圓弧面朝向你）：
+       ┌─────┐
+       │  ●  │  ← 接收窗（對準遙控器）
+       │     │
+       └──┬──┘
+         │││
+         │││
+         OUT VCC GND
+         (1) (2) (3)
+
+規格：
+- 工作電壓：2.7V ~ 5.5V
+- 載波頻率：38kHz
+- 接收角度：±45°
+- 接收距離：約 18 公尺
+- 輸出：解調後的數位訊號（低電平有效）
+</code></pre>
+<h3 id="ir">常見 IR 接收器型號</h3>
+<pre><code>┌────────────┬────────────┬────────────┬────────────┐
+│   型號     │  載波頻率   │    電壓    │    備註    │
+├────────────┼────────────┼────────────┼────────────┤
+│ VS1838B    │   38kHz    │  2.7-5.5V  │ 最常見     │
+│ TSOP1838   │   38kHz    │  2.5-5.5V  │ 品質較好   │
+│ TSOP4838   │   38kHz    │  2.5-5.5V  │ AGC 增益   │
+│ CHQ1838    │   38kHz    │  2.7-5.5V  │ 相容品     │
+└────────────┴────────────┴────────────┴────────────┘
+
+腳位順序可能不同，使用前請確認 datasheet！
+</code></pre>
+<h3 id="ir_1">IR 接收模組</h3>
+<pre><code>IR 接收模組（三腳，已焊接在小板上）：
+
+    ┌─────────────────┐
+    │   ┌───────┐     │
+    │   │VS1838B│     │
+    │   └───┬───┘     │
+    │       │         │
+    │    S  +  -      │  ← 標示可能不同
+    │    ○  ○  ○      │
+    └────┼──┼──┼──────┘
+         │  │  │
+        訊號 VCC GND
+        (OUT)
+
+優點：已加入必要的電容和電阻，接線更簡單
+</code></pre>
+<hr />
+<h2 id="_11">四、接線方式</h2>
+<h3 id="vs1838b_1">VS1838B 直接接線</h3>
+<pre><code>VS1838B 直接連接 Arduino：
+
+    Arduino UNO              VS1838B
+    ┌─────────┐             （正面）
+    │         │              ┌───┐
+    │     D11 ├──────────────┤OUT│
+    │         │              │   │
+    │      5V ├──────────────┤VCC│
+    │         │              │   │
+    │     GND ├──────────────┤GND│
+    │         │              └───┘
+    └─────────┘
+
+    建議加上濾波電容：
+    - 在 VCC 和 GND 之間加 100nF 電容
+    - 可減少電源雜訊造成的誤觸發
+</code></pre>
+<h3 id="ir_2">IR 接收模組接線</h3>
+<pre><code>IR 接收模組連接 Arduino：
+
+    Arduino UNO              IR 模組
+    ┌─────────┐            ┌─────────┐
+    │         │            │  S + -  │
+    │     D11 ├────────────┤  ○ ○ ○  │
+    │         │            │  │ │ │  │
+    │      5V ├────────────┤──┘ │ │  │
+    │         │            │    │ │  │
+    │     GND ├────────────┤────┘ │  │
+    │         │            │      │  │
+    └─────────┘            └──────┘  │
+                                     ↓
+                               確認標示！
+</code></pre>
+<h3 id="_12">麵包板接線圖</h3>
+<pre><code>         Arduino                    VS1838B
+    ┌───────────────┐               ┌───┐
+    │               │               │ ● │ ← 對準遙控器
+    │          D11 ─┼───────────────┤OUT│
+    │               │       ┌───────┤VCC│
+    │           5V ─┼───────┤       │   │
+    │               │       │   ┌───┤GND│
+    │          GND ─┼───────┼───┘   └───┘
+    │               │       │
+    └───────────────┘      ═╧═ 100nF（選配）
+</code></pre>
+<hr />
+<h2 id="irremote">五、IRremote 程式庫安裝</h2>
+<h3 id="_13">安裝步驟</h3>
+<pre><code>Arduino IDE 安裝 IRremote 程式庫：
+
+1. 開啟 Arduino IDE
+
+2. 點選選單：草稿碼 → 匯入程式庫 → 管理程式庫
+   (Sketch → Include Library → Manage Libraries)
+
+3. 在搜尋框輸入「IRremote」
+
+4. 找到「IRremote」by shirriff, z3t0, ArminJo
+   ┌────────────────────────────────────────┐
+   │ IRremote                               │
+   │ by shirriff, z3t0, ArminJo             │
+   │ Version: 4.x.x                         │
+   │                          [安裝] ←點這  │
+   └────────────────────────────────────────┘
+
+5. 安裝完成！
+
+⚠️ 注意：版本 3.x 和 4.x 語法有差異
+   本文範例使用 4.x 版本語法
+</code></pre>
+<h3 id="_14">版本差異注意</h3>
+<pre><code class="language-cpp">// IRremote 3.x 舊版語法
+#include &lt;IRremote.h&gt;
+IRrecv irrecv(11);
+decode_results results;
+irrecv.enableIRIn();
+if (irrecv.decode(&amp;results)) {
+  Serial.println(results.value, HEX);
+  irrecv.resume();
+}
+
+// IRremote 4.x 新版語法（推薦）
+#include &lt;IRremote.hpp&gt;
+IrReceiver.begin(11, ENABLE_LED_FEEDBACK);
+if (IrReceiver.decode()) {
+  Serial.println(IrReceiver.decodedIRData.decodedRawData, HEX);
+  IrReceiver.resume();
+}
+</code></pre>
+<hr />
+<h2 id="arduino">六、Arduino 程式範例</h2>
+<h3 id="1">範例 1：接收並顯示遙控器碼</h3>
+<pre><code class="language-cpp">/*
+ * 紅外線接收器測試
+ * 顯示遙控器按鍵的代碼
+ */
+
+#include &lt;IRremote.hpp&gt;
+
+const int IR_RECEIVE_PIN = 11;
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println(&quot;IR 接收器測試&quot;);
+  Serial.println(&quot;請按遙控器按鈕...&quot;);
+  Serial.println();
+
+  // 初始化 IR 接收器
+  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+}
+
+void loop() {
+  // 檢查是否收到訊號
+  if (IrReceiver.decode()) {
+
+    // 顯示協定類型
+    Serial.print(&quot;協定：&quot;);
+    Serial.println(getProtocolString(IrReceiver.decodedIRData.protocol));
+
+    // 顯示原始資料（HEX）
+    Serial.print(&quot;代碼：0x&quot;);
+    Serial.println(IrReceiver.decodedIRData.decodedRawData, HEX);
+
+    // 顯示命令碼
+    Serial.print(&quot;命令：0x&quot;);
+    Serial.println(IrReceiver.decodedIRData.command, HEX);
+
+    // 顯示地址碼
+    Serial.print(&quot;地址：0x&quot;);
+    Serial.println(IrReceiver.decodedIRData.address, HEX);
+
+    Serial.println(&quot;-------------------&quot;);
+
+    // 準備接收下一個訊號
+    IrReceiver.resume();
+  }
+}
+</code></pre>
+<h3 id="2">範例 2：辨識遙控器按鍵</h3>
+<pre><code class="language-cpp">/*
+ * 辨識常見 Arduino 套件遙控器的按鍵
+ * 請先用範例 1 找出你的遙控器代碼
+ */
+
+#include &lt;IRremote.hpp&gt;
+
+const int IR_RECEIVE_PIN = 11;
+
+// 定義遙控器按鍵代碼（根據你的遙控器調整）
+// 這些是常見 Arduino 套件遙控器的代碼
+#define IR_BUTTON_0     0xE916FF00
+#define IR_BUTTON_1     0xF30CFF00
+#define IR_BUTTON_2     0xE718FF00
+#define IR_BUTTON_3     0xA15EFF00
+#define IR_BUTTON_4     0xF708FF00
+#define IR_BUTTON_5     0xE31CFF00
+#define IR_BUTTON_6     0xA55AFF00
+#define IR_BUTTON_7     0xBD42FF00
+#define IR_BUTTON_8     0xAD52FF00
+#define IR_BUTTON_9     0xB54AFF00
+#define IR_BUTTON_STAR  0xE619FF00  // *
+#define IR_BUTTON_HASH  0xF20DFF00  // #
+#define IR_BUTTON_UP    0xE718FF00
+#define IR_BUTTON_DOWN  0xAD52FF00
+#define IR_BUTTON_LEFT  0xF708FF00
+#define IR_BUTTON_RIGHT 0xA55AFF00
+#define IR_BUTTON_OK    0xE31CFF00
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println(&quot;遙控器按鍵辨識&quot;);
+
+  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+}
+
+void loop() {
+  if (IrReceiver.decode()) {
+    uint32_t code = IrReceiver.decodedIRData.decodedRawData;
+
+    Serial.print(&quot;收到：0x&quot;);
+    Serial.print(code, HEX);
+    Serial.print(&quot; → &quot;);
+
+    // 辨識按鍵
+    switch (code) {
+      case IR_BUTTON_0: Serial.println(&quot;按鍵 0&quot;); break;
+      case IR_BUTTON_1: Serial.println(&quot;按鍵 1&quot;); break;
+      case IR_BUTTON_2: Serial.println(&quot;按鍵 2&quot;); break;
+      case IR_BUTTON_3: Serial.println(&quot;按鍵 3&quot;); break;
+      case IR_BUTTON_4: Serial.println(&quot;按鍵 4&quot;); break;
+      case IR_BUTTON_5: Serial.println(&quot;按鍵 5&quot;); break;
+      case IR_BUTTON_6: Serial.println(&quot;按鍵 6&quot;); break;
+      case IR_BUTTON_7: Serial.println(&quot;按鍵 7&quot;); break;
+      case IR_BUTTON_8: Serial.println(&quot;按鍵 8&quot;); break;
+      case IR_BUTTON_9: Serial.println(&quot;按鍵 9&quot;); break;
+      case IR_BUTTON_STAR: Serial.println(&quot;按鍵 *&quot;); break;
+      case IR_BUTTON_HASH: Serial.println(&quot;按鍵 #&quot;); break;
+      case 0xFFFFFFFF: Serial.println(&quot;（重複碼）&quot;); break;
+      default: Serial.println(&quot;未知按鍵&quot;); break;
+    }
+
+    IrReceiver.resume();
+  }
+}
+</code></pre>
+<h3 id="3-led">範例 3：遙控器控制 LED</h3>
+<pre><code class="language-cpp">/*
+ * 使用遙控器控制 LED
+ * 按 1：開 LED
+ * 按 2：關 LED
+ * 按 3-9：調整亮度
+ */
+
+#include &lt;IRremote.hpp&gt;
+
+const int IR_RECEIVE_PIN = 11;
+const int LED_PIN = 9;  // PWM 腳位
+
+// 遙控器代碼（請根據你的遙控器調整）
+#define IR_BUTTON_1  0xF30CFF00
+#define IR_BUTTON_2  0xE718FF00
+#define IR_BUTTON_3  0xA15EFF00
+#define IR_BUTTON_4  0xF708FF00
+#define IR_BUTTON_5  0xE31CFF00
+#define IR_BUTTON_6  0xA55AFF00
+#define IR_BUTTON_7  0xBD42FF00
+#define IR_BUTTON_8  0xAD52FF00
+#define IR_BUTTON_9  0xB54AFF00
+
+int brightness = 0;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(LED_PIN, OUTPUT);
+
+  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+
+  Serial.println(&quot;遙控器控制 LED&quot;);
+  Serial.println(&quot;1=開, 2=關, 3-9=亮度&quot;);
+}
+
+void loop() {
+  if (IrReceiver.decode()) {
+    uint32_t code = IrReceiver.decodedIRData.decodedRawData;
+
+    switch (code) {
+      case IR_BUTTON_1:
+        brightness = 255;
+        Serial.println(&quot;LED 開啟&quot;);
+        break;
+
+      case IR_BUTTON_2:
+        brightness = 0;
+        Serial.println(&quot;LED 關閉&quot;);
+        break;
+
+      case IR_BUTTON_3:
+        brightness = 30;
+        Serial.println(&quot;亮度：12%&quot;);
+        break;
+
+      case IR_BUTTON_4:
+        brightness = 60;
+        Serial.println(&quot;亮度：24%&quot;);
+        break;
+
+      case IR_BUTTON_5:
+        brightness = 90;
+        Serial.println(&quot;亮度：35%&quot;);
+        break;
+
+      case IR_BUTTON_6:
+        brightness = 128;
+        Serial.println(&quot;亮度：50%&quot;);
+        break;
+
+      case IR_BUTTON_7:
+        brightness = 180;
+        Serial.println(&quot;亮度：70%&quot;);
+        break;
+
+      case IR_BUTTON_8:
+        brightness = 220;
+        Serial.println(&quot;亮度：86%&quot;);
+        break;
+
+      case IR_BUTTON_9:
+        brightness = 255;
+        Serial.println(&quot;亮度：100%&quot;);
+        break;
+    }
+
+    analogWrite(LED_PIN, brightness);
+    IrReceiver.resume();
+  }
+}
+</code></pre>
+<h3 id="4">範例 4：遙控器控制伺服馬達</h3>
+<pre><code class="language-cpp">/*
+ * 使用遙控器控制伺服馬達角度
+ * ↑：增加角度
+ * ↓：減少角度
+ * OK：回到 90 度
+ * 數字 1-9：快速跳到特定角度
+ */
+
+#include &lt;IRremote.hpp&gt;
+#include &lt;Servo.h&gt;
+
+const int IR_RECEIVE_PIN = 11;
+const int SERVO_PIN = 9;
+
+// 遙控器代碼（請根據你的遙控器調整）
+#define IR_UP     0xE718FF00
+#define IR_DOWN   0xAD52FF00
+#define IR_OK     0xE31CFF00
+#define IR_1      0xF30CFF00
+#define IR_2      0xE718FF00
+#define IR_3      0xA15EFF00
+#define IR_4      0xF708FF00
+#define IR_5      0xE31CFF00
+#define IR_6      0xA55AFF00
+#define IR_7      0xBD42FF00
+#define IR_8      0xAD52FF00
+#define IR_9      0xB54AFF00
+
+Servo myServo;
+int angle = 90;
+const int STEP = 10;
+
+void setup() {
+  Serial.begin(9600);
+  myServo.attach(SERVO_PIN);
+  myServo.write(angle);
+
+  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+
+  Serial.println(&quot;遙控器控制伺服馬達&quot;);
+  Serial.println(&quot;↑/↓=調整角度, OK=90度&quot;);
+}
+
+void loop() {
+  if (IrReceiver.decode()) {
+    uint32_t code = IrReceiver.decodedIRData.decodedRawData;
+
+    switch (code) {
+      case IR_UP:
+        angle = min(angle + STEP, 180);
+        break;
+      case IR_DOWN:
+        angle = max(angle - STEP, 0);
+        break;
+      case IR_OK:
+        angle = 90;
+        break;
+      case IR_1:
+        angle = 0;
+        break;
+      case IR_3:
+        angle = 45;
+        break;
+      case IR_5:
+        angle = 90;
+        break;
+      case IR_7:
+        angle = 135;
+        break;
+      case IR_9:
+        angle = 180;
+        break;
+    }
+
+    myServo.write(angle);
+    Serial.print(&quot;角度：&quot;);
+    Serial.println(angle);
+
+    IrReceiver.resume();
+  }
+}
+</code></pre>
+<h3 id="5">範例 5：學習遙控器代碼</h3>
+<pre><code class="language-cpp">/*
+ * 遙控器代碼學習工具
+ * 按任意遙控器按鈕，顯示可直接複製的程式碼
+ */
+
+#include &lt;IRremote.hpp&gt;
+
+const int IR_RECEIVE_PIN = 11;
+
+int buttonCount = 0;
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println(&quot;============================&quot;);
+  Serial.println(&quot;   遙控器代碼學習工具&quot;);
+  Serial.println(&quot;============================&quot;);
+  Serial.println();
+  Serial.println(&quot;請依序按下遙控器按鈕...&quot;);
+  Serial.println(&quot;複製下面的 #define 到你的程式中使用&quot;);
+  Serial.println();
+
+  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+}
+
+void loop() {
+  if (IrReceiver.decode()) {
+    // 忽略重複碼
+    if (IrReceiver.decodedIRData.decodedRawData != 0 &amp;&amp;
+        IrReceiver.decodedIRData.decodedRawData != 0xFFFFFFFF) {
+
+      buttonCount++;
+
+      // 輸出可複製的格式
+      Serial.print(&quot;#define IR_BUTTON_&quot;);
+      Serial.print(buttonCount);
+      Serial.print(&quot;  0x&quot;);
+      Serial.println(IrReceiver.decodedIRData.decodedRawData, HEX);
+    }
+
+    IrReceiver.resume();
+    delay(100);  // 避免重複讀取
+  }
+}
+</code></pre>
+<h3 id="6-rgb-led">範例 6：遙控器控制 RGB LED</h3>
+<pre><code class="language-cpp">/*
+ * 使用遙控器控制 RGB LED 顏色
+ * 1=紅, 2=綠, 3=藍
+ * 4=黃, 5=青, 6=紫
+ * 7=白, 8=關, 9=彩虹模式
+ */
+
+#include &lt;IRremote.hpp&gt;
+
+const int IR_RECEIVE_PIN = 11;
+const int RED_PIN = 9;
+const int GREEN_PIN = 10;
+const int BLUE_PIN = 6;
+
+// 遙控器代碼
+#define IR_1  0xF30CFF00
+#define IR_2  0xE718FF00
+#define IR_3  0xA15EFF00
+#define IR_4  0xF708FF00
+#define IR_5  0xE31CFF00
+#define IR_6  0xA55AFF00
+#define IR_7  0xBD42FF00
+#define IR_8  0xAD52FF00
+#define IR_9  0xB54AFF00
+
+bool rainbowMode = false;
+int rainbowHue = 0;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(RED_PIN, OUTPUT);
+  pinMode(GREEN_PIN, OUTPUT);
+  pinMode(BLUE_PIN, OUTPUT);
+
+  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+
+  Serial.println(&quot;RGB LED 遙控器控制&quot;);
+}
+
+void loop() {
+  // 檢查遙控器
+  if (IrReceiver.decode()) {
+    uint32_t code = IrReceiver.decodedIRData.decodedRawData;
+    rainbowMode = false;  // 收到任何按鍵就停止彩虹模式
+
+    switch (code) {
+      case IR_1: setColor(255, 0, 0); Serial.println(&quot;紅色&quot;); break;
+      case IR_2: setColor(0, 255, 0); Serial.println(&quot;綠色&quot;); break;
+      case IR_3: setColor(0, 0, 255); Serial.println(&quot;藍色&quot;); break;
+      case IR_4: setColor(255, 255, 0); Serial.println(&quot;黃色&quot;); break;
+      case IR_5: setColor(0, 255, 255); Serial.println(&quot;青色&quot;); break;
+      case IR_6: setColor(255, 0, 255); Serial.println(&quot;紫色&quot;); break;
+      case IR_7: setColor(255, 255, 255); Serial.println(&quot;白色&quot;); break;
+      case IR_8: setColor(0, 0, 0); Serial.println(&quot;關閉&quot;); break;
+      case IR_9: rainbowMode = true; Serial.println(&quot;彩虹模式&quot;); break;
+    }
+
+    IrReceiver.resume();
+  }
+
+  // 彩虹模式
+  if (rainbowMode) {
+    rainbowHue = (rainbowHue + 1) % 360;
+    setColorHSV(rainbowHue, 255, 255);
+    delay(20);
+  }
+}
+
+void setColor(int r, int g, int b) {
+  analogWrite(RED_PIN, r);
+  analogWrite(GREEN_PIN, g);
+  analogWrite(BLUE_PIN, b);
+}
+
+// HSV 轉 RGB（簡化版）
+void setColorHSV(int h, int s, int v) {
+  int r, g, b;
+  int region = h / 60;
+  int remainder = (h % 60) * 255 / 60;
+
+  int p = v * (255 - s) / 255;
+  int q = v * (255 - (s * remainder) / 255) / 255;
+  int t = v * (255 - (s * (255 - remainder)) / 255) / 255;
+
+  switch (region) {
+    case 0: r = v; g = t; b = p; break;
+    case 1: r = q; g = v; b = p; break;
+    case 2: r = p; g = v; b = t; break;
+    case 3: r = p; g = q; b = v; break;
+    case 4: r = t; g = p; b = v; break;
+    default: r = v; g = p; b = q; break;
+  }
+
+  setColor(r, g, b);
+}
+</code></pre>
+<h3 id="7">範例 7：遙控器綜合控制（溫室應用）</h3>
+<pre><code class="language-cpp">/*
+ * 智慧溫室遙控控制面板
+ * 1=風扇開關
+ * 2=霧化器開關
+ * 3=LED燈開關
+ * 4=窗戶開
+ * 5=窗戶關
+ * 0=全部關閉
+ */
+
+#include &lt;IRremote.hpp&gt;
+#include &lt;Servo.h&gt;
+
+const int IR_RECEIVE_PIN = 11;
+const int FAN_RELAY = 4;
+const int HUMIDIFIER_RELAY = 5;
+const int LED_RELAY = 6;
+const int WINDOW_SERVO_PIN = 9;
+
+// 遙控器代碼
+#define IR_0  0xE916FF00
+#define IR_1  0xF30CFF00
+#define IR_2  0xE718FF00
+#define IR_3  0xA15EFF00
+#define IR_4  0xF708FF00
+#define IR_5  0xE31CFF00
+
+Servo windowServo;
+
+bool fanOn = false;
+bool humidifierOn = false;
+bool ledOn = false;
+int windowAngle = 0;
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(FAN_RELAY, OUTPUT);
+  pinMode(HUMIDIFIER_RELAY, OUTPUT);
+  pinMode(LED_RELAY, OUTPUT);
+  windowServo.attach(WINDOW_SERVO_PIN);
+
+  // 初始狀態：全部關閉
+  digitalWrite(FAN_RELAY, LOW);
+  digitalWrite(HUMIDIFIER_RELAY, LOW);
+  digitalWrite(LED_RELAY, LOW);
+  windowServo.write(0);
+
+  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+
+  Serial.println(&quot;=== 智慧溫室遙控面板 ===&quot;);
+  Serial.println(&quot;1=風扇 2=霧化器 3=LED燈&quot;);
+  Serial.println(&quot;4=開窗 5=關窗 0=全關&quot;);
+  printStatus();
+}
+
+void loop() {
+  if (IrReceiver.decode()) {
+    uint32_t code = IrReceiver.decodedIRData.decodedRawData;
+
+    switch (code) {
+      case IR_1:  // 風扇開關
+        fanOn = !fanOn;
+        digitalWrite(FAN_RELAY, fanOn ? HIGH : LOW);
+        Serial.println(fanOn ? &quot;風扇：開&quot; : &quot;風扇：關&quot;);
+        break;
+
+      case IR_2:  // 霧化器開關
+        humidifierOn = !humidifierOn;
+        digitalWrite(HUMIDIFIER_RELAY, humidifierOn ? HIGH : LOW);
+        Serial.println(humidifierOn ? &quot;霧化器：開&quot; : &quot;霧化器：關&quot;);
+        break;
+
+      case IR_3:  // LED 燈開關
+        ledOn = !ledOn;
+        digitalWrite(LED_RELAY, ledOn ? HIGH : LOW);
+        Serial.println(ledOn ? &quot;LED燈：開&quot; : &quot;LED燈：關&quot;);
+        break;
+
+      case IR_4:  // 開窗
+        windowAngle = 90;
+        windowServo.write(windowAngle);
+        Serial.println(&quot;窗戶：開啟&quot;);
+        break;
+
+      case IR_5:  // 關窗
+        windowAngle = 0;
+        windowServo.write(windowAngle);
+        Serial.println(&quot;窗戶：關閉&quot;);
+        break;
+
+      case IR_0:  // 全部關閉
+        fanOn = false;
+        humidifierOn = false;
+        ledOn = false;
+        windowAngle = 0;
+        digitalWrite(FAN_RELAY, LOW);
+        digitalWrite(HUMIDIFIER_RELAY, LOW);
+        digitalWrite(LED_RELAY, LOW);
+        windowServo.write(0);
+        Serial.println(&quot;全部關閉&quot;);
+        break;
+    }
+
+    printStatus();
+    IrReceiver.resume();
+  }
+}
+
+void printStatus() {
+  Serial.println(&quot;-------------------&quot;);
+  Serial.print(&quot;風扇：&quot;); Serial.println(fanOn ? &quot;ON&quot; : &quot;OFF&quot;);
+  Serial.print(&quot;霧化器：&quot;); Serial.println(humidifierOn ? &quot;ON&quot; : &quot;OFF&quot;);
+  Serial.print(&quot;LED燈：&quot;); Serial.println(ledOn ? &quot;ON&quot; : &quot;OFF&quot;);
+  Serial.print(&quot;窗戶：&quot;); Serial.println(windowAngle &gt; 0 ? &quot;開&quot; : &quot;關&quot;);
+  Serial.println(&quot;-------------------&quot;);
+}
+</code></pre>
+<hr />
+<h2 id="_15">七、常見遙控器代碼表</h2>
+<h3 id="arduino-21">Arduino 套件小遙控器（21 鍵）</h3>
+<pre><code>常見 Arduino 套件遙控器按鍵代碼（僅供參考，請自行測試）：
+
+┌─────────────────────────────────┐
+│  CH-    CH     CH+              │
+│  0xFFA25D  0xFF629D  0xFFE21D   │
+│                                 │
+│   |&lt;&lt;    &gt;&gt;|     &gt;||            │
+│  0xFF22DD  0xFF02FD  0xFFC23D   │
+│                                 │
+│   -       +       EQ            │
+│  0xFFE01F  0xFFA857  0xFF906F   │
+│                                 │
+│   0      100+    200+           │
+│  0xFF6897  0xFF9867  0xFFB04F   │
+│                                 │
+│   1       2       3             │
+│  0xFF30CF  0xFF18E7  0xFF7A85   │
+│                                 │
+│   4       5       6             │
+│  0xFF10EF  0xFF38C7  0xFF5AA5   │
+│                                 │
+│   7       8       9             │
+│  0xFF42BD  0xFF4AB5  0xFF52AD   │
+└─────────────────────────────────┘
+
+⚠️ 不同批次、不同廠商的代碼可能不同！
+   請使用「範例 5：學習遙控器代碼」來取得你的遙控器代碼
+</code></pre>
+<hr />
+<h2 id="_16">八、常見問題排解</h2>
+<h3 id="1_1">問題 1：接收不到訊號</h3>
+<pre><code>檢查步驟：
+
+□ 1. 接線正確嗎？（OUT、VCC、GND）
+□ 2. 遙控器有電嗎？（用手機相機看 IR LED 有沒有亮）
+□ 3. 接收器方向對嗎？（圓弧面對著遙控器）
+□ 4. 距離會不會太遠？（先近距離測試）
+□ 5. 程式中腳位設定正確嗎？
+□ 6. 有沒有強光干擾？（太陽光、日光燈）
+□ 7. 試著換一個遙控器測試
+</code></pre>
+<h3 id="2-0-ffffffff">問題 2：收到的代碼一直是 0 或 FFFFFFFF</h3>
+<pre><code>可能原因與解決方法：
+
+1. 重複碼問題
+   → 長按按鈕會發送重複碼（0xFFFFFFFF）
+   → 這是正常的，程式中過濾掉即可
+
+   if (code != 0xFFFFFFFF) {
+     // 處理正常代碼
+   }
+
+2. 協定不支援
+   → 某些遙控器使用特殊協定
+   → 嘗試用 decodedRawData 而非 command
+
+3. 訊號不穩定
+   → 加濾波電容
+   → 減少距離
+</code></pre>
+<h3 id="3">問題 3：代碼每次都不一樣</h3>
+<pre><code>可能原因與解決方法：
+
+1. 訊號干擾
+   → 遠離日光燈、螢幕等光源
+   → 加 100nF 濾波電容
+
+2. 接線不穩
+   → 檢查杜邦線是否鬆動
+   → 使用較短的線材
+
+3. 按太快
+   → 每次按下後等待 0.5 秒再按下一次
+   → 程式中加入 delay 防止重複讀取
+</code></pre>
+<h3 id="4_1">問題 4：只有某些按鍵可用</h3>
+<pre><code>可能原因：
+
+1. 代碼定義錯誤
+   → 用學習工具重新取得所有按鍵代碼
+
+2. 代碼位數不同
+   → 某些按鍵可能是 16 位元，某些是 32 位元
+   → 嘗試使用 command 而非 decodedRawData
+
+3. 遙控器問題
+   → 某些按鍵可能故障或電池沒電
+</code></pre>
+<hr />
+<h2 id="_17">九、用手機相機看紅外線</h2>
+<pre><code>檢測遙控器是否正常的小技巧：
+
+1. 打開手機相機（前置或後置都可以）
+2. 將遙控器 IR LED 對準鏡頭
+3. 按下遙控器按鈕
+4. 在手機螢幕上會看到紫色/藍白色閃光
+
+   ┌─────────────┐
+   │             │
+   │    [●]      │  ← 看到閃光 = 遙控器正常
+   │             │
+   │   手機相機   │
+   └─────────────┘
+
+⚠️ 某些高階手機有 IR 濾鏡，可能看不到
+   可以用前置相機或舊手機測試
+</code></pre>
+<hr />
+<h2 id="_18">十、接線與程式速查</h2>
+<h3 id="_19">接線速查</h3>
+<table>
+<thead>
+<tr>
+<th>VS1838B 腳位</th>
+<th>Arduino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OUT (訊號)</td>
+<td>D11（或其他數位腳位）</td>
+</tr>
+<tr>
+<td>VCC</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>GND</td>
+</tr>
+</tbody>
+</table>
+<h3 id="irremote-4x">IRremote 4.x 程式速查</h3>
+<pre><code class="language-cpp">#include &lt;IRremote.hpp&gt;
+
+// 初始化
+IrReceiver.begin(11, ENABLE_LED_FEEDBACK);
+
+// 接收訊號
+if (IrReceiver.decode()) {
+  // 取得代碼
+  uint32_t code = IrReceiver.decodedIRData.decodedRawData;
+  uint16_t cmd = IrReceiver.decodedIRData.command;
+  uint16_t addr = IrReceiver.decodedIRData.address;
+
+  // 取得協定名稱
+  String protocol = getProtocolString(IrReceiver.decodedIRData.protocol);
+
+  // 準備接收下一個
+  IrReceiver.resume();
+}
+
+// 檢查是否為重複碼
+if (IrReceiver.decodedIRData.flags &amp; IRDATA_FLAGS_IS_REPEAT) {
+  // 這是長按產生的重複碼
+}
+</code></pre>
+<h3 id="_20">常用程式模板</h3>
+<pre><code class="language-cpp">#include &lt;IRremote.hpp&gt;
+
+const int IR_PIN = 11;
+
+// 在這裡定義你的遙控器代碼
+#define IR_BUTTON_1  0x12345678
+#define IR_BUTTON_2  0x87654321
+
+void setup() {
+  Serial.begin(9600);
+  IrReceiver.begin(IR_PIN, ENABLE_LED_FEEDBACK);
+}
+
+void loop() {
+  if (IrReceiver.decode()) {
+    uint32_t code = IrReceiver.decodedIRData.decodedRawData;
+
+    // 忽略重複碼和無效碼
+    if (code != 0 &amp;&amp; code != 0xFFFFFFFF) {
+      switch (code) {
+        case IR_BUTTON_1:
+          // 按鈕 1 的動作
+          break;
+        case IR_BUTTON_2:
+          // 按鈕 2 的動作
+          break;
+      }
+    }
+
+    IrReceiver.resume();
+  }
+}
+</code></pre>
+<hr />
+<h2 id="_21">延伸學習</h2>
+<ul>
+<li><strong>關於伺服馬達.md</strong> - 用遙控器控制伺服馬達</li>
+<li><strong>關於步進馬達.md</strong> - 用遙控器控制步進馬達</li>
+<li><strong>關於繼電器模組.md</strong> - 用遙控器控制家電開關</li>
+<li><strong>關於序列埠通訊.md</strong> - 將遙控器代碼傳到電腦</li>
+</ul>
+<hr />
+<blockquote>
+<p>紅外線遙控是最簡單、最便宜的無線控制方式，學會它就能讓你的專案擺脫線材束縛！</p>
+</blockquote>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

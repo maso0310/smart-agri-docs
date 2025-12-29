@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於無人機航拍巡檢注意事項</title>
+<style>
+    body { font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; line-height: 1.8; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e8e8e8; min-height: 100vh; }
+    h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+    h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+    h3 { color: #81e6d9; margin-top: 20px; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+    th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+    th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+    tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+    code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+    pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid #2d3a4f; }
+    pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+    blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+    .warning { border-left: 4px solid #ed8936; background-color: rgba(237, 137, 54, 0.1); color: #fbd38d; }
+    .danger { border-left: 4px solid #f56565; background-color: rgba(245, 101, 101, 0.1); color: #feb2b2; }
+    ul, ol { padding-left: 25px; }
+    li { margin: 5px 0; }
+    hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+    strong { color: #f6e05e; }
+    .floating-home { position: fixed; bottom: 25px; right: 25px; z-index: 9999; width: 55px; height: 55px; background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%); color: #1a1a2e; text-decoration: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .theme-toggle { position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%; border: none; cursor: pointer; z-index: 10000; font-size: 24px; background: linear-gradient(135deg, #4fd1c5, #63b3ed); color: #1a1a2e; display: flex; align-items: center; justify-content: center; }
+    [data-theme="light"] body { background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important; color: #2d3748 !important; }
+    [data-theme="light"] h1 { color: #2b6cb0 !important; }
+    [data-theme="light"] h2 { color: #2c5282 !important; }
+    [data-theme="light"] h3 { color: #2b6cb0 !important; }
+    [data-theme="light"] p, [data-theme="light"] li, [data-theme="light"] td { color: #4a5568 !important; }
+    [data-theme="light"] th { background-color: rgba(79, 209, 197, 0.25) !important; color: #2d3748 !important; }
+    [data-theme="light"] table { background-color: rgba(255, 255, 255, 0.9) !important; }
+    [data-theme="light"] code { background-color: rgba(79, 209, 197, 0.2) !important; color: #2b6cb0 !important; }
+    [data-theme="light"] pre { background-color: #f7fafc !important; }
+    [data-theme="light"] pre code { color: #2d3748 !important; }
+    [data-theme="light"] strong { color: #d69e2e !important; }
+    [data-theme="light"] .theme-toggle { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+</style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換主題"><span id="theme-icon">☀️</span></button>
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+    <h1>關於無人機航拍巡檢注意事項</h1>
+    <p>無人機（UAV/Drone）在農業上的應用日益普及，包括作物巡檢、病蟲害偵測、施肥噴藥等。本文整理農業無人機航拍作業的關鍵注意事項。</p>
+    <hr />
+
+    <h2>一、法規與證照</h2>
+    <h3>台灣無人機法規重點</h3>
+    <table>
+        <thead><tr><th>項目</th><th>規定</th></tr></thead>
+        <tbody>
+            <tr><td>主管機關</td><td>民航局（遙控無人機管理規則）</td></tr>
+            <tr><td>註冊門檻</td><td>250g 以上須註冊</td></tr>
+            <tr><td>操作證</td><td>2kg 以上須持有操作證</td></tr>
+            <tr><td>活動申請</td><td>特定區域/高度須事先申請</td></tr>
+            <tr><td>保險</td><td>商業用途須投保責任險</td></tr>
+        </tbody>
+    </table>
+
+    <h3>禁航區域</h3>
+    <blockquote class="danger">
+        <strong>禁止飛行區域（嚴禁！）</strong>
+        <ul>
+            <li>機場周邊（依禁限航圖）</li>
+            <li>軍事設施、政府機關</li>
+            <li>核電廠周邊</li>
+            <li>人群聚集區上空</li>
+            <li>國家公園（需特別申請）</li>
+        </ul>
+    </blockquote>
+
+    <h3>飛行限制</h3>
+    <ul>
+        <li>最大飛行高度：<strong>120 公尺</strong>（400 英尺）</li>
+        <li>日間目視範圍內飛行</li>
+        <li>不得在人群上方飛行</li>
+        <li>不得投擲物品（特定農用除外）</li>
+    </ul>
+    <hr />
+
+    <h2>二、飛行前準備</h2>
+    <h3>檢查清單</h3>
+    <pre><code>□ 機體檢查
+  ├─ 機臂是否牢固
+  ├─ 螺旋槳有無損傷
+  ├─ 電池電量是否充足
+  └─ 相機/感測器是否乾淨
+
+□ 遙控器檢查
+  ├─ 電量充足
+  ├─ 天線展開
+  └─ 與飛機配對正常
+
+□ 手機/平板
+  ├─ App 更新至最新
+  ├─ 螢幕亮度足夠
+  └─ 電量充足
+
+□ 環境確認
+  ├─ 天氣狀況
+  ├─ 風速（建議 &lt; 5 級）
+  ├─ 周圍障礙物
+  └─ 電磁干擾源
+</code></pre>
+
+    <h3>天氣條件</h3>
+    <table>
+        <thead><tr><th>條件</th><th>建議標準</th><th>影響</th></tr></thead>
+        <tbody>
+            <tr><td>風速</td><td>&lt; 10 m/s（5級風）</td><td>穩定性、電量消耗</td></tr>
+            <tr><td>降雨</td><td>無雨</td><td>多數機型不防水</td></tr>
+            <tr><td>能見度</td><td>&gt; 1 km</td><td>目視飛行安全</td></tr>
+            <tr><td>溫度</td><td>0-40°C</td><td>電池效能</td></tr>
+            <tr><td>光線</td><td>日出後～日落前</td><td>法規要求、影像品質</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>三、航拍任務規劃</h2>
+    <h3>飛行參數設定</h3>
+    <table>
+        <thead><tr><th>參數</th><th>說明</th><th>建議值</th></tr></thead>
+        <tbody>
+            <tr><td>飛行高度</td><td>地面解析度的關鍵</td><td>依需求 30-120m</td></tr>
+            <tr><td>航線重疊率</td><td>前向重疊</td><td>70-80%</td></tr>
+            <tr><td>旁向重疊率</td><td>側向重疊</td><td>60-70%</td></tr>
+            <tr><td>飛行速度</td><td>影響影像清晰度</td><td>5-10 m/s</td></tr>
+            <tr><td>相機角度</td><td>正射影像用</td><td>-90°（垂直向下）</td></tr>
+        </tbody>
+    </table>
+
+    <h3>地面解析度（GSD）</h3>
+    <pre><code># GSD 計算
+GSD (cm/pixel) = (飛行高度 × 感測器寬度) / (焦距 × 影像寬度像素)
+
+# 經驗值（DJI Phantom 4 為例）
+30m 高度 ≈ 0.82 cm/pixel
+60m 高度 ≈ 1.64 cm/pixel
+100m 高度 ≈ 2.74 cm/pixel
+120m 高度 ≈ 3.28 cm/pixel
+
+# 應用建議
+- 病蟲害偵測：GSD &lt; 1 cm
+- 作物監測：GSD 1-3 cm
+- 大面積調查：GSD 3-5 cm
+</code></pre>
+
+    <h3>電池續航估算</h3>
+    <pre><code># 飛行時間估算因素
+- 標稱續航時間（通常為理想條件）
+- 風速影響（逆風增加 20-30% 耗電）
+- 負載（多光譜相機較重）
+- 溫度（低溫減少續航）
+
+# 安全建議
+- 預留 20-30% 電量作為返航餘裕
+- 單趟任務控制在 60-70% 標稱時間
+- 多塊電池輪替使用
+</code></pre>
+    <hr />
+
+    <h2>四、安全作業程序</h2>
+    <h3>起飛流程</h3>
+    <ol>
+        <li>選擇平坦開闊起飛點</li>
+        <li>確認 GPS 訊號良好（通常需 10+ 顆衛星）</li>
+        <li>確認返航點設定正確</li>
+        <li>校正指南針（如提示）</li>
+        <li>啟動電機，低空懸停 10 秒確認穩定</li>
+        <li>開始執行任務</li>
+    </ol>
+
+    <h3>飛行中注意</h3>
+    <ul>
+        <li>隨時注意電量與訊號強度</li>
+        <li>觀察周圍有無其他飛行物</li>
+        <li>注意風向變化</li>
+        <li>避免飛入視線死角</li>
+        <li>注意高壓電線、樹木等障礙</li>
+    </ul>
+
+    <h3>緊急狀況處理</h3>
+    <table>
+        <thead><tr><th>狀況</th><th>處理方式</th></tr></thead>
+        <tbody>
+            <tr><td>失去遙控訊號</td><td>等待自動返航（RTH）</td></tr>
+            <tr><td>電量過低</td><td>立即返航或就近降落</td></tr>
+            <tr><td>指南針干擾</td><td>切換姿態模式手動飛回</td></tr>
+            <tr><td>遇到鳥類</td><td>降低高度或暫停懸停</td></tr>
+            <tr><td>突然起風</td><td>降低高度返航</td></tr>
+        </tbody>
+    </table>
+    <blockquote class="warning">
+        <strong>重要：</strong>電量低於 30% 應立即返航，低於 15% 會強制降落！
+    </blockquote>
+    <hr />
+
+    <h2>五、影像拍攝技巧</h2>
+    <h3>正射影像拍攝</h3>
+    <ul>
+        <li>相機垂直向下（-90°）</li>
+        <li>使用自動曝光或快門優先</li>
+        <li>避免正午強烈陽光（陰影短但對比強）</li>
+        <li>最佳時段：上午 9-11 點或下午 2-4 點</li>
+    </ul>
+
+    <h3>多光譜拍攝注意</h3>
+    <ul>
+        <li>校正反射板拍攝（起飛前/降落後）</li>
+        <li>保持均勻光照條件</li>
+        <li>避免雲影移動造成的亮度變化</li>
+        <li>記錄太陽角度與時間</li>
+    </ul>
+
+    <h3>地面控制點（GCP）</h3>
+    <pre><code># GCP 布設原則
+- 數量：小區域 4-6 個，大區域 8-12 個
+- 位置：均勻分布，涵蓋邊角
+- 大小：至少涵蓋 5-10 像素
+- 材質：高對比色（黑白、橙色）
+- 測量：RTK GPS 測量座標
+</code></pre>
+    <hr />
+
+    <h2>六、資料處理流程</h2>
+    <pre><code>原始影像
+    ↓
+影像品質篩選（去除模糊、過曝）
+    ↓
+影像拼接（Pix4D、ODM、Agisoft）
+    ↓
+正射影像（Orthomosaic）
+    ↓
+        ├─→ 數值地形模型（DTM/DSM）
+        ├─→ 植被指數計算（NDVI）
+        └─→ 點雲/3D模型
+    ↓
+GIS 分析 / 報告產出
+</code></pre>
+
+    <h3>常用處理軟體</h3>
+    <table>
+        <thead><tr><th>軟體</th><th>類型</th><th>特點</th></tr></thead>
+        <tbody>
+            <tr><td>Pix4Dmapper</td><td>商業</td><td>專業級、農業模組</td></tr>
+            <tr><td>DroneDeploy</td><td>雲端</td><td>易用、即時處理</td></tr>
+            <tr><td>OpenDroneMap</td><td>開源</td><td>免費、可自架</td></tr>
+            <tr><td>Agisoft Metashape</td><td>商業</td><td>高品質 3D</td></tr>
+            <tr><td>DJI Terra</td><td>商業</td><td>DJI 整合</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>七、農業應用案例</h2>
+    <h3>作物生長監測</h3>
+    <ul>
+        <li>定期航拍追蹤 NDVI 變化</li>
+        <li>建議週期：生長期每 1-2 週一次</li>
+        <li>比較不同區域生長差異</li>
+    </ul>
+
+    <h3>病蟲害偵測</h3>
+    <ul>
+        <li>使用多光譜相機</li>
+        <li>低空高解析度拍攝（GSD &lt; 1 cm）</li>
+        <li>AI 輔助影像辨識</li>
+    </ul>
+
+    <h3>精準噴灑</h3>
+    <ul>
+        <li>依據 NDVI 地圖產生處方圖</li>
+        <li>變量噴灑減少農藥用量</li>
+        <li>記錄噴灑軌跡與用量</li>
+    </ul>
+    <hr />
+
+    <h2>八、常見問題與預防</h2>
+    <table>
+        <thead><tr><th>問題</th><th>原因</th><th>預防措施</th></tr></thead>
+        <tbody>
+            <tr><td>影像模糊</td><td>飛行速度過快、振動</td><td>降低速度、檢查雲台</td></tr>
+            <tr><td>拼接失敗</td><td>重疊率不足、特徵少</td><td>增加重疊率、設置 GCP</td></tr>
+            <tr><td>顏色不均</td><td>光照變化</td><td>選擇穩定光照時段</td></tr>
+            <tr><td>炸機</td><td>障礙物、訊號中斷</td><td>事前勘查、保持視線</td></tr>
+            <tr><td>電池鼓包</td><td>過放、碰撞</td><td>正確充放電、檢查</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>九、維護保養</h2>
+    <ul>
+        <li>每次飛行後清潔機身與鏡頭</li>
+        <li>檢查螺旋槳有無裂痕</li>
+        <li>電池存放於 40-60% 電量</li>
+        <li>定期更新韌體</li>
+        <li>紀錄飛行時數與維修紀錄</li>
+    </ul>
+    <hr />
+
+    <p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">智慧農業課程教材</p>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            html.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+            icon.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+            localStorage.setItem('theme', currentTheme === 'dark' ? 'light' : 'dark');
+        }
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於RTC時鐘</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="rtc-real-time-clock">關於 RTC 時鐘 (Real-Time Clock)</h1>
+<h2 id="rtc">什麼是 RTC？</h2>
+<p><strong>RTC（Real-Time Clock，即時時鐘）</strong> 是一種專門用來追蹤時間的電子元件。簡單來說，它就像是電腦或手機裡面的「小時鐘」，即使主電源關閉，它也能靠著一顆小電池繼續運作，記住現在是幾點幾分。</p>
+<h3 id="rtc_1">生活中的 RTC 例子</h3>
+<p>你可能已經在日常生活中遇過 RTC：<br />
+- 🖥️ <strong>電腦</strong>：關機後重新開機，時間還是正確的<br />
+- 📺 <strong>微波爐/烤箱</strong>：拔掉插頭再插回去，時間還在<br />
+- ⏰ <strong>電子鬧鐘</strong>：換電池後時間不會歸零<br />
+- 🚗 <strong>汽車儀表板</strong>：熄火後時間依然正確</p>
+<p>這些設備都有內建 RTC 模組！</p>
+<hr />
+<h2 id="arduino-rtc">為什麼 Arduino 需要 RTC？</h2>
+<h3 id="arduino">Arduino 本身的時間問題</h3>
+<p>Arduino 有一個 <code>millis()</code> 函數可以計算「開機後經過多少毫秒」，但它有幾個致命缺點：</p>
+<pre><code>Arduino 內建計時的問題：
+
+1. 斷電歸零
+   ┌─────────────────────────────────┐
+   │  開機 → millis() 從 0 開始計算  │
+   │  關機 → 一切歸零                │
+   │  再開機 → 又從 0 開始           │
+   └─────────────────────────────────┘
+
+2. 不知道「現在」是什麼時候
+   - millis() 只知道「開機後過了多久」
+   - 不知道「現在是 2024 年 12 月 19 日 下午 3 點」
+
+3. 長時間會有誤差
+   - Arduino 的時鐘並不精準
+   - 一天可能差幾秒到幾十秒
+</code></pre>
+<h3 id="rtc_2">有了 RTC 之後</h3>
+<pre><code>RTC 解決的問題：
+
+✓ 斷電不歸零（有備用電池）
+✓ 知道真實的日期與時間
+✓ 精度高（好的 RTC 一個月只差幾秒）
+✓ 可以做「定時」功能
+</code></pre>
+<hr />
+<h2 id="rtc_3">RTC 的工作原理</h2>
+<h3 id="_1">核心概念：石英振盪器</h3>
+<p>RTC 的心臟是一顆「石英晶體」，它有一個神奇的特性：</p>
+<pre><code>石英晶體的特性：
+
+        ⚡ 通電
+           ↓
+    ┌─────────────┐
+    │   石英晶體   │ ← 會以非常穩定的頻率振動
+    └─────────────┘
+           ↓
+    每秒振動 32,768 次
+    （這個數字 = 2 的 15 次方）
+           ↓
+    電路計數 32,768 次 = 1 秒
+           ↓
+    累計 60 秒 = 1 分鐘
+           ↓
+    以此類推...
+</code></pre>
+<h3 id="32768">為什麼是 32,768？</h3>
+<p>這不是隨便選的數字！32,768 = 2^15，用二進位表示就是：</p>
+<pre><code>32768 = 1000000000000000 (二進位)
+
+每振動 32768 次，最高位元進位一次 = 1 秒
+
+這讓電路設計變得非常簡單！
+</code></pre>
+<h3 id="_2">備用電池的作用</h3>
+<pre><code>正常運作時：
+┌─────────┐      ┌─────────┐
+│ Arduino │──5V──│   RTC   │
+│  主電源  │      │  模組   │
+└─────────┘      └─────────┘
+
+斷電時：
+┌─────────┐      ┌─────────┐
+│ Arduino │  ✕   │   RTC   │←── 小電池（CR2032）
+│  無電源  │      │ 繼續走  │     持續供電
+└─────────┘      └─────────┘
+
+一顆 CR2032 電池大約可以讓 RTC 運作 3-5 年！
+</code></pre>
+<hr />
+<h2 id="rtc_4">常見的 RTC 模組</h2>
+<h3 id="ds1302">DS1302（入門款）</h3>
+<pre><code>┌───────────────────┐
+│      DS1302       │
+├───────────────────┤
+│ • 價格便宜        │
+│ • 精度較低        │
+│ • 需要 3 條線     │
+│ • 適合學習用      │
+└───────────────────┘
+
+精度：每月誤差可達數分鐘
+價格：約 NT$ 30-50
+</code></pre>
+<h3 id="ds1307">DS1307（基本款）</h3>
+<pre><code>┌───────────────────┐
+│      DS1307       │
+├───────────────────┤
+│ • 使用 I2C 通訊   │
+│ • 只需 2 條線     │
+│ • 精度中等        │
+│ • 最常見的選擇    │
+└───────────────────┘
+
+精度：每月誤差約 1-2 分鐘
+價格：約 NT$ 50-80
+</code></pre>
+<h3 id="ds3231">DS3231（推薦款）⭐</h3>
+<pre><code>┌───────────────────┐
+│      DS3231       │
+├───────────────────┤
+│ • 內建溫度補償    │
+│ • 精度非常高      │
+│ • 使用 I2C 通訊   │
+│ • 性價比最好      │
+└───────────────────┘
+
+精度：每月誤差僅約 5 秒！
+價格：約 NT$ 60-100
+原理：內建溫度感測器，自動調整誤差
+</code></pre>
+<h3 id="_3">比較表</h3>
+<table>
+<thead>
+<tr>
+<th>型號</th>
+<th>通訊方式</th>
+<th>精度</th>
+<th>溫度補償</th>
+<th>建議用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DS1302</td>
+<td>3-wire</td>
+<td>低</td>
+<td>無</td>
+<td>學習入門</td>
+</tr>
+<tr>
+<td>DS1307</td>
+<td>I2C</td>
+<td>中</td>
+<td>無</td>
+<td>一般應用</td>
+</tr>
+<tr>
+<td>DS3231</td>
+<td>I2C</td>
+<td>高</td>
+<td>有</td>
+<td>精確計時 ⭐</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="ds3231_1">DS3231 模組接線</h2>
+<h3 id="_4">腳位說明</h3>
+<pre><code>DS3231 模組（常見款）：
+┌─────────────────────────┐
+│  ┌─────────────────┐    │
+│  │     DS3231      │    │
+│  │   [電池座]      │    │
+│  └─────────────────┘    │
+│                         │
+│  32K  SQW  SCL  SDA  VCC  GND
+│   │    │    │    │    │    │
+└───┴────┴────┴────┴────┴────┘
+
+必要接線：
+- VCC → Arduino 5V（或 3.3V）
+- GND → Arduino GND
+- SDA → Arduino A4（I2C 資料線）
+- SCL → Arduino A5（I2C 時鐘線）
+
+選用接線：
+- SQW → 方波輸出（可做鬧鐘中斷）
+- 32K → 32.768KHz 輸出（通常不用）
+</code></pre>
+<h3 id="_5">接線圖</h3>
+<pre><code>Arduino UNO          DS3231 模組
+┌─────────────┐      ┌─────────────┐
+│             │      │             │
+│         A4 ├──────┤ SDA         │
+│             │      │             │
+│         A5 ├──────┤ SCL         │
+│             │      │             │
+│         5V ├──────┤ VCC         │
+│             │      │             │
+│        GND ├──────┤ GND         │
+│             │      │             │
+└─────────────┘      └─────────────┘
+</code></pre>
+<hr />
+<h2 id="arduino_1">Arduino 程式實作</h2>
+<h3 id="_6">安裝函式庫</h3>
+<ol>
+<li>開啟 Arduino IDE</li>
+<li><code>工具</code> → <code>管理程式庫...</code></li>
+<li>搜尋 <code>RTClib</code></li>
+<li>安裝 <strong>RTClib by Adafruit</strong></li>
+</ol>
+<h3 id="1">範例 1：讀取時間</h3>
+<pre><code class="language-cpp">/*
+ * RTC 基本讀取範例
+ * 使用 DS3231 模組
+ */
+
+#include &lt;Wire.h&gt;
+#include &lt;RTClib.h&gt;
+
+RTC_DS3231 rtc;
+
+// 星期名稱（中文）
+const char* weekDays[] = {
+  &quot;星期日&quot;, &quot;星期一&quot;, &quot;星期二&quot;, &quot;星期三&quot;,
+  &quot;星期四&quot;, &quot;星期五&quot;, &quot;星期六&quot;
+};
+
+void setup() {
+  Serial.begin(9600);
+
+  // 初始化 I2C
+  Wire.begin();
+
+  // 初始化 RTC
+  if (!rtc.begin()) {
+    Serial.println(&quot;找不到 RTC 模組！&quot;);
+    Serial.println(&quot;請檢查接線...&quot;);
+    while (1);  // 停在這裡
+  }
+
+  // 檢查 RTC 是否曾經設定過時間
+  if (rtc.lostPower()) {
+    Serial.println(&quot;RTC 電池沒電或首次使用，正在設定時間...&quot;);
+    // 設定為編譯時的電腦時間
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  }
+
+  Serial.println(&quot;RTC 初始化完成！&quot;);
+  Serial.println();
+}
+
+void loop() {
+  // 取得目前時間
+  DateTime now = rtc.now();
+
+  // 顯示日期
+  Serial.print(&quot;日期: &quot;);
+  Serial.print(now.year());
+  Serial.print(&quot;/&quot;);
+  Serial.print(now.month());
+  Serial.print(&quot;/&quot;);
+  Serial.print(now.day());
+  Serial.print(&quot; &quot;);
+  Serial.println(weekDays[now.dayOfTheWeek()]);
+
+  // 顯示時間
+  Serial.print(&quot;時間: &quot;);
+  if (now.hour() &lt; 10) Serial.print(&quot;0&quot;);
+  Serial.print(now.hour());
+  Serial.print(&quot;:&quot;);
+  if (now.minute() &lt; 10) Serial.print(&quot;0&quot;);
+  Serial.print(now.minute());
+  Serial.print(&quot;:&quot;);
+  if (now.second() &lt; 10) Serial.print(&quot;0&quot;);
+  Serial.println(now.second());
+
+  Serial.println(&quot;-------------------&quot;);
+
+  delay(1000);
+}
+</code></pre>
+<h3 id="2">範例 2：手動設定時間</h3>
+<pre><code class="language-cpp">/*
+ * RTC 手動設定時間範例
+ */
+
+#include &lt;Wire.h&gt;
+#include &lt;RTClib.h&gt;
+
+RTC_DS3231 rtc;
+
+void setup() {
+  Serial.begin(9600);
+  Wire.begin();
+
+  if (!rtc.begin()) {
+    Serial.println(&quot;找不到 RTC！&quot;);
+    while (1);
+  }
+
+  // 手動設定時間
+  // DateTime(年, 月, 日, 時, 分, 秒)
+  rtc.adjust(DateTime(2024, 12, 19, 15, 30, 0));
+
+  Serial.println(&quot;時間已設定為 2024/12/19 15:30:00&quot;);
+}
+
+void loop() {
+  DateTime now = rtc.now();
+
+  // 格式化輸出
+  char buffer[30];
+  sprintf(buffer, &quot;%04d/%02d/%02d %02d:%02d:%02d&quot;,
+          now.year(), now.month(), now.day(),
+          now.hour(), now.minute(), now.second());
+
+  Serial.println(buffer);
+  delay(1000);
+}
+</code></pre>
+<h3 id="3">範例 3：定時執行任務</h3>
+<pre><code class="language-cpp">/*
+ * RTC 定時任務範例
+ * 每天早上 8:00 和晚上 6:00 執行動作
+ */
+
+#include &lt;Wire.h&gt;
+#include &lt;RTClib.h&gt;
+
+RTC_DS3231 rtc;
+
+#define LED_PIN 13
+
+// 上次執行的時間（避免重複觸發）
+int lastTriggeredHour = -1;
+
+void setup() {
+  Serial.begin(9600);
+  Wire.begin();
+
+  pinMode(LED_PIN, OUTPUT);
+
+  if (!rtc.begin()) {
+    Serial.println(&quot;找不到 RTC！&quot;);
+    while (1);
+  }
+
+  Serial.println(&quot;定時任務系統啟動&quot;);
+  Serial.println(&quot;排程：08:00 開燈, 18:00 關燈&quot;);
+}
+
+void loop() {
+  DateTime now = rtc.now();
+  int currentHour = now.hour();
+  int currentMinute = now.minute();
+
+  // 只在整點且尚未觸發時執行
+  if (currentMinute == 0 &amp;&amp; currentHour != lastTriggeredHour) {
+
+    // 早上 8:00 - 開燈
+    if (currentHour == 8) {
+      digitalWrite(LED_PIN, HIGH);
+      Serial.println(&quot;08:00 - 執行開燈任務！&quot;);
+      lastTriggeredHour = currentHour;
+    }
+
+    // 晚上 18:00 - 關燈
+    if (currentHour == 18) {
+      digitalWrite(LED_PIN, LOW);
+      Serial.println(&quot;18:00 - 執行關燈任務！&quot;);
+      lastTriggeredHour = currentHour;
+    }
+  }
+
+  // 每秒顯示時間
+  static unsigned long lastPrint = 0;
+  if (millis() - lastPrint &gt;= 1000) {
+    lastPrint = millis();
+
+    Serial.print(&quot;目前時間: &quot;);
+    Serial.print(currentHour);
+    Serial.print(&quot;:&quot;);
+    if (currentMinute &lt; 10) Serial.print(&quot;0&quot;);
+    Serial.print(currentMinute);
+    Serial.print(&quot; | LED: &quot;);
+    Serial.println(digitalRead(LED_PIN) ? &quot;ON&quot; : &quot;OFF&quot;);
+  }
+
+  delay(100);
+}
+</code></pre>
+<h3 id="4ds3231">範例 4：DS3231 溫度讀取</h3>
+<p>DS3231 內建溫度感測器（用於校正），我們也可以讀取它：</p>
+<pre><code class="language-cpp">/*
+ * DS3231 溫度讀取範例
+ */
+
+#include &lt;Wire.h&gt;
+#include &lt;RTClib.h&gt;
+
+RTC_DS3231 rtc;
+
+void setup() {
+  Serial.begin(9600);
+  Wire.begin();
+
+  if (!rtc.begin()) {
+    Serial.println(&quot;找不到 RTC！&quot;);
+    while (1);
+  }
+
+  Serial.println(&quot;DS3231 時間與溫度監測&quot;);
+}
+
+void loop() {
+  DateTime now = rtc.now();
+  float temp = rtc.getTemperature();  // DS3231 特有功能
+
+  Serial.print(&quot;時間: &quot;);
+  Serial.print(now.hour());
+  Serial.print(&quot;:&quot;);
+  if (now.minute() &lt; 10) Serial.print(&quot;0&quot;);
+  Serial.print(now.minute());
+  Serial.print(&quot;:&quot;);
+  if (now.second() &lt; 10) Serial.print(&quot;0&quot;);
+  Serial.print(now.second());
+
+  Serial.print(&quot; | 晶片溫度: &quot;);
+  Serial.print(temp, 1);
+  Serial.println(&quot; °C&quot;);
+
+  delay(1000);
+}
+</code></pre>
+<hr />
+<h2 id="_7">實際應用情境</h2>
+<h3 id="1_1">1. 智慧溫室定時控制</h3>
+<pre><code>應用場景：
+┌─────────────────────────────────────────┐
+│           智慧溫室排程系統               │
+├─────────────────────────────────────────┤
+│                                         │
+│  06:00 - 開啟補光燈                     │
+│  07:00 - 第一次澆水                     │
+│  12:00 - 開啟通風扇                     │
+│  18:00 - 關閉補光燈                     │
+│  19:00 - 第二次澆水                     │
+│  22:00 - 關閉通風扇                     │
+│                                         │
+│  優點：                                 │
+│  • 即使 Arduino 重開機也不影響排程      │
+│  • 可以記錄事件發生的時間               │
+│  • 精確的定時控制                       │
+│                                         │
+└─────────────────────────────────────────┘
+</code></pre>
+<h3 id="2-data-logger">2. 資料記錄器（Data Logger）</h3>
+<pre><code>應用場景：
+┌─────────────────────────────────────────┐
+│           環境監測記錄器                 │
+├─────────────────────────────────────────┤
+│                                         │
+│  每 10 分鐘記錄一次：                   │
+│                                         │
+│  2024/12/19 08:00:00, 25.5°C, 65%       │
+│  2024/12/19 08:10:00, 25.8°C, 64%       │
+│  2024/12/19 08:20:00, 26.2°C, 63%       │
+│  ...                                    │
+│                                         │
+│  優點：                                 │
+│  • 每筆資料都有時間戳記                 │
+│  • 方便事後分析                         │
+│  • 追蹤長期趨勢                         │
+│                                         │
+└─────────────────────────────────────────┘
+</code></pre>
+<h3 id="3_1">3. 電子鬧鐘/提醒器</h3>
+<pre><code>應用場景：
+┌─────────────────────────────────────────┐
+│            藥物提醒器                    │
+├─────────────────────────────────────────┤
+│                                         │
+│  ⏰ 08:00 - 早餐藥物提醒                │
+│  ⏰ 12:00 - 午餐藥物提醒                │
+│  ⏰ 18:00 - 晚餐藥物提醒                │
+│  ⏰ 22:00 - 睡前藥物提醒                │
+│                                         │
+│  • 蜂鳴器響起提醒                       │
+│  • LCD 顯示該吃什麼藥                   │
+│  • 按鈕確認已服藥                       │
+│                                         │
+└─────────────────────────────────────────┘
+</code></pre>
+<h3 id="4">4. 寵物/植物自動餵食器</h3>
+<pre><code>應用場景：
+┌─────────────────────────────────────────┐
+│          自動餵魚器                      │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌─────┐                                │
+│  │飼料 │  每天 08:00 和 18:00           │
+│  │容器 │  伺服馬達轉動                  │
+│  └──┬──┘  倒出定量飼料                  │
+│     │                                   │
+│     ▼                                   │
+│  🐠🐠🐠                                 │
+│                                         │
+│  出門旅行也不用擔心！                   │
+│                                         │
+└─────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_8">常見問題與解決</h2>
+<h3 id="q1rtc">Q1：RTC 時間不準？</h3>
+<pre><code>可能原因與解決方法：
+
+1. 電池沒電
+   → 更換 CR2032 電池
+
+2. 使用 DS1307（精度較低）
+   → 改用 DS3231（有溫度補償）
+
+3. 環境溫度變化大
+   → DS3231 可自動補償
+
+4. 石英晶體品質差
+   → 購買品質好的模組
+</code></pre>
+<h3 id="q2">Q2：每次上傳程式時間都會重設？</h3>
+<pre><code class="language-cpp">// 問題程式碼：
+void setup() {
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  // 每次上傳都會執行這行！
+}
+
+// 正確做法：
+void setup() {
+  if (rtc.lostPower()) {  // 只有電池沒電時才設定
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  }
+}
+</code></pre>
+<h3 id="q3">Q3：時間差了好幾個小時？</h3>
+<pre><code>可能是時區問題！
+
+__TIME__ 是編譯時的電腦時間
+如果電腦時區設定錯誤，RTC 時間也會錯
+
+解決方法：
+1. 確認電腦時區設定正確
+2. 或手動設定正確時間：
+   rtc.adjust(DateTime(2024, 12, 19, 15, 30, 0));
+</code></pre>
+<h3 id="q4-rtc">Q4：找不到 RTC 模組？</h3>
+<pre><code>檢查清單：
+
+□ VCC 和 GND 接線正確？
+□ SDA 接到 A4？
+□ SCL 接到 A5？
+□ 模組上的電池有裝？
+□ 電池方向正確？（正極朝上）
+
+測試 I2C 連線：
+使用 I2C Scanner 程式掃描位址
+DS3231 位址通常是 0x68
+</code></pre>
+<hr />
+<h2 id="_9">進階應用</h2>
+<h3 id="sd">搭配 SD 卡做資料記錄</h3>
+<pre><code class="language-cpp">// 虛擬碼示意
+void loop() {
+  DateTime now = rtc.now();
+  float temp = readTemperature();
+
+  // 開啟 SD 卡檔案
+  File dataFile = SD.open(&quot;log.csv&quot;, FILE_WRITE);
+
+  // 寫入時間戳記和資料
+  dataFile.print(now.year());
+  dataFile.print(&quot;,&quot;);
+  dataFile.print(now.month());
+  dataFile.print(&quot;,&quot;);
+  dataFile.print(now.day());
+  dataFile.print(&quot;,&quot;);
+  dataFile.print(now.hour());
+  dataFile.print(&quot;:&quot;);
+  dataFile.print(now.minute());
+  dataFile.print(&quot;,&quot;);
+  dataFile.println(temp);
+
+  dataFile.close();
+}
+</code></pre>
+<h3 id="mqtt">搭配 MQTT 發送時間戳記</h3>
+<pre><code class="language-cpp">// 發送帶有時間戳記的 JSON
+DateTime now = rtc.now();
+char json[100];
+sprintf(json,
+  &quot;{\&quot;time\&quot;:\&quot;%04d-%02d-%02d %02d:%02d:%02d\&quot;,\&quot;temp\&quot;:%.1f}&quot;,
+  now.year(), now.month(), now.day(),
+  now.hour(), now.minute(), now.second(),
+  temperature);
+
+mqtt.publish(&quot;sensor/data&quot;, json);
+</code></pre>
+<hr />
+<h2 id="_10">總結</h2>
+<table>
+<thead>
+<tr>
+<th>特點</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>是什麼</strong></td>
+<td>專門追蹤時間的電子元件</td>
+</tr>
+<tr>
+<td><strong>為什麼需要</strong></td>
+<td>Arduino 斷電會忘記時間</td>
+</tr>
+<tr>
+<td><strong>原理</strong></td>
+<td>石英晶體 32,768Hz 振盪計時</td>
+</tr>
+<tr>
+<td><strong>推薦型號</strong></td>
+<td>DS3231（精度高、價格合理）</td>
+</tr>
+<tr>
+<td><strong>接線</strong></td>
+<td>I2C：SDA→A4, SCL→A5</td>
+</tr>
+<tr>
+<td><strong>函式庫</strong></td>
+<td>RTClib by Adafruit</td>
+</tr>
+<tr>
+<td><strong>應用</strong></td>
+<td>定時控制、資料記錄、鬧鐘提醒</td>
+</tr>
+</tbody>
+</table>
+<p>RTC 是物聯網和自動化專案中非常實用的元件，讓你的 Arduino 專案能夠「知道現在幾點」，實現真正的定時自動化！</p>
+<hr />
+<p><em>本文件適用於 Arduino 初學者</em><br />
+<em>建議搭配 DS3231 模組實際操作練習</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

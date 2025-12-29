@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於終端機與vscode操作的新手指南</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="vs-code">終端機與 VS Code 操作新手指南</h1>
+<h2 id="_1">一、什麼是終端機？</h2>
+<p>終端機（Terminal）是一個用文字指令操作電腦的工具，雖然沒有圖形介面，但能更快速、精確地執行任務。</p>
+<table>
+<thead>
+<tr>
+<th>名稱</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>命令提示字元 (CMD)</strong></td>
+<td>Windows 傳統終端機</td>
+</tr>
+<tr>
+<td><strong>PowerShell</strong></td>
+<td>Windows 新版終端機（功能較強）</td>
+</tr>
+<tr>
+<td><strong>Terminal</strong></td>
+<td>Mac / Linux 的終端機</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_2">二、開啟終端機的方式</h2>
+<h3 id="1windows">方法 1：Windows 搜尋</h3>
+<ol>
+<li>按下 <code>Win</code> 鍵</li>
+<li>輸入 <code>cmd</code> 或 <code>powershell</code></li>
+<li>按 Enter 開啟</li>
+</ol>
+<h3 id="2">方法 2：在資料夾中開啟</h3>
+<ol>
+<li>開啟檔案總管，進入目標資料夾</li>
+<li>在路徑列輸入 <code>cmd</code> 後按 Enter</li>
+<li>終端機會直接在該資料夾開啟</li>
+</ol>
+<h3 id="3vs-code">方法 3：VS Code 內建終端機（推薦）</h3>
+<ol>
+<li>開啟 VS Code</li>
+<li>按下 <code>Ctrl + `</code> (數字 1 左邊的按鍵)</li>
+<li>或從選單：檢視 → 終端機</li>
+</ol>
+<hr />
+<h2 id="_3">三、終端機基本指令</h2>
+<h3 id="_4">目錄操作</h3>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cd</code></td>
+<td>切換目錄</td>
+<td><code>cd D:\Course</code></td>
+</tr>
+<tr>
+<td><code>cd ..</code></td>
+<td>回上一層</td>
+<td><code>cd ..</code></td>
+</tr>
+<tr>
+<td><code>dir</code></td>
+<td>列出目錄內容 (Windows)</td>
+<td><code>dir</code></td>
+</tr>
+<tr>
+<td><code>ls</code></td>
+<td>列出目錄內容 (Mac/Linux)</td>
+<td><code>ls</code></td>
+</tr>
+<tr>
+<td><code>mkdir</code></td>
+<td>建立資料夾</td>
+<td><code>mkdir my_folder</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="windows">切換磁碟機 (Windows)</h3>
+<pre><code class="language-cmd"># 切換到 D 槽
+D:
+
+# 然後切換目錄
+cd Course\Smart_Agri_Course
+</code></pre>
+<h3 id="_5">清除畫面</h3>
+<pre><code class="language-cmd">cls      # Windows
+clear    # Mac/Linux
+</code></pre>
+<hr />
+<h2 id="python">四、Python 相關指令</h2>
+<h3 id="python_1">確認 Python 版本</h3>
+<pre><code class="language-cmd">python --version
+</code></pre>
+<h3 id="_6">建立虛擬環境</h3>
+<pre><code class="language-cmd"># 建立名為 venv 的虛擬環境
+python -m venv venv
+</code></pre>
+<h3 id="_7">啟動虛擬環境</h3>
+<pre><code class="language-cmd"># Windows
+venv\Scripts\activate
+
+# Mac/Linux
+source venv/bin/activate
+</code></pre>
+<p>啟動成功後，終端機前面會出現 <code>(venv)</code> 標示：</p>
+<pre><code>(venv) D:\Course\Smart_Agri_Course&gt;
+</code></pre>
+<h3 id="_8">離開虛擬環境</h3>
+<pre><code class="language-cmd">deactivate
+</code></pre>
+<h3 id="_9">安裝套件</h3>
+<pre><code class="language-cmd"># 安裝單一套件
+pip install flask
+
+# 從 requirements.txt 安裝
+pip install -r requirements.txt
+
+# 從 .whl 檔案安裝
+pip install GDAL-3.3.0-cp39-cp39-win_amd64.whl
+</code></pre>
+<h3 id="_10">查看已安裝套件</h3>
+<pre><code class="language-cmd">pip list
+</code></pre>
+<h3 id="python_2">執行 Python 程式</h3>
+<pre><code class="language-cmd">python my_script.py
+</code></pre>
+<hr />
+<h2 id="vs-code_1">五、VS Code 基本操作</h2>
+<h3 id="vs-code_2">安裝 VS Code</h3>
+<ol>
+<li>下載：https://code.visualstudio.com/</li>
+<li>安裝時勾選「Add to PATH」</li>
+</ol>
+<h3 id="_11">開啟資料夾</h3>
+<ol>
+<li>檔案 → 開啟資料夾</li>
+<li>選擇 <code>D:\Course\Smart_Agri_Course</code></li>
+<li>左側會顯示整個專案結構</li>
+</ol>
+<h3 id="_12">必裝擴充功能</h3>
+<table>
+<thead>
+<tr>
+<th>擴充功能</th>
+<th>用途</th>
+<th>安裝方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Python</strong></td>
+<td>Python 開發必備</td>
+<td>搜尋 "Python"</td>
+</tr>
+<tr>
+<td><strong>Live Server</strong></td>
+<td>網頁即時預覽</td>
+<td>搜尋 "Live Server"</td>
+</tr>
+<tr>
+<td><strong>Chinese (Traditional)</strong></td>
+<td>繁體中文介面</td>
+<td>搜尋 "Chinese"</td>
+</tr>
+</tbody>
+</table>
+<p>安裝步驟：<br />
+1. 按下 <code>Ctrl + Shift + X</code> 開啟擴充功能<br />
+2. 搜尋擴充功能名稱<br />
+3. 點擊「安裝」</p>
+<h3 id="_13">常用快捷鍵</h3>
+<table>
+<thead>
+<tr>
+<th>快捷鍵</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl + ``</code></td>
+<td>開啟/關閉終端機</td>
+</tr>
+<tr>
+<td><code>Ctrl + S</code></td>
+<td>儲存檔案</td>
+</tr>
+<tr>
+<td><code>Ctrl + Shift + S</code></td>
+<td>另存新檔</td>
+</tr>
+<tr>
+<td><code>Ctrl + P</code></td>
+<td>快速開啟檔案</td>
+</tr>
+<tr>
+<td><code>Ctrl + Shift + P</code></td>
+<td>開啟命令面板</td>
+</tr>
+<tr>
+<td><code>Ctrl + B</code></td>
+<td>顯示/隱藏側邊欄</td>
+</tr>
+<tr>
+<td><code>F5</code></td>
+<td>執行程式（需設定）</td>
+</tr>
+<tr>
+<td><code>Ctrl + F</code></td>
+<td>搜尋</td>
+</tr>
+<tr>
+<td><code>Ctrl + H</code></td>
+<td>搜尋並取代</td>
+</tr>
+</tbody>
+</table>
+<h3 id="python_3">執行 Python 程式</h3>
+<p><strong>方法 1：使用終端機</strong><br />
+1. 按 <code>Ctrl + `</code> 開啟終端機<br />
+2. 輸入 <code>python 檔案名稱.py</code></p>
+<p><strong>方法 2：右鍵執行</strong><br />
+1. 在 .py 檔案上右鍵<br />
+2. 選擇「在終端機中執行 Python 檔案」</p>
+<p><strong>方法 3：執行按鈕</strong><br />
+1. 開啟 .py 檔案<br />
+2. 點擊右上角的 ▶ 播放按鈕</p>
+<h3 id="python_4">選擇 Python 直譯器</h3>
+<ol>
+<li>按 <code>Ctrl + Shift + P</code></li>
+<li>輸入 <code>Python: Select Interpreter</code></li>
+<li>選擇虛擬環境中的 Python（顯示 venv 路徑）</li>
+</ol>
+<hr />
+<h2 id="live-server">六、Live Server 使用（網頁開發）</h2>
+<h3 id="live-server_1">啟動 Live Server</h3>
+<ol>
+<li>開啟 HTML 檔案</li>
+<li>右鍵 → 「Open with Live Server」</li>
+<li>或點擊右下角的「Go Live」</li>
+</ol>
+<h3 id="_14">特點</h3>
+<ul>
+<li>儲存檔案後自動重新整理瀏覽器</li>
+<li>適合 HTML/CSS/JavaScript 開發</li>
+<li>WebGIS Leaflet 課程會用到</li>
+</ul>
+<hr />
+<h2 id="_15">七、常見問題</h2>
+<h3 id="q1-python">Q1: 'python' 不是內部或外部命令</h3>
+<p><strong>原因</strong>：Python 未加入系統 PATH</p>
+<p><strong>解決</strong>：<br />
+1. 重新安裝 Python，勾選「Add Python to PATH」<br />
+2. 或手動加入環境變數</p>
+<h3 id="q2">Q2: 終端機顯示亂碼</h3>
+<p><strong>解決</strong>：</p>
+<pre><code class="language-cmd">chcp 65001
+</code></pre>
+<h3 id="q3-vs-code">Q3: VS Code 終端機無法啟動虛擬環境</h3>
+<p><strong>原因</strong>：PowerShell 執行原則限制</p>
+<p><strong>解決</strong>：</p>
+<pre><code class="language-powershell">Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+</code></pre>
+<h3 id="q4-pip-install">Q4: pip install 出現紅字錯誤</h3>
+<p><strong>常見原因</strong>：<br />
+- 網路問題 → 換網路或使用鏡像源<br />
+- 權限問題 → 加上 <code>--user</code><br />
+- 版本不相容 → 確認 Python 版本</p>
+<h3 id="q5-vs-code-python">Q5: VS Code 沒有偵測到 Python</h3>
+<ol>
+<li>確認已安裝 Python 擴充功能</li>
+<li>按 <code>Ctrl + Shift + P</code> → <code>Python: Select Interpreter</code></li>
+<li>選擇正確的 Python 路徑</li>
+</ol>
+<hr />
+<h2 id="_16">八、實用技巧</h2>
+<h3 id="tab">Tab 自動補全</h3>
+<p>輸入部分檔名後按 <code>Tab</code> 鍵，終端機會自動補全：</p>
+<pre><code class="language-cmd">cd Cour[Tab]  →  cd Course
+</code></pre>
+<h3 id="_17">上下鍵歷史指令</h3>
+<p>按 <code>↑</code> <code>↓</code> 可以瀏覽之前輸入過的指令</p>
+<h3 id="_18">複製貼上</h3>
+<ul>
+<li><strong>CMD</strong>：選取文字後按 Enter 複製，右鍵貼上</li>
+<li><strong>PowerShell / VS Code 終端機</strong>：<code>Ctrl + C</code> 複製，<code>Ctrl + V</code> 貼上</li>
+</ul>
+<h3 id="_19">中斷執行中的程式</h3>
+<p>按 <code>Ctrl + C</code> 可以中斷正在執行的程式</p>
+<hr />
+<h2 id="_20">九、課程操作流程範例</h2>
+<pre><code class="language-cmd"># 1. 開啟 VS Code，開啟課程資料夾
+
+# 2. 開啟終端機 (Ctrl + `)
+
+# 3. 建立虛擬環境
+python -m venv venv
+
+# 4. 啟動虛擬環境
+venv\Scripts\activate
+
+# 5. 安裝課程套件（以遙測分析為例）
+pip install 04_DOCUMENT/installers/GDAL-3.3.0-cp39-cp39-win_amd64.whl
+pip install -r 04_DOCUMENT/requirements/05_rs_analysis.txt
+
+# 6. 執行範例程式
+cd 02_CODE/05_RS_Analysis
+python A01_Pandas讀取資料.py
+
+# 7. 課程結束後離開虛擬環境
+deactivate
+</code></pre>
+<hr />
+<p><strong>最後更新：2025/12/12</strong></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

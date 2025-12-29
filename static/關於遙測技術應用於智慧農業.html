@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於遙測技術應用於智慧農業</title>
+
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        .info-box { background-color: rgba(79, 209, 197, 0.1); border: 1px solid #4fd1c5; border-radius: 8px; padding: 15px; margin: 15px 0; }
+        .warning-box { background-color: rgba(237, 137, 54, 0.1); border: 1px solid #ed8936; border-radius: 8px; padding: 15px; margin: 15px 0; }
+
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* ===== 淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 { color: #2b6cb0 !important; border-bottom-color: #4fd1c5 !important; }
+        [data-theme="light"] h2 { color: #2c5282 !important; border-bottom-color: #90cdf4 !important; }
+        [data-theme="light"] h3 { color: #2b6cb0 !important; }
+        [data-theme="light"] h4 { color: #3182ce !important; }
+        [data-theme="light"] p, [data-theme="light"] li, [data-theme="light"] td { color: #4a5568 !important; }
+        [data-theme="light"] th { background-color: rgba(79, 209, 197, 0.25) !important; color: #2d3748 !important; }
+        [data-theme="light"] table { background-color: rgba(255, 255, 255, 0.9) !important; }
+        [data-theme="light"] tr:nth-child(even) { background-color: rgba(79, 209, 197, 0.08) !important; }
+        [data-theme="light"] tr:hover { background-color: rgba(79, 209, 197, 0.15) !important; }
+        [data-theme="light"] code { background-color: rgba(79, 209, 197, 0.2) !important; color: #2b6cb0 !important; }
+        [data-theme="light"] pre { background-color: #f7fafc !important; border: 1px solid rgba(79, 209, 197, 0.3) !important; }
+        [data-theme="light"] pre code { background-color: transparent !important; color: #2d3748 !important; }
+        [data-theme="light"] blockquote { background-color: rgba(79, 209, 197, 0.15) !important; color: #2d3748 !important; }
+        [data-theme="light"] a { color: #3182ce !important; }
+        [data-theme="light"] strong { color: #d69e2e !important; }
+        [data-theme="light"] hr { border-top-color: rgba(79, 209, 197, 0.3) !important; }
+    </style>
+
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+    <h1>關於遙測技術應用於智慧農業</h1>
+    <p>遙測（Remote Sensing）是指不直接接觸目標物體，透過感測器從遠距離收集資訊的技術。在智慧農業中，遙測技術能提供大面積、即時的農地監測，協助農民做出更精準的決策。</p>
+    <hr />
+
+    <h2>一、什麼是遙測技術</h2>
+    <h3>基本原理</h3>
+    <p>遙測技術的核心是利用<strong>電磁波</strong>與地表物體的交互作用來獲取資訊：</p>
+    <ol>
+        <li><strong>太陽輻射</strong>照射地表</li>
+        <li>不同物體<strong>吸收、反射</strong>不同波長的電磁波</li>
+        <li>感測器接收反射或發射的電磁波</li>
+        <li>經過處理分析，獲得地表資訊</li>
+    </ol>
+
+    <h3>遙測平台分類</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>平台類型</th>
+                <th>高度</th>
+                <th>特點</th>
+                <th>應用場景</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>衛星遙測</td>
+                <td>200-36000 km</td>
+                <td>覆蓋範圍大、定期重訪</td>
+                <td>大區域監測、氣候分析</td>
+            </tr>
+            <tr>
+                <td>航空遙測</td>
+                <td>1-10 km</td>
+                <td>解析度高、可彈性規劃</td>
+                <td>區域調查、專案測量</td>
+            </tr>
+            <tr>
+                <td>無人機遙測</td>
+                <td>50-500 m</td>
+                <td>機動性強、成本低</td>
+                <td>農場巡檢、精準農業</td>
+            </tr>
+            <tr>
+                <td>地面遙測</td>
+                <td>0-50 m</td>
+                <td>精度最高、範圍小</td>
+                <td>樣區調查、設備校正</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>二、電磁波譜與農業應用</h2>
+    <h3>常用波段</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>波段</th>
+                <th>波長範圍</th>
+                <th>農業應用</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>可見光（RGB）</td>
+                <td>400-700 nm</td>
+                <td>作物外觀、病蟲害辨識</td>
+            </tr>
+            <tr>
+                <td>近紅外線（NIR）</td>
+                <td>700-1100 nm</td>
+                <td>植物健康、生物量估算</td>
+            </tr>
+            <tr>
+                <td>短波紅外線（SWIR）</td>
+                <td>1100-2500 nm</td>
+                <td>水分含量、土壤特性</td>
+            </tr>
+            <tr>
+                <td>熱紅外線（TIR）</td>
+                <td>8000-14000 nm</td>
+                <td>作物蒸散、灌溉管理</td>
+            </tr>
+            <tr>
+                <td>微波（雷達）</td>
+                <td>1 mm - 1 m</td>
+                <td>土壤濕度、穿透雲層</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>植被光譜特性</h3>
+    <p>健康植物的光譜反射特性：</p>
+    <ul>
+        <li><strong>藍光（450 nm）</strong>：被葉綠素強烈吸收</li>
+        <li><strong>綠光（550 nm）</strong>：反射較多，所以植物呈綠色</li>
+        <li><strong>紅光（650 nm）</strong>：被葉綠素強烈吸收</li>
+        <li><strong>近紅外（750-1300 nm）</strong>：細胞結構強烈反射</li>
+    </ul>
+    <blockquote>
+        <strong>重要觀念</strong>：健康植物在紅光波段反射低（被吸收）、近紅外波段反射高；生病或缺水的植物這個差異會縮小。
+    </blockquote>
+    <hr />
+
+    <h2>三、植被指數</h2>
+    <h3>NDVI - 常態化差異植生指數</h3>
+    <p>最常用的植被指數，反映植物健康狀態：</p>
+    <pre><code>NDVI = (NIR - Red) / (NIR + Red)
+
+其中：
+NIR = 近紅外波段反射值
+Red = 紅光波段反射值
+</code></pre>
+
+    <table>
+        <thead>
+            <tr>
+                <th>NDVI 值</th>
+                <th>代表意義</th>
+                <th>地表狀態</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>-1.0 ~ 0</td>
+                <td>非植被</td>
+                <td>水體、裸土、人造物</td>
+            </tr>
+            <tr>
+                <td>0 ~ 0.2</td>
+                <td>稀疏植被</td>
+                <td>沙漠、裸露地</td>
+            </tr>
+            <tr>
+                <td>0.2 ~ 0.4</td>
+                <td>中等植被</td>
+                <td>草地、灌木</td>
+            </tr>
+            <tr>
+                <td>0.4 ~ 0.6</td>
+                <td>茂密植被</td>
+                <td>農作物、一般森林</td>
+            </tr>
+            <tr>
+                <td>0.6 ~ 1.0</td>
+                <td>非常茂密</td>
+                <td>熱帶雨林、健康作物</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>其他常用植被指數</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>指數</th>
+                <th>全名</th>
+                <th>公式</th>
+                <th>用途</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>EVI</td>
+                <td>增強型植被指數</td>
+                <td>2.5 × (NIR-Red)/(NIR+6×Red-7.5×Blue+1)</td>
+                <td>高植被覆蓋區域</td>
+            </tr>
+            <tr>
+                <td>NDWI</td>
+                <td>水分指數</td>
+                <td>(NIR - SWIR) / (NIR + SWIR)</td>
+                <td>植物水分含量</td>
+            </tr>
+            <tr>
+                <td>SAVI</td>
+                <td>土壤調整植被指數</td>
+                <td>(NIR-Red)×(1+L)/(NIR+Red+L)</td>
+                <td>稀疏植被區</td>
+            </tr>
+            <tr>
+                <td>LAI</td>
+                <td>葉面積指數</td>
+                <td>由多波段推算</td>
+                <td>生物量估算</td>
+            </tr>
+            <tr>
+                <td>GNDVI</td>
+                <td>綠色植被指數</td>
+                <td>(NIR - Green) / (NIR + Green)</td>
+                <td>葉綠素含量</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>四、農業遙測衛星</h2>
+    <h3>常用衛星資料來源</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>衛星/星系</th>
+                <th>營運單位</th>
+                <th>解析度</th>
+                <th>重訪週期</th>
+                <th>特點</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Sentinel-2</td>
+                <td>ESA（歐洲太空總署）</td>
+                <td>10-60m</td>
+                <td>5 天</td>
+                <td>免費、多光譜</td>
+            </tr>
+            <tr>
+                <td>Landsat 8/9</td>
+                <td>NASA/USGS</td>
+                <td>30m</td>
+                <td>16 天</td>
+                <td>免費、長期資料</td>
+            </tr>
+            <tr>
+                <td>MODIS</td>
+                <td>NASA</td>
+                <td>250-1000m</td>
+                <td>1-2 天</td>
+                <td>大範圍監測</td>
+            </tr>
+            <tr>
+                <td>Planet</td>
+                <td>Planet Labs</td>
+                <td>3-5m</td>
+                <td>每日</td>
+                <td>高解析、商業</td>
+            </tr>
+            <tr>
+                <td>WorldView</td>
+                <td>Maxar</td>
+                <td>0.3-1.2m</td>
+                <td>1-4 天</td>
+                <td>極高解析、商業</td>
+            </tr>
+            <tr>
+                <td>福衛五號</td>
+                <td>台灣國家太空中心</td>
+                <td>2m</td>
+                <td>2 天</td>
+                <td>台灣自主衛星</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>免費資料取得</h3>
+    <ul>
+        <li><strong>Google Earth Engine</strong>：雲端遙測分析平台，可存取多種衛星資料</li>
+        <li><strong>Copernicus Open Access Hub</strong>：Sentinel 衛星資料下載</li>
+        <li><strong>USGS Earth Explorer</strong>：Landsat 及其他美國衛星資料</li>
+        <li><strong>NASA Earthdata</strong>：MODIS 及其他 NASA 資料</li>
+    </ul>
+    <hr />
+
+    <h2>五、無人機遙測</h2>
+    <h3>農用無人機感測器</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>感測器類型</th>
+                <th>波段</th>
+                <th>應用</th>
+                <th>價格範圍</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>RGB 相機</td>
+                <td>可見光</td>
+                <td>地圖製作、巡檢</td>
+                <td>低</td>
+            </tr>
+            <tr>
+                <td>多光譜相機</td>
+                <td>4-10 波段</td>
+                <td>NDVI、植物健康</td>
+                <td>中</td>
+            </tr>
+            <tr>
+                <td>高光譜相機</td>
+                <td>數十至數百波段</td>
+                <td>精細分析、研究</td>
+                <td>高</td>
+            </tr>
+            <tr>
+                <td>熱像儀</td>
+                <td>熱紅外</td>
+                <td>灌溉、病害偵測</td>
+                <td>中高</td>
+            </tr>
+            <tr>
+                <td>光達（LiDAR）</td>
+                <td>雷射</td>
+                <td>地形、冠層結構</td>
+                <td>高</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>無人機作業流程</h3>
+    <ol>
+        <li><strong>任務規劃</strong>：設定飛行路徑、高度、重疊率</li>
+        <li><strong>飛行作業</strong>：自動或手動飛行拍攝</li>
+        <li><strong>資料處理</strong>：影像拼接、正射校正</li>
+        <li><strong>分析產出</strong>：植被指數圖、3D 模型</li>
+        <li><strong>決策應用</strong>：變量施肥、精準灌溉</li>
+    </ol>
+
+    <h3>常用軟體工具</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>軟體</th>
+                <th>用途</th>
+                <th>類型</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Pix4D</td>
+                <td>影像處理、正射影像</td>
+                <td>商業</td>
+            </tr>
+            <tr>
+                <td>DroneDeploy</td>
+                <td>雲端處理、農業分析</td>
+                <td>商業</td>
+            </tr>
+            <tr>
+                <td>OpenDroneMap</td>
+                <td>開源影像處理</td>
+                <td>免費</td>
+            </tr>
+            <tr>
+                <td>QGIS</td>
+                <td>GIS 分析、地圖製作</td>
+                <td>免費</td>
+            </tr>
+            <tr>
+                <td>Google Earth Engine</td>
+                <td>大規模遙測分析</td>
+                <td>免費</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>六、農業應用案例</h2>
+    <h3>1. 作物生長監測</h3>
+    <p>利用時序 NDVI 追蹤作物整個生長週期：</p>
+    <ul>
+        <li>播種期：NDVI 低（裸土）</li>
+        <li>營養生長期：NDVI 快速上升</li>
+        <li>成熟期：NDVI 達到高峰</li>
+        <li>收穫期：NDVI 下降</li>
+    </ul>
+
+    <h3>2. 病蟲害偵測</h3>
+    <p>病害會影響植物光譜特性：</p>
+    <ul>
+        <li>葉綠素減少 → 紅光反射增加</li>
+        <li>細胞結構改變 → 近紅外反射降低</li>
+        <li>表現為 NDVI 局部異常降低</li>
+    </ul>
+
+    <h3>3. 灌溉管理</h3>
+    <p>使用熱紅外遙測監測作物水分狀態：</p>
+    <ul>
+        <li>缺水作物蒸散減少 → 溫度上升</li>
+        <li>建立<strong>作物水分逆境指數（CWSI）</strong></li>
+        <li>指導精準灌溉決策</li>
+    </ul>
+
+    <h3>4. 產量預估</h3>
+    <pre><code># 簡化的產量預估模型
+# 使用積分 NDVI 預測產量
+
+import numpy as np
+
+def estimate_yield(ndvi_timeseries, dates):
+    """
+    使用 NDVI 時序資料估算產量
+    """
+    # 計算 NDVI 時間積分（面積）
+    ndvi_integral = np.trapz(ndvi_timeseries, dates)
+
+    # 經驗公式（需依作物校正）
+    yield_estimate = a * ndvi_integral + b
+
+    return yield_estimate
+</code></pre>
+
+    <h3>5. 變量施肥</h3>
+    <p>根據 NDVI 分區圖制定施肥處方：</p>
+    <table>
+        <thead>
+            <tr>
+                <th>NDVI 分區</th>
+                <th>作物狀態</th>
+                <th>氮肥建議</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>高 NDVI 區</td>
+                <td>生長旺盛</td>
+                <td>減少用量</td>
+            </tr>
+            <tr>
+                <td>中 NDVI 區</td>
+                <td>正常生長</td>
+                <td>標準用量</td>
+            </tr>
+            <tr>
+                <td>低 NDVI 區</td>
+                <td>生長受限</td>
+                <td>增加用量或調查原因</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>七、Python 遙測分析範例</h2>
+    <h3>計算 NDVI</h3>
+    <pre><code class="language-python">import numpy as np
+import rasterio
+from rasterio.plot import show
+import matplotlib.pyplot as plt
+
+# 讀取多光譜影像
+with rasterio.open('multispectral.tif') as src:
+    # 假設 Band 4 是紅光，Band 5 是近紅外
+    red = src.read(4).astype(float)
+    nir = src.read(5).astype(float)
+
+# 計算 NDVI
+# 避免除以零
+np.seterr(divide='ignore', invalid='ignore')
+ndvi = (nir - red) / (nir + red)
+
+# 處理無效值
+ndvi = np.where(np.isfinite(ndvi), ndvi, 0)
+
+# 視覺化
+plt.figure(figsize=(10, 8))
+plt.imshow(ndvi, cmap='RdYlGn', vmin=-1, vmax=1)
+plt.colorbar(label='NDVI')
+plt.title('NDVI Map')
+plt.show()
+</code></pre>
+
+    <h3>使用 Google Earth Engine</h3>
+    <pre><code class="language-python">import ee
+
+# 初始化 Earth Engine
+ee.Initialize()
+
+# 定義研究區域（台灣某農場）
+farm = ee.Geometry.Rectangle([120.5, 23.5, 120.6, 23.6])
+
+# 取得 Sentinel-2 影像
+s2 = ee.ImageCollection('COPERNICUS/S2_SR') \
+    .filterBounds(farm) \
+    .filterDate('2024-01-01', '2024-06-01') \
+    .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20))
+
+# 計算 NDVI 函數
+def add_ndvi(image):
+    ndvi = image.normalizedDifference(['B8', 'B4']).rename('NDVI')
+    return image.addBands(ndvi)
+
+# 套用函數
+s2_ndvi = s2.map(add_ndvi)
+
+# 取得平均 NDVI
+mean_ndvi = s2_ndvi.select('NDVI').mean()
+
+# 匯出或視覺化
+# ...
+</code></pre>
+    <hr />
+
+    <h2>八、挑戰與限制</h2>
+    <h3>技術挑戰</h3>
+    <ul>
+        <li><strong>雲層遮蔽</strong>：光學遙測無法穿透雲層</li>
+        <li><strong>大氣校正</strong>：需移除大氣影響</li>
+        <li><strong>混合像元</strong>：一個像元可能包含多種地物</li>
+        <li><strong>時間解析度</strong>：重訪週期可能錯過關鍵時期</li>
+    </ul>
+
+    <h3>應用限制</h3>
+    <ul>
+        <li>需要地面真值資料驗證</li>
+        <li>不同作物需要不同的分析模型</li>
+        <li>初期投資和學習成本</li>
+        <li>資料處理需要專業知識</li>
+    </ul>
+    <hr />
+
+    <h2>九、未來趨勢</h2>
+    <ul>
+        <li><strong>小衛星星群</strong>：更高時間解析度</li>
+        <li><strong>AI 影像分析</strong>：自動化病蟲害辨識</li>
+        <li><strong>多源資料融合</strong>：結合衛星、無人機、地面感測器</li>
+        <li><strong>即時決策系統</strong>：從監測到行動的自動化</li>
+        <li><strong>雲端運算普及</strong>：降低分析門檻</li>
+    </ul>
+    <hr />
+
+    <p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

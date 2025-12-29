@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask 網頁應用入門</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e2e8f0; min-height: 100vh; line-height: 1.8;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        h1 {
+            text-align: center; font-size: 2.5rem; margin-bottom: 10px;
+            background: linear-gradient(135deg, #000, #333);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+        h1::before { content: '🌶️ '; -webkit-text-fill-color: initial; }
+        .subtitle { text-align: center; color: #a0aec0; margin-bottom: 40px; font-size: 1.1rem; }
+        .section {
+            background: rgba(255, 255, 255, 0.05); border-radius: 16px;
+            padding: 30px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h2 { color: #ed8936; font-size: 1.5rem; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid rgba(237, 137, 54, 0.3); }
+        h3 { color: #63b3ed; font-size: 1.2rem; margin: 25px 0 15px 0; }
+        p { margin-bottom: 15px; color: #cbd5e0; }
+        .code-block {
+            background: #0d1117; border-radius: 8px; padding: 20px; margin: 15px 0;
+            overflow-x: auto; border: 1px solid #30363d;
+        }
+        .code-block code { font-family: 'Consolas', monospace; font-size: 0.9rem; color: #e6edf3; white-space: pre; }
+        .keyword { color: #ff7b72; }
+        .string { color: #a5d6ff; }
+        .number { color: #79c0ff; }
+        .function { color: #d2a8ff; }
+        .comment { color: #8b949e; }
+        .decorator { color: #ffa657; }
+        .tip-box {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.1), rgba(99, 179, 237, 0.1));
+            border-left: 4px solid #4fd1c5; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0;
+        }
+        .tip-box strong { color: #4fd1c5; }
+        .file-structure {
+            background: #0d1117; padding: 20px; border-radius: 8px; font-family: 'Consolas', monospace;
+        }
+        .file-structure .folder { color: #79c0ff; }
+        .file-structure .file { color: #7ee787; }
+        .home-btn {
+            position: fixed; bottom: 30px; right: 30px;
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: white; padding: 15px 25px; border-radius: 50px;
+            text-decoration: none; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(237, 137, 54, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .home-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(237, 137, 54, 0.4); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Flask 網頁應用入門</h1>
+        <p class="subtitle">使用 Python 建立網頁應用程式</p>
+
+        <div class="section">
+            <h2>📚 什麼是 Flask？</h2>
+            <p>Flask 是一個輕量級的 Python 網頁框架，適合快速開發小型到中型的網頁應用。它簡單易學，非常適合作為後端 API 伺服器。</p>
+
+            <h3>安裝 Flask</h3>
+            <div class="code-block">
+<code><span class="comment"># 使用 pip 安裝</span>
+pip install flask</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🚀 第一個 Flask 應用</h2>
+            <div class="code-block">
+<code><span class="keyword">from</span> flask <span class="keyword">import</span> Flask
+
+<span class="comment"># 建立 Flask 應用</span>
+app = Flask(__name__)
+
+<span class="comment"># 定義路由（首頁）</span>
+<span class="decorator">@app.route('/')</span>
+<span class="keyword">def</span> <span class="function">home</span>():
+    <span class="keyword">return</span> <span class="string">'歡迎來到智慧農業系統！'</span>
+
+<span class="comment"># 另一個路由</span>
+<span class="decorator">@app.route('/about')</span>
+<span class="keyword">def</span> <span class="function">about</span>():
+    <span class="keyword">return</span> <span class="string">'這是關於頁面'</span>
+
+<span class="comment"># 啟動伺服器</span>
+<span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:
+    app.run(debug=<span class="keyword">True</span>, port=<span class="number">5000</span>)</code>
+            </div>
+            <div class="tip-box">
+                <strong>💡 執行方式：</strong><br>
+                1. 儲存為 <code>app.py</code><br>
+                2. 執行 <code>python app.py</code><br>
+                3. 開啟瀏覽器訪問 <code>http://localhost:5000</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">📁 專案結構</h2>
+            <div class="file-structure">
+my_farm_app/
+├── <span class="file">app.py</span>              # 主程式
+├── <span class="folder">templates/</span>         # HTML 模板
+│   ├── <span class="file">base.html</span>
+│   ├── <span class="file">index.html</span>
+│   └── <span class="file">dashboard.html</span>
+├── <span class="folder">static/</span>            # 靜態檔案
+│   ├── <span class="folder">css/</span>
+│   │   └── <span class="file">style.css</span>
+│   ├── <span class="folder">js/</span>
+│   │   └── <span class="file">app.js</span>
+│   └── <span class="folder">images/</span>
+└── <span class="file">requirements.txt</span>   # 依賴套件
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">🎨 HTML 模板 (Jinja2)</h2>
+            <div class="code-block">
+<code><span class="comment">&lt;!-- templates/base.html --&gt;</span>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;{% block title %}智慧農業{% endblock %}&lt;/title&gt;
+    &lt;link rel=<span class="string">"stylesheet"</span> href=<span class="string">"{{ url_for('static', filename='css/style.css') }}"</span>&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;nav&gt;
+        &lt;a href=<span class="string">"{{ url_for('home') }}"</span>&gt;首頁&lt;/a&gt;
+        &lt;a href=<span class="string">"{{ url_for('dashboard') }}"</span>&gt;儀表板&lt;/a&gt;
+    &lt;/nav&gt;
+    &lt;main&gt;
+        {% block content %}{% endblock %}
+    &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+<span class="comment">&lt;!-- templates/dashboard.html --&gt;</span>
+{% extends "base.html" %}
+{% block title %}監控儀表板{% endblock %}
+{% block content %}
+    &lt;h1&gt;農場監控&lt;/h1&gt;
+
+    <span class="comment">&lt;!-- 顯示變數 --&gt;</span>
+    &lt;p&gt;目前溫度: {{ temperature }}°C&lt;/p&gt;
+
+    <span class="comment">&lt;!-- 條件判斷 --&gt;</span>
+    {% if temperature > 30 %}
+        &lt;p class=<span class="string">"warning"</span>&gt;溫度過高！&lt;/p&gt;
+    {% elif temperature < 10 %}
+        &lt;p class=<span class="string">"warning"</span>&gt;溫度過低！&lt;/p&gt;
+    {% else %}
+        &lt;p class=<span class="string">"normal"</span>&gt;溫度正常&lt;/p&gt;
+    {% endif %}
+
+    <span class="comment">&lt;!-- 迴圈 --&gt;</span>
+    &lt;ul&gt;
+    {% for sensor in sensors %}
+        &lt;li&gt;{{ sensor.name }}: {{ sensor.value }}{{ sensor.unit }}&lt;/li&gt;
+    {% endfor %}
+    &lt;/ul&gt;
+{% endblock %}</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">🔗 路由與參數</h2>
+            <div class="code-block">
+<code><span class="comment"># 動態路由</span>
+<span class="decorator">@app.route('/sensor/&lt;int:sensor_id&gt;')</span>
+<span class="keyword">def</span> <span class="function">get_sensor</span>(sensor_id):
+    <span class="keyword">return</span> <span class="string">f'感測器 ID: {sensor_id}'</span>
+
+<span class="comment"># 多種 HTTP 方法</span>
+<span class="decorator">@app.route('/control', methods=['GET', 'POST'])</span>
+<span class="keyword">def</span> <span class="function">control</span>():
+    <span class="keyword">if</span> request.method == <span class="string">'POST'</span>:
+        action = request.form.get(<span class="string">'action'</span>)
+        <span class="keyword">return</span> <span class="string">f'執行動作: {action}'</span>
+    <span class="keyword">return</span> render_template(<span class="string">'control.html'</span>)
+
+<span class="comment"># 取得 URL 參數</span>
+<span class="decorator">@app.route('/search')</span>
+<span class="keyword">def</span> <span class="function">search</span>():
+    query = request.args.get(<span class="string">'q'</span>, <span class="string">''</span>)  <span class="comment"># /search?q=水稻</span>
+    <span class="keyword">return</span> <span class="string">f'搜尋: {query}'</span></code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">📡 建立 REST API</h2>
+            <div class="code-block">
+<code><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, jsonify, request
+
+app = Flask(__name__)
+
+<span class="comment"># 模擬資料</span>
+sensors = [
+    {<span class="string">'id'</span>: <span class="number">1</span>, <span class="string">'name'</span>: <span class="string">'溫度'</span>, <span class="string">'value'</span>: <span class="number">25.5</span>, <span class="string">'unit'</span>: <span class="string">'°C'</span>},
+    {<span class="string">'id'</span>: <span class="number">2</span>, <span class="string">'name'</span>: <span class="string">'濕度'</span>, <span class="string">'value'</span>: <span class="number">60</span>, <span class="string">'unit'</span>: <span class="string">'%'</span>}
+]
+
+<span class="comment"># GET - 取得所有感測器</span>
+<span class="decorator">@app.route('/api/sensors', methods=['GET'])</span>
+<span class="keyword">def</span> <span class="function">get_sensors</span>():
+    <span class="keyword">return</span> jsonify(sensors)
+
+<span class="comment"># GET - 取得單一感測器</span>
+<span class="decorator">@app.route('/api/sensors/&lt;int:sensor_id&gt;', methods=['GET'])</span>
+<span class="keyword">def</span> <span class="function">get_sensor</span>(sensor_id):
+    sensor = <span class="keyword">next</span>((s <span class="keyword">for</span> s <span class="keyword">in</span> sensors <span class="keyword">if</span> s[<span class="string">'id'</span>] == sensor_id), <span class="keyword">None</span>)
+    <span class="keyword">if</span> sensor:
+        <span class="keyword">return</span> jsonify(sensor)
+    <span class="keyword">return</span> jsonify({<span class="string">'error'</span>: <span class="string">'找不到感測器'</span>}), <span class="number">404</span>
+
+<span class="comment"># POST - 執行控制命令</span>
+<span class="decorator">@app.route('/api/control', methods=['POST'])</span>
+<span class="keyword">def</span> <span class="function">control_action</span>():
+    data = request.get_json()
+    action = data.get(<span class="string">'action'</span>)
+
+    <span class="keyword">if</span> action == <span class="string">'irrigate'</span>:
+        <span class="comment"># 執行灌溉邏輯</span>
+        <span class="keyword">return</span> jsonify({<span class="string">'status'</span>: <span class="string">'success'</span>, <span class="string">'message'</span>: <span class="string">'灌溉已啟動'</span>})
+    <span class="keyword">elif</span> action == <span class="string">'fan_on'</span>:
+        <span class="keyword">return</span> jsonify({<span class="string">'status'</span>: <span class="string">'success'</span>, <span class="string">'message'</span>: <span class="string">'風扇已開啟'</span>})
+
+    <span class="keyword">return</span> jsonify({<span class="string">'error'</span>: <span class="string">'未知動作'</span>}), <span class="number">400</span></code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">🌾 農業監控系統完整範例</h2>
+            <div class="code-block">
+<code><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template, jsonify, request
+<span class="keyword">import</span> random
+<span class="keyword">from</span> datetime <span class="keyword">import</span> datetime
+
+app = Flask(__name__)
+
+<span class="comment"># 模擬感測器資料</span>
+<span class="keyword">def</span> <span class="function">get_sensor_data</span>():
+    <span class="keyword">return</span> {
+        <span class="string">'temperature'</span>: round(random.uniform(<span class="number">20</span>, <span class="number">35</span>), <span class="number">1</span>),
+        <span class="string">'humidity'</span>: round(random.uniform(<span class="number">40</span>, <span class="number">80</span>), <span class="number">1</span>),
+        <span class="string">'soil_moisture'</span>: round(random.uniform(<span class="number">30</span>, <span class="number">70</span>), <span class="number">1</span>),
+        <span class="string">'light'</span>: round(random.uniform(<span class="number">200</span>, <span class="number">1000</span>), <span class="number">0</span>),
+        <span class="string">'timestamp'</span>: datetime.now().strftime(<span class="string">'%Y-%m-%d %H:%M:%S'</span>)
+    }
+
+<span class="comment"># 首頁</span>
+<span class="decorator">@app.route('/')</span>
+<span class="keyword">def</span> <span class="function">index</span>():
+    <span class="keyword">return</span> render_template(<span class="string">'index.html'</span>)
+
+<span class="comment"># 儀表板</span>
+<span class="decorator">@app.route('/dashboard')</span>
+<span class="keyword">def</span> <span class="function">dashboard</span>():
+    data = get_sensor_data()
+    <span class="keyword">return</span> render_template(<span class="string">'dashboard.html'</span>, **data)
+
+<span class="comment"># API: 取得即時感測器資料</span>
+<span class="decorator">@app.route('/api/sensors')</span>
+<span class="keyword">def</span> <span class="function">api_sensors</span>():
+    <span class="keyword">return</span> jsonify(get_sensor_data())
+
+<span class="comment"># API: 控制設備</span>
+<span class="decorator">@app.route('/api/control', methods=['POST'])</span>
+<span class="keyword">def</span> <span class="function">api_control</span>():
+    data = request.get_json()
+    device = data.get(<span class="string">'device'</span>)
+    action = data.get(<span class="string">'action'</span>)
+
+    <span class="comment"># 實際應用中這裡會控制硬體</span>
+    <span class="function">print</span>(<span class="string">f'控制 {device}: {action}'</span>)
+
+    <span class="keyword">return</span> jsonify({
+        <span class="string">'success'</span>: <span class="keyword">True</span>,
+        <span class="string">'message'</span>: <span class="string">f'{device} 已{action}'</span>
+    })
+
+<span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:
+    app.run(debug=<span class="keyword">True</span>, host=<span class="string">'0.0.0.0'</span>, port=<span class="number">5000</span>)</code>
+            </div>
+        </div>
+
+        <a href="文件索引.html" class="home-btn">🏠 返回首頁</a>
+    </div>
+</body>
+</html>

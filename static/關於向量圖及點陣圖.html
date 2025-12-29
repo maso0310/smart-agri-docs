@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於向量圖及點陣圖</title>
+<style>
+    body { font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; line-height: 1.8; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e8e8e8; min-height: 100vh; }
+    h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+    h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+    h3 { color: #81e6d9; margin-top: 20px; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+    th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+    th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+    tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+    code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+    pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+    pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+    blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+    a { color: #63b3ed; }
+    ul, ol { padding-left: 25px; }
+    li { margin: 5px 0; }
+    hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+    strong { color: #f6e05e; }
+    .floating-home { position: fixed; bottom: 25px; right: 25px; z-index: 9999; width: 55px; height: 55px; background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%); color: #1a1a2e; text-decoration: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .theme-toggle { position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%; border: none; cursor: pointer; z-index: 10000; font-size: 24px; background: linear-gradient(135deg, #4fd1c5, #63b3ed); color: #1a1a2e; display: flex; align-items: center; justify-content: center; }
+    [data-theme="light"] body { background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important; color: #2d3748 !important; }
+    [data-theme="light"] h1 { color: #2b6cb0 !important; }
+    [data-theme="light"] h2 { color: #2c5282 !important; }
+    [data-theme="light"] h3 { color: #2b6cb0 !important; }
+    [data-theme="light"] p, [data-theme="light"] li, [data-theme="light"] td { color: #4a5568 !important; }
+    [data-theme="light"] th { background-color: rgba(79, 209, 197, 0.25) !important; color: #2d3748 !important; }
+    [data-theme="light"] table { background-color: rgba(255, 255, 255, 0.9) !important; }
+    [data-theme="light"] code { background-color: rgba(79, 209, 197, 0.2) !important; color: #2b6cb0 !important; }
+    [data-theme="light"] pre { background-color: #f7fafc !important; }
+    [data-theme="light"] pre code { color: #2d3748 !important; }
+    [data-theme="light"] strong { color: #d69e2e !important; }
+    [data-theme="light"] .theme-toggle { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+</style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換主題"><span id="theme-icon">☀️</span></button>
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+    <h1>關於向量圖及點陣圖</h1>
+    <p>在 GIS、影像處理和農業資訊系統中，了解向量圖（Vector）和點陣圖（Raster）的差異是基礎知識。兩者各有優缺點，適用於不同場景。</p>
+    <hr />
+
+    <h2>一、基本概念</h2>
+    <h3>點陣圖（Raster）</h3>
+    <p>由<strong>像素（Pixel）</strong>組成的影像，每個像素儲存一個數值：</p>
+    <ul>
+        <li>又稱「柵格圖」、「位圖」</li>
+        <li>類似馬賽克磁磚，由小方格組成</li>
+        <li>放大會產生鋸齒（像素化）</li>
+        <li>常見格式：JPEG、PNG、TIFF、GeoTIFF</li>
+    </ul>
+
+    <h3>向量圖（Vector）</h3>
+    <p>由<strong>數學公式</strong>定義的幾何物件：</p>
+    <ul>
+        <li>使用點、線、多邊形描述形狀</li>
+        <li>無限縮放不失真</li>
+        <li>儲存的是座標與屬性</li>
+        <li>常見格式：SHP、GeoJSON、KML、SVG</li>
+    </ul>
+    <hr />
+
+    <h2>二、核心差異比較</h2>
+    <table>
+        <thead><tr><th>特性</th><th>點陣圖（Raster）</th><th>向量圖（Vector）</th></tr></thead>
+        <tbody>
+            <tr><td>組成元素</td><td>像素（網格）</td><td>點、線、面（幾何物件）</td></tr>
+            <tr><td>縮放特性</td><td>放大會模糊/鋸齒</td><td>無限縮放不失真</td></tr>
+            <tr><td>檔案大小</td><td>通常較大</td><td>通常較小</td></tr>
+            <tr><td>編輯方式</td><td>修改像素值</td><td>修改座標/屬性</td></tr>
+            <tr><td>適合內容</td><td>連續變化的現象（照片、遙測）</td><td>離散物件（邊界、道路、點位）</td></tr>
+            <tr><td>空間分析</td><td>表面分析、內插</td><td>幾何運算、網路分析</td></tr>
+            <tr><td>屬性資料</td><td>每像素一個值（或多波段）</td><td>每物件可有多個屬性欄位</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>三、GIS 中的應用</h2>
+    <h3>點陣圖應用</h3>
+    <table>
+        <thead><tr><th>資料類型</th><th>說明</th><th>範例</th></tr></thead>
+        <tbody>
+            <tr><td>衛星影像</td><td>遙測拍攝的影像</td><td>Sentinel-2、Landsat</td></tr>
+            <tr><td>航拍正射影像</td><td>無人機拍攝處理後</td><td>農場高解析度圖</td></tr>
+            <tr><td>數值地形模型</td><td>DEM/DTM</td><td>高程資料</td></tr>
+            <tr><td>土壤性質圖</td><td>內插產生的連續面</td><td>pH 分布圖、養分圖</td></tr>
+            <tr><td>植被指數圖</td><td>NDVI 等遙測產品</td><td>作物健康圖</td></tr>
+            <tr><td>溫度/降雨圖</td><td>氣象資料網格化</td><td>氣候分布</td></tr>
+        </tbody>
+    </table>
+
+    <h3>向量圖應用</h3>
+    <table>
+        <thead><tr><th>資料類型</th><th>幾何類型</th><th>範例</th></tr></thead>
+        <tbody>
+            <tr><td>地籍資料</td><td>多邊形</td><td>農地邊界、所有權</td></tr>
+            <tr><td>採樣點位</td><td>點</td><td>土壤採樣位置、感測器</td></tr>
+            <tr><td>灌溉渠道</td><td>線</td><td>水路、管線</td></tr>
+            <tr><td>道路網</td><td>線</td><td>農路、運輸路線</td></tr>
+            <tr><td>設施位置</td><td>點</td><td>儲藏室、機具位置</td></tr>
+            <tr><td>行政區界</td><td>多邊形</td><td>鄉鎮區界</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>四、常見檔案格式</h2>
+    <h3>點陣圖格式</h3>
+    <table>
+        <thead><tr><th>格式</th><th>副檔名</th><th>特點</th><th>用途</th></tr></thead>
+        <tbody>
+            <tr><td>GeoTIFF</td><td>.tif/.tiff</td><td>含地理資訊、多波段</td><td>遙測、GIS 標準</td></tr>
+            <tr><td>JPEG</td><td>.jpg</td><td>有損壓縮、體積小</td><td>一般照片</td></tr>
+            <tr><td>PNG</td><td>.png</td><td>無損壓縮、透明支援</td><td>網頁圖片</td></tr>
+            <tr><td>JPEG2000</td><td>.jp2</td><td>高壓縮比、多解析度</td><td>大型影像</td></tr>
+            <tr><td>NetCDF</td><td>.nc</td><td>多維陣列、時序資料</td><td>氣象資料</td></tr>
+        </tbody>
+    </table>
+
+    <h3>向量圖格式</h3>
+    <table>
+        <thead><tr><th>格式</th><th>副檔名</th><th>特點</th><th>用途</th></tr></thead>
+        <tbody>
+            <tr><td>Shapefile</td><td>.shp+.dbf+.shx...</td><td>業界標準、需多檔案</td><td>GIS 通用</td></tr>
+            <tr><td>GeoJSON</td><td>.geojson</td><td>JSON 格式、網頁友善</td><td>Web GIS</td></tr>
+            <tr><td>KML/KMZ</td><td>.kml/.kmz</td><td>Google 格式</td><td>Google Earth</td></tr>
+            <tr><td>GeoPackage</td><td>.gpkg</td><td>SQLite 基礎、單一檔案</td><td>新一代標準</td></tr>
+            <tr><td>SVG</td><td>.svg</td><td>網頁向量圖</td><td>圖標、示意圖</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>五、解析度概念</h2>
+    <h3>點陣圖解析度</h3>
+    <pre><code># 空間解析度
+每個像素代表的實際面積
+例如：10m 解析度 = 每像素 10m x 10m = 100 m²
+
+# 像素計算
+影像涵蓋面積 1 km² = 1,000,000 m²
+10m 解析度：1,000,000 / 100 = 10,000 像素
+1m 解析度：1,000,000 / 1 = 1,000,000 像素
+
+# 檔案大小估算（單波段 8-bit）
+像素數 × 位元深度 / 8 = bytes
+1,000,000 × 8 / 8 = 1 MB（未壓縮）
+</code></pre>
+
+    <h3>向量圖精度</h3>
+    <ul>
+        <li>取決於座標小數位數</li>
+        <li>頂點數量影響檔案大小</li>
+        <li>過度簡化會失去細節</li>
+    </ul>
+    <hr />
+
+    <h2>六、Python 處理範例</h2>
+    <h3>點陣圖處理 (rasterio)</h3>
+    <pre><code class="language-python">import rasterio
+import numpy as np
+
+# 讀取 GeoTIFF
+with rasterio.open('ndvi.tif') as src:
+    ndvi = src.read(1)  # 讀取第一波段
+    profile = src.profile
+    transform = src.transform
+    crs = src.crs
+
+    print(f"形狀: {ndvi.shape}")
+    print(f"解析度: {transform[0]} m")
+    print(f"座標系: {crs}")
+
+# 寫入新的 GeoTIFF
+with rasterio.open('output.tif', 'w', **profile) as dst:
+    dst.write(ndvi, 1)
+
+# 座標轉換：像素 ↔ 地理座標
+row, col = 100, 200
+x, y = rasterio.transform.xy(transform, row, col)
+print(f"像素 ({row}, {col}) → 座標 ({x}, {y})")</code></pre>
+
+    <h3>向量圖處理 (geopandas)</h3>
+    <pre><code class="language-python">import geopandas as gpd
+from shapely.geometry import Point, Polygon
+
+# 讀取 Shapefile
+gdf = gpd.read_file('farmland.shp')
+print(gdf.head())
+print(f"座標系: {gdf.crs}")
+
+# 讀取 GeoJSON
+gdf = gpd.read_file('points.geojson')
+
+# 建立新的 GeoDataFrame
+data = {
+    'name': ['採樣點A', '採樣點B', '採樣點C'],
+    'pH': [6.5, 7.0, 6.8],
+    'geometry': [Point(121.5, 25.0), Point(121.6, 25.1), Point(121.7, 25.0)]
+}
+gdf = gpd.GeoDataFrame(data, crs="EPSG:4326")
+
+# 儲存
+gdf.to_file('output.shp')
+gdf.to_file('output.geojson', driver='GeoJSON')
+
+# 座標轉換
+gdf_twd97 = gdf.to_crs("EPSG:3826")</code></pre>
+
+    <h3>向量轉點陣</h3>
+    <pre><code class="language-python">from rasterio import features
+import rasterio
+
+# 向量轉點陣（柵格化）
+shapes = [(geom, value) for geom, value in zip(gdf.geometry, gdf['pH'])]
+
+out_shape = (1000, 1000)  # 輸出大小
+transform = rasterio.transform.from_bounds(*gdf.total_bounds, *out_shape)
+
+raster = features.rasterize(
+    shapes,
+    out_shape=out_shape,
+    transform=transform,
+    fill=0,
+    dtype='float32'
+)</code></pre>
+
+    <h3>點陣轉向量</h3>
+    <pre><code class="language-python">from rasterio import features
+import shapely
+
+# 點陣轉向量（向量化）
+with rasterio.open('classified.tif') as src:
+    image = src.read(1)
+
+    # 取得多邊形
+    shapes = features.shapes(image, transform=src.transform)
+
+    polygons = []
+    for geom, value in shapes:
+        polygons.append({
+            'geometry': shapely.geometry.shape(geom),
+            'value': value
+        })
+
+    gdf = gpd.GeoDataFrame(polygons)</code></pre>
+    <hr />
+
+    <h2>七、選擇指南</h2>
+    <table>
+        <thead><tr><th>情況</th><th>建議格式</th><th>原因</th></tr></thead>
+        <tbody>
+            <tr><td>儲存衛星影像</td><td>點陣（GeoTIFF）</td><td>連續的像素資料</td></tr>
+            <tr><td>記錄農地邊界</td><td>向量（Shapefile）</td><td>精確的邊界線</td></tr>
+            <tr><td>土壤養分分布</td><td>點陣（內插結果）</td><td>連續變化的現象</td></tr>
+            <tr><td>採樣點位置</td><td>向量（點）</td><td>離散的位置資料</td></tr>
+            <tr><td>灌溉管線</td><td>向量（線）</td><td>網路結構</td></tr>
+            <tr><td>高程地形</td><td>點陣（DEM）</td><td>連續的高度值</td></tr>
+            <tr><td>網頁地圖顯示</td><td>向量（GeoJSON）或瓦片</td><td>互動、輕量</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>八、常見問題</h2>
+    <table>
+        <thead><tr><th>問題</th><th>原因</th><th>解決方法</th></tr></thead>
+        <tbody>
+            <tr><td>影像放大模糊</td><td>解析度不足</td><td>使用更高解析度影像</td></tr>
+            <tr><td>Shapefile 亂碼</td><td>編碼問題</td><td>指定 encoding='utf-8'</td></tr>
+            <tr><td>檔案過大</td><td>解析度過高</td><td>重新取樣、壓縮</td></tr>
+            <tr><td>座標不對齊</td><td>座標系不同</td><td>統一轉換 CRS</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">智慧農業課程教材</p>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            html.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+            icon.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+            localStorage.setItem('theme', currentTheme === 'dark' ? 'light' : 'dark');
+        }
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於LoRa通訊</title>
+<style>
+    body { font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; line-height: 1.8; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e8e8e8; min-height: 100vh; }
+    h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+    h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+    h3 { color: #81e6d9; margin-top: 20px; }
+    h4 { color: #90cdf4; margin-top: 15px; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+    th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+    th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+    tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+    tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+    code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+    pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+    pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+    blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+    a { color: #63b3ed; text-decoration: none; }
+    ul, ol { padding-left: 25px; }
+    li { margin: 5px 0; }
+    hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+    strong { color: #f6e05e; }
+    .floating-home { position: fixed; bottom: 25px; right: 25px; z-index: 9999; display: flex; align-items: center; justify-content: center; width: 55px; height: 55px; background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%); color: #1a1a2e; text-decoration: none; border-radius: 50%; box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4); font-size: 24px; transition: all 0.3s ease; }
+    .floating-home:hover { transform: scale(1.1); }
+    .theme-toggle { position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%; border: none; cursor: pointer; z-index: 10000; display: flex; align-items: center; justify-content: center; font-size: 24px; background: linear-gradient(135deg, #4fd1c5, #63b3ed); color: #1a1a2e; }
+    [data-theme="light"] body { background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important; color: #2d3748 !important; }
+    [data-theme="light"] h1 { color: #2b6cb0 !important; }
+    [data-theme="light"] h2 { color: #2c5282 !important; }
+    [data-theme="light"] h3 { color: #2b6cb0 !important; }
+    [data-theme="light"] p, [data-theme="light"] li, [data-theme="light"] td { color: #4a5568 !important; }
+    [data-theme="light"] th { background-color: rgba(79, 209, 197, 0.25) !important; color: #2d3748 !important; }
+    [data-theme="light"] table { background-color: rgba(255, 255, 255, 0.9) !important; }
+    [data-theme="light"] code { background-color: rgba(79, 209, 197, 0.2) !important; color: #2b6cb0 !important; }
+    [data-theme="light"] pre { background-color: #f7fafc !important; }
+    [data-theme="light"] pre code { color: #2d3748 !important; }
+    [data-theme="light"] blockquote { background-color: rgba(79, 209, 197, 0.15) !important; color: #2d3748 !important; }
+    [data-theme="light"] strong { color: #d69e2e !important; }
+    [data-theme="light"] .theme-toggle { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+</style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換主題"><span id="theme-icon">☀️</span></button>
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+    <h1>關於 LoRa 通訊</h1>
+    <p>LoRa（Long Range）是一種低功耗廣域網路（LPWAN）無線通訊技術，特別適合物聯網應用。在智慧農業中，LoRa 可實現遠距離、低功耗的感測器資料傳輸。</p>
+    <hr />
+
+    <h2>一、LoRa 基本概念</h2>
+    <h3>什麼是 LoRa</h3>
+    <p><strong>LoRa</strong> 是由 Semtech 公司開發的展頻調變技術：</p>
+    <ul>
+        <li><strong>LoRa</strong>：物理層技術（調變方式）</li>
+        <li><strong>LoRaWAN</strong>：網路協議層（MAC 層規範）</li>
+    </ul>
+
+    <h3>核心特點</h3>
+    <table>
+        <thead><tr><th>特性</th><th>說明</th></tr></thead>
+        <tbody>
+            <tr><td>傳輸距離</td><td>鄉村 10-15 km，都市 2-5 km</td></tr>
+            <tr><td>功耗</td><td>極低，電池可用數年</td></tr>
+            <tr><td>頻段</td><td>Sub-GHz 免許可頻段</td></tr>
+            <tr><td>資料速率</td><td>0.3 - 50 kbps</td></tr>
+            <tr><td>適用場景</td><td>低資料量、長距離、電池供電</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>二、LoRa vs 其他無線技術</h2>
+    <table>
+        <thead><tr><th>技術</th><th>距離</th><th>功耗</th><th>速率</th><th>適用場景</th></tr></thead>
+        <tbody>
+            <tr><td>LoRa</td><td>10+ km</td><td>極低</td><td>0.3-50 kbps</td><td>農業感測、環境監測</td></tr>
+            <tr><td>WiFi</td><td>50-100 m</td><td>高</td><td>54-600 Mbps</td><td>室內高速傳輸</td></tr>
+            <tr><td>Bluetooth</td><td>10-100 m</td><td>低</td><td>1-3 Mbps</td><td>穿戴裝置、近距通訊</td></tr>
+            <tr><td>ZigBee</td><td>100 m</td><td>低</td><td>250 kbps</td><td>家庭自動化</td></tr>
+            <tr><td>NB-IoT</td><td>10+ km</td><td>低</td><td>200 kbps</td><td>需基站、有月租費</td></tr>
+            <tr><td>4G/5G</td><td>數公里</td><td>高</td><td>高</td><td>需 SIM 卡、月租</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>三、頻段與法規</h2>
+    <h3>台灣可用頻段</h3>
+    <table>
+        <thead><tr><th>頻段</th><th>頻率範圍</th><th>最大功率</th><th>說明</th></tr></thead>
+        <tbody>
+            <tr><td>AS923</td><td>920-925 MHz</td><td>14 dBm (25mW)</td><td>亞洲區域標準</td></tr>
+            <tr><td>433 MHz</td><td>433.05-434.79 MHz</td><td>10 mW</td><td>需申請</td></tr>
+        </tbody>
+    </table>
+    <blockquote>台灣主要使用 AS923 頻段計畫，符合 NCC 規範即可免執照使用。</blockquote>
+    <hr />
+
+    <h2>四、LoRa 參數設定</h2>
+    <h3>展頻因子（SF）</h3>
+    <table>
+        <thead><tr><th>SF</th><th>晶片/符號</th><th>靈敏度</th><th>距離</th><th>速率</th><th>電量消耗</th></tr></thead>
+        <tbody>
+            <tr><td>SF7</td><td>128</td><td>-123 dBm</td><td>短</td><td>最快</td><td>最少</td></tr>
+            <tr><td>SF8</td><td>256</td><td>-126 dBm</td><td>↓</td><td>↓</td><td>↓</td></tr>
+            <tr><td>SF9</td><td>512</td><td>-129 dBm</td><td>↓</td><td>↓</td><td>↓</td></tr>
+            <tr><td>SF10</td><td>1024</td><td>-132 dBm</td><td>↓</td><td>↓</td><td>↓</td></tr>
+            <tr><td>SF11</td><td>2048</td><td>-134.5 dBm</td><td>↓</td><td>↓</td><td>↓</td></tr>
+            <tr><td>SF12</td><td>4096</td><td>-137 dBm</td><td>最遠</td><td>最慢</td><td>最多</td></tr>
+        </tbody>
+    </table>
+
+    <h3>頻寬（BW）</h3>
+    <ul>
+        <li><strong>125 kHz</strong>：標準設定，平衡距離與速率</li>
+        <li><strong>250 kHz</strong>：較高速率，距離較短</li>
+        <li><strong>500 kHz</strong>：最高速率，距離最短</li>
+    </ul>
+
+    <h3>編碼率（CR）</h3>
+    <ul>
+        <li><strong>4/5</strong>：最少冗餘，速度快</li>
+        <li><strong>4/6、4/7</strong>：中等</li>
+        <li><strong>4/8</strong>：最多冗餘，抗干擾強</li>
+    </ul>
+    <hr />
+
+    <h2>五、LoRaWAN 網路架構</h2>
+    <pre><code>
+    [感測節點] ─┐
+    [感測節點] ──┼──→ [閘道器] ──→ [網路伺服器] ──→ [應用伺服器]
+    [感測節點] ─┘      Gateway      Network Server    Application
+         │                               │
+         └── LoRa 無線 ──┘               └── IP 網路 ──┘
+    </code></pre>
+
+    <h3>設備類型</h3>
+    <table>
+        <thead><tr><th>類別</th><th>接收方式</th><th>功耗</th><th>延遲</th><th>適用</th></tr></thead>
+        <tbody>
+            <tr><td>Class A</td><td>上行後開窗接收</td><td>最低</td><td>高</td><td>感測器（預設）</td></tr>
+            <tr><td>Class B</td><td>定時接收窗</td><td>中</td><td>中</td><td>需定時控制</td></tr>
+            <tr><td>Class C</td><td>持續接收</td><td>最高</td><td>低</td><td>常電源設備</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>六、硬體模組</h2>
+    <h3>常見 LoRa 模組</h3>
+    <table>
+        <thead><tr><th>模組</th><th>晶片</th><th>特點</th><th>價格</th></tr></thead>
+        <tbody>
+            <tr><td>SX1276/78</td><td>Semtech</td><td>經典款、137-1020MHz</td><td>低</td></tr>
+            <tr><td>RFM95W</td><td>HopeRF</td><td>SX1276 模組化</td><td>低</td></tr>
+            <tr><td>Ra-02</td><td>安信可</td><td>便宜、433MHz</td><td>最低</td></tr>
+            <tr><td>REYAX RYLR896</td><td>SX1276</td><td>內建 AT 指令</td><td>中</td></tr>
+            <tr><td>Heltec WiFi LoRa 32</td><td>ESP32+SX1276</td><td>整合開發板</td><td>中</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>七、Arduino 程式範例</h2>
+    <h3>發送端</h3>
+    <pre><code class="language-cpp">#include &lt;SPI.h&gt;
+#include &lt;LoRa.h&gt;
+
+// 腳位定義 (依模組調整)
+#define SS    18
+#define RST   14
+#define DIO0  26
+
+void setup() {
+    Serial.begin(115200);
+
+    LoRa.setPins(SS, RST, DIO0);
+
+    // 初始化 LoRa (923 MHz for AS923)
+    if (!LoRa.begin(923E6)) {
+        Serial.println("LoRa 初始化失敗!");
+        while (1);
+    }
+
+    // 設定參數
+    LoRa.setSpreadingFactor(7);    // SF7-SF12
+    LoRa.setSignalBandwidth(125E3); // 125kHz
+    LoRa.setCodingRate4(5);         // 4/5
+    LoRa.setTxPower(14);            // 14 dBm
+
+    Serial.println("LoRa 發送端就緒");
+}
+
+void loop() {
+    // 模擬感測器資料
+    float temperature = 25.5;
+    float humidity = 65.0;
+    int soilMoisture = 45;
+
+    // 建立資料封包
+    String packet = String(temperature) + "," +
+                    String(humidity) + "," +
+                    String(soilMoisture);
+
+    // 發送
+    LoRa.beginPacket();
+    LoRa.print(packet);
+    LoRa.endPacket();
+
+    Serial.println("已發送: " + packet);
+
+    delay(60000); // 每分鐘發送一次
+}</code></pre>
+
+    <h3>接收端</h3>
+    <pre><code class="language-cpp">#include &lt;SPI.h&gt;
+#include &lt;LoRa.h&gt;
+
+#define SS    18
+#define RST   14
+#define DIO0  26
+
+void setup() {
+    Serial.begin(115200);
+
+    LoRa.setPins(SS, RST, DIO0);
+
+    if (!LoRa.begin(923E6)) {
+        Serial.println("LoRa 初始化失敗!");
+        while (1);
+    }
+
+    LoRa.setSpreadingFactor(7);
+    LoRa.setSignalBandwidth(125E3);
+
+    Serial.println("LoRa 接收端就緒");
+}
+
+void loop() {
+    int packetSize = LoRa.parsePacket();
+
+    if (packetSize) {
+        String received = "";
+
+        while (LoRa.available()) {
+            received += (char)LoRa.read();
+        }
+
+        int rssi = LoRa.packetRssi();
+        float snr = LoRa.packetSnr();
+
+        Serial.println("收到: " + received);
+        Serial.println("RSSI: " + String(rssi) + " dBm");
+        Serial.println("SNR: " + String(snr) + " dB");
+        Serial.println("---");
+    }
+}</code></pre>
+    <hr />
+
+    <h2>八、農業應用案例</h2>
+    <h3>分散式感測網路</h3>
+    <pre><code>農場感測網路架構：
+
+    [土壤感測器A] ────┐
+                      │
+    [氣象站B] ────────┼───→ [LoRa閘道器] ───→ [樹莓派] ───→ [雲端]
+                      │         │                │
+    [水位感測器C] ────┘         │          MQTT/HTTP
+                               WiFi
+
+    特點：
+    - 節點電池供電，可運作 1-2 年
+    - 每個節點每 10 分鐘回報一次
+    - 閘道器覆蓋半徑 5 公里
+    </code></pre>
+
+    <h3>適用場景</h3>
+    <ul>
+        <li>大範圍農地土壤濕度監測</li>
+        <li>溫室環境資料收集</li>
+        <li>水塔/蓄水池水位監控</li>
+        <li>氣象資料收集站</li>
+        <li>病蟲害偵測器回報</li>
+    </ul>
+    <hr />
+
+    <h2>九、常見問題</h2>
+    <table>
+        <thead><tr><th>問題</th><th>可能原因</th><th>解決方法</th></tr></thead>
+        <tbody>
+            <tr><td>收不到訊號</td><td>頻率/參數不一致</td><td>確認雙方 SF、BW、頻率相同</td></tr>
+            <tr><td>傳輸距離短</td><td>天線問題、遮蔽</td><td>使用外接天線、提高位置</td></tr>
+            <tr><td>封包遺失</td><td>干擾、SF 太低</td><td>提高 SF、加入重傳機制</td></tr>
+            <tr><td>電池耗電快</td><td>發送太頻繁</td><td>延長發送間隔、使用睡眠模式</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">智慧農業課程教材 | 最後更新：2025年12月</p>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            html.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+            icon.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+            localStorage.setItem('theme', currentTheme === 'dark' ? 'light' : 'dark');
+        }
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+        })();
+    </script>
+</body>
+</html>

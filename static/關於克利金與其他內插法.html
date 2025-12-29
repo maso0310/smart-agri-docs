@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於克利金與其他內插法</title>
+<style>
+    body { font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; line-height: 1.8; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e8e8e8; min-height: 100vh; }
+    h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+    h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+    h3 { color: #81e6d9; margin-top: 20px; }
+    h4 { color: #90cdf4; margin-top: 15px; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+    th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+    th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+    tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+    tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+    code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+    pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+    pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+    blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+    a { color: #63b3ed; text-decoration: none; }
+    ul, ol { padding-left: 25px; }
+    li { margin: 5px 0; }
+    hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+    strong { color: #f6e05e; }
+    .floating-home { position: fixed; bottom: 25px; right: 25px; z-index: 9999; display: flex; align-items: center; justify-content: center; width: 55px; height: 55px; background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%); color: #1a1a2e; text-decoration: none; border-radius: 50%; box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4); font-size: 24px; transition: all 0.3s ease; }
+    .floating-home:hover { transform: scale(1.1); }
+    .theme-toggle { position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%; border: none; cursor: pointer; z-index: 10000; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: all 0.3s ease; background: linear-gradient(135deg, #4fd1c5, #63b3ed); color: #1a1a2e; }
+    [data-theme="light"] body { background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important; color: #2d3748 !important; }
+    [data-theme="light"] h1 { color: #2b6cb0 !important; }
+    [data-theme="light"] h2 { color: #2c5282 !important; }
+    [data-theme="light"] h3 { color: #2b6cb0 !important; }
+    [data-theme="light"] p, [data-theme="light"] li, [data-theme="light"] td { color: #4a5568 !important; }
+    [data-theme="light"] th { background-color: rgba(79, 209, 197, 0.25) !important; color: #2d3748 !important; }
+    [data-theme="light"] table { background-color: rgba(255, 255, 255, 0.9) !important; }
+    [data-theme="light"] code { background-color: rgba(79, 209, 197, 0.2) !important; color: #2b6cb0 !important; }
+    [data-theme="light"] pre { background-color: #f7fafc !important; }
+    [data-theme="light"] pre code { color: #2d3748 !important; }
+    [data-theme="light"] blockquote { background-color: rgba(79, 209, 197, 0.15) !important; color: #2d3748 !important; }
+    [data-theme="light"] strong { color: #d69e2e !important; }
+    [data-theme="light"] .theme-toggle { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+</style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換主題"><span id="theme-icon">☀️</span></button>
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+    <h1>關於克利金與其他內插法</h1>
+    <p>空間內插是將離散的採樣點資料，推估為連續空間分布的技術。在精準農業中，常用於土壤養分分布圖、產量地圖、病蟲害分布等應用。本文介紹克利金（Kriging）及其他常用內插方法。</p>
+    <hr />
+
+    <h2>一、空間內插概述</h2>
+    <h3>什麼是空間內插</h3>
+    <p>空間內插是根據<strong>已知點的值</strong>，推估<strong>未知位置的值</strong>的過程。基本假設是「空間上相近的點，其值也相近」（空間自相關）。</p>
+
+    <h3>內插法分類</h3>
+    <table>
+        <thead>
+            <tr><th>類型</th><th>方法</th><th>特點</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>確定性方法</td><td>IDW、樣條、多項式</td><td>直接由數學公式計算</td></tr>
+            <tr><td>地統計方法</td><td>克利金系列</td><td>考慮空間結構，提供誤差估計</td></tr>
+            <tr><td>機器學習</td><td>隨機森林、神經網路</td><td>可納入輔助變數</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>二、反距離加權法（IDW）</h2>
+    <h3>原理</h3>
+    <p><strong>IDW</strong>（Inverse Distance Weighting）假設距離越近的點影響越大：</p>
+    <pre><code>           Σ(Zi / di^p)
+Z(x) = ─────────────────
+           Σ(1 / di^p)
+
+其中：
+Z(x) = 預測點的值
+Zi   = 第 i 個已知點的值
+di   = 預測點到第 i 個已知點的距離
+p    = 權重指數（通常 p=2）
+</code></pre>
+
+    <h3>特點</h3>
+    <ul>
+        <li><strong>優點</strong>：簡單直觀、計算快速、參數少</li>
+        <li><strong>缺點</strong>：會產生「牛眼效應」、無法外推、無誤差估計</li>
+    </ul>
+
+    <h3>Python 實作</h3>
+    <pre><code class="language-python">import numpy as np
+from scipy.spatial.distance import cdist
+
+def idw_interpolation(known_points, known_values, predict_points, power=2):
+    """
+    反距離加權內插
+
+    參數：
+        known_points: 已知點座標 (n, 2)
+        known_values: 已知點值 (n,)
+        predict_points: 預測點座標 (m, 2)
+        power: 權重指數
+
+    回傳：
+        預測值 (m,)
+    """
+    # 計算距離矩陣
+    distances = cdist(predict_points, known_points)
+
+    # 避免除以零
+    distances = np.where(distances == 0, 1e-10, distances)
+
+    # 計算權重
+    weights = 1 / (distances ** power)
+
+    # 正規化權重
+    weights_sum = weights.sum(axis=1, keepdims=True)
+    weights_normalized = weights / weights_sum
+
+    # 加權平均
+    predictions = np.dot(weights_normalized, known_values)
+
+    return predictions
+
+# 使用範例
+known_xy = np.array([[0, 0], [1, 0], [0, 1], [1, 1]])
+known_z = np.array([10, 20, 15, 25])
+predict_xy = np.array([[0.5, 0.5], [0.25, 0.75]])
+
+result = idw_interpolation(known_xy, known_z, predict_xy)
+print(f"預測值: {result}")
+</code></pre>
+    <hr />
+
+    <h2>三、克利金法（Kriging）</h2>
+    <h3>基本概念</h3>
+    <p><strong>克利金</strong>（Kriging）是一種地統計內插方法，由南非礦業工程師 D.G. Krige 發展。它不僅估計數值，還提供<strong>估計不確定性</strong>。</p>
+
+    <h3>核心概念：變異元</h3>
+    <p><strong>變異元（Variogram）</strong>描述空間自相關結構：</p>
+    <pre><code>              1
+γ(h) = ───── Σ[Z(xi) - Z(xi + h)]²
+           2N(h)
+
+其中：
+γ(h) = 距離 h 的半變異數
+N(h) = 距離為 h 的點對數量
+Z(xi) = 位置 xi 的觀測值
+</code></pre>
+
+    <h3>變異元參數</h3>
+    <table>
+        <thead>
+            <tr><th>參數</th><th>英文</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>基台值</td><td>Sill</td><td>變異數趨於穩定的值</td></tr>
+            <tr><td>變程</td><td>Range</td><td>達到基台值的距離，超過此距離無空間相關</td></tr>
+            <tr><td>塊金值</td><td>Nugget</td><td>距離為 0 時的變異數（測量誤差+微尺度變異）</td></tr>
+        </tbody>
+    </table>
+
+    <h3>常用變異元模型</h3>
+    <pre><code class="language-python">import numpy as np
+
+def spherical_model(h, nugget, sill, range_):
+    """球型模型"""
+    c = sill - nugget
+    if h == 0:
+        return 0
+    elif h < range_:
+        return nugget + c * (1.5 * h/range_ - 0.5 * (h/range_)**3)
+    else:
+        return sill
+
+def exponential_model(h, nugget, sill, range_):
+    """指數模型"""
+    c = sill - nugget
+    if h == 0:
+        return 0
+    return nugget + c * (1 - np.exp(-3 * h / range_))
+
+def gaussian_model(h, nugget, sill, range_):
+    """高斯模型"""
+    c = sill - nugget
+    if h == 0:
+        return 0
+    return nugget + c * (1 - np.exp(-3 * (h/range_)**2))
+</code></pre>
+
+    <h3>克利金類型</h3>
+    <table>
+        <thead>
+            <tr><th>類型</th><th>假設</th><th>應用場景</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>簡單克利金</td><td>平均值已知且恆定</td><td>理論研究</td></tr>
+            <tr><td>普通克利金</td><td>平均值未知但恆定</td><td>最常用</td></tr>
+            <tr><td>泛克利金</td><td>有趨勢（漂移）</td><td>有明顯趨勢的資料</td></tr>
+            <tr><td>共克利金</td><td>多變數</td><td>利用輔助變數</td></tr>
+            <tr><td>指標克利金</td><td>二元或類別</td><td>超標機率估計</td></tr>
+        </tbody>
+    </table>
+
+    <h3>Python 克利金實作</h3>
+    <pre><code class="language-python">from pykrige.ok import OrdinaryKriging
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 準備資料
+np.random.seed(42)
+x = np.random.rand(20) * 100
+y = np.random.rand(20) * 100
+z = np.sin(x/20) + np.cos(y/20) + np.random.randn(20) * 0.1
+
+# 建立普通克利金模型
+OK = OrdinaryKriging(
+    x, y, z,
+    variogram_model='spherical',  # 變異元模型
+    verbose=False,
+    enable_plotting=False
+)
+
+# 建立預測網格
+grid_x = np.arange(0, 100, 2)
+grid_y = np.arange(0, 100, 2)
+
+# 執行內插
+z_pred, z_var = OK.execute('grid', grid_x, grid_y)
+
+# 視覺化
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# 預測值
+im1 = axes[0].imshow(z_pred, origin='lower', extent=[0, 100, 0, 100], cmap='RdYlGn')
+axes[0].scatter(x, y, c=z, edgecolors='black', cmap='RdYlGn')
+axes[0].set_title('克利金預測值')
+plt.colorbar(im1, ax=axes[0])
+
+# 變異數（不確定性）
+im2 = axes[1].imshow(z_var, origin='lower', extent=[0, 100, 0, 100], cmap='YlOrRd')
+axes[1].scatter(x, y, c='black', s=20)
+axes[1].set_title('估計變異數（不確定性）')
+plt.colorbar(im2, ax=axes[1])
+
+plt.tight_layout()
+plt.show()
+</code></pre>
+    <hr />
+
+    <h2>四、其他內插方法</h2>
+
+    <h3>樣條內插（Spline）</h3>
+    <p>使用數學函數建立通過所有已知點的平滑曲面。</p>
+    <pre><code class="language-python">from scipy.interpolate import RBFInterpolator
+import numpy as np
+
+# 徑向基函數內插
+known_xy = np.random.rand(30, 2) * 100
+known_z = np.sin(known_xy[:, 0]/20) + np.cos(known_xy[:, 1]/20)
+
+# 建立內插器
+rbf = RBFInterpolator(known_xy, known_z, kernel='thin_plate_spline')
+
+# 預測
+grid_x, grid_y = np.meshgrid(np.linspace(0, 100, 50), np.linspace(0, 100, 50))
+predict_xy = np.column_stack([grid_x.ravel(), grid_y.ravel()])
+z_pred = rbf(predict_xy).reshape(grid_x.shape)
+</code></pre>
+
+    <h3>自然鄰近法（Natural Neighbor）</h3>
+    <p>基於 Voronoi 圖的內插方法，權重由幾何關係決定。</p>
+    <pre><code class="language-python">from scipy.interpolate import NearestNDInterpolator, LinearNDInterpolator
+
+# 線性內插（基於三角化）
+linear_interp = LinearNDInterpolator(known_xy, known_z)
+z_linear = linear_interp(predict_xy)
+
+# 最近鄰內插
+nearest_interp = NearestNDInterpolator(known_xy, known_z)
+z_nearest = nearest_interp(predict_xy)
+</code></pre>
+
+    <h3>趨勢面分析（Trend Surface）</h3>
+    <p>用多項式擬合整體趨勢。</p>
+    <pre><code class="language-python">from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
+
+# 二次趨勢面
+poly = PolynomialFeatures(degree=2)
+X_poly = poly.fit_transform(known_xy)
+
+model = LinearRegression()
+model.fit(X_poly, known_z)
+
+# 預測
+predict_poly = poly.transform(predict_xy)
+z_trend = model.predict(predict_poly)
+</code></pre>
+    <hr />
+
+    <h2>五、方法比較</h2>
+    <table>
+        <thead>
+            <tr><th>方法</th><th>優點</th><th>缺點</th><th>適用場景</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>IDW</td>
+                <td>簡單快速</td>
+                <td>牛眼效應、無誤差估計</td>
+                <td>快速預覽、資料探索</td>
+            </tr>
+            <tr>
+                <td>克利金</td>
+                <td>最佳線性無偏估計、有誤差</td>
+                <td>計算量大、需擬合變異元</td>
+                <td>精準農業、土壤調查</td>
+            </tr>
+            <tr>
+                <td>樣條</td>
+                <td>平滑、通過所有點</td>
+                <td>可能過度擬合、邊界震盪</td>
+                <td>地形建模</td>
+            </tr>
+            <tr>
+                <td>趨勢面</td>
+                <td>呈現整體趨勢</td>
+                <td>忽略局部變異</td>
+                <td>區域趨勢分析</td>
+            </tr>
+            <tr>
+                <td>自然鄰近</td>
+                <td>無參數、結果合理</td>
+                <td>計算較慢</td>
+                <td>不規則分布資料</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>六、農業應用範例</h2>
+    <h3>土壤養分內插</h3>
+    <pre><code class="language-python">import pandas as pd
+import numpy as np
+from pykrige.ok import OrdinaryKriging
+import matplotlib.pyplot as plt
+
+# 假設土壤採樣資料
+soil_data = pd.DataFrame({
+    'E': [250100, 250200, 250150, 250300, 250050, 250250],
+    'N': [2770100, 2770100, 2770200, 2770150, 2770250, 2770300],
+    'pH': [6.2, 6.5, 6.1, 6.8, 5.9, 6.4],
+    'N_content': [45, 52, 38, 61, 42, 55]  # 氮含量 ppm
+})
+
+# 建立氮含量克利金模型
+OK = OrdinaryKriging(
+    soil_data['E'].values,
+    soil_data['N'].values,
+    soil_data['N_content'].values,
+    variogram_model='spherical',
+    verbose=False
+)
+
+# 建立網格
+grid_e = np.linspace(250000, 250400, 50)
+grid_n = np.linspace(2770000, 2770400, 50)
+
+# 內插
+n_pred, n_var = OK.execute('grid', grid_e, grid_n)
+
+# 繪製氮含量分布圖
+plt.figure(figsize=(10, 8))
+plt.imshow(n_pred, origin='lower',
+           extent=[250000, 250400, 2770000, 2770400],
+           cmap='YlGn')
+plt.colorbar(label='氮含量 (ppm)')
+plt.scatter(soil_data['E'], soil_data['N'],
+            c=soil_data['N_content'], edgecolors='black',
+            s=100, cmap='YlGn')
+plt.xlabel('E (m)')
+plt.ylabel('N (m)')
+plt.title('土壤氮含量分布圖')
+plt.show()
+</code></pre>
+
+    <h3>變量施肥處方圖</h3>
+    <pre><code class="language-python">def create_fertilizer_prescription(n_map, target_n=60):
+    """
+    根據氮含量分布圖建立施肥處方
+
+    參數：
+        n_map: 氮含量內插結果
+        target_n: 目標氮含量
+
+    回傳：
+        施肥量地圖
+    """
+    # 計算氮缺乏量
+    n_deficit = target_n - n_map
+
+    # 負值設為 0（不需要施肥）
+    n_deficit = np.maximum(n_deficit, 0)
+
+    # 轉換為肥料用量（假設利用率 50%）
+    fertilizer_rate = n_deficit / 0.5 * 2.17  # kg/ha 尿素
+
+    return fertilizer_rate
+
+# 產生施肥處方
+prescription = create_fertilizer_prescription(n_pred)
+</code></pre>
+    <hr />
+
+    <h2>七、實作建議</h2>
+    <h3>樣點設計</h3>
+    <ul>
+        <li>樣點數量：建議至少 30-50 點</li>
+        <li>樣點間距：考慮變異元變程</li>
+        <li>分布方式：網格或隨機，避免群聚</li>
+    </ul>
+
+    <h3>方法選擇流程</h3>
+    <pre><code>開始
+ ├─ 需要誤差估計？
+ │   ├─ 是 → 克利金
+ │   └─ 否 → 繼續
+ │
+ ├─ 資料有明顯趨勢？
+ │   ├─ 是 → 泛克利金或趨勢面+殘差克利金
+ │   └─ 否 → 繼續
+ │
+ ├─ 快速預覽？
+ │   ├─ 是 → IDW
+ │   └─ 否 → 克利金或樣條
+ │
+ └─ 資料通過所有點？
+     ├─ 是 → 樣條
+     └─ 否 → 克利金
+</code></pre>
+
+    <h3>驗證方法</h3>
+    <pre><code class="language-python">from sklearn.model_selection import LeaveOneOut
+
+def cross_validation(x, y, z, method='kriging'):
+    """留一法交叉驗證"""
+    loo = LeaveOneOut()
+    errors = []
+
+    for train_idx, test_idx in loo.split(x):
+        # 訓練
+        x_train, y_train, z_train = x[train_idx], y[train_idx], z[train_idx]
+        x_test, y_test, z_test = x[test_idx], y[test_idx], z[test_idx]
+
+        # 預測（使用克利金）
+        OK = OrdinaryKriging(x_train, y_train, z_train,
+                            variogram_model='spherical', verbose=False)
+        z_pred, _ = OK.execute('points', x_test, y_test)
+
+        errors.append(z_test[0] - z_pred[0])
+
+    rmse = np.sqrt(np.mean(np.array(errors)**2))
+    mae = np.mean(np.abs(errors))
+
+    return {'RMSE': rmse, 'MAE': mae}
+</code></pre>
+    <hr />
+
+    <h2>八、常見問題</h2>
+    <table>
+        <thead>
+            <tr><th>問題</th><th>可能原因</th><th>解決方法</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>變異元無法收斂</td>
+                <td>資料量不足、無空間結構</td>
+                <td>增加樣點、改用 IDW</td>
+            </tr>
+            <tr>
+                <td>預測值超出合理範圍</td>
+                <td>外推、資料異常</td>
+                <td>檢查異常值、限制預測範圍</td>
+            </tr>
+            <tr>
+                <td>結果過於平滑</td>
+                <td>變程設太大</td>
+                <td>重新擬合變異元</td>
+            </tr>
+            <tr>
+                <td>計算太慢</td>
+                <td>點數過多</td>
+                <td>降低解析度、使用搜尋半徑</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">智慧農業課程教材 | 最後更新：2025年12月</p>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) { icon.textContent = savedTheme === 'light' ? '🌙' : '☀️'; }
+        })();
+    </script>
+</body>
+</html>

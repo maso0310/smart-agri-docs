@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於LED點矩陣</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="led">關於 LED 點矩陣</h1>
+<h2 id="led_1">前言：LED 點矩陣能做什麼？</h2>
+<p>LED 點矩陣（LED Matrix）是由多個 LED 排列成矩陣形式的顯示裝置，可以用來：</p>
+<ul>
+<li>顯示數字、文字</li>
+<li>顯示簡單圖案、表情符號</li>
+<li>製作跑馬燈效果</li>
+<li>顯示動畫</li>
+<li>作為狀態指示器</li>
+</ul>
+<p>相較於 LCD 螢幕，LED 點矩陣更亮、更醒目，適合遠距離觀看！</p>
+<hr />
+<h2 id="led_2">一、LED 點矩陣是什麼？</h2>
+<h3 id="_1">一句話解釋</h3>
+<blockquote>
+<p>LED 點矩陣是將多顆 LED 排列成網格狀，透過控制每顆 LED 的亮滅來顯示圖案的顯示裝置。</p>
+</blockquote>
+<h3 id="_2">常見規格</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                    常見 LED 點矩陣規格                       │
+├─────────────┬─────────────┬─────────────┬───────────────────┤
+│    規格     │   LED 數量   │    尺寸     │      用途         │
+├─────────────┼─────────────┼─────────────┼───────────────────┤
+│   8x8       │    64 顆    │   約 3cm    │ 顯示圖案、表情    │
+│   8x32      │   256 顆    │  約 12cm    │ 跑馬燈、文字      │
+│   16x16     │   256 顆    │   約 6cm    │ 大型圖案          │
+│   32x8      │   256 顆    │  約 12cm    │ 同 8x32           │
+└─────────────┴─────────────┴─────────────┴───────────────────┘
+</code></pre>
+<h3 id="8x8-led">8x8 LED 點矩陣外觀</h3>
+<pre><code>8x8 LED 點矩陣（含 MAX7219 驅動板）：
+
+正面：
+    ┌─────────────────────────┐
+    │  ● ● ● ● ● ● ● ●       │
+    │  ● ● ● ● ● ● ● ●       │
+    │  ● ● ● ● ● ● ● ●       │
+    │  ● ● ● ● ● ● ● ●       │  ← 64 顆 LED
+    │  ● ● ● ● ● ● ● ●       │
+    │  ● ● ● ● ● ● ● ●       │
+    │  ● ● ● ● ● ● ● ●       │
+    │  ● ● ● ● ● ● ● ●       │
+    └─────────────────────────┘
+
+背面：
+    ┌─────────────────────────┐
+    │  ┌──────────────────┐   │
+    │  │     MAX7219      │   │  ← 驅動晶片
+    │  └──────────────────┘   │
+    │                         │
+    │  VCC GND DIN CS CLK     │  ← 輸入端
+    │   ○   ○   ○  ○  ○      │
+    │                         │
+    │  VCC GND DOUT CS CLK    │  ← 輸出端（串接用）
+    │   ○   ○   ○   ○  ○     │
+    └─────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="max7219">二、為什麼需要 MAX7219 驅動晶片？</h2>
+<h3 id="_3">問題：腳位不夠</h3>
+<pre><code>如果直接控制 8x8 LED 矩陣：
+
+傳統接法需要的腳位：
+- 8 條行線（Row）
+- 8 條列線（Column）
+- 總共需要 16 個腳位！
+
+而且還需要：
+- 限流電阻 x 64
+- 複雜的掃描程式
+
+Arduino Uno 只有 14 個數位腳位，根本不夠！
+</code></pre>
+<h3 id="max7219_1">解決方案：MAX7219</h3>
+<pre><code>使用 MAX7219 驅動晶片：
+
+    Arduino              MAX7219              LED 矩陣
+    ┌───────┐           ┌─────────┐          ┌────────┐
+    │       │           │         │          │ ●●●●●● │
+    │   DIN ├───────────┤ DIN     ├──────────┤ ●●●●●● │
+    │    CS ├───────────┤ CS      │內建驅動  │ ●●●●●● │
+    │   CLK ├───────────┤ CLK     │和掃描    │ ●●●●●● │
+    │       │           │         │          │ ●●●●●● │
+    │    5V ├───────────┤ VCC     │          │ ●●●●●● │
+    │   GND ├───────────┤ GND     │          │ ●●●●●● │
+    │       │           │         │          │ ●●●●●● │
+    └───────┘           └─────────┘          └────────┘
+
+優點：
+✓ 只需要 3 個腳位（DIN, CS, CLK）
+✓ 內建掃描電路，不佔用 Arduino 運算資源
+✓ 內建限流電阻
+✓ 可調整亮度（16 階）
+✓ 可串接多個模組
+</code></pre>
+<h3 id="max7219_2">MAX7219 串接</h3>
+<pre><code>多個模組串接：
+
+Arduino        模組 1         模組 2         模組 3
+┌───────┐    ┌────────┐    ┌────────┐    ┌────────┐
+│   DIN ├────┤DIN DOUT├────┤DIN DOUT├────┤DIN DOUT│
+│    CS ├────┤CS      ├────┤CS      ├────┤CS      │
+│   CLK ├────┤CLK     ├────┤CLK     ├────┤CLK     │
+│    5V ├────┤VCC     ├────┤VCC     ├────┤VCC     │
+│   GND ├────┤GND     ├────┤GND     ├────┤GND     │
+└───────┘    └────────┘    └────────┘    └────────┘
+
+可以串接 8 個以上的模組！
+仍然只需要 3 個控制腳位
+</code></pre>
+<hr />
+<h2 id="_4">三、座標系統</h2>
+<h3 id="8x8">8x8 點矩陣座標</h3>
+<pre><code>8x8 LED 點矩陣座標系統：
+
+        列（Column）
+        0 1 2 3 4 5 6 7
+       ┌─┬─┬─┬─┬─┬─┬─┬─┐
+     0 │○│○│○│○│○│○│○│○│
+       ├─┼─┼─┼─┼─┼─┼─┼─┤
+     1 │○│○│○│○│○│○│○│○│
+       ├─┼─┼─┼─┼─┼─┼─┼─┤
+     2 │○│○│○│○│○│○│○│○│
+       ├─┼─┼─┼─┼─┼─┼─┼─┤
+行   3 │○│○│○│○│○│○│○│○│
+(Row)  ├─┼─┼─┼─┼─┼─┼─┼─┤
+     4 │○│○│○│○│○│○│○│○│
+       ├─┼─┼─┼─┼─┼─┼─┼─┤
+     5 │○│○│○│○│○│○│○│○│
+       ├─┼─┼─┼─┼─┼─┼─┼─┤
+     6 │○│○│○│○│○│○│○│○│
+       ├─┼─┼─┼─┼─┼─┼─┼─┤
+     7 │○│○│○│○│○│○│○│○│
+       └─┴─┴─┴─┴─┴─┴─┴─┘
+
+座標表示：(列 Column, 行 Row) 或 (x, y)
+- (0, 0) = 左上角
+- (7, 0) = 右上角
+- (0, 7) = 左下角
+- (7, 7) = 右下角
+</code></pre>
+<h3 id="_5">二進位表示法</h3>
+<pre><code>每一行（Row）可以用 1 個位元組（8 bits）表示：
+
+範例：顯示愛心圖案
+
+行 0: ○ ● ● ○ ○ ● ● ○  = 0b01100110 = 0x66
+行 1: ● ● ● ● ● ● ● ●  = 0b11111111 = 0xFF
+行 2: ● ● ● ● ● ● ● ●  = 0b11111111 = 0xFF
+行 3: ● ● ● ● ● ● ● ●  = 0b11111111 = 0xFF
+行 4: ○ ● ● ● ● ● ● ○  = 0b01111110 = 0x7E
+行 5: ○ ○ ● ● ● ● ○ ○  = 0b00111100 = 0x3C
+行 6: ○ ○ ○ ● ● ○ ○ ○  = 0b00011000 = 0x18
+行 7: ○ ○ ○ ○ ○ ○ ○ ○  = 0b00000000 = 0x00
+
+程式碼：
+byte heart[8] = {
+  0x66, 0xFF, 0xFF, 0xFF,
+  0x7E, 0x3C, 0x18, 0x00
+};
+</code></pre>
+<hr />
+<h2 id="_6">四、接線方式</h2>
+<h3 id="_7">單一模組接線</h3>
+<pre><code>Arduino Uno 與 MAX7219 LED 點矩陣接線：
+
+    Arduino UNO              MAX7219 模組
+    ┌─────────┐             ┌─────────────┐
+    │         │             │    [LED]    │
+    │      5V ├─────────────┤ VCC         │
+    │         │             │             │
+    │     GND ├─────────────┤ GND         │
+    │         │             │             │
+    │     D12 ├─────────────┤ DIN         │  ← 資料輸入
+    │         │             │             │
+    │     D11 ├─────────────┤ CLK         │  ← 時脈
+    │         │             │             │
+    │     D10 ├─────────────┤ CS          │  ← 晶片選擇
+    │         │             │             │
+    └─────────┘             └─────────────┘
+
+    只需要 5 條線！
+</code></pre>
+<h3 id="_8">多模組串接</h3>
+<pre><code>4 個模組串接成 8x32 顯示器：
+
+    Arduino           模組 1        模組 2        模組 3        模組 4
+    ┌───────┐       ┌───────┐    ┌───────┐    ┌───────┐    ┌───────┐
+    │    5V ├───┬───┤VCC    │┬───┤VCC    │┬───┤VCC    │┬───┤VCC    │
+    │       │   │   │       ││   │       ││   │       ││   │       │
+    │   GND ├───┼───┤GND    │┼───┤GND    │┼───┤GND    │┼───┤GND    │
+    │       │   │   │       ││   │       ││   │       ││   │       │
+    │   D12 ├───┼───┤DIN    ││   │       ││   │       ││   │       │
+    │       │   │   │  DOUT─┼┼───┤DIN    ││   │       ││   │       │
+    │       │   │   │       ││   │  DOUT─┼┼───┤DIN    ││   │       │
+    │       │   │   │       ││   │       ││   │  DOUT─┼┼───┤DIN    │
+    │       │   │   │       ││   │       ││   │       ││   │       │
+    │   D11 ├───┴───┤CLK    │┴───┤CLK    │┴───┤CLK    │┴───┤CLK    │
+    │       │       │       │    │       │    │       │    │       │
+    │   D10 ├───────┤CS     ├────┤CS     ├────┤CS     ├────┤CS     │
+    │       │       │       │    │       │    │       │    │       │
+    └───────┘       └───────┘    └───────┘    └───────┘    └───────┘
+
+    DIN → DOUT → DIN → DOUT → DIN → DOUT → DIN
+    資料從第一個模組傳到最後一個
+</code></pre>
+<h3 id="_9">電源注意事項</h3>
+<pre><code>⚠️ 電源需求計算：
+
+每個 MAX7219 模組：
+- 工作電流：約 10-50mA（視亮度而定）
+- 最大電流：約 320mA（全亮時）
+
+4 個模組全亮：約 1.3A
+Arduino 5V 腳位最大輸出：約 500mA
+
+解決方案：
+- 少量模組（1-2 個）：可用 Arduino 5V
+- 多量模組（3 個以上）：需要外接 5V 電源
+
+外接電源接法：
+┌──────────┐
+│ 5V 2A    │
+│ 電源供應 ├───→ 模組 VCC
+│          │
+│   GND  ──┼───→ 模組 GND ←─┬─ Arduino GND
+└──────────┘                │
+                            共地！
+</code></pre>
+<hr />
+<h2 id="_10">五、程式庫安裝</h2>
+<h3 id="ledcontrol">LedControl 程式庫</h3>
+<pre><code>適合初學者的簡單程式庫：
+
+安裝步驟：
+1. Arduino IDE → 草稿碼 → 匯入程式庫 → 管理程式庫
+2. 搜尋「LedControl」
+3. 安裝「LedControl」by Eberhard Fahle
+</code></pre>
+<h3 id="md_max72xx">MD_MAX72XX 程式庫</h3>
+<pre><code>功能更強大的程式庫（推薦）：
+
+安裝步驟：
+1. Arduino IDE → 草稿碼 → 匯入程式庫 → 管理程式庫
+2. 搜尋「MD_MAX72XX」
+3. 安裝「MD_MAX72XX」by majicDesigns
+4. 同時安裝「MD_Parola」（跑馬燈效果）
+</code></pre>
+<hr />
+<h2 id="arduino">六、Arduino 程式範例</h2>
+<h3 id="1ledcontrol">範例 1：基本測試（LedControl）</h3>
+<pre><code class="language-cpp">/*
+ * MAX7219 LED 點矩陣基本測試
+ * 依序點亮每顆 LED
+ */
+
+#include &lt;LedControl.h&gt;
+
+// 建立 LedControl 物件
+// 參數：DIN, CLK, CS, 模組數量
+LedControl lc = LedControl(12, 11, 10, 1);
+
+void setup() {
+  // 初始化模組 0
+  lc.shutdown(0, false);   // 喚醒模組（預設是省電模式）
+  lc.setIntensity(0, 8);   // 設定亮度（0-15）
+  lc.clearDisplay(0);      // 清除顯示
+}
+
+void loop() {
+  // 依序點亮每顆 LED
+  for (int row = 0; row &lt; 8; row++) {
+    for (int col = 0; col &lt; 8; col++) {
+      lc.setLed(0, row, col, true);   // 點亮
+      delay(50);
+      lc.setLed(0, row, col, false);  // 熄滅
+    }
+  }
+}
+</code></pre>
+<h3 id="2">範例 2：顯示圖案</h3>
+<pre><code class="language-cpp">/*
+ * 顯示預設圖案
+ */
+
+#include &lt;LedControl.h&gt;
+
+LedControl lc = LedControl(12, 11, 10, 1);
+
+// 定義圖案（每個 byte 代表一行）
+byte smile[8] = {
+  B00111100,
+  B01000010,
+  B10100101,
+  B10000001,
+  B10100101,
+  B10011001,
+  B01000010,
+  B00111100
+};
+
+byte heart[8] = {
+  B00000000,
+  B01100110,
+  B11111111,
+  B11111111,
+  B11111111,
+  B01111110,
+  B00111100,
+  B00011000
+};
+
+byte arrow[8] = {
+  B00010000,
+  B00110000,
+  B01111111,
+  B11111111,
+  B01111111,
+  B00110000,
+  B00010000,
+  B00000000
+};
+
+void setup() {
+  lc.shutdown(0, false);
+  lc.setIntensity(0, 8);
+  lc.clearDisplay(0);
+}
+
+void loop() {
+  // 顯示笑臉
+  displayPattern(smile);
+  delay(1000);
+
+  // 顯示愛心
+  displayPattern(heart);
+  delay(1000);
+
+  // 顯示箭頭
+  displayPattern(arrow);
+  delay(1000);
+}
+
+// 顯示圖案函數
+void displayPattern(byte pattern[]) {
+  for (int row = 0; row &lt; 8; row++) {
+    lc.setRow(0, row, pattern[row]);
+  }
+}
+</code></pre>
+<h3 id="3">範例 3：動畫效果</h3>
+<pre><code class="language-cpp">/*
+ * LED 點矩陣動畫
+ * 愛心跳動效果
+ */
+
+#include &lt;LedControl.h&gt;
+
+LedControl lc = LedControl(12, 11, 10, 1);
+
+// 小愛心
+byte heartSmall[8] = {
+  B00000000,
+  B00000000,
+  B00100100,
+  B01111110,
+  B01111110,
+  B00111100,
+  B00011000,
+  B00000000
+};
+
+// 大愛心
+byte heartLarge[8] = {
+  B00000000,
+  B01100110,
+  B11111111,
+  B11111111,
+  B11111111,
+  B01111110,
+  B00111100,
+  B00011000
+};
+
+void setup() {
+  lc.shutdown(0, false);
+  lc.setIntensity(0, 8);
+  lc.clearDisplay(0);
+}
+
+void loop() {
+  // 小愛心
+  displayPattern(heartSmall);
+  delay(300);
+
+  // 大愛心
+  displayPattern(heartLarge);
+  delay(300);
+}
+
+void displayPattern(byte pattern[]) {
+  for (int row = 0; row &lt; 8; row++) {
+    lc.setRow(0, row, pattern[row]);
+  }
+}
+</code></pre>
+<h3 id="4">範例 4：顯示數字</h3>
+<pre><code class="language-cpp">/*
+ * 顯示 0-9 數字
+ */
+
+#include &lt;LedControl.h&gt;
+
+LedControl lc = LedControl(12, 11, 10, 1);
+
+// 數字字型（3x5 像素，置中顯示）
+byte digits[10][8] = {
+  // 0
+  {B00000000, B00111000, B01000100, B01000100, B01000100, B01000100, B00111000, B00000000},
+  // 1
+  {B00000000, B00010000, B00110000, B00010000, B00010000, B00010000, B00111000, B00000000},
+  // 2
+  {B00000000, B00111000, B01000100, B00001000, B00010000, B00100000, B01111100, B00000000},
+  // 3
+  {B00000000, B00111000, B01000100, B00011000, B00000100, B01000100, B00111000, B00000000},
+  // 4
+  {B00000000, B00001000, B00011000, B00101000, B01001000, B01111100, B00001000, B00000000},
+  // 5
+  {B00000000, B01111100, B01000000, B01111000, B00000100, B01000100, B00111000, B00000000},
+  // 6
+  {B00000000, B00111000, B01000000, B01111000, B01000100, B01000100, B00111000, B00000000},
+  // 7
+  {B00000000, B01111100, B00000100, B00001000, B00010000, B00010000, B00010000, B00000000},
+  // 8
+  {B00000000, B00111000, B01000100, B00111000, B01000100, B01000100, B00111000, B00000000},
+  // 9
+  {B00000000, B00111000, B01000100, B01000100, B00111100, B00000100, B00111000, B00000000}
+};
+
+void setup() {
+  lc.shutdown(0, false);
+  lc.setIntensity(0, 8);
+  lc.clearDisplay(0);
+}
+
+void loop() {
+  // 倒數計時 9 到 0
+  for (int i = 9; i &gt;= 0; i--) {
+    displayDigit(i);
+    delay(1000);
+  }
+
+  // 閃爍效果
+  for (int i = 0; i &lt; 3; i++) {
+    lc.clearDisplay(0);
+    delay(200);
+    displayDigit(0);
+    delay(200);
+  }
+
+  delay(1000);
+}
+
+void displayDigit(int num) {
+  for (int row = 0; row &lt; 8; row++) {
+    lc.setRow(0, row, digits[num][row]);
+  }
+}
+</code></pre>
+<h3 id="5md_parola">範例 5：跑馬燈效果（MD_Parola）</h3>
+<pre><code class="language-cpp">/*
+ * LED 點矩陣跑馬燈
+ * 使用 MD_Parola 程式庫
+ */
+
+#include &lt;MD_Parola.h&gt;
+#include &lt;MD_MAX72xx.h&gt;
+#include &lt;SPI.h&gt;
+
+// 定義硬體類型
+#define HARDWARE_TYPE MD_MAX72XX::FC16_HW
+
+// 定義腳位
+#define MAX_DEVICES 4  // 模組數量
+#define CLK_PIN   13
+#define DATA_PIN  11
+#define CS_PIN    10
+
+// 建立 Parola 物件
+MD_Parola display = MD_Parola(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
+
+void setup() {
+  display.begin();
+  display.setIntensity(5);  // 亮度 0-15
+  display.displayClear();
+
+  // 設定跑馬燈效果
+  display.displayScroll(
+    &quot;Hello Arduino!&quot;,  // 文字
+    PA_CENTER,         // 對齊方式
+    PA_SCROLL_LEFT,    // 捲動方向
+    100                // 速度（毫秒）
+  );
+}
+
+void loop() {
+  if (display.displayAnimate()) {
+    display.displayReset();
+  }
+}
+</code></pre>
+<h3 id="6">範例 6：顯示感測器數值</h3>
+<pre><code class="language-cpp">/*
+ * 在 LED 點矩陣上顯示溫度
+ */
+
+#include &lt;MD_Parola.h&gt;
+#include &lt;MD_MAX72xx.h&gt;
+#include &lt;DHT.h&gt;
+
+#define HARDWARE_TYPE MD_MAX72XX::FC16_HW
+#define MAX_DEVICES 4
+#define DATA_PIN  11
+#define CLK_PIN   13
+#define CS_PIN    10
+#define DHT_PIN   2
+
+MD_Parola display = MD_Parola(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
+DHT dht(DHT_PIN, DHT11);
+
+char message[20];
+unsigned long lastUpdate = 0;
+
+void setup() {
+  display.begin();
+  display.setIntensity(5);
+  dht.begin();
+
+  display.displayText(&quot;Starting...&quot;, PA_CENTER, 50, 0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
+}
+
+void loop() {
+  if (display.displayAnimate()) {
+    // 每 5 秒更新一次
+    if (millis() - lastUpdate &gt; 5000) {
+      float temp = dht.readTemperature();
+      float humi = dht.readHumidity();
+
+      if (!isnan(temp) &amp;&amp; !isnan(humi)) {
+        sprintf(message, &quot;T:%.1fC H:%.0f%%&quot;, temp, humi);
+      } else {
+        sprintf(message, &quot;Sensor Error!&quot;);
+      }
+
+      display.displayText(message, PA_CENTER, 50, 0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
+      lastUpdate = millis();
+    }
+
+    display.displayReset();
+  }
+}
+</code></pre>
+<h3 id="7">範例 7：多種動畫效果</h3>
+<pre><code class="language-cpp">/*
+ * 展示 MD_Parola 的各種動畫效果
+ */
+
+#include &lt;MD_Parola.h&gt;
+#include &lt;MD_MAX72xx.h&gt;
+
+#define HARDWARE_TYPE MD_MAX72XX::FC16_HW
+#define MAX_DEVICES 4
+#define DATA_PIN  11
+#define CLK_PIN   13
+#define CS_PIN    10
+
+MD_Parola display = MD_Parola(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
+
+// 動畫效果陣列
+textEffect_t effects[] = {
+  PA_SCROLL_LEFT,
+  PA_SCROLL_RIGHT,
+  PA_SCROLL_UP,
+  PA_SCROLL_DOWN,
+  PA_FADE,
+  PA_DISSOLVE,
+  PA_BLINDS,
+  PA_WIPE,
+  PA_RANDOM
+};
+
+const char* effectNames[] = {
+  &quot;SCROLL LEFT&quot;,
+  &quot;SCROLL RIGHT&quot;,
+  &quot;SCROLL UP&quot;,
+  &quot;SCROLL DOWN&quot;,
+  &quot;FADE&quot;,
+  &quot;DISSOLVE&quot;,
+  &quot;BLINDS&quot;,
+  &quot;WIPE&quot;,
+  &quot;RANDOM&quot;
+};
+
+int currentEffect = 0;
+int numEffects = sizeof(effects) / sizeof(effects[0]);
+
+void setup() {
+  display.begin();
+  display.setIntensity(5);
+  showNextEffect();
+}
+
+void loop() {
+  if (display.displayAnimate()) {
+    currentEffect = (currentEffect + 1) % numEffects;
+    showNextEffect();
+  }
+}
+
+void showNextEffect() {
+  display.displayText(
+    effectNames[currentEffect],
+    PA_CENTER,
+    50,
+    2000,  // 暫停時間
+    effects[currentEffect],
+    effects[currentEffect]
+  );
+}
+</code></pre>
+<h3 id="8">範例 8：互動式亮度控制</h3>
+<pre><code class="language-cpp">/*
+ * 使用電位器控制 LED 點矩陣亮度
+ */
+
+#include &lt;LedControl.h&gt;
+
+LedControl lc = LedControl(12, 11, 10, 1);
+const int POT_PIN = A0;
+
+byte pattern[8] = {
+  B11111111,
+  B10000001,
+  B10111101,
+  B10100101,
+  B10100101,
+  B10111101,
+  B10000001,
+  B11111111
+};
+
+void setup() {
+  lc.shutdown(0, false);
+  lc.clearDisplay(0);
+
+  // 顯示固定圖案
+  for (int row = 0; row &lt; 8; row++) {
+    lc.setRow(0, row, pattern[row]);
+  }
+
+  Serial.begin(9600);
+}
+
+void loop() {
+  // 讀取電位器
+  int potValue = analogRead(POT_PIN);
+
+  // 對應到亮度（0-15）
+  int brightness = map(potValue, 0, 1023, 0, 15);
+
+  // 設定亮度
+  lc.setIntensity(0, brightness);
+
+  Serial.print(&quot;亮度：&quot;);
+  Serial.println(brightness);
+
+  delay(100);
+}
+</code></pre>
+<hr />
+<h2 id="_11">七、圖案設計工具</h2>
+<h3 id="_12">線上設計工具</h3>
+<pre><code>推薦網站：
+
+1. LED Matrix Editor
+   https://xantorohara.github.io/led-matrix-editor/
+
+2. Dot Matrix Generator
+   搜尋「8x8 LED matrix generator」
+
+使用方式：
+1. 在網格上點擊設計圖案
+2. 複製產生的 byte 陣列
+3. 貼到 Arduino 程式中使用
+</code></pre>
+<h3 id="_13">手動設計方法</h3>
+<pre><code>設計步驟：
+
+1. 畫出 8x8 網格
+   ┌─┬─┬─┬─┬─┬─┬─┬─┐
+   │ │ │ │ │ │ │ │ │
+   ├─┼─┼─┼─┼─┼─┼─┼─┤
+   ... (共 8 行)
+
+2. 在網格上畫出想要的圖案
+   ● = 亮 (1)
+   ○ = 暗 (0)
+
+3. 將每行轉換成二進位
+   ○●●○○●●○ = 0b01100110 = 0x66
+
+4. 寫成 byte 陣列
+   byte myPattern[8] = {
+     0x66, 0xFF, 0xFF, 0xFF,
+     0x7E, 0x3C, 0x18, 0x00
+   };
+</code></pre>
+<h3 id="_14">常用圖案範例</h3>
+<pre><code class="language-cpp">// 笑臉
+byte smile[8] = {0x3C,0x42,0xA5,0x81,0xA5,0x99,0x42,0x3C};
+
+// 愛心
+byte heart[8] = {0x00,0x66,0xFF,0xFF,0xFF,0x7E,0x3C,0x18};
+
+// 太陽
+byte sun[8] = {0x81,0x42,0x24,0x18,0x18,0x24,0x42,0x81};
+
+// 箭頭（右）
+byte arrowR[8] = {0x08,0x0C,0xFE,0xFF,0xFE,0x0C,0x08,0x00};
+
+// 箭頭（上）
+byte arrowU[8] = {0x18,0x3C,0x7E,0xFF,0x18,0x18,0x18,0x18};
+
+// 打勾
+byte check[8] = {0x00,0x01,0x03,0x06,0xCC,0x78,0x30,0x00};
+
+// 叉叉
+byte cross[8] = {0x81,0x42,0x24,0x18,0x18,0x24,0x42,0x81};
+
+// 問號
+byte question[8] = {0x3C,0x42,0x02,0x04,0x08,0x00,0x08,0x00};
+</code></pre>
+<hr />
+<h2 id="_15">八、硬體類型設定</h2>
+<h3 id="md_max72xx_1">MD_MAX72XX 硬體類型</h3>
+<pre><code class="language-cpp">// 不同廠商的模組，線路配置可能不同
+// 需要設定正確的硬體類型
+
+// 常見類型：
+#define HARDWARE_TYPE MD_MAX72XX::FC16_HW     // FC-16 模組（最常見）
+#define HARDWARE_TYPE MD_MAX72XX::GENERIC_HW  // 通用模組
+#define HARDWARE_TYPE MD_MAX72XX::PAROLA_HW   // Parola 專用
+#define HARDWARE_TYPE MD_MAX72XX::ICSTATION_HW // ICStation 模組
+
+// 如果顯示方向不對，試試其他類型
+// 或使用旋轉功能：
+display.setZoneEffect(0, true, PA_FLIP_UD);  // 上下翻轉
+display.setZoneEffect(0, true, PA_FLIP_LR);  // 左右翻轉
+</code></pre>
+<hr />
+<h2 id="_16">九、常見問題排解</h2>
+<h3 id="1">問題 1：完全不亮</h3>
+<pre><code>檢查步驟：
+
+□ 1. 電源接好了嗎？（VCC → 5V, GND → GND）
+□ 2. 控制線接對了嗎？（DIN, CLK, CS）
+□ 3. 程式有執行 shutdown(0, false) 嗎？
+     → MAX7219 預設是省電模式（關閉）
+□ 4. 亮度設定是 0 嗎？
+     → setIntensity(0, 8) 設定亮度
+□ 5. 模組數量設定正確嗎？
+</code></pre>
+<h3 id="2_1">問題 2：顯示亂碼或鏡像</h3>
+<pre><code>可能原因與解決方法：
+
+1. 硬體類型設定錯誤
+   → 嘗試不同的 HARDWARE_TYPE
+
+2. 模組方向裝反
+   → 物理旋轉模組
+   → 或用程式翻轉
+
+3. 串接順序錯誤
+   → 檢查 DIN → DOUT 的連接順序
+</code></pre>
+<h3 id="3_1">問題 3：多模組只有部分亮</h3>
+<pre><code>檢查步驟：
+
+□ 1. 電源是否足夠？
+     → 多模組需要外接電源
+
+□ 2. 串接線是否鬆動？
+     → 檢查 DOUT → DIN 連接
+
+□ 3. MAX_DEVICES 數量正確嗎？
+     → 要和實際模組數量一致
+</code></pre>
+<h3 id="4_1">問題 4：亮度不均勻</h3>
+<pre><code>可能原因：
+
+1. 電源不足
+   → 使用外接電源
+   → 縮短電源線
+
+2. 接線電阻
+   → 使用較粗的電源線
+   → 在每個模組 VCC-GND 加電容
+
+3. LED 品質差異
+   → 正常現象，低價模組常見
+</code></pre>
+<hr />
+<h2 id="ledcontrol_1">十、LedControl 函數參考</h2>
+<h3 id="_17">常用函數</h3>
+<table>
+<thead>
+<tr>
+<th>函數</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>shutdown(addr, status)</code></td>
+<td>省電模式</td>
+<td><code>lc.shutdown(0, false);</code></td>
+</tr>
+<tr>
+<td><code>setIntensity(addr, value)</code></td>
+<td>設定亮度(0-15)</td>
+<td><code>lc.setIntensity(0, 8);</code></td>
+</tr>
+<tr>
+<td><code>clearDisplay(addr)</code></td>
+<td>清除顯示</td>
+<td><code>lc.clearDisplay(0);</code></td>
+</tr>
+<tr>
+<td><code>setLed(addr, row, col, state)</code></td>
+<td>設定單顆 LED</td>
+<td><code>lc.setLed(0, 3, 4, true);</code></td>
+</tr>
+<tr>
+<td><code>setRow(addr, row, value)</code></td>
+<td>設定整行</td>
+<td><code>lc.setRow(0, 0, 0xFF);</code></td>
+</tr>
+<tr>
+<td><code>setColumn(addr, col, value)</code></td>
+<td>設定整列</td>
+<td><code>lc.setColumn(0, 0, 0xFF);</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_18">程式速查</h3>
+<pre><code class="language-cpp">#include &lt;LedControl.h&gt;
+
+// 建立物件（DIN, CLK, CS, 模組數）
+LedControl lc = LedControl(12, 11, 10, 1);
+
+void setup() {
+  lc.shutdown(0, false);   // 喚醒（必要！）
+  lc.setIntensity(0, 8);   // 亮度 0-15
+  lc.clearDisplay(0);      // 清除
+}
+
+// 顯示圖案
+byte pattern[8] = {0x00, 0x66, 0xFF, 0xFF, 0xFF, 0x7E, 0x3C, 0x18};
+for (int i = 0; i &lt; 8; i++) {
+  lc.setRow(0, i, pattern[i]);
+}
+
+// 點亮單顆 LED
+lc.setLed(0, row, col, true);   // 亮
+lc.setLed(0, row, col, false);  // 滅
+</code></pre>
+<hr />
+<h2 id="_19">十一、接線速查表</h2>
+<h3 id="_20">單模組接線</h3>
+<table>
+<thead>
+<tr>
+<th>MAX7219 模組</th>
+<th>Arduino Uno</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VCC</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>DIN</td>
+<td>D12（或 D11）</td>
+</tr>
+<tr>
+<td>CLK</td>
+<td>D11（或 D13）</td>
+</tr>
+<tr>
+<td>CS</td>
+<td>D10</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_21">多模組串接</h3>
+<pre><code>Arduino    模組1      模組2      模組3
+  DIN   →  DIN
+          DOUT   →  DIN
+                   DOUT   →  DIN
+  CLK   →  CLK   →  CLK   →  CLK   （並聯）
+  CS    →  CS    →  CS    →  CS    （並聯）
+  5V    →  VCC   →  VCC   →  VCC   （並聯，或外接電源）
+  GND   →  GND   →  GND   →  GND   （並聯）
+</code></pre>
+<hr />
+<h2 id="_22">延伸學習</h2>
+<ul>
+<li><strong>關於LCD液晶螢幕.md</strong> - 另一種顯示方式</li>
+<li><strong>關於資料通訊方式.md</strong> - 了解 SPI 通訊</li>
+<li><strong>關於電源供應.md</strong> - 多模組電源規劃</li>
+<li><strong>關於移位暫存器與IO擴展IC.md</strong> - 了解 MAX7219 的原理</li>
+</ul>
+<hr />
+<blockquote>
+<p>LED 點矩陣是製作視覺效果的好幫手，掌握它就能讓你的專案更加生動有趣！</p>
+</blockquote>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

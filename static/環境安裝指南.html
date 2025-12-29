@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>環境安裝指南</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="-">智慧農業課程 - 環境安裝指南</h1>
+<h2 id="_1">課程概覽</h2>
+<table>
+<thead>
+<tr>
+<th>天數</th>
+<th>主題</th>
+<th>需要安裝</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Day 1</td>
+<td>Arduino 物聯網基礎</td>
+<td>Arduino IDE</td>
+</tr>
+<tr>
+<td>Day 2</td>
+<td>Webduino &amp; Python</td>
+<td>Python + MQTT</td>
+</tr>
+<tr>
+<td>Day 3</td>
+<td>網頁應用 &amp; GIS</td>
+<td>VS Code + Live Server</td>
+</tr>
+<tr>
+<td>Day 4-5</td>
+<td>農業遙測影像分析</td>
+<td>Python 3.9 + GDAL</td>
+</tr>
+<tr>
+<td>Day 6</td>
+<td>AI 人工智慧應用</td>
+<td>Python + Ollama</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_2">一、基礎軟體安裝</h2>
+<h3 id="1-python">1. Python 安裝 (必要) - 2025 新版安裝方式</h3>
+<p><strong>建議版本：Python 3.9</strong> (遙測分析課程的 GDAL 套件需要)</p>
+<blockquote>
+<strong>重要說明：</strong>Python 官方從 2025 年開始採用新的「Python Install Manager」安裝方式。<br />
+這個新方式讓您可以<strong>同時安裝多個 Python 版本</strong>，並輕鬆切換使用！
+</blockquote>
+
+<h4>步驟 1：下載並安裝 Python Install Manager</h4>
+<ol>
+<li>前往 Python 官網：<a href="https://www.python.org/downloads/" target="_blank">https://www.python.org/downloads/</a></li>
+<li>點擊 <strong>「Download Python」</strong> 按鈕下載安裝程式</li>
+<li>執行安裝程式，依照提示完成安裝：
+    <ul>
+    <li>詢問是否移除舊版 py launcher → 選擇 <strong>y</strong> (建議)</li>
+    <li>是否加入 PATH → 選擇 <strong>y</strong></li>
+    <li>是否安裝最新版 Python → 可選 y 或 n (我們之後會安裝 3.9)</li>
+    </ul>
+</li>
+<li><strong>重新開啟終端機</strong>（重要！PATH 變更需要重開才生效）</li>
+</ol>
+
+<h4>步驟 2：安裝 Python 3.9 (課程必需)</h4>
+<pre><code class="language-cmd"># 開啟 cmd 或 PowerShell，執行以下指令安裝 Python 3.9
+py install 3.9
+
+# 驗證安裝成功
+py -3.9 --version
+# 應顯示：Python 3.9.x
+</code></pre>
+
+<h4>步驟 3：查看已安裝的 Python 版本</h4>
+<pre><code class="language-cmd"># 列出所有已安裝的 Python 版本
+py list
+
+# 範例輸出：
+#  PythonCore\3.14    C:\Users\xxx\AppData\Local\Python\PythonCore\3.14
+#  PythonCore\3.9     C:\Users\xxx\AppData\Local\Python\PythonCore\3.9
+</code></pre>
+
+<h4>Python Install Manager 常用指令</h4>
+<table>
+<thead>
+<tr><th>指令</th><th>說明</th></tr>
+</thead>
+<tbody>
+<tr><td><code>py install 3.9</code></td><td>安裝 Python 3.9</td></tr>
+<tr><td><code>py list</code></td><td>列出已安裝的版本</td></tr>
+<tr><td><code>py -3.9</code></td><td>使用 Python 3.9 執行</td></tr>
+<tr><td><code>py -3.9 -m venv venv</code></td><td>用 Python 3.9 建立虛擬環境</td></tr>
+<tr><td><code>py uninstall 3.14</code></td><td>移除 Python 3.14</td></tr>
+<tr><td><code>py help</code></td><td>查看所有指令說明</td></tr>
+</tbody>
+</table>
+<h3 id="2-vs-code">2. VS Code 安裝 (建議)</h3>
+<ol>
+<li>下載：https://code.visualstudio.com/</li>
+<li>安裝擴充功能：</li>
+<li>Python</li>
+<li>Live Server (網頁開發用)</li>
+<li>Arduino (可選)</li>
+</ol>
+<h3 id="3-arduino-ide-day-1">3. Arduino IDE 安裝 (Day 1 需要)</h3>
+<ol>
+<li>下載：https://www.arduino.cc/en/software</li>
+<li>安裝驅動程式 (CH340/CP2102)</li>
+</ol>
+<hr />
+<h2 id="python">二、Python 虛擬環境建立</h2>
+<h3 id="_3">建立虛擬環境 (建議每個課程獨立建立)</h3>
+<blockquote>
+<strong>重要：</strong>本課程需要使用 <strong>Python 3.9</strong> 建立虛擬環境，請務必使用 <code>py -3.9</code> 指令！
+</blockquote>
+<pre><code class="language-cmd"># 進入課程目錄
+cd D:\Course\Smart_Agri_Course
+
+# 使用 Python 3.9 建立虛擬環境 (重要!)
+py -3.9 -m venv venv
+
+# 啟動虛擬環境 (Windows)
+venv\Scripts\activate
+
+# 啟動後會看到 (venv) 前綴
+# 確認虛擬環境使用的是 Python 3.9
+python --version
+# 應顯示：Python 3.9.x
+</code></pre>
+<h3 id="_4">離開虛擬環境</h3>
+<pre><code class="language-cmd">deactivate
+</code></pre>
+
+<h3 id="_venv_note">虛擬環境注意事項</h3>
+<ul>
+<li>虛擬環境建立後，<code>python</code> 和 <code>pip</code> 指令會自動指向該環境的 Python 版本</li>
+<li>如果不小心用錯版本建立了虛擬環境，請刪除 <code>venv</code> 資料夾後重新建立</li>
+<li>每次開啟新的終端機，都需要重新執行 <code>venv\Scripts\activate</code> 啟動環境</li>
+</ul>
+<hr />
+<h2 id="_5">三、各課程套件安裝</h2>
+<h3 id="day-1-2arduino-mqtt">Day 1-2：Arduino &amp; MQTT 物聯網</h3>
+<pre><code class="language-cmd"># 啟動虛擬環境後
+pip install -r 04_DOCUMENT/requirements/03_mqtt_iot.txt
+</code></pre>
+<h3 id="day-2-3python-flask">Day 2-3：Python 基礎 &amp; Flask</h3>
+<pre><code class="language-cmd">pip install -r 04_DOCUMENT/requirements/01_python_basic.txt
+pip install -r 04_DOCUMENT/requirements/02_flask_web.txt
+</code></pre>
+<h3 id="day-3webgis">Day 3：WebGIS 網頁地圖</h3>
+<p>此課程使用 HTML/CSS/JavaScript，不需要額外 Python 套件。<br />
+使用 VS Code 的 Live Server 擴充功能即可。</p>
+<h3 id="day-4-5">Day 4-5：農業遙測影像分析 (重要!)</h3>
+<p><strong>此課程需要特別處理 GDAL 安裝，且必須使用 Python 3.9</strong></p>
+<blockquote>
+<strong>為什麼需要 Python 3.9？</strong><br />
+GDAL 的預編譯 .whl 檔案是針對特定 Python 版本編譯的。<br />
+檔案名稱中的 <code>cp39</code> 表示「CPython 3.9」，只能在 Python 3.9 環境中使用。
+</blockquote>
+<pre><code class="language-cmd"># 1. 確保虛擬環境使用 Python 3.9
+python --version
+# 應顯示：Python 3.9.x
+# 如果不是 3.9，請刪除 venv 資料夾，用 py -3.9 -m venv venv 重新建立
+
+# 2. 先安裝 GDAL (使用 .whl 檔案)
+pip install 04_DOCUMENT/installers/GDAL-3.3.0-cp39-cp39-win_amd64.whl
+
+# 3. 安裝其他套件
+pip install -r 04_DOCUMENT/requirements/05_rs_analysis.txt
+
+# 4. 驗證 GDAL 安裝
+python -c &quot;from osgeo import gdal; print(gdal.__version__)&quot;
+</code></pre>
+<p><strong>GDAL 安裝常見問題：</strong></p>
+<ul>
+<li>如果出現 <code>DLL load failed</code> 錯誤，請確認虛擬環境是用 Python 3.9 建立的</li>
+<li>.whl 檔案名稱 <code>cp39</code> 表示 Python 3.9 專用，不相容其他版本</li>
+<li>如果不確定虛擬環境的 Python 版本，執行 <code>python --version</code> 檢查</li>
+</ul>
+<h3 id="day-6langchain-ai">Day 6：LangChain AI 應用</h3>
+<pre><code class="language-cmd"># 1. 安裝套件
+pip install -r 04_DOCUMENT/requirements/06_langchain_ai.txt
+
+# 2. 安裝 Ollama (本地大語言模型)
+#    下載：https://ollama.ai/
+#    安裝後執行以下指令下載模型：
+ollama pull gemma3              # 對話模型（建議使用）
+ollama pull llama3.2            # 對話模型（備選）
+ollama pull nomic-embed-text    # 嵌入模型（RAG 必需）
+</code></pre>
+<hr />
+<h2 id="_6">四、一鍵安裝所有套件 (進階)</h2>
+<p>如果想一次安裝所有課程套件：</p>
+<pre><code class="language-cmd"># 啟動虛擬環境後
+pip install 04_DOCUMENT/installers/GDAL-3.3.0-cp39-cp39-win_amd64.whl
+pip install -r 04_DOCUMENT/requirements/01_python_basic.txt
+pip install -r 04_DOCUMENT/requirements/02_flask_web.txt
+pip install -r 04_DOCUMENT/requirements/03_mqtt_iot.txt
+pip install -r 04_DOCUMENT/requirements/05_rs_analysis.txt
+pip install -r 04_DOCUMENT/requirements/06_langchain_ai.txt
+</code></pre>
+<hr />
+<h2 id="_7">五、驗證安裝</h2>
+<h3 id="python_1">測試 Python 基礎</h3>
+<pre><code class="language-python">from PyQt5.QtWidgets import QApplication
+print(&quot;PyQt5 安裝成功!&quot;)
+</code></pre>
+<h3 id="gdal">測試 GDAL</h3>
+<pre><code class="language-python">from osgeo import gdal, ogr
+print(f&quot;GDAL 版本: {gdal.__version__}&quot;)
+</code></pre>
+<h3 id="opencv">測試 OpenCV</h3>
+<pre><code class="language-python">import cv2
+print(f&quot;OpenCV 版本: {cv2.__version__}&quot;)
+</code></pre>
+<h3 id="langchain">測試 LangChain</h3>
+<pre><code class="language-python">from langchain_ollama import OllamaLLM
+print(&quot;LangChain 安裝成功!&quot;)
+</code></pre>
+<hr />
+<h2 id="_8">六、常見問題排解</h2>
+
+<h3 id="q0-py">Q0: 什麼是 Python Install Manager？和以前有什麼不同？</h3>
+<p>從 2025 年開始，Python 官方改變了 Windows 的安裝方式：</p>
+<ul>
+<li><strong>以前</strong>：需要下載特定版本的安裝程式 (如 python-3.9.13-amd64.exe)</li>
+<li><strong>現在</strong>：統一使用 Python Install Manager，可用指令安裝任意版本</li>
+</ul>
+<p><strong>優點：</strong></p>
+<ul>
+<li>可以同時安裝多個 Python 版本</li>
+<li>用 <code>py -3.9</code> 或 <code>py -3.14</code> 輕鬆切換版本</li>
+<li>不會有版本衝突的問題</li>
+</ul>
+
+<h3 id="q1-install-39">Q1: 如何確認 Python 3.9 已安裝成功？</h3>
+<pre><code class="language-cmd"># 列出所有已安裝的版本
+py list
+
+# 直接測試 Python 3.9
+py -3.9 --version
+</code></pre>
+
+<h3 id="q2-pip-install">Q2: pip install 出現權限錯誤</h3>
+<pre><code class="language-cmd">pip install --user &lt;套件名稱&gt;
+</code></pre>
+
+<h3 id="q3-gdal">Q3: GDAL 安裝失敗</h3>
+<ul>
+<li>確認虛擬環境是用 <code>py -3.9 -m venv venv</code> 建立的</li>
+<li>使用提供的 .whl 檔案安裝，不要用 <code>pip install gdal</code></li>
+<li>如果版本不對，刪除 venv 資料夾重新建立</li>
+</ul>
+
+<h3 id="q4-wrong-version">Q4: 虛擬環境用錯 Python 版本怎麼辦？</h3>
+<pre><code class="language-cmd"># 1. 先離開虛擬環境
+deactivate
+
+# 2. 刪除原本的 venv 資料夾
+rmdir /s /q venv
+
+# 3. 用正確版本重新建立
+py -3.9 -m venv venv
+
+# 4. 重新啟動
+venv\Scripts\activate
+
+# 5. 確認版本
+python --version
+</code></pre>
+
+<h3 id="q5-py-not-found">Q5: 執行 py 指令出現「找不到命令」錯誤</h3>
+<ul>
+<li>請確認已重新開啟終端機（安裝後 PATH 需要重開才生效）</li>
+<li>如果仍有問題，請重新執行 Python 安裝程式，確認選擇「Add to PATH」</li>
+</ul>
+<h3 id="q6-tensorflow">Q6: TensorFlow 安裝很慢</h3>
+<pre><code class="language-cmd">pip install tensorflow==2.10.0 -i https://pypi.tuna.tsinghua.edu.cn/simple
+</code></pre>
+<h3 id="q7-ollama">Q7: Ollama 模型下載失敗</h3>
+<ul>
+<li>確認網路連線正常</li>
+<li>可嘗試較小的模型：<code>ollama pull gemma3:2b</code> 或 <code>ollama pull llama3.2:1b</code></li>
+<li>建議下載的模型：</li>
+<li><code>gemma3</code> - 對話模型（建議使用）</li>
+<li><code>llama3.2</code> - 對話模型（備選）</li>
+<li><code>nomic-embed-text</code> - 嵌入模型（RAG 範例必需）</li>
+</ul>
+<hr />
+<h2 id="_9">七、課程目錄結構</h2>
+<pre><code>Smart_Agri_Course/
+├── 01_PPT/                    # 簡報教材
+├── 02_CODE/                   # 範例程式碼
+│   ├── 01_Arduino/
+│   ├── 02_Python_Basic/
+│   ├── 03_MQTT/
+│   ├── 04_WebGIS_Leaflet/
+│   ├── 05_RS_Analysis/
+│   └── 06_LangChain_AI/
+├── 03_ASSETS/                 # 素材資源
+└── 04_DOCUMENT/               # 文件
+    ├── requirements/          # 套件清單
+    ├── installers/            # 安裝檔案
+    │   └── GDAL-3.3.0-cp39-cp39-win_amd64.whl
+    └── 環境安裝指南.md
+</code></pre>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

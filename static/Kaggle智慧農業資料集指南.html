@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaggle 智慧農業資料集指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h2 {
+            color: #27ae60;
+            font-size: 2em;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #2ecc71;
+        }
+
+        h3 {
+            color: #2c3e50;
+            font-size: 1.5em;
+            margin: 30px 0 15px 0;
+        }
+
+        .intro-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #2ecc71;
+        }
+
+        .intro-section p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card h4 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .steps {
+            counter-reset: step-counter;
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .steps li {
+            counter-increment: step-counter;
+            background: #ecf0f1;
+            padding: 20px 20px 20px 60px;
+            margin: 15px 0;
+            border-radius: 10px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .steps li:hover {
+            background: #d5dbdb;
+            transform: translateX(5px);
+        }
+
+        .steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #27ae60;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .dataset-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .dataset-item {
+            background: #ffffff;
+            border: 2px solid #e8e8e8;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-left: 70px;
+        }
+
+        .dataset-item:hover {
+            border-color: #2ecc71;
+            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .dataset-item.featured {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+            border: 3px solid #e74c3c;
+        }
+
+        .dataset-item .number {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #27ae60;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .dataset-item.featured .number {
+            background: #e74c3c;
+        }
+
+        .dataset-item h4 {
+            color: #2c3e50;
+            font-size: 1.3em;
+            margin-bottom: 8px;
+        }
+
+        .dataset-item.featured h4 {
+            color: #c0392b;
+        }
+
+        .dataset-item p {
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+
+        .dataset-item a {
+            color: #3498db;
+            text-decoration: none;
+            word-break: break-all;
+            font-size: 0.95em;
+            transition: color 0.3s ease;
+        }
+
+        .dataset-item a:hover {
+            color: #2ecc71;
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .category-tag {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+
+        .tips {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+
+        .tips h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e74c3c;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌾 Kaggle 智慧農業資料集指南</h1>
+            <p>探索全球最豐富的農業 AI 訓練資料庫</p>
+        </header>
+
+        <div class="content">
+            <!-- Kaggle 簡介 -->
+            <section>
+                <h2>📚 什麼是 Kaggle？</h2>
+                <div class="intro-section">
+                    <p><strong>Kaggle</strong> 是全球最大的資料科學和機器學習社群平台，由 Google 於 2017 年收購。它提供了豐富的資料集、競賽、筆記本（Notebooks）和學習資源，是資料科學家、機器學習工程師和 AI 研究者的首選平台。</p>
+                    <p>在智慧農業領域，Kaggle 擁有大量高品質的農作物影像資料集、病蟲害辨識資料、產量預測資料等，是開發農業 AI 應用的重要資源寶庫。</p>
+                </div>
+
+                <h3>🌟 Kaggle 平台核心功能</h3>
+                <div class="features">
+                    <div class="feature-card">
+                        <h4>📊 資料集</h4>
+                        <p>超過 10 萬個公開資料集，涵蓋各種領域，包括農業、醫療、金融等。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🏆 競賽</h4>
+                        <p>參加全球資料科學競賽，與頂尖高手切磋，贏取獎金和榮譽。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📓 Notebooks</h4>
+                        <p>雲端 Jupyter 環境，免費 GPU/TPU 支援，可直接在線上進行模型訓練。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🎓 學習資源</h4>
+                        <p>豐富的教學課程和社群分享的解決方案，適合初學者到進階者。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 如何使用 Kaggle -->
+            <section>
+                <h2>🚀 如何使用 Kaggle</h2>
+
+                <h3>步驟一：註冊與登入</h3>
+                <ol class="steps">
+                    <li>前往 <a href="https://www.kaggle.com" target="_blank">https://www.kaggle.com</a></li>
+                    <li>點擊右上角的 "Register" 註冊帳號（可使用 Google 帳號快速登入）</li>
+                    <li>完成電子郵件驗證</li>
+                </ol>
+
+                <h3>步驟二：搜尋與下載資料集</h3>
+                <ol class="steps">
+                    <li>在首頁搜尋欄輸入關鍵字（如 "agriculture"、"crop disease"、"fruit classification"）</li>
+                    <li>點擊 "Datasets" 標籤，瀏覽相關資料集</li>
+                    <li>查看資料集詳細資訊：檔案大小、更新時間、使用次數、評分等</li>
+                    <li>點擊 "Download" 下載資料集（需登入）</li>
+                </ol>
+
+                <h3>步驟三：使用 Kaggle API 下載（進階）</h3>
+                <ol class="steps">
+                    <li>安裝 Kaggle API：<code>pip install kaggle</code></li>
+                    <li>前往帳號設定頁面，點擊 "Create New API Token" 下載 <code>kaggle.json</code></li>
+                    <li>將 <code>kaggle.json</code> 放置於 <code>~/.kaggle/</code> 目錄（Windows: <code>C:\Users\&lt;使用者名稱&gt;\.kaggle\</code>）</li>
+                    <li>使用指令下載資料集：<code>kaggle datasets download -d &lt;dataset-name&gt;</code></li>
+                </ol>
+
+                <div class="highlight-box">
+                    <h4>💡 範例：下載蘋果品質分類資料集</h4>
+                    <code>kaggle datasets download -d sriramr/fruits-fresh-and-rotten-for-classification</code>
+                </div>
+
+                <h3>步驟四：在 Kaggle Notebooks 中使用</h3>
+                <ol class="steps">
+                    <li>進入資料集頁面，點擊 "New Notebook"</li>
+                    <li>選擇運算環境（GPU/TPU 加速器）</li>
+                    <li>資料集會自動載入到 <code>/kaggle/input/</code> 目錄</li>
+                    <li>開始撰寫程式碼進行資料分析或模型訓練</li>
+                </ol>
+            </section>
+
+            <!-- 重要提示 -->
+            <div class="tips">
+                <h4>⚠️ 使用 Kaggle 的注意事項</h4>
+                <ul style="margin-left: 20px;">
+                    <li>務必查看資料集的授權條款（License），確保符合您的使用情境</li>
+                    <li>注意資料集的品質和完整性，有些資料集可能存在標註錯誤</li>
+                    <li>Kaggle Notebooks 免費版有使用時數限制（每週 30 小時 GPU）</li>
+                    <li>下載大型資料集時，建議使用 Kaggle API 而非網頁下載</li>
+                    <li>參考其他使用者的 Notebooks，可以快速學習資料集的應用方式</li>
+                </ul>
+            </div>
+
+            <!-- 資料集列表 -->
+            <section>
+                <h2>🌱 50 個高品質智慧農業資料集</h2>
+                <p style="margin-bottom: 30px; font-size: 1.1em; color: #555;">
+                    以下精選 50 個優質的智慧農業相關資料集，涵蓋水果分類、作物病害檢測、產量預測、植物識別等多個領域。
+                    這些資料集經過社群驗證，具有良好的資料品質和完整的標註資訊。
+                </p>
+
+                <ul class="dataset-list">
+                    <!-- 第 1 個：特別推薦的蘋果資料集 -->
+                    <li class="dataset-item featured">
+                        <span class="number">1</span>
+                        <h4>Fruits Fresh and Rotten for Classification <span class="badge">精選推薦</span></h4>
+                        <p>新鮮與腐爛水果分類資料集，包含多種水果的健康與病變影像，非常適合品質檢測應用。</p>
+                        <span class="category-tag">水果分類</span>
+                        <span class="category-tag">品質檢測</span>
+                        <span class="category-tag">蘋果</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/sriramr/fruits-fresh-and-rotten-for-classification" target="_blank">https://www.kaggle.com/datasets/sriramr/fruits-fresh-and-rotten-for-classification</a>
+                    </li>
+
+                    <!-- 第 2-31 個：使用者提供的資料集 -->
+                    <li class="dataset-item">
+                        <span class="number">2</span>
+                        <h4>Agricultural Crops Image Classification</h4>
+                        <p>30 種農作物的影像分類資料集，適合訓練多類別農作物識別模型。</p>
+                        <span class="category-tag">作物分類</span>
+                        <span class="category-tag">多品種</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/mdwaquarazam/agricultural-crops-image-classification" target="_blank">https://www.kaggle.com/datasets/mdwaquarazam/agricultural-crops-image-classification</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">3</span>
+                        <h4>Pinot Noir Grapes</h4>
+                        <p>黑皮諾葡萄資料集，包含不同成熟階段的葡萄影像，適用於葡萄品質評估。</p>
+                        <span class="category-tag">葡萄</span>
+                        <span class="category-tag">成熟度檢測</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/nicolaasregnier/pinotnoirgrapes" target="_blank">https://www.kaggle.com/datasets/nicolaasregnier/pinotnoirgrapes</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">4</span>
+                        <h4>Agriculture Crops Dataset</h4>
+                        <p>另一個包含 30 種農作物的影像資料集，提供多樣化的作物樣本。</p>
+                        <span class="category-tag">作物分類</span>
+                        <span class="category-tag">多品種</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/osamajalilhassan/agriculture-crops-dataset" target="_blank">https://www.kaggle.com/datasets/osamajalilhassan/agriculture-crops-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">5</span>
+                        <h4>Mango Varieties Classification and Grading</h4>
+                        <p>芒果多品種分級分類資料集，包含不同品種與品質等級的芒果影像。</p>
+                        <span class="category-tag">芒果</span>
+                        <span class="category-tag">品質分級</span>
+                        <span class="category-tag">多品種</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/saurabhshahane/mango-varieties-classification" target="_blank">https://www.kaggle.com/datasets/saurabhshahane/mango-varieties-classification</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">6</span>
+                        <h4>Tomato</h4>
+                        <p>番茄影像資料集，適合訓練番茄辨識與分類模型。</p>
+                        <span class="category-tag">番茄</span>
+                        <span class="category-tag">作物識別</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/kangdali/tomato" target="_blank">https://www.kaggle.com/datasets/kangdali/tomato</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">7</span>
+                        <h4>AppleScabFDs</h4>
+                        <p>蘋果與梨病害檢測資料集，包含蘋果痂病等常見果樹病害影像。</p>
+                        <span class="category-tag">蘋果</span>
+                        <span class="category-tag">病害檢測</span>
+                        <span class="category-tag">梨</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/projectlzp201910094/applescabfds" target="_blank">https://www.kaggle.com/datasets/projectlzp201910094/applescabfds</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">8</span>
+                        <h4>Banana Count and Weight in a Bunch</h4>
+                        <p>香蕉串與重量資料集，可用於產量估算和重量預測。</p>
+                        <span class="category-tag">香蕉</span>
+                        <span class="category-tag">產量預測</span>
+                        <span class="category-tag">重量估算</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/krisho007/banana-count-and-weight-in-a-bunch" target="_blank">https://www.kaggle.com/datasets/krisho007/banana-count-and-weight-in-a-bunch</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">9</span>
+                        <h4>Grape Bunch Detect and Segment</h4>
+                        <p>不同品種的葡萄檢測與分割資料集，適合物件偵測和語義分割任務。</p>
+                        <span class="category-tag">葡萄</span>
+                        <span class="category-tag">物件偵測</span>
+                        <span class="category-tag">語義分割</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/nicolaasregnier/grape-grapes" target="_blank">https://www.kaggle.com/datasets/nicolaasregnier/grape-grapes</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">10</span>
+                        <h4>ESOGU-APPLES</h4>
+                        <p>在樹上的蘋果照片資料集，適合訓練果園自動化採收系統。</p>
+                        <span class="category-tag">蘋果</span>
+                        <span class="category-tag">果樹偵測</span>
+                        <span class="category-tag">採收自動化</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/emrekarapaca/esogu-apples" target="_blank">https://www.kaggle.com/datasets/emrekarapaca/esogu-apples</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">11</span>
+                        <h4>Kakao (Cacao) Mentah Primer</h4>
+                        <p>可可果實資料集，包含可可豆莢的影像資料。</p>
+                        <span class="category-tag">可可</span>
+                        <span class="category-tag">果實識別</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/fypugm/kakaomentah" target="_blank">https://www.kaggle.com/datasets/fypugm/kakaomentah</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">12</span>
+                        <h4>Cauliflower Dataset</h4>
+                        <p>花椰菜資料集，適合訓練十字花科蔬菜識別模型。</p>
+                        <span class="category-tag">花椰菜</span>
+                        <span class="category-tag">蔬菜分類</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/noamaanabdulazeem/cauliflower-dataset" target="_blank">https://www.kaggle.com/datasets/noamaanabdulazeem/cauliflower-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">13</span>
+                        <h4>Cacao Diseases</h4>
+                        <p>可可病害資料集，包含多種可可樹常見病害的影像。</p>
+                        <span class="category-tag">可可</span>
+                        <span class="category-tag">病害檢測</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/zaldyjr/cacao-diseases" target="_blank">https://www.kaggle.com/datasets/zaldyjr/cacao-diseases</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">14</span>
+                        <h4>Lab2Wild Apple Rotting Segmentation</h4>
+                        <p>落地蘋果腐爛分割資料集，適合研究採收後的果實品質評估。</p>
+                        <span class="category-tag">蘋果</span>
+                        <span class="category-tag">腐爛檢測</span>
+                        <span class="category-tag">語義分割</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/sergeynesteruk/apple-rotting-segmentation-problem-in-the-wild" target="_blank">https://www.kaggle.com/datasets/sergeynesteruk/apple-rotting-segmentation-problem-in-the-wild</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">15</span>
+                        <h4>deepNIR 11 Fruits Annotations</h4>
+                        <p>11 種帶有 bounding box 標註的水果資料集，適合物件偵測訓練。</p>
+                        <span class="category-tag">水果分類</span>
+                        <span class="category-tag">物件偵測</span>
+                        <span class="category-tag">多品種</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/enddl22/deepnir-11fruits" target="_blank">https://www.kaggle.com/datasets/enddl22/deepnir-11fruits</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">16</span>
+                        <h4>Global Wheat Detection Extend</h4>
+                        <p>小麥麥穗偵測資料集，包含全球多地的小麥影像，適合麥穗計數與產量估算。</p>
+                        <span class="category-tag">小麥</span>
+                        <span class="category-tag">物件偵測</span>
+                        <span class="category-tag">產量估算</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/qingyuanwang/globalwheatdetectionextend" target="_blank">https://www.kaggle.com/datasets/qingyuanwang/globalwheatdetectionextend</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">17</span>
+                        <h4>Pistachio Dataset</h4>
+                        <p>開心果果實照片資料集，包含不同品種的開心果影像。</p>
+                        <span class="category-tag">開心果</span>
+                        <span class="category-tag">堅果分類</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/hosseinmousavi/pistachio-dataset" target="_blank">https://www.kaggle.com/datasets/hosseinmousavi/pistachio-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">18</span>
+                        <h4>Orange Diseases Dataset</h4>
+                        <p>橘子病害資料集，涵蓋柑橘類常見病害影像。</p>
+                        <span class="category-tag">橘子</span>
+                        <span class="category-tag">病害檢測</span>
+                        <span class="category-tag">柑橘類</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/jonathansilva2020/orange-diseases-dataset" target="_blank">https://www.kaggle.com/datasets/jonathansilva2020/orange-diseases-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">19</span>
+                        <h4>Tomato Bunches</h4>
+                        <p>樹枝上的番茄資料集，適合訓練溫室番茄採收機器人。</p>
+                        <span class="category-tag">番茄</span>
+                        <span class="category-tag">物件偵測</span>
+                        <span class="category-tag">自動化採收</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/mferrac/tomato-bunches" target="_blank">https://www.kaggle.com/datasets/mferrac/tomato-bunches</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">20</span>
+                        <h4>Banana Ripeness Dataset</h4>
+                        <p>香蕉成熟度資料集，可用於訓練水果成熟度評估系統。</p>
+                        <span class="category-tag">香蕉</span>
+                        <span class="category-tag">成熟度檢測</span>
+                        <span class="category-tag">品質評估</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/lucianon/banana-ripeness-dataset" target="_blank">https://www.kaggle.com/datasets/lucianon/banana-ripeness-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">21</span>
+                        <h4>Alexya by YOLOv4</h4>
+                        <p>麥穗偵測資料集，已針對 YOLOv4 格式進行標註。</p>
+                        <span class="category-tag">小麥</span>
+                        <span class="category-tag">物件偵測</span>
+                        <span class="category-tag">YOLOv4</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/iamprateek/alexyabyolov4" target="_blank">https://www.kaggle.com/datasets/iamprateek/alexyabyolov4</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">22</span>
+                        <h4>Grapevine Development Stages (BBCH 71-79)</h4>
+                        <p>各種角度與光影的葡萄發展階段資料集，涵蓋 BBCH 71-79 成熟期。</p>
+                        <span class="category-tag">葡萄</span>
+                        <span class="category-tag">生長階段</span>
+                        <span class="category-tag">成熟度</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/schieckmartin/grapesdevelopmentstages" target="_blank">https://www.kaggle.com/datasets/schieckmartin/grapesdevelopmentstages</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">23</span>
+                        <h4>MushR-Project Raw Image Dataset (Oyster Mushrooms)</h4>
+                        <p>菇菇太空包資料集，適用於菇類栽培自動化監控。</p>
+                        <span class="category-tag">菇類</span>
+                        <span class="category-tag">栽培監控</span>
+                        <span class="category-tag">蠔菇</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/etcelab/mushr-project-raw-image-dataset-oyster-mushrooms" target="_blank">https://www.kaggle.com/datasets/etcelab/mushr-project-raw-image-dataset-oyster-mushrooms</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">24</span>
+                        <h4>Banana Classification Dataset</h4>
+                        <p>出口香蕉分類資料集，包含不同等級的香蕉品質分類。</p>
+                        <span class="category-tag">香蕉</span>
+                        <span class="category-tag">品質分級</span>
+                        <span class="category-tag">出口標準</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/andreruizcalle/banana-classification-dataset" target="_blank">https://www.kaggle.com/datasets/andreruizcalle/banana-classification-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">25</span>
+                        <h4>Cotton Balls</h4>
+                        <p>各種背景下的棉花球資料集，適合訓練棉花識別與採收系統。</p>
+                        <span class="category-tag">棉花</span>
+                        <span class="category-tag">物件偵測</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/panashemusemwa/cotton" target="_blank">https://www.kaggle.com/datasets/panashemusemwa/cotton</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">26</span>
+                        <h4>Black Pod Rot Levels</h4>
+                        <p>可可豆莢腐爛程度資料集，用於可可病害嚴重度評估。</p>
+                        <span class="category-tag">可可</span>
+                        <span class="category-tag">病害檢測</span>
+                        <span class="category-tag">嚴重度評估</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/zaldyjr/black-pod-rot-levels" target="_blank">https://www.kaggle.com/datasets/zaldyjr/black-pod-rot-levels</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">27</span>
+                        <h4>Apple Single Object Detection</h4>
+                        <p>蘋果單一物件偵測資料集，適合訓練精確的蘋果定位模型。</p>
+                        <span class="category-tag">蘋果</span>
+                        <span class="category-tag">物件偵測</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/aeeeeeep/apple-single-object-detection" target="_blank">https://www.kaggle.com/datasets/aeeeeeep/apple-single-object-detection</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">28</span>
+                        <h4>Malus Sylvestris</h4>
+                        <p>單顆蘋果資料集，包含野生蘋果品種影像。</p>
+                        <span class="category-tag">蘋果</span>
+                        <span class="category-tag">野生品種</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/vieri03/malus-sylvestris" target="_blank">https://www.kaggle.com/datasets/vieri03/malus-sylvestris</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">29</span>
+                        <h4>Local Cocoa Dataset</h4>
+                        <p>可可病害與正常影像資料集，適合訓練可可健康狀態分類器。</p>
+                        <span class="category-tag">可可</span>
+                        <span class="category-tag">病害檢測</span>
+                        <span class="category-tag">健康分類</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/toku404/local-cocoa-dataset" target="_blank">https://www.kaggle.com/datasets/toku404/local-cocoa-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">30</span>
+                        <h4>Tea Shoots (Object and Keypoints Detection)</h4>
+                        <p>茶葉葉芽資料集，包含物件偵測和關鍵點偵測標註。</p>
+                        <span class="category-tag">茶葉</span>
+                        <span class="category-tag">物件偵測</span>
+                        <span class="category-tag">關鍵點偵測</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/slygirl/tea-shoots-object-and-keypoints-detection" target="_blank">https://www.kaggle.com/datasets/slygirl/tea-shoots-object-and-keypoints-detection</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">31</span>
+                        <h4>Pomegranate Images</h4>
+                        <p>各種狀態的石榴影像資料集，包含成熟、未熟和病害石榴。</p>
+                        <span class="category-tag">石榴</span>
+                        <span class="category-tag">成熟度</span>
+                        <span class="category-tag">品質評估</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/pratikpawar9/pomegrenate-images" target="_blank">https://www.kaggle.com/datasets/pratikpawar9/pomegrenate-images</a>
+                    </li>
+
+                    <!-- 第 32-50 個：補充的高品質資料集 -->
+                    <li class="dataset-item">
+                        <span class="number">32</span>
+                        <h4>PlantVillage Dataset</h4>
+                        <p>最知名的植物病害資料集，包含 14 種作物的 38 類病害，超過 54,000 張影像。</p>
+                        <span class="category-tag">多作物</span>
+                        <span class="category-tag">病害檢測</span>
+                        <span class="category-tag">經典資料集</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/emmarex/plantdisease" target="_blank">https://www.kaggle.com/datasets/emmarex/plantdisease</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">33</span>
+                        <h4>Rice Leaf Disease Dataset</h4>
+                        <p>水稻葉片病害資料集，包含稻熱病、白葉枯病、褐斑病等常見水稻病害。</p>
+                        <span class="category-tag">水稻</span>
+                        <span class="category-tag">病害檢測</span>
+                        <span class="category-tag">葉片分析</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/tedisetiady/rice-leaf-disease-dataset" target="_blank">https://www.kaggle.com/datasets/tedisetiady/rice-leaf-disease-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">34</span>
+                        <h4>Corn Leaf Infection Dataset</h4>
+                        <p>玉米葉片病害資料集，涵蓋鏽病、葉斑病等玉米常見疾病。</p>
+                        <span class="category-tag">玉米</span>
+                        <span class="category-tag">病害檢測</span>
+                        <span class="category-tag">葉片分析</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/smaranjitghose/corn-or-maize-leaf-disease-dataset" target="_blank">https://www.kaggle.com/datasets/smaranjitghose/corn-or-maize-leaf-disease-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">35</span>
+                        <h4>Potato Disease Dataset</h4>
+                        <p>馬鈴薯病害資料集，包含早疫病、晚疫病和健康葉片影像。</p>
+                        <span class="category-tag">馬鈴薯</span>
+                        <span class="category-tag">病害檢測</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/arjuntejaswi/plant-village" target="_blank">https://www.kaggle.com/datasets/arjuntejaswi/plant-village</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">36</span>
+                        <h4>Strawberry Disease Detection</h4>
+                        <p>草莓病害偵測資料集，包含葉枯病、灰黴病等草莓常見病害。</p>
+                        <span class="category-tag">草莓</span>
+                        <span class="category-tag">病害檢測</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/usersushant/strawberry-disease-detection-dataset" target="_blank">https://www.kaggle.com/datasets/usersushant/strawberry-disease-detection-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">37</span>
+                        <h4>Grape Leaf Disease Detection</h4>
+                        <p>葡萄葉片病害偵測資料集，適合訓練葡萄園病害監控系統。</p>
+                        <span class="category-tag">葡萄</span>
+                        <span class="category-tag">病害檢測</span>
+                        <span class="category-tag">葉片分析</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/rm1000/grape-disease-dataset-original" target="_blank">https://www.kaggle.com/datasets/rm1000/grape-disease-dataset-original</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">38</span>
+                        <h4>Cassava Leaf Disease Classification</h4>
+                        <p>樹薯葉片病害分類資料集，來自 Kaggle 競賽，資料品質極高。</p>
+                        <span class="category-tag">樹薯</span>
+                        <span class="category-tag">病害檢測</span>
+                        <span class="category-tag">競賽資料</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/competitions/cassava-leaf-disease-classification" target="_blank">https://www.kaggle.com/competitions/cassava-leaf-disease-classification</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">39</span>
+                        <h4>Citrus Leaves Dataset</h4>
+                        <p>柑橘類葉片資料集,包含健康與病害葉片,適合柑橘病害診斷。</p>
+                        <span class="category-tag">柑橘類</span>
+                        <span class="category-tag">葉片分析</span>
+                        <span class="category-tag">病害檢測</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/dtrilsbeek/citrus-leaves-dataset" target="_blank">https://www.kaggle.com/datasets/dtrilsbeek/citrus-leaves-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">40</span>
+                        <h4>Soybean Disease Dataset</h4>
+                        <p>大豆病害資料集,涵蓋大豆鏽病、葉斑病等主要病害。</p>
+                        <span class="category-tag">大豆</span>
+                        <span class="category-tag">病害檢測</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/umeradnaan/soybean-crop-disease-dataset" target="_blank">https://www.kaggle.com/datasets/umeradnaan/soybean-crop-disease-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">41</span>
+                        <h4>Plant Seedlings Classification</h4>
+                        <p>植物幼苗分類資料集,包含 12 種常見作物與雜草的幼苗影像,適合雜草識別。</p>
+                        <span class="category-tag">幼苗分類</span>
+                        <span class="category-tag">雜草識別</span>
+                        <span class="category-tag">多品種</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/competitions/plant-seedlings-classification" target="_blank">https://www.kaggle.com/competitions/plant-seedlings-classification</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">42</span>
+                        <h4>Sugar Beet Yield Prediction</h4>
+                        <p>甜菜產量預測資料集,包含氣象、土壤和管理數據,適合訓練產量預測模型。</p>
+                        <span class="category-tag">甜菜</span>
+                        <span class="category-tag">產量預測</span>
+                        <span class="category-tag">時間序列</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/alexdark2010/sugar-beet-yield-prediction" target="_blank">https://www.kaggle.com/datasets/alexdark2010/sugar-beet-yield-prediction</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">43</span>
+                        <h4>Crop Recommendation Dataset</h4>
+                        <p>作物推薦資料集,基於土壤條件和氣候參數推薦最適合的作物種類。</p>
+                        <span class="category-tag">作物推薦</span>
+                        <span class="category-tag">精準農業</span>
+                        <span class="category-tag">決策支援</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/atharvaingle/crop-recommendation-dataset" target="_blank">https://www.kaggle.com/datasets/atharvaingle/crop-recommendation-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">44</span>
+                        <h4>Soil Type Classification</h4>
+                        <p>土壤類型分類資料集,包含不同土壤類型的影像和物理化學特性數據。</p>
+                        <span class="category-tag">土壤分析</span>
+                        <span class="category-tag">土壤分類</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/prasanshasatpathy/soil-types-image-dataset" target="_blank">https://www.kaggle.com/datasets/prasanshasatpathy/soil-types-image-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">45</span>
+                        <h4>Weed Detection in Soybean Crops</h4>
+                        <p>大豆田雜草偵測資料集,包含精確的雜草位置標註,適合精準除草應用。</p>
+                        <span class="category-tag">雜草偵測</span>
+                        <span class="category-tag">物件偵測</span>
+                        <span class="category-tag">精準農業</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/fpeccia/weed-detection-in-soybean-crops" target="_blank">https://www.kaggle.com/datasets/fpeccia/weed-detection-in-soybean-crops</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">46</span>
+                        <h4>Coffee Leaf Disease Dataset</h4>
+                        <p>咖啡葉片病害資料集,包含咖啡鏽病、葉斑病等咖啡主要病害。</p>
+                        <span class="category-tag">咖啡</span>
+                        <span class="category-tag">病害檢測</span>
+                        <span class="category-tag">葉片分析</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/alvarole/coffee-leaves-disease" target="_blank">https://www.kaggle.com/datasets/alvarole/coffee-leaves-disease</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">47</span>
+                        <h4>Pest Detection in Agriculture</h4>
+                        <p>農業害蟲偵測資料集,包含多種常見農業害蟲的影像,適合訓練害蟲識別系統。</p>
+                        <span class="category-tag">害蟲偵測</span>
+                        <span class="category-tag">物件偵測</span>
+                        <span class="category-tag">蟲害管理</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/simranvolunesia/pest-detection-in-agriculture" target="_blank">https://www.kaggle.com/datasets/simranvolunesia/pest-detection-in-agriculture</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">48</span>
+                        <h4>Drone Images for Precision Agriculture</h4>
+                        <p>無人機精準農業影像資料集,包含多光譜影像和植被指數,適合作物健康監測。</p>
+                        <span class="category-tag">無人機影像</span>
+                        <span class="category-tag">精準農業</span>
+                        <span class="category-tag">多光譜</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/sangramjit/agriculture-drone-dataset" target="_blank">https://www.kaggle.com/datasets/sangramjit/agriculture-drone-dataset</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">49</span>
+                        <h4>Fertilizer Prediction Dataset</h4>
+                        <p>肥料推薦資料集,根據土壤養分和作物需求預測最適合的肥料類型和用量。</p>
+                        <span class="category-tag">肥料推薦</span>
+                        <span class="category-tag">精準農業</span>
+                        <span class="category-tag">決策支援</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/gdabhishek/fertilizer-prediction" target="_blank">https://www.kaggle.com/datasets/gdabhishek/fertilizer-prediction</a>
+                    </li>
+
+                    <li class="dataset-item">
+                        <span class="number">50</span>
+                        <h4>Fruit 360 Dataset</h4>
+                        <p>超大型水果資料集,包含 131 種水果和蔬菜的 90,000+ 張影像,資料品質極高。</p>
+                        <span class="category-tag">水果分類</span>
+                        <span class="category-tag">蔬菜分類</span>
+                        <span class="category-tag">大型資料集</span>
+                        <br><br>
+                        <a href="https://www.kaggle.com/datasets/moltean/fruits" target="_blank">https://www.kaggle.com/datasets/moltean/fruits</a>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- 實用技巧 -->
+            <section>
+                <h2>💡 使用資料集的實用技巧</h2>
+
+                <div class="tips">
+                    <h4>📌 選擇資料集的考量因素</h4>
+                    <ul style="margin-left: 20px;">
+                        <li><strong>資料量</strong>：確保資料量足夠訓練深度學習模型（通常至少需要數百張影像）</li>
+                        <li><strong>標註品質</strong>：檢查標註是否正確、一致性高</li>
+                        <li><strong>類別平衡</strong>：各類別的資料數量是否均衡，避免模型偏向某一類別</li>
+                        <li><strong>影像品質</strong>：解析度、光照條件、拍攝角度是否符合應用場景</li>
+                        <li><strong>授權條款</strong>：確認是否允許商業使用、重新分發等</li>
+                        <li><strong>社群評價</strong>：查看使用次數、評分和其他使用者的評論</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>🔍 進階搜尋技巧</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>使用多個關鍵字組合：<code>agriculture disease detection</code></li>
+                        <li>利用篩選器：檔案類型（Image）、大小、更新時間等</li>
+                        <li>排序方式：選擇「Hotness」找熱門資料集、「Usability」找高品質資料集</li>
+                        <li>查看 Notebooks：參考其他人如何使用這個資料集</li>
+                    </ul>
+                </div>
+
+                <h3>🛠️ 資料前處理建議</h3>
+                <ol class="steps">
+                    <li><strong>資料清洗</strong>：移除損壞或品質不佳的影像</li>
+                    <li><strong>資料擴增</strong>：使用旋轉、翻轉、縮放等技術增加訓練資料多樣性</li>
+                    <li><strong>標準化</strong>：統一影像尺寸和色彩空間</li>
+                    <li><strong>資料分割</strong>：適當分配訓練集、驗證集和測試集（通常 70:15:15 或 80:10:10）</li>
+                    <li><strong>標註檢查</strong>：人工抽查標註正確性,必要時進行修正</li>
+                </ol>
+            </section>
+
+            <!-- 延伸資源 -->
+            <section>
+                <h2>🔗 延伸資源</h2>
+                <div class="intro-section">
+                    <h4>其他農業資料集平台</h4>
+                    <ul style="margin-left: 20px;">
+                        <li><strong>PlantVillage</strong>: <a href="https://plantvillage.psu.edu/" target="_blank">https://plantvillage.psu.edu/</a> - 專業植物病害資料庫</li>
+                        <li><strong>AI for Agriculture</strong>: <a href="https://github.com/topics/agriculture-ai" target="_blank">GitHub Agriculture AI</a> - 開源農業 AI 專案</li>
+                        <li><strong>UCI Machine Learning Repository</strong>: <a href="https://archive.ics.uci.edu/ml/datasets.php" target="_blank">UCI ML Repository</a> - 包含農業相關資料集</li>
+                        <li><strong>Google Dataset Search</strong>: <a href="https://datasetsearch.research.google.com/" target="_blank">Google Dataset Search</a> - 搜尋全球開放資料集</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 智慧農業課程 | 本文件僅供教學使用</p>
+            <p>最後更新：2025 年 12 月</p>
+        </footer>
+    </div>
+</body>
+</html>

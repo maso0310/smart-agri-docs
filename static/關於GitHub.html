@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於GitHub</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="github">GitHub 使用指南</h1>
+<h2 id="_1">目錄</h2>
+<ol>
+<li><a href="#什麼是-github">什麼是 GitHub</a></li>
+<li><a href="#註冊帳號">註冊帳號</a></li>
+<li><a href="#基本操作">基本操作</a></li>
+<li><a href="#下載專案">下載專案</a></li>
+<li><a href="#課程相關資源連結">課程相關資源連結</a></li>
+</ol>
+<hr />
+<h2 id="github_1">什麼是 GitHub</h2>
+<p>GitHub 是全球最大的程式碼託管平台，可以用來：<br />
+- 儲存和管理程式碼<br />
+- 與他人協作開發<br />
+- 下載開源專案<br />
+- 學習他人的程式碼</p>
+<pre><code>GitHub 運作概念
+===============
+
+    你的電腦                    GitHub 雲端
+   ┌─────────┐                ┌─────────────┐
+   │  本地   │  ◄── 下載 ──── │   儲存庫    │
+   │  資料夾 │  ─── 上傳 ───► │ Repository  │
+   └─────────┘                └─────────────┘
+
+   可以下載別人分享的專案
+   也可以上傳自己的專案讓別人使用
+</code></pre>
+<hr />
+<h2 id="_2">註冊帳號</h2>
+<h3 id="1-github">步驟 1：前往 GitHub 官網</h3>
+<ol>
+<li>開啟瀏覽器，前往 https://github.com</li>
+<li>點擊右上角「Sign up」</li>
+</ol>
+<h3 id="2">步驟 2：填寫資料</h3>
+<pre><code>註冊資訊
+========
+• Email：填寫你的電子郵件
+• Password：設定密碼（至少 8 個字元）
+• Username：選擇一個使用者名稱（英文）
+</code></pre>
+<h3 id="3">步驟 3：驗證信箱</h3>
+<ul>
+<li>GitHub 會寄送驗證信到你的信箱</li>
+<li>點擊信中的連結完成驗證</li>
+</ul>
+<hr />
+<h2 id="_3">基本操作</h2>
+<h3 id="_4">瀏覽專案頁面</h3>
+<pre><code>GitHub 專案頁面結構
+==================
+
+┌─────────────────────────────────────────────────────┐
+│  使用者名稱 / 專案名稱                              │
+├─────────────────────────────────────────────────────┤
+│  [Code]  [Issues]  [Pull requests]  [Actions]       │
+├─────────────────────────────────────────────────────┤
+│                                                     │
+│  📁 src/                                            │
+│  📁 docs/                                           │
+│  📄 README.md          ← 專案說明文件               │
+│  📄 LICENSE                                         │
+│                                                     │
+├─────────────────────────────────────────────────────┤
+│  About                                              │
+│  專案簡介說明                                        │
+│                                                     │
+│  ⭐ Stars: 1.2k        ← 收藏數（越多越受歡迎）      │
+│  🍴 Forks: 234         ← 複製數                     │
+└─────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="_5">常用按鈕說明</h3>
+<table>
+<thead>
+<tr>
+<th>按鈕</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>⭐ Star</td>
+<td>收藏專案（類似按讚）</td>
+</tr>
+<tr>
+<td>🍴 Fork</td>
+<td>複製一份到自己的帳號</td>
+</tr>
+<tr>
+<td>📥 Code</td>
+<td>下載程式碼</td>
+</tr>
+<tr>
+<td>👁 Watch</td>
+<td>追蹤專案更新</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_6">下載專案</h2>
+<h3 id="1-zip">方法 1：直接下載 ZIP（最簡單）</h3>
+<pre><code>步驟：
+1. 進入專案頁面
+2. 點擊綠色的「Code」按鈕
+3. 選擇「Download ZIP」
+4. 解壓縮下載的檔案
+
+┌──────────────────────┐
+│  &lt; &gt; Code  ▼         │
+├──────────────────────┤
+│  📋 Clone            │
+│  HTTPS               │
+│  ┌────────────────┐  │
+│  │ https://github │  │
+│  └────────────────┘  │
+│                      │
+│  ─────────────────   │
+│  📥 Download ZIP ◄───┼── 點這裡下載
+└──────────────────────┘
+</code></pre>
+<h3 id="2-git">方法 2：使用 Git 指令（進階）</h3>
+<pre><code class="language-bash"># 首先安裝 Git
+# Windows: https://git-scm.com/download/win
+# Mac: brew install git
+# Linux: sudo apt install git
+
+# 複製專案到本地
+git clone https://github.com/使用者名稱/專案名稱.git
+
+# 範例：
+git clone https://github.com/raspberrypi/pico-examples.git
+</code></pre>
+<h3 id="3_1">方法 3：在樹莓派上下載</h3>
+<pre><code class="language-bash"># 樹莓派已預裝 Git，可直接使用
+cd ~/Documents
+
+# 下載專案
+git clone https://github.com/專案網址.git
+
+# 進入專案資料夾
+cd 專案名稱
+</code></pre>
+<hr />
+<h2 id="_7">課程相關資源連結</h2>
+<h3 id="arduino">一、Arduino 相關資源</h3>
+<h4 id="_8">繁體中文教學資源</h4>
+<table>
+<thead>
+<tr>
+<th>資源名稱</th>
+<th>連結</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arduino 入門教學</td>
+<td>https://github.com/oaleeapp/About-Arduino</td>
+<td>繁體中文 Arduino 基礎教學</td>
+</tr>
+<tr>
+<td>Arduino 範例程式</td>
+<td>https://github.com/arduino/arduino-examples</td>
+<td>Arduino 官方範例程式碼</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_9">推薦學習網站</h4>
+<pre><code>iT邦幫忙 Arduino 教學系列
+=========================
+網址：https://ithelp.ithome.com.tw/
+
+搜尋關鍵字：
+• Arduino 入門
+• Arduino 感測器
+• Arduino IoT
+
+許多台灣工程師撰寫的繁體中文教學文章
+</code></pre>
+<hr />
+<h3 id="raspberry-pi">二、Raspberry Pi 相關資源</h3>
+<h4 id="_10">繁體中文專案</h4>
+<table>
+<thead>
+<tr>
+<th>資源名稱</th>
+<th>連結</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>樹莓派入門教學</td>
+<td>https://github.com/victorgau/khpy_rpi_intro</td>
+<td>高雄 Python 社群製作的教學</td>
+</tr>
+<tr>
+<td>樹莓派學習資源</td>
+<td>https://github.com/dsalearning/raspberrypi</td>
+<td>繁體中文學習資源整理</td>
+</tr>
+<tr>
+<td>Raspberry Pi OS</td>
+<td>https://github.com/raspberrypi</td>
+<td>官方 GitHub 組織</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_11">官方資源</h4>
+<table>
+<thead>
+<tr>
+<th>資源名稱</th>
+<th>連結</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raspberry Pi 官方範例</td>
+<td>https://github.com/raspberrypi/pico-examples</td>
+<td>Pico 開發板範例</td>
+</tr>
+<tr>
+<td>GPIO 程式庫</td>
+<td>https://github.com/RPi-Distro/python-gpiozero</td>
+<td>Python GPIO 控制</td>
+</tr>
+<tr>
+<td>攝影機程式庫</td>
+<td>https://github.com/raspberrypi/picamera2</td>
+<td>Pi Camera 控制</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_12">推薦學習網站</h4>
+<pre><code>鳥哥的 Linux 私房菜 - 樹莓派篇
+==============================
+網址：https://linux.vbird.org/
+
+內容涵蓋：
+• Linux 基礎指令
+• 系統設定
+• 網路設定
+
+適合剛接觸 Linux 的初學者
+</code></pre>
+<hr />
+<h3 id="mqtt-iot">三、MQTT / IoT 相關資源</h3>
+<h4 id="_13">繁體中文教學</h4>
+<table>
+<thead>
+<tr>
+<th>資源名稱</th>
+<th>連結</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MQTT 教學文章</td>
+<td>https://ithelp.ithome.com.tw/articles/10268078</td>
+<td>iT邦幫忙 MQTT 入門</td>
+</tr>
+<tr>
+<td>Webduino MQTT 教學</td>
+<td>https://tutorials.webduino.io/</td>
+<td>台灣 Webduino 團隊教學</td>
+</tr>
+<tr>
+<td>Node-RED 教學</td>
+<td>https://github.com/node-red/node-red</td>
+<td>視覺化 IoT 開發工具</td>
+</tr>
+</tbody>
+</table>
+<h4 id="mqtt">MQTT 開源工具</h4>
+<table>
+<thead>
+<tr>
+<th>工具名稱</th>
+<th>連結</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Eclipse Mosquitto</td>
+<td>https://github.com/eclipse/mosquitto</td>
+<td>輕量級 MQTT Broker</td>
+</tr>
+<tr>
+<td>MQTT Explorer</td>
+<td>https://github.com/thomasnordquist/MQTT-Explorer</td>
+<td>MQTT 視覺化除錯工具</td>
+</tr>
+<tr>
+<td>Paho MQTT Python</td>
+<td>https://github.com/eclipse/paho.mqtt.python</td>
+<td>Python MQTT 程式庫</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="_14">四、智慧農業相關專案</h3>
+<h4 id="_15">農業物聯網專案</h4>
+<table>
+<thead>
+<tr>
+<th>專案名稱</th>
+<th>連結</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open Agriculture</td>
+<td>https://github.com/OpenAgricultureFoundation</td>
+<td>MIT 開放農業計畫</td>
+</tr>
+<tr>
+<td>Farm Hack</td>
+<td>https://github.com/farmhack</td>
+<td>開源農業工具</td>
+</tr>
+<tr>
+<td>AgOpenGPS</td>
+<td>https://github.com/farmerbriantee/AgOpenGPS</td>
+<td>開源農業 GPS 導航</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_16">環境監測專案</h4>
+<table>
+<thead>
+<tr>
+<th>專案名稱</th>
+<th>連結</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AirGradient</td>
+<td>https://github.com/airgradient/arduino</td>
+<td>空氣品質監測</td>
+</tr>
+<tr>
+<td>OpenMQTTGateway</td>
+<td>https://github.com/1technophile/OpenMQTTGateway</td>
+<td>多協定 IoT 閘道器</td>
+</tr>
+<tr>
+<td>ESPHome</td>
+<td>https://github.com/esphome/esphome</td>
+<td>ESP32/ESP8266 IoT 框架</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="python">五、Python 機器學習資源</h3>
+<h4 id="_17">影像辨識相關</h4>
+<table>
+<thead>
+<tr>
+<th>專案名稱</th>
+<th>連結</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ultralytics YOLOv8</td>
+<td>https://github.com/ultralytics/ultralytics</td>
+<td>物件偵測模型</td>
+</tr>
+<tr>
+<td>OpenCV</td>
+<td>https://github.com/opencv/opencv</td>
+<td>電腦視覺程式庫</td>
+</tr>
+<tr>
+<td>Teachable Machine</td>
+<td>https://github.com/googlecreativelab/teachablemachine-community</td>
+<td>Google 簡易 AI 訓練工具</td>
+</tr>
+</tbody>
+</table>
+<h4 id="ai">繁體中文 AI 教學</h4>
+<pre><code>台灣人工智慧學校
+================
+網址：https://aiacademy.tw/
+
+提供：
+• 線上課程
+• 實作專案
+• 產業應用案例
+
+適合想深入學習 AI 的學員
+</code></pre>
+<hr />
+<h2 id="_18">實用技巧</h2>
+<h3 id="_19">搜尋專案</h3>
+<pre><code>GitHub 搜尋語法
+==============
+
+在 GitHub 搜尋欄輸入：
+
+1. 基本搜尋
+   arduino sensor        ← 搜尋 Arduino 感測器專案
+
+2. 指定語言
+   raspberry pi language:python  ← 只搜尋 Python 專案
+
+3. 依星星數排序
+   mqtt stars:&gt;100       ← 搜尋超過 100 星的 MQTT 專案
+
+4. 指定時間
+   iot created:&gt;2023-01-01  ← 搜尋 2023 年後建立的 IoT 專案
+</code></pre>
+<h3 id="_20">判斷專案品質</h3>
+<pre><code>好專案的特徵
+===========
+
+✓ ⭐ Stars 數量多（受歡迎）
+✓ 📅 最近有更新（持續維護）
+✓ 📖 有完整的 README 說明
+✓ 📋 有 Issues 討論區活躍
+✓ 📜 有明確的 License（授權）
+✓ 🔢 有版本號（Release）
+
+警告訊號
+========
+✗ 好幾年沒更新
+✗ 沒有說明文件
+✗ Issues 累積很多沒人回
+✗ 沒有授權說明
+</code></pre>
+<hr />
+<h2 id="_21">常見問題</h2>
+<h3 id="q1-github">Q1: GitHub 需要付費嗎？</h3>
+<p>免費帳號就可以：<br />
+- 下載任何公開專案<br />
+- 建立無限數量的公開儲存庫<br />
+- 建立私人儲存庫（有協作人數限制）</p>
+<h3 id="q2">Q2: 下載的專案可以商用嗎？</h3>
+<p>需要查看專案的 License（授權）：</p>
+<table>
+<thead>
+<tr>
+<th>授權類型</th>
+<th>商用</th>
+<th>需要標註來源</th>
+<th>需要開源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MIT</td>
+<td>✓</td>
+<td>✓</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>Apache 2.0</td>
+<td>✓</td>
+<td>✓</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>GPL</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>CC BY</td>
+<td>✓</td>
+<td>✓</td>
+<td>✗</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q3">Q3: 如何回報專案問題？</h3>
+<ol>
+<li>進入專案頁面</li>
+<li>點擊「Issues」標籤</li>
+<li>點擊「New Issue」</li>
+<li>描述你遇到的問題</li>
+<li>送出等待回覆</li>
+</ol>
+<h3 id="q4">Q4: 專案下載後如何使用？</h3>
+<p>通常步驟：<br />
+1. 解壓縮下載的 ZIP<br />
+2. 閱讀 README.md 說明<br />
+3. 依照說明安裝相依套件<br />
+4. 執行程式</p>
+<hr />
+<h2 id="_22">延伸學習</h2>
+<h3 id="_23">線上課程資源</h3>
+<table>
+<thead>
+<tr>
+<th>平台</th>
+<th>課程</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hahow 好學校</td>
+<td>Git/GitHub 課程</td>
+<td>繁體中文付費課程</td>
+</tr>
+<tr>
+<td>YouTube</td>
+<td>Git 教學</td>
+<td>免費影片教學</td>
+</tr>
+<tr>
+<td>Codecademy</td>
+<td>Learn Git</td>
+<td>英文互動式課程</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_24">推薦書籍</h3>
+<pre><code>繁體中文書籍
+==========
+
+1.《為你自己學 Git》- 高見龍
+   適合初學者，有網頁版免費閱讀
+
+2.《Git 版本控制》- 歐萊禮
+   完整的參考書籍
+</code></pre>
+<h3 id="_25">相關工具</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GitHub Desktop</td>
+<td>圖形化 Git 工具（適合初學者）</td>
+</tr>
+<tr>
+<td>VS Code</td>
+<td>內建 Git 支援的編輯器</td>
+</tr>
+<tr>
+<td>Sourcetree</td>
+<td>另一個圖形化 Git 工具</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_26">參考資料</h2>
+<ul>
+<li><a href="https://docs.github.com/zh">GitHub 官方文件</a>（有繁體中文）</li>
+<li><a href="https://git-scm.com/">Git 官方網站</a></li>
+<li><a href="https://gitbook.tw/">為你自己學 Git</a>（繁體中文免費教學）</li>
+</ul>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

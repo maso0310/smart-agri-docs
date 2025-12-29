@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於上拉電阻與下拉電阻</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="_1">關於上拉電阻與下拉電阻</h1>
+<h2 id="_2">前言：為什麼需要上拉/下拉電阻？</h2>
+<p>當 Arduino 的輸入腳位<strong>沒有連接到任何東西</strong>時，會發生一個問題。</p>
+<hr />
+<h2 id="floating">問題：浮動狀態 (Floating)</h2>
+<h3 id="_3">什麼是浮動狀態？</h3>
+<pre><code>Arduino 輸入腳位 ──── ？？？（沒接任何東西）
+
+讀取結果：隨機！有時 HIGH，有時 LOW
+</code></pre>
+<p>輸入腳位就像一根天線，會接收到環境中的電磁雜訊，導致讀取的值<strong>不穩定</strong>、<strong>無法預測</strong>。</p>
+<h3 id="_4">水流比喻</h3>
+<p>想像輸入腳位是一個<strong>水位感測器</strong>：</p>
+<pre><code>【浮動狀態】
+水池沒有進水管也沒有排水管
+水位受天氣、蒸發、下雨影響，忽高忽低
+→ 感測器讀數完全不可靠
+</code></pre>
+<h3 id="_5">實際問題</h3>
+<pre><code class="language-cpp">// 錯誤示範：按鈕沒有上拉/下拉電阻
+pinMode(2, INPUT);  // 只設定為輸入，沒有上拉
+
+void loop() {
+  int state = digitalRead(2);
+  // state 的值會亂跳，即使沒有按按鈕
+  // 可能連續讀到：HIGH, LOW, HIGH, HIGH, LOW, LOW...
+}
+</code></pre>
+<hr />
+<h2 id="pull-up-resistor">解決方案一：上拉電阻 (Pull-up Resistor)</h2>
+<h3 id="_6">原理</h3>
+<p>用一個電阻把輸入腳位「拉」向高電位 (VCC)，讓預設狀態為 <strong>HIGH</strong>。</p>
+<h3 id="_7">電路圖</h3>
+<pre><code>        VCC (5V)
+          │
+         [R] 10kΩ（上拉電阻）
+          │
+ Arduino ─┴──────── 按鈕 ──── GND
+ 輸入腳位
+</code></pre>
+<h3 id="_8">運作方式</h3>
+<table>
+<thead>
+<tr>
+<th>按鈕狀態</th>
+<th>電流路徑</th>
+<th>腳位電壓</th>
+<th>讀取值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>沒按</td>
+<td>VCC → 電阻 → 腳位</td>
+<td>約 5V</td>
+<td><strong>HIGH</strong></td>
+</tr>
+<tr>
+<td>按下</td>
+<td>腳位直接接 GND</td>
+<td>0V</td>
+<td><strong>LOW</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_9">水流比喻</h3>
+<pre><code>【有上拉電阻】
+水池接了一條小水管持續進水（上拉電阻）
+保持高水位（HIGH）
+
+按鈕 = 排水閥
+沒按 → 水位維持高（HIGH）
+按下 → 水快速排掉，水位變低（LOW）
+</code></pre>
+<h3 id="10k">為什麼用 10kΩ？</h3>
+<ul>
+<li><strong>太小</strong>（如 100Ω）：按下按鈕時電流太大，浪費電、可能過熱</li>
+<li><strong>太大</strong>（如 1MΩ）：拉的力道不夠，容易受雜訊干擾</li>
+<li><strong>10kΩ 剛剛好</strong>：足夠穩定，電流又很小（約 0.5mA）</li>
+</ul>
+<hr />
+<h2 id="arduino-input_pullup">解決方案二：Arduino 內建上拉電阻 (INPUT_PULLUP)</h2>
+<h3 id="_10">好消息！</h3>
+<p>Arduino 內部已經有上拉電阻（約 20-50kΩ），只要啟用就好，<strong>不需要外接電阻</strong>！</p>
+<h3 id="_11">使用方式</h3>
+<pre><code class="language-cpp">pinMode(2, INPUT_PULLUP);  // 啟用內建上拉電阻
+</code></pre>
+<h3 id="_12">簡化後的電路</h3>
+<pre><code> Arduino ──────── 按鈕 ──── GND
+ 輸入腳位
+
+ （內部自動連接上拉電阻到 5V）
+</code></pre>
+<h3 id="_13">完整程式範例</h3>
+<pre><code class="language-cpp">const int BUTTON_PIN = 2;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);  // 啟用內建上拉
+}
+
+void loop() {
+  int state = digitalRead(BUTTON_PIN);
+
+  // 注意：邏輯是反的！
+  // 沒按 = HIGH，按下 = LOW
+  if (state == LOW) {
+    Serial.println(&quot;按鈕被按下&quot;);
+  }
+
+  delay(100);
+}
+</code></pre>
+<h3 id="_14">接線圖</h3>
+<pre><code>Arduino Uno         按鈕
+    D2 ─────────── 一端
+   GND ─────────── 另一端
+
+超簡單！只要兩條線！
+</code></pre>
+<hr />
+<h2 id="pull-down-resistor">解決方案三：下拉電阻 (Pull-down Resistor)</h2>
+<h3 id="_15">原理</h3>
+<p>用一個電阻把輸入腳位「拉」向低電位 (GND)，讓預設狀態為 <strong>LOW</strong>。</p>
+<h3 id="_16">電路圖</h3>
+<pre><code>        VCC (5V)
+          │
+        按鈕
+          │
+ Arduino ─┴──────── [R] 10kΩ ──── GND
+ 輸入腳位           （下拉電阻）
+</code></pre>
+<h3 id="_17">運作方式</h3>
+<table>
+<thead>
+<tr>
+<th>按鈕狀態</th>
+<th>電流路徑</th>
+<th>腳位電壓</th>
+<th>讀取值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>沒按</td>
+<td>腳位 → 電阻 → GND</td>
+<td>約 0V</td>
+<td><strong>LOW</strong></td>
+</tr>
+<tr>
+<td>按下</td>
+<td>VCC 直接接腳位</td>
+<td>5V</td>
+<td><strong>HIGH</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_18">水流比喻</h3>
+<pre><code>【有下拉電阻】
+水池底部有一個小排水孔（下拉電阻）
+水位維持在低位（LOW）
+
+按鈕 = 大水管進水
+沒按 → 水位維持低（LOW）
+按下 → 大量進水，水位變高（HIGH）
+</code></pre>
+<h3 id="_19">注意</h3>
+<p>Arduino <strong>沒有內建下拉電阻</strong>，必須自己外接！</p>
+<hr />
+<h2 id="_20">三種模式完整比較</h2>
+<h3 id="input-vs-input_pullup-vs">INPUT vs INPUT_PULLUP vs 外接電阻</h3>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>預設狀態</th>
+<th>按下狀態</th>
+<th>需要外接電阻？</th>
+<th>邏輯</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>INPUT</code>（浮動）</td>
+<td>不確定</td>
+<td>不確定</td>
+<td>必須</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>INPUT_PULLUP</code></td>
+<td>HIGH</td>
+<td>LOW</td>
+<td>不需要</td>
+<td>負邏輯</td>
+</tr>
+<tr>
+<td><code>INPUT</code> + 外接上拉</td>
+<td>HIGH</td>
+<td>LOW</td>
+<td>需要</td>
+<td>負邏輯</td>
+</tr>
+<tr>
+<td><code>INPUT</code> + 外接下拉</td>
+<td>LOW</td>
+<td>HIGH</td>
+<td>需要</td>
+<td>正邏輯</td>
+</tr>
+</tbody>
+</table>
+<h3 id="vs">正邏輯 vs 負邏輯</h3>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>按鈕沒按</th>
+<th>按鈕按下</th>
+<th>判斷「按下」的寫法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>正邏輯 (Active High)</td>
+<td>LOW</td>
+<td>HIGH</td>
+<td><code>if (state == HIGH)</code></td>
+</tr>
+<tr>
+<td>負邏輯 (Active Low)</td>
+<td>HIGH</td>
+<td>LOW</td>
+<td><code>if (state == LOW)</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_21">程式碼範例</h2>
+<h3 id="1-input_pullup">範例 1：使用 INPUT_PULLUP（推薦）</h3>
+<pre><code class="language-cpp">const int BUTTON_PIN = 2;
+const int LED_PIN = 13;
+
+void setup() {
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  pinMode(LED_PIN, OUTPUT);
+}
+
+void loop() {
+  // INPUT_PULLUP 是負邏輯：按下 = LOW
+  if (digitalRead(BUTTON_PIN) == LOW) {
+    digitalWrite(LED_PIN, HIGH);  // 按下時 LED 亮
+  } else {
+    digitalWrite(LED_PIN, LOW);   // 放開時 LED 滅
+  }
+}
+</code></pre>
+<h3 id="2">範例 2：使用外接下拉電阻</h3>
+<pre><code class="language-cpp">const int BUTTON_PIN = 2;
+const int LED_PIN = 13;
+
+void setup() {
+  pinMode(BUTTON_PIN, INPUT);  // 普通輸入，搭配外接下拉電阻
+  pinMode(LED_PIN, OUTPUT);
+}
+
+void loop() {
+  // 外接下拉是正邏輯：按下 = HIGH
+  if (digitalRead(BUTTON_PIN) == HIGH) {
+    digitalWrite(LED_PIN, HIGH);  // 按下時 LED 亮
+  } else {
+    digitalWrite(LED_PIN, LOW);   // 放開時 LED 滅
+  }
+}
+</code></pre>
+<h3 id="3">範例 3：讓負邏輯更直覺</h3>
+<p>如果覺得 <code>== LOW</code> 代表「按下」不直覺，可以這樣寫：</p>
+<pre><code class="language-cpp">const int BUTTON_PIN = 2;
+
+void setup() {
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  Serial.begin(9600);
+}
+
+void loop() {
+  // 轉換成直覺的布林值
+  bool buttonPressed = (digitalRead(BUTTON_PIN) == LOW);
+
+  if (buttonPressed) {
+    Serial.println(&quot;按鈕被按下了！&quot;);
+  }
+
+  delay(100);
+}
+</code></pre>
+<h3 id="4">範例 4：封裝成函數</h3>
+<pre><code class="language-cpp">const int BUTTON_PIN = 2;
+
+void setup() {
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  Serial.begin(9600);
+}
+
+// 自定義函數：回傳按鈕是否被按下
+bool isButtonPressed(int pin) {
+  return digitalRead(pin) == LOW;  // INPUT_PULLUP 負邏輯
+}
+
+void loop() {
+  if (isButtonPressed(BUTTON_PIN)) {
+    Serial.println(&quot;按下！&quot;);
+  }
+  delay(100);
+}
+</code></pre>
+<hr />
+<h2 id="_22">什麼時候用哪種？</h2>
+<h3 id="input_pullup">推薦使用 INPUT_PULLUP 的情況</h3>
+<table>
+<thead>
+<tr>
+<th>情境</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>接按鈕/開關</td>
+<td>省一個電阻，接線簡單</td>
+</tr>
+<tr>
+<td>快速測試/原型開發</td>
+<td>方便快速</td>
+</tr>
+<tr>
+<td>減少零件數量</td>
+<td>不需要額外電阻</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_23">需要使用外接電阻的情況</h3>
+<table>
+<thead>
+<tr>
+<th>情境</th>
+<th>建議</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>需要正邏輯（按下 = HIGH）</td>
+<td>外接下拉電阻</td>
+</tr>
+<tr>
+<td>需要特定電阻值</td>
+<td>外接上拉/下拉電阻</td>
+</tr>
+<tr>
+<td>長距離接線（雜訊多）</td>
+<td>外接較小的上拉電阻（如 4.7kΩ）</td>
+</tr>
+<tr>
+<td>多個按鈕共用電源</td>
+<td>可能需要外接電阻</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_24">不需要上拉/下拉電阻的情況</h3>
+<table>
+<thead>
+<tr>
+<th>情境</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>接感測器輸出</td>
+<td>感測器自己會輸出 HIGH/LOW</td>
+</tr>
+<tr>
+<td>接其他 Arduino 的輸出</td>
+<td>對方會主動輸出電壓</td>
+</tr>
+<tr>
+<td>接有輸出驅動的模組</td>
+<td>模組內部已處理</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_25">常見問題</h2>
+<h3 id="q1">Q1: 為什麼我的按鈕讀值會亂跳？</h3>
+<p><strong>A</strong>: 很可能沒有使用上拉/下拉電阻，腳位處於浮動狀態。</p>
+<p><strong>解決</strong>：使用 <code>INPUT_PULLUP</code> 或外接電阻。</p>
+<h3 id="q2-input_pullup">Q2: INPUT_PULLUP 為什麼是負邏輯？</h3>
+<p><strong>A</strong>: 因為內部電阻把腳位拉到 HIGH，按下按鈕才會變成 LOW。這是電路特性決定的。</p>
+<h3 id="q3-input_pullup">Q3: 可以同時用 INPUT_PULLUP 和外接下拉電阻嗎？</h3>
+<p><strong>A</strong>: 技術上可以，但沒有意義。兩個電阻會形成分壓，讀值會不穩定。請選擇其中一種。</p>
+<h3 id="q4">Q4: 內建上拉電阻的阻值是多少？</h3>
+<p><strong>A</strong>: Arduino Uno 的內建上拉電阻約 <strong>20-50kΩ</strong>，比建議的 10kΩ 大一些，但在一般情況下夠用。</p>
+<h3 id="q5-arduino">Q5: 為什麼 Arduino 沒有內建下拉電阻？</h3>
+<p><strong>A</strong>: 這是晶片設計的選擇。大多數 AVR 晶片只提供內建上拉電阻。如果需要下拉，就必須外接。</p>
+<hr />
+<h2 id="_26">電路圖總整理</h2>
+<h3 id="_27">上拉電阻（外接）</h3>
+<pre><code>        VCC (5V)
+          │
+         [R] 10kΩ
+          │
+Arduino ──┴──── 按鈕 ──── GND
+
+沒按 = HIGH
+按下 = LOW
+</code></pre>
+<h3 id="input_pullup_1">上拉電阻（內建 INPUT_PULLUP）</h3>
+<pre><code>        ┌─────────────────┐
+        │  Arduino 內部   │
+        │                 │
+        │  VCC ─[R]─┐    │
+        │           │    │
+        │  腳位 ────┴────┼──── 按鈕 ──── GND
+        │                 │
+        └─────────────────┘
+
+沒按 = HIGH
+按下 = LOW
+</code></pre>
+<h3 id="_28">下拉電阻（必須外接）</h3>
+<pre><code>        VCC (5V)
+          │
+        按鈕
+          │
+Arduino ──┴──── [R] 10kΩ ──── GND
+
+沒按 = LOW
+按下 = HIGH
+</code></pre>
+<hr />
+<h2 id="_29">重點總結</h2>
+<h3 id="_30">口訣</h3>
+<pre><code>浮動不穩要拉住
+上拉預設在高處 (HIGH)
+下拉預設在低處 (LOW)
+INPUT_PULLUP 最方便
+負邏輯按下是 LOW
+</code></pre>
+<h3 id="_31">快速選擇指南</h3>
+<pre><code>需要接按鈕？
+    │
+    ├─ 想要簡單 → INPUT_PULLUP（負邏輯）
+    │
+    └─ 想要正邏輯 → 外接下拉電阻
+</code></pre>
+<h3 id="_32">安全提醒</h3>
+<ol>
+<li><strong>不要</strong>讓輸入腳位浮動</li>
+<li><strong>不要</strong>同時使用內建上拉和外接下拉</li>
+<li><strong>記得</strong>上拉是負邏輯，下拉是正邏輯</li>
+</ol>
+<hr />
+<p><em>最後更新：2024 年 12 月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>G1_光線控制組 操作手冊</title>
+    
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+    
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1>第一組：光線控制組 操作手冊</h1>
+
+<h2>模擬情境</h2>
+<p>組成溫室所需要的<strong>光強度控制系統</strong></p>
+<p>在智慧溫室中，光線是植物生長的關鍵因素。本組將學習如何感測環境光線強度，並根據光線情況自動控制補光燈（LED）。</p>
+
+<blockquote>
+<strong>💡 你知道嗎？</strong><br>
+植物需要光線進行光合作用，不同植物對光照時間（光週期）和光線強度的需求不同。例如：番茄需要每天 14-18 小時的光照，而萵苣只需要 10-12 小時。智慧補光系統可以在陰天或夜間自動補充光線，確保植物健康生長！
+</blockquote>
+
+<hr />
+
+<h2>學習目標</h2>
+<ol>
+<li>認識 Arduino Uno 的基本架構與腳位</li>
+<li>了解類比訊號 (Analog) 與數位訊號 (Digital) 的差異</li>
+<li>學習 PWM（脈衝寬度調變）控制 LED 亮度</li>
+<li>使用光敏電阻感測環境光線</li>
+<li>使用電位器調整參數</li>
+<li>整合感測與控制，實現自動補光系統</li>
+<li>透過序列埠監視器觀察與除錯</li>
+</ol>
+
+<hr />
+
+<h2>材料清單</h2>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>數量</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arduino Uno</td>
+<td>1</td>
+<td>主控制板</td>
+</tr>
+<tr>
+<td>麵包板</td>
+<td>1</td>
+<td>830孔</td>
+</tr>
+<tr>
+<td>光敏電阻</td>
+<td>1</td>
+<td>光線感測器（CdS 光敏電阻）</td>
+</tr>
+<tr>
+<td>電位器</td>
+<td>1</td>
+<td>10K 可變電阻（用於設定閾值）</td>
+</tr>
+<tr>
+<td>LED 燈</td>
+<td>2</td>
+<td>紅色、綠色各一（5mm）</td>
+</tr>
+<tr>
+<td>220Ω 電阻</td>
+<td>2</td>
+<td>LED 限流電阻（色碼：紅紅棕金）</td>
+</tr>
+<tr>
+<td>10KΩ 電阻</td>
+<td>1</td>
+<td>光敏電阻分壓用（色碼：棕黑橙金）</td>
+</tr>
+<tr>
+<td>杜邦線</td>
+<td>若干</td>
+<td>公對公、公對母</td>
+</tr>
+<tr>
+<td>USB 傳輸線</td>
+<td>1</td>
+<td>Type-B（連接電腦用）</td>
+</tr>
+</tbody>
+</table>
+
+<h3>元件說明</h3>
+
+<h4>光敏電阻（Photoresistor / LDR）</h4>
+<p>光敏電阻是一種特殊的電阻，其電阻值會隨著光線強度改變：</p>
+<ul>
+<li><strong>光線強</strong> → 電阻值<strong>低</strong>（約 1KΩ ~ 10KΩ）</li>
+<li><strong>光線弱</strong> → 電阻值<strong>高</strong>（約 100KΩ ~ 1MΩ）</li>
+</ul>
+<p>常見型號：GL5528、GL5516，外觀為圓形，表面有蛇形線條。</p>
+
+<h4>電位器（Potentiometer）</h4>
+<p>電位器是一個三腳的可變電阻，轉動旋鈕可以改變中間腳位的輸出電壓：</p>
+<ul>
+<li>左腳：接 VCC（5V）</li>
+<li>中腳：輸出（接類比輸入腳位）</li>
+<li>右腳：接 GND</li>
+</ul>
+<p>在本專案中，電位器用來設定「光線閾值」，讓使用者可以調整系統的靈敏度。</p>
+
+<h4>LED（發光二極體）</h4>
+<p>LED 有正負極之分：</p>
+<ul>
+<li><strong>長腳</strong> = 正極（Anode）→ 接電阻後接 Arduino 腳位</li>
+<li><strong>短腳</strong> = 負極（Cathode）→ 接 GND</li>
+</ul>
+<p>LED 必須串聯限流電阻（通常 220Ω），否則會燒毀！</p>
+<hr />
+<h2>腳位對照表</h2>
+<table>
+<thead>
+<tr>
+<th>元件</th>
+<th>Arduino 腳位</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>光敏電阻</td>
+<td>A0</td>
+<td>類比輸入</td>
+</tr>
+<tr>
+<td>電位器</td>
+<td>A1</td>
+<td>類比輸入</td>
+</tr>
+<tr>
+<td>LED 1 (紅)</td>
+<td>D9</td>
+<td>PWM 輸出</td>
+</tr>
+<tr>
+<td>LED 2 (綠)</td>
+<td>D10</td>
+<td>PWM 輸出</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>接線圖說明</h2>
+<h3>光敏電阻接線</h3>
+<pre><code>       VCC (5V)
+          │
+         [光敏電阻]
+          │
+          ├──────→ A0 (Arduino)
+          │
+        [10KΩ]
+          │
+         GND
+</code></pre>
+<h3>電位器接線</h3>
+<pre><code>VCC (5V) ─── 電位器左腳
+              │
+         電位器中腳 ───→ A1 (Arduino)
+              │
+GND ──────── 電位器右腳
+</code></pre>
+<h3>LED 接線</h3>
+<pre><code>D9/D10 ───[220Ω]───[LED]─── GND
+</code></pre>
+<hr />
+
+<h2>實作步驟與程式碼</h2>
+
+<h3>步驟一：基礎 LED 控制（認識數位輸出）</h3>
+<p><strong>目標</strong>：讓 LED 閃爍，認識 <code>digitalWrite()</code></p>
+<ol>
+<li>打開 Arduino IDE</li>
+<li>輸入以下程式碼</li>
+<li>上傳並觀察 LED 閃爍</li>
+</ol>
+
+<pre><code class="language-cpp">/*
+ * 01_LED_Blink.ino
+ * 基礎 LED 閃爍程式
+ * 功能：讓 LED 每秒閃爍一次
+ */
+
+const int LED_PIN = 9;  // LED 連接的腳位
+
+void setup() {
+  pinMode(LED_PIN, OUTPUT);  // 設定腳位為輸出模式
+  Serial.begin(9600);        // 開啟序列埠通訊
+  Serial.println("LED 閃爍程式啟動！");
+}
+
+void loop() {
+  digitalWrite(LED_PIN, HIGH);  // 點亮 LED
+  Serial.println("LED 亮");
+  delay(1000);                  // 等待 1 秒
+
+  digitalWrite(LED_PIN, LOW);   // 熄滅 LED
+  Serial.println("LED 暗");
+  delay(1000);                  // 等待 1 秒
+}
+</code></pre>
+
+<blockquote>
+<strong>🔍 程式解說</strong><br>
+• <code>pinMode()</code>：設定腳位為輸入或輸出模式<br>
+• <code>digitalWrite()</code>：輸出 HIGH（5V）或 LOW（0V）<br>
+• <code>delay()</code>：暫停執行，單位為毫秒（1000ms = 1秒）
+</blockquote>
+
+<hr />
+
+<h3>步驟二：PWM 控制 LED 亮度（呼吸燈效果）</h3>
+<p><strong>目標</strong>：使用 <code>analogWrite()</code> 控制 LED 亮度</p>
+
+<pre><code class="language-cpp">/*
+ * 02_LED_PWM.ino
+ * PWM 呼吸燈效果
+ * 功能：LED 漸亮漸暗，模擬呼吸效果
+ */
+
+const int LED_PIN = 9;  // 必須使用 PWM 腳位（3, 5, 6, 9, 10, 11）
+
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+  Serial.begin(9600);
+  Serial.println("PWM 呼吸燈啟動！");
+}
+
+void loop() {
+  // 漸亮：0 → 255
+  for (int brightness = 0; brightness <= 255; brightness += 5) {
+    analogWrite(LED_PIN, brightness);
+    Serial.print("亮度: ");
+    Serial.println(brightness);
+    delay(30);
+  }
+
+  // 漸暗：255 → 0
+  for (int brightness = 255; brightness >= 0; brightness -= 5) {
+    analogWrite(LED_PIN, brightness);
+    Serial.print("亮度: ");
+    Serial.println(brightness);
+    delay(30);
+  }
+}
+</code></pre>
+
+<blockquote>
+<strong>🔍 PWM 說明</strong><br>
+• <code>analogWrite(pin, value)</code>：value 範圍是 0-255<br>
+• 0 = 完全關閉（0% duty cycle）<br>
+• 127 = 半亮（50% duty cycle）<br>
+• 255 = 全亮（100% duty cycle）
+</blockquote>
+
+<hr />
+
+<h3>步驟三：電位器控制 LED 亮度</h3>
+<p><strong>目標</strong>：讀取電位器值，即時調整 LED 亮度</p>
+
+<pre><code class="language-cpp">/*
+ * 03_Potentiometer_LED.ino
+ * 電位器控制 LED 亮度
+ * 功能：轉動電位器即時調整 LED 亮度
+ */
+
+const int POT_PIN = A1;   // 電位器接 A1
+const int LED_PIN = 9;    // LED 接 D9（PWM）
+
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+  Serial.begin(9600);
+  Serial.println("電位器控制 LED 啟動！");
+  Serial.println("轉動電位器來調整 LED 亮度");
+}
+
+void loop() {
+  // 讀取電位器值（0-1023）
+  int potValue = analogRead(POT_PIN);
+
+  // 將 0-1023 轉換為 0-255（使用 map 函數）
+  int brightness = map(potValue, 0, 1023, 0, 255);
+
+  // 設定 LED 亮度
+  analogWrite(LED_PIN, brightness);
+
+  // 顯示數值
+  Serial.print("電位器: ");
+  Serial.print(potValue);
+  Serial.print(" → LED 亮度: ");
+  Serial.println(brightness);
+
+  delay(100);  // 短暫延遲，避免序列埠輸出過快
+}
+</code></pre>
+
+<blockquote>
+<strong>🔍 map() 函數說明</strong><br>
+<code>map(value, fromLow, fromHigh, toLow, toHigh)</code><br>
+將數值從一個範圍線性對應到另一個範圍。<br>
+例如：<code>map(512, 0, 1023, 0, 255)</code> 會回傳 127
+</blockquote>
+
+<hr />
+
+<h3>步驟四：光敏電阻感測光線</h3>
+<p><strong>目標</strong>：讀取環境光線強度</p>
+
+<pre><code class="language-cpp">/*
+ * 04_Light_Sensor.ino
+ * 光敏電阻感測光線
+ * 功能：讀取並顯示環境光線強度
+ */
+
+const int LDR_PIN = A0;  // 光敏電阻接 A0
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println("光線感測器啟動！");
+  Serial.println("請用手遮擋或用手電筒照射光敏電阻");
+  Serial.println("=====================================");
+}
+
+void loop() {
+  // 讀取光敏電阻值
+  int lightValue = analogRead(LDR_PIN);
+
+  // 計算光線百分比（大約）
+  int lightPercent = map(lightValue, 0, 1023, 0, 100);
+
+  // 判斷光線狀態
+  String status;
+  if (lightValue < 200) {
+    status = "非常暗 🌙";
+  } else if (lightValue < 400) {
+    status = "偏暗 🌘";
+  } else if (lightValue < 600) {
+    status = "正常 ⛅";
+  } else if (lightValue < 800) {
+    status = "明亮 🌤️";
+  } else {
+    status = "非常亮 ☀️";
+  }
+
+  // 顯示結果
+  Serial.print("光線值: ");
+  Serial.print(lightValue);
+  Serial.print(" (");
+  Serial.print(lightPercent);
+  Serial.print("%) - ");
+  Serial.println(status);
+
+  delay(500);
+}
+</code></pre>
+
+<blockquote>
+<strong>🔍 觀察重點</strong><br>
+• 用手完全遮住光敏電阻，數值會變低（約 50-200）<br>
+• 用手電筒照射，數值會變高（約 800-1000）<br>
+• 記錄你的環境光線數值，作為設定閾值的參考
+</blockquote>
+
+<hr />
+
+<h3>步驟五：自動補光系統（整合實作）</h3>
+<p><strong>目標</strong>：當環境光線不足時，自動點亮 LED</p>
+
+<pre><code class="language-cpp">/*
+ * 05_Auto_Light.ino
+ * 自動補光系統
+ * 功能：
+ *   - 光線不足時自動點亮 LED
+ *   - 用電位器調整光線閾值
+ *   - LED 亮度與環境光線成反比
+ */
+
+const int LDR_PIN = A0;      // 光敏電阻
+const int POT_PIN = A1;      // 電位器（設定閾值）
+const int LED_RED = 9;       // 紅色 LED（補光燈）
+const int LED_GREEN = 10;    // 綠色 LED（狀態指示）
+
+void setup() {
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+  Serial.begin(9600);
+
+  Serial.println("=====================================");
+  Serial.println("   智慧溫室 - 自動補光系統 v1.0");
+  Serial.println("=====================================");
+  Serial.println("• 電位器：調整光線閾值");
+  Serial.println("• 紅色 LED：補光燈");
+  Serial.println("• 綠色 LED：光線充足指示");
+  Serial.println("=====================================");
+}
+
+void loop() {
+  // 讀取感測器
+  int lightValue = analogRead(LDR_PIN);
+  int thresholdValue = analogRead(POT_PIN);
+
+  // 將閾值轉換為與光線值相同的範圍
+  int threshold = map(thresholdValue, 0, 1023, 100, 900);
+
+  // 判斷是否需要補光
+  if (lightValue < threshold) {
+    // 光線不足 → 開啟補光燈
+    // 計算補光亮度（越暗越亮）
+    int brightness = map(lightValue, 0, threshold, 255, 50);
+    brightness = constrain(brightness, 50, 255);  // 限制範圍
+
+    analogWrite(LED_RED, brightness);
+    digitalWrite(LED_GREEN, LOW);
+
+    Serial.print("[補光中] ");
+  } else {
+    // 光線充足 → 關閉補光燈
+    analogWrite(LED_RED, 0);
+    digitalWrite(LED_GREEN, HIGH);
+
+    Serial.print("[光線OK] ");
+  }
+
+  // 顯示詳細資訊
+  Serial.print("光線: ");
+  Serial.print(lightValue);
+  Serial.print(" | 閾值: ");
+  Serial.print(threshold);
+  Serial.print(" | 狀態: ");
+  Serial.println(lightValue < threshold ? "需要補光 🔴" : "光線充足 🟢");
+
+  delay(200);
+}
+</code></pre>
+
+<blockquote>
+<strong>🔧 調整技巧</strong><br>
+1. 先觀察正常環境的光線值（例如 500）<br>
+2. 用電位器將閾值設定在稍低的位置（例如 400）<br>
+3. 用手遮住光敏電阻，觀察補光燈是否自動亮起<br>
+4. 調整電位器找到最適合的閾值
+</blockquote>
+
+<hr />
+
+<h3>步驟六：進階功能 - 平滑補光（選修）</h3>
+<p><strong>目標</strong>：讓補光燈的亮度變化更平滑，避免閃爍</p>
+
+<pre><code class="language-cpp">/*
+ * 06_Smooth_Auto_Light.ino
+ * 平滑自動補光系統（進階版）
+ * 功能：使用移動平均濾波，讓亮度變化更平滑
+ */
+
+const int LDR_PIN = A0;
+const int POT_PIN = A1;
+const int LED_RED = 9;
+const int LED_GREEN = 10;
+
+// 移動平均濾波參數
+const int NUM_READINGS = 10;  // 取樣數量
+int readings[NUM_READINGS];   // 儲存讀數的陣列
+int readIndex = 0;            // 當前索引
+int total = 0;                // 總和
+int smoothedLight = 0;        // 平滑後的光線值
+
+// 目標亮度與當前亮度（用於平滑過渡）
+int targetBrightness = 0;
+int currentBrightness = 0;
+
+void setup() {
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+  Serial.begin(9600);
+
+  // 初始化讀數陣列
+  for (int i = 0; i < NUM_READINGS; i++) {
+    readings[i] = 0;
+  }
+
+  Serial.println("平滑自動補光系統啟動！");
+}
+
+void loop() {
+  // === 移動平均濾波 ===
+  total = total - readings[readIndex];           // 減去最舊的讀數
+  readings[readIndex] = analogRead(LDR_PIN);     // 讀取新值
+  total = total + readings[readIndex];           // 加入新讀數
+  readIndex = (readIndex + 1) % NUM_READINGS;    // 移動索引
+  smoothedLight = total / NUM_READINGS;          // 計算平均值
+
+  // 讀取閾值
+  int threshold = map(analogRead(POT_PIN), 0, 1023, 100, 900);
+
+  // 計算目標亮度
+  if (smoothedLight < threshold) {
+    targetBrightness = map(smoothedLight, 0, threshold, 255, 0);
+    targetBrightness = constrain(targetBrightness, 0, 255);
+    digitalWrite(LED_GREEN, LOW);
+  } else {
+    targetBrightness = 0;
+    digitalWrite(LED_GREEN, HIGH);
+  }
+
+  // === 平滑過渡到目標亮度 ===
+  if (currentBrightness < targetBrightness) {
+    currentBrightness += 2;  // 漸亮
+    if (currentBrightness > targetBrightness) {
+      currentBrightness = targetBrightness;
+    }
+  } else if (currentBrightness > targetBrightness) {
+    currentBrightness -= 2;  // 漸暗
+    if (currentBrightness < targetBrightness) {
+      currentBrightness = targetBrightness;
+    }
+  }
+
+  analogWrite(LED_RED, currentBrightness);
+
+  // 每秒顯示一次狀態
+  static unsigned long lastPrint = 0;
+  if (millis() - lastPrint > 1000) {
+    Serial.print("光線(平滑): ");
+    Serial.print(smoothedLight);
+    Serial.print(" | 閾值: ");
+    Serial.print(threshold);
+    Serial.print(" | LED亮度: ");
+    Serial.println(currentBrightness);
+    lastPrint = millis();
+  }
+
+  delay(10);  // 短延遲讓過渡更平滑
+}
+</code></pre>
+<hr />
+
+<h2>知識補充</h2>
+
+<h3>類比訊號 vs 數位訊號</h3>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>範圍</th>
+<th>Arduino 函數</th>
+<th>應用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>數位</td>
+<td>HIGH/LOW (0/1)</td>
+<td>digitalRead/Write</td>
+<td>開關、按鈕</td>
+</tr>
+<tr>
+<td>類比輸入</td>
+<td>0-1023 (10-bit)</td>
+<td>analogRead</td>
+<td>感測器</td>
+</tr>
+<tr>
+<td>PWM 輸出</td>
+<td>0-255 (8-bit)</td>
+<td>analogWrite</td>
+<td>LED亮度、馬達轉速</td>
+</tr>
+</tbody>
+</table>
+
+<h3>PWM 原理詳解</h3>
+<p>PWM（Pulse Width Modulation）脈衝寬度調變是一種用數位訊號模擬類比輸出的技術：</p>
+
+<pre><code>
+PWM 波形示意圖：
+
+100% Duty Cycle (255)：
+████████████████████████  → 全亮
+
+50% Duty Cycle (127)：
+████████░░░░░░░░████████  → 半亮
+
+25% Duty Cycle (64)：
+████░░░░░░░░░░░░████░░░░  → 1/4 亮度
+
+0% Duty Cycle (0)：
+░░░░░░░░░░░░░░░░░░░░░░░░  → 全暗
+</code></pre>
+
+<ul>
+<li>透過快速開關（約 490Hz）模擬類比輸出</li>
+<li>開的時間越長（duty cycle 越高），亮度越亮</li>
+<li>因為切換速度很快，人眼看起來就像是連續的亮度變化</li>
+<li>Arduino PWM 腳位：<strong>3, 5, 6, 9, 10, 11</strong>（腳位旁有 ~ 符號）</li>
+</ul>
+
+<h3>分壓電路原理</h3>
+<p>光敏電阻無法直接讀取電阻值，需要與固定電阻組成分壓電路來產生可測量的電壓：</p>
+
+<pre><code>
+分壓電路原理圖：
+
+    5V (Vcc)
+      │
+      │
+    ┌─┴─┐
+    │   │  R1 = 光敏電阻
+    │ LDR│  （亮時約 1KΩ，暗時約 100KΩ）
+    │   │
+    └─┬─┘
+      │
+      ├───────→ Vout (接 Arduino A0)
+      │
+    ┌─┴─┐
+    │   │  R2 = 10KΩ 固定電阻
+    │10K│
+    │   │
+    └─┬─┘
+      │
+     GND
+
+公式：Vout = Vcc × R2 / (R1 + R2)
+
+範例計算：
+• 亮時：R1 = 1KΩ → Vout = 5V × 10K/(1K+10K) = 4.55V → ADC ≈ 930
+• 暗時：R1 = 100KΩ → Vout = 5V × 10K/(100K+10K) = 0.45V → ADC ≈ 92
+</code></pre>
+
+<h3>植物與光照的關係</h3>
+<p>不同植物對光照的需求差異很大：</p>
+
+<table>
+<thead>
+<tr>
+<th>植物類型</th>
+<th>每日光照時間</th>
+<th>光照強度 (Lux)</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>番茄、辣椒</td>
+<td>14-18 小時</td>
+<td>25,000-50,000</td>
+<td>高光需求，需要充足日照</td>
+</tr>
+<tr>
+<td>萵苣、菠菜</td>
+<td>10-14 小時</td>
+<td>15,000-25,000</td>
+<td>中等光需求</td>
+</tr>
+<tr>
+<td>香草（薄荷、羅勒）</td>
+<td>12-16 小時</td>
+<td>20,000-40,000</td>
+<td>喜光但可耐半陰</td>
+</tr>
+<tr>
+<td>草莓</td>
+<td>12-14 小時</td>
+<td>20,000-35,000</td>
+<td>需要良好光照才能結果</td>
+</tr>
+<tr>
+<td>豆芽、蘑菇</td>
+<td>0-8 小時</td>
+<td>1,000-5,000</td>
+<td>低光或無光環境</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<strong>💡 光週期效應</strong><br>
+植物會根據日照長度（光週期）決定是否開花：<br>
+• <strong>長日照植物</strong>：日照超過臨界時數才開花（如菠菜、萵苣）<br>
+• <strong>短日照植物</strong>：日照少於臨界時數才開花（如菊花、草莓）<br>
+• <strong>日中性植物</strong>：不受日照長度影響（如番茄、黃瓜）
+</blockquote>
+
+<h3>溫室補光燈的類型</h3>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>優點</th>
+<th>缺點</th>
+<th>適用場景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LED 植物燈</td>
+<td>省電、壽命長、可調光譜</td>
+<td>初期成本較高</td>
+<td>室內種植、垂直農場</td>
+</tr>
+<tr>
+<td>螢光燈管 (T5/T8)</td>
+<td>價格便宜、光線均勻</td>
+<td>效率較低、含汞</td>
+<td>育苗、葉菜類</td>
+</tr>
+<tr>
+<td>高壓鈉燈 (HPS)</td>
+<td>穿透力強、適合開花期</td>
+<td>耗電、發熱量大</td>
+<td>大型溫室、開花結果期</td>
+</tr>
+<tr>
+<td>金屬鹵化物燈 (MH)</td>
+<td>全光譜、接近自然光</td>
+<td>壽命較短、需安定器</td>
+<td>營養生長期</td>
+</tr>
+</tbody>
+</table>
+
+<h3>光譜與植物生長</h3>
+<p>植物對不同波長的光有不同反應：</p>
+<ul>
+<li><strong>藍光 (400-500nm)</strong>：促進葉片生長、抑制徒長、增加葉綠素</li>
+<li><strong>紅光 (600-700nm)</strong>：促進開花結果、光合作用效率最高</li>
+<li><strong>遠紅光 (700-800nm)</strong>：影響開花時間、莖的伸長</li>
+<li><strong>綠光 (500-600nm)</strong>：穿透葉片、到達下層葉片</li>
+</ul>
+
+<blockquote>
+這就是為什麼很多植物補光燈是<strong>紫紅色</strong>的 —— 因為它們混合了紅光和藍光，這兩種光對植物最有效！
+</blockquote>
+
+<hr />
+
+<h2>進階應用：使用 LED 燈條</h2>
+
+<p>實際溫室中，單顆 LED 的亮度不足。可以升級使用 LED 燈條：</p>
+
+<h3>方案一：單色 LED 燈條（12V）</h3>
+<pre><code class="language-cpp">/*
+ * LED 燈條控制（需要 MOSFET 或繼電器）
+ *
+ * 接線：
+ * Arduino D9 → MOSFET Gate
+ * 12V 電源 + → LED 燈條 +
+ * LED 燈條 - → MOSFET Drain
+ * MOSFET Source → GND
+ * 12V 電源 - → GND（共地）
+ */
+
+const int LED_STRIP_PIN = 9;
+
+void setup() {
+  pinMode(LED_STRIP_PIN, OUTPUT);
+}
+
+void loop() {
+  // PWM 控制燈條亮度
+  int brightness = 200;  // 0-255
+  analogWrite(LED_STRIP_PIN, brightness);
+}
+</code></pre>
+
+<h3>方案二：WS2812B 可定址 LED 燈條（彩色）</h3>
+<pre><code class="language-cpp">/*
+ * WS2812B 智慧 LED 燈條控制
+ * 需要安裝 FastLED 函式庫
+ *
+ * 接線：
+ * Arduino D6 → LED 燈條 DIN
+ * 5V → LED 燈條 VCC
+ * GND → LED 燈條 GND
+ */
+
+#include &lt;FastLED.h&gt;
+
+#define LED_PIN     6
+#define NUM_LEDS    30    // LED 數量
+#define BRIGHTNESS  200
+
+CRGB leds[NUM_LEDS];
+
+void setup() {
+  FastLED.addLeds&lt;WS2812B, LED_PIN, GRB&gt;(leds, NUM_LEDS);
+  FastLED.setBrightness(BRIGHTNESS);
+}
+
+void loop() {
+  // 模擬植物補光（紅光+藍光）
+  for (int i = 0; i < NUM_LEDS; i++) {
+    if (i % 3 == 0) {
+      leds[i] = CRGB::Red;    // 紅光
+    } else {
+      leds[i] = CRGB::Blue;   // 藍光
+    }
+  }
+  FastLED.show();
+}
+</code></pre>
+
+<hr />
+
+<h2>延伸思考</h2>
+<ol>
+<li><strong>精確光照感測</strong>：如果要感測更精確的光線強度（Lux），可以使用 BH1750 數位光照感測器，它可以直接輸出 Lux 數值。</li>
+<li><strong>日出日落模擬</strong>：如何設計一個程式，讓 LED 在早上慢慢變亮（模擬日出），晚上慢慢變暗（模擬日落）？</li>
+<li><strong>光週期控制</strong>：如何結合 RTC 時鐘模組，實現精確的光週期控制（例如每天 14 小時光照）？</li>
+<li><strong>多區域控制</strong>：如何控制多個獨立的補光區域，讓不同區域有不同的光照設定？</li>
+<li><strong>數據記錄</strong>：如何記錄每天的光照數據，並透過 Serial Plotter 繪製圖表？</li>
+</ol>
+
+<hr />
+
+<h2>常見問題與故障排除</h2>
+
+<h3>Q1: LED 不亮？</h3>
+<p><strong>檢查步驟：</strong></p>
+<ol>
+<li>確認 LED 正負極是否正確（長腳為正極）</li>
+<li>檢查 220Ω 電阻是否正確連接</li>
+<li>確認腳位設定正確（程式碼中的腳位與實際接線一致）</li>
+<li>用萬用電表測量 Arduino 腳位是否有輸出電壓</li>
+<li>嘗試更換另一顆 LED 測試（LED 可能已燒毀）</li>
+</ol>
+
+<h3>Q2: 光敏電阻讀值不變或一直是 0/1023？</h3>
+<p><strong>檢查步驟：</strong></p>
+<ol>
+<li>確認分壓電路接線正確（光敏電阻接 5V，固定電阻接 GND）</li>
+<li>確認 10KΩ 電阻確實有接到 GND</li>
+<li>檢查中間節點是否正確連接到 A0</li>
+<li>用手電筒照射測試，數值應該會明顯變化</li>
+<li>如果讀值一直是 1023：可能光敏電阻沒接好</li>
+<li>如果讀值一直是 0：可能 GND 沒接好</li>
+</ol>
+
+<h3>Q3: 電位器沒反應？</h3>
+<p><strong>檢查步驟：</strong></p>
+<ol>
+<li>確認三隻腳都有正確連接（左→5V，中→A1，右→GND）</li>
+<li>中間腳必須接到類比輸入腳位</li>
+<li>開啟序列埠監視器觀察讀值變化</li>
+<li>如果左右腳接反，電位器仍可運作，只是方向相反</li>
+</ol>
+
+<h3>Q4: 補光燈會閃爍？</h3>
+<p><strong>可能原因與解決方法：</strong></p>
+<ol>
+<li><strong>光敏電阻讀值不穩定</strong>：使用移動平均濾波（參考步驟六的程式碼）</li>
+<li><strong>閾值設定在臨界點</strong>：調整電位器，讓閾值遠離當前光線值</li>
+<li><strong>加入遲滯區間</strong>：在程式中加入「開啟閾值」和「關閉閾值」，避免頻繁切換</li>
+</ol>
+
+<pre><code class="language-cpp">// 遲滯控制範例
+const int THRESHOLD_ON = 300;   // 低於此值開燈
+const int THRESHOLD_OFF = 400;  // 高於此值關燈
+
+if (lightValue < THRESHOLD_ON) {
+  // 開燈
+} else if (lightValue > THRESHOLD_OFF) {
+  // 關燈
+}
+// 在兩個閾值之間時，維持原狀態
+</code></pre>
+
+<h3>Q5: 序列埠監視器顯示亂碼？</h3>
+<p><strong>解決方法：</strong></p>
+<ol>
+<li>確認序列埠監視器的鮑率設定與程式碼中的 <code>Serial.begin()</code> 一致</li>
+<li>程式碼使用 <code>Serial.begin(9600)</code>，監視器也要選擇 9600</li>
+<li>關閉序列埠監視器後重新上傳程式</li>
+</ol>
+
+<hr />
+
+<h2>實作檢核表</h2>
+
+<p>完成每個步驟後，在方框中打勾 ✓</p>
+
+<table>
+<thead>
+<tr>
+<th>步驟</th>
+<th>項目</th>
+<th>完成</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>LED 可以閃爍（digitalWrite 測試成功）</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LED 呼吸燈效果正常（PWM 測試成功）</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>3</td>
+<td>電位器可以控制 LED 亮度</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>4</td>
+<td>光敏電阻可以感測光線（序列埠顯示正確數值）</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>5</td>
+<td>自動補光系統運作正常</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>6</td>
+<td>（選修）平滑補光系統</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>-</td>
+<td>可以向老師解釋 PWM 的原理</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>-</td>
+<td>可以向老師解釋分壓電路的原理</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>-</td>
+<td>可以獨立修改閾值設定</td>
+<td>☐</td>
+</tr>
+</tbody>
+</table>
+
+<hr />
+
+<h2>相關文件連結</h2>
+<ul>
+<li><a href="關於基礎電子學與Arduino.html">基礎電子學與 Arduino</a></li>
+<li><a href="關於Arduino程式常用語法.html">Arduino 程式常用語法</a></li>
+<li><a href="關於電阻色碼與使用情境.html">電阻色碼與使用情境</a></li>
+<li><a href="關於麵包板與基礎接線.html">麵包板與基礎接線</a></li>
+<li><a href="關於LED排燈挑選.html">LED 排燈挑選指南</a></li>
+<li><a href="分組任務總覽.html">返回分組任務總覽</a></li>
+</ul>
+
+
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

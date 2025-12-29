@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>開源地理空間資料教學 - SoilGrids、Copernicus 與農業應用</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e8e8e8;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #4fd1c5, #38a169);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a0aec0;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+
+        .section {
+            background: rgba(45, 55, 72, 0.6);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 4px solid #38a169;
+        }
+
+        h2 {
+            color: #4fd1c5;
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            color: #68d391;
+            font-size: 1.3em;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(104, 211, 145, 0.3);
+        }
+
+        h4 {
+            color: #9ae6b4;
+            font-size: 1.1em;
+            margin: 20px 0 10px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #cbd5e0;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+            border: 1px solid #30363d;
+        }
+
+        .code-block code {
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 0.9em;
+            color: #e6edf3;
+            white-space: pre;
+        }
+
+        .code-block .comment { color: #8b949e; }
+        .code-block .keyword { color: #ff7b72; }
+        .code-block .string { color: #a5d6ff; }
+        .code-block .function { color: #d2a8ff; }
+        .code-block .number { color: #79c0ff; }
+        .code-block .variable { color: #ffa657; }
+
+        .tip-box {
+            background: linear-gradient(135deg, rgba(56, 161, 105, 0.2), rgba(72, 187, 120, 0.1));
+            border: 1px solid rgba(72, 187, 120, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .tip-box.info {
+            background: linear-gradient(135deg, rgba(66, 153, 225, 0.2), rgba(99, 179, 237, 0.1));
+            border-color: rgba(99, 179, 237, 0.4);
+        }
+
+        .tip-box.warning {
+            background: linear-gradient(135deg, rgba(237, 137, 54, 0.2), rgba(246, 173, 85, 0.1));
+            border-color: rgba(246, 173, 85, 0.4);
+        }
+
+        .tip-box h4 {
+            margin-top: 0;
+            color: #68d391;
+        }
+
+        .tip-box.info h4 { color: #63b3ed; }
+        .tip-box.warning h4 { color: #f6ad55; }
+
+        ul, ol {
+            margin: 15px 0 15px 25px;
+            color: #cbd5e0;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .data-source-card {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid rgba(79, 209, 197, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .data-source-card:hover {
+            transform: translateX(5px);
+            border-color: rgba(79, 209, 197, 0.6);
+        }
+
+        .data-source-card h4 {
+            color: #4fd1c5;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .data-source-card .url {
+            font-family: monospace;
+            background: rgba(79, 209, 197, 0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            color: #4fd1c5;
+            word-break: break-all;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .badge.free { background: #276749; color: #9ae6b4; }
+        .badge.api { background: #2c5282; color: #90cdf4; }
+        .badge.satellite { background: #553c9a; color: #d6bcfa; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(26, 32, 44, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(79, 209, 197, 0.2);
+        }
+
+        th {
+            background: rgba(79, 209, 197, 0.2);
+            color: #4fd1c5;
+            font-weight: 600;
+        }
+
+        td {
+            color: #cbd5e0;
+        }
+
+        .diagram {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px dashed rgba(79, 209, 197, 0.4);
+        }
+
+        .diagram-flow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .diagram-box {
+            background: linear-gradient(135deg, rgba(56, 161, 105, 0.3), rgba(72, 187, 120, 0.2));
+            border: 1px solid rgba(72, 187, 120, 0.5);
+            border-radius: 10px;
+            padding: 15px 20px;
+            min-width: 120px;
+        }
+
+        .diagram-box.satellite {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.2));
+            border-color: rgba(118, 75, 162, 0.5);
+        }
+
+        .diagram-box.data {
+            background: linear-gradient(135deg, rgba(237, 137, 54, 0.3), rgba(246, 173, 85, 0.2));
+            border-color: rgba(246, 173, 85, 0.5);
+        }
+
+        .diagram-arrow {
+            font-size: 1.5em;
+            color: #4fd1c5;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #4fd1c5;
+            text-decoration: none;
+            font-size: 0.95em;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .toc {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(79, 209, 197, 0.3);
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            border-bottom: none;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .toc li {
+            margin-bottom: 10px;
+        }
+
+        .toc a {
+            color: #68d391;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            color: #9ae6b4;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .section { padding: 20px; }
+            .diagram-flow { flex-direction: column; }
+            .diagram-arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="文件索引.html" class="back-link">← 返回文件索引</a>
+
+        <h1>開源地理空間資料教學</h1>
+        <p class="subtitle">SoilGrids、Copernicus 與農業遙測應用</p>
+
+        <!-- 目錄 -->
+        <div class="toc">
+            <h3>目錄</h3>
+            <ul>
+                <li><a href="#overview">1. 開源地理資料概述</a></li>
+                <li><a href="#soilgrids">2. SoilGrids 土壤資料</a></li>
+                <li><a href="#copernicus">3. Copernicus 哥白尼計畫</a></li>
+                <li><a href="#sentinel">4. Sentinel 衛星資料</a></li>
+                <li><a href="#other-sources">5. 其他開源資料來源</a></li>
+                <li><a href="#python-integration">6. Python 整合應用</a></li>
+                <li><a href="#agriculture-cases">7. 農業應用案例</a></li>
+            </ul>
+        </div>
+
+        <!-- 概述 -->
+        <section class="section" id="overview">
+            <h2>1. 開源地理資料概述</h2>
+
+            <p>在智慧農業領域，開源地理空間資料提供了豐富的環境資訊，包括土壤特性、衛星影像、氣候資料等。這些資料可用於：</p>
+
+            <ul>
+                <li><strong>精準農業</strong>：根據土壤特性進行差異化管理</li>
+                <li><strong>作物監測</strong>：利用衛星影像追蹤作物生長狀況</li>
+                <li><strong>災害評估</strong>：監測乾旱、洪水等自然災害影響</li>
+                <li><strong>產量預測</strong>：結合多源資料建立預測模型</li>
+            </ul>
+
+            <div class="diagram">
+                <p style="margin-bottom: 15px; color: #a0aec0;">開源地理資料生態系統</p>
+                <div class="diagram-flow">
+                    <div class="diagram-box satellite">衛星觀測<br><small>Sentinel, Landsat</small></div>
+                    <span class="diagram-arrow">→</span>
+                    <div class="diagram-box data">資料平台<br><small>Copernicus, NASA</small></div>
+                    <span class="diagram-arrow">→</span>
+                    <div class="diagram-box">API 存取<br><small>REST, WCS, WMS</small></div>
+                    <span class="diagram-arrow">→</span>
+                    <div class="diagram-box" style="background: linear-gradient(135deg, rgba(79, 209, 197, 0.3), rgba(99, 179, 237, 0.2)); border-color: rgba(79, 209, 197, 0.5);">農業應用<br><small>分析、決策</small></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SoilGrids -->
+        <section class="section" id="soilgrids">
+            <h2>2. SoilGrids 土壤資料</h2>
+
+            <p>SoilGrids 是由 ISRIC（國際土壤參考與資訊中心）提供的全球土壤資料系統，提供 250 公尺解析度的土壤特性預測圖。</p>
+
+            <div class="data-source-card">
+                <h4>SoilGrids 2.0 <span class="badge free">免費</span><span class="badge api">REST API</span></h4>
+                <p>全球土壤屬性預測資料，涵蓋多個深度層次</p>
+                <div class="url">https://soilgrids.org/</div>
+            </div>
+
+            <h3>可用的土壤屬性</h3>
+
+            <table>
+                <tr>
+                    <th>屬性代碼</th>
+                    <th>說明</th>
+                    <th>單位</th>
+                </tr>
+                <tr>
+                    <td>soc</td>
+                    <td>土壤有機碳含量</td>
+                    <td>g/kg (dg/kg)</td>
+                </tr>
+                <tr>
+                    <td>phh2o</td>
+                    <td>土壤 pH 值（水溶液）</td>
+                    <td>pH × 10</td>
+                </tr>
+                <tr>
+                    <td>nitrogen</td>
+                    <td>總氮含量</td>
+                    <td>cg/kg</td>
+                </tr>
+                <tr>
+                    <td>clay</td>
+                    <td>黏土含量</td>
+                    <td>g/kg</td>
+                </tr>
+                <tr>
+                    <td>sand</td>
+                    <td>砂土含量</td>
+                    <td>g/kg</td>
+                </tr>
+                <tr>
+                    <td>silt</td>
+                    <td>粉土含量</td>
+                    <td>g/kg</td>
+                </tr>
+                <tr>
+                    <td>bdod</td>
+                    <td>土壤容重</td>
+                    <td>cg/cm³</td>
+                </tr>
+                <tr>
+                    <td>cec</td>
+                    <td>陽離子交換容量</td>
+                    <td>mmol(c)/kg</td>
+                </tr>
+                <tr>
+                    <td>cfvo</td>
+                    <td>粗礫含量</td>
+                    <td>cm³/dm³</td>
+                </tr>
+                <tr>
+                    <td>ocd</td>
+                    <td>有機碳密度</td>
+                    <td>hg/m³</td>
+                </tr>
+            </table>
+
+            <h3>深度層次</h3>
+            <p>SoilGrids 提供六個標準深度層的資料：</p>
+            <ul>
+                <li><code>0-5cm</code> - 表土層</li>
+                <li><code>5-15cm</code> - 淺層</li>
+                <li><code>15-30cm</code> - 耕作層</li>
+                <li><code>30-60cm</code> - 根系層</li>
+                <li><code>60-100cm</code> - 深層</li>
+                <li><code>100-200cm</code> - 底土層</li>
+            </ul>
+
+            <h3>使用 REST API 取得資料</h3>
+
+            <div class="code-block"><code><span class="keyword">import</span> requests
+<span class="keyword">import</span> json
+
+<span class="keyword">def</span> <span class="function">get_soilgrids_data</span>(lat, lon, properties=<span class="keyword">None</span>, depths=<span class="keyword">None</span>):
+    <span class="string">"""
+    從 SoilGrids API 取得指定位置的土壤資料
+
+    參數:
+        lat: 緯度
+        lon: 經度
+        properties: 土壤屬性列表，如 ['soc', 'phh2o', 'clay']
+        depths: 深度列表，如 ['0-5cm', '5-15cm']
+    """</span>
+
+    <span class="comment"># API 端點</span>
+    base_url = <span class="string">"https://rest.isric.org/soilgrids/v2.0/properties/query"</span>
+
+    <span class="comment"># 預設屬性和深度</span>
+    <span class="keyword">if</span> properties <span class="keyword">is None</span>:
+        properties = [<span class="string">'soc'</span>, <span class="string">'phh2o'</span>, <span class="string">'clay'</span>, <span class="string">'sand'</span>, <span class="string">'nitrogen'</span>]
+    <span class="keyword">if</span> depths <span class="keyword">is None</span>:
+        depths = [<span class="string">'0-5cm'</span>, <span class="string">'5-15cm'</span>, <span class="string">'15-30cm'</span>]
+
+    <span class="comment"># 建立查詢參數</span>
+    params = {
+        <span class="string">'lon'</span>: lon,
+        <span class="string">'lat'</span>: lat,
+        <span class="string">'property'</span>: properties,
+        <span class="string">'depth'</span>: depths,
+        <span class="string">'value'</span>: <span class="string">'mean'</span>  <span class="comment"># 可選: mean, Q0.05, Q0.5, Q0.95, uncertainty</span>
+    }
+
+    <span class="comment"># 發送請求</span>
+    response = requests.get(base_url, params=params)
+
+    <span class="keyword">if</span> response.status_code == <span class="number">200</span>:
+        <span class="keyword">return</span> response.json()
+    <span class="keyword">else</span>:
+        <span class="keyword">raise</span> Exception(<span class="string">f"API 錯誤: {response.status_code}"</span>)
+
+<span class="comment"># 範例：查詢台灣某農田位置的土壤資料</span>
+lat, lon = <span class="number">24.1477</span>, <span class="number">120.6736</span>  <span class="comment"># 台中地區</span>
+
+<span class="keyword">try</span>:
+    soil_data = get_soilgrids_data(lat, lon)
+
+    <span class="comment"># 解析結果</span>
+    <span class="keyword">for</span> layer <span class="keyword">in</span> soil_data[<span class="string">'properties'</span>][<span class="string">'layers'</span>]:
+        prop_name = layer[<span class="string">'name'</span>]
+        <span class="keyword">print</span>(<span class="string">f"\n土壤屬性: {prop_name}"</span>)
+
+        <span class="keyword">for</span> depth <span class="keyword">in</span> layer[<span class="string">'depths'</span>]:
+            depth_label = depth[<span class="string">'label'</span>]
+            mean_value = depth[<span class="string">'values'</span>][<span class="string">'mean'</span>]
+            <span class="keyword">print</span>(<span class="string">f"  {depth_label}: {mean_value}"</span>)
+
+<span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+    <span class="keyword">print</span>(<span class="string">f"錯誤: {e}"</span>)</code></div>
+
+            <h3>下載柵格資料（GeoTIFF）</h3>
+
+            <div class="code-block"><code><span class="keyword">import</span> requests
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+
+<span class="keyword">def</span> <span class="function">download_soilgrids_tiff</span>(property_name, depth, bbox, output_path):
+    <span class="string">"""
+    下載指定區域的 SoilGrids GeoTIFF 資料
+
+    參數:
+        property_name: 土壤屬性 (如 'soc', 'phh2o')
+        depth: 深度 (如 '0-5cm')
+        bbox: 邊界框 [west, south, east, north]
+        output_path: 輸出檔案路徑
+    """</span>
+
+    <span class="comment"># WCS (Web Coverage Service) 端點</span>
+    base_url = <span class="string">"https://maps.isric.org/mapserv"</span>
+
+    <span class="comment"># 建立 WCS 請求</span>
+    params = {
+        <span class="string">'map'</span>: <span class="string">f'/map/{property_name}.map'</span>,
+        <span class="string">'SERVICE'</span>: <span class="string">'WCS'</span>,
+        <span class="string">'VERSION'</span>: <span class="string">'2.0.1'</span>,
+        <span class="string">'REQUEST'</span>: <span class="string">'GetCoverage'</span>,
+        <span class="string">'COVERAGEID'</span>: <span class="string">f'{property_name}_{depth}_mean'</span>,
+        <span class="string">'FORMAT'</span>: <span class="string">'image/tiff'</span>,
+        <span class="string">'SUBSET'</span>: [
+            <span class="string">f'X({bbox[0]},{bbox[2]})'</span>,
+            <span class="string">f'Y({bbox[1]},{bbox[3]})'</span>
+        ],
+        <span class="string">'SUBSETTINGCRS'</span>: <span class="string">'http://www.opengis.net/def/crs/EPSG/0/4326'</span>
+    }
+
+    response = requests.get(base_url, params=params, stream=<span class="keyword">True</span>)
+
+    <span class="keyword">if</span> response.status_code == <span class="number">200</span>:
+        <span class="keyword">with</span> <span class="function">open</span>(output_path, <span class="string">'wb'</span>) <span class="keyword">as</span> f:
+            <span class="keyword">for</span> chunk <span class="keyword">in</span> response.iter_content(chunk_size=<span class="number">8192</span>):
+                f.write(chunk)
+        <span class="keyword">print</span>(<span class="string">f"已下載: {output_path}"</span>)
+    <span class="keyword">else</span>:
+        <span class="keyword">raise</span> Exception(<span class="string">f"下載失敗: {response.status_code}"</span>)
+
+<span class="comment"># 範例：下載台灣中部地區的有機碳資料</span>
+bbox = [<span class="number">120.0</span>, <span class="number">23.5</span>, <span class="number">121.5</span>, <span class="number">25.0</span>]  <span class="comment"># 西、南、東、北</span>
+download_soilgrids_tiff(<span class="string">'soc'</span>, <span class="string">'0-5cm'</span>, bbox, <span class="string">'taiwan_soc_0-5cm.tif'</span>)</code></div>
+
+            <div class="tip-box info">
+                <h4>API 使用限制</h4>
+                <p>SoilGrids REST API 有請求頻率限制。建議：</p>
+                <ul>
+                    <li>批次查詢時加入適當延遲（如每秒 1-2 次請求）</li>
+                    <li>大範圍區域建議下載 GeoTIFF 格式進行離線處理</li>
+                    <li>快取已查詢過的資料以減少重複請求</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Copernicus -->
+        <section class="section" id="copernicus">
+            <h2>3. Copernicus 哥白尼計畫</h2>
+
+            <p>Copernicus（哥白尼）是歐盟的地球觀測計畫，提供免費、開放的環境監測資料。對農業應用特別重要的服務包括：</p>
+
+            <div class="data-source-card">
+                <h4>Copernicus Open Access Hub <span class="badge free">免費</span><span class="badge satellite">衛星資料</span></h4>
+                <p>Sentinel 系列衛星原始資料下載平台</p>
+                <div class="url">https://scihub.copernicus.eu/</div>
+            </div>
+
+            <div class="data-source-card">
+                <h4>Copernicus Climate Data Store (CDS) <span class="badge free">免費</span><span class="badge api">API</span></h4>
+                <p>氣候再分析資料、季節預報、歷史氣候資料</p>
+                <div class="url">https://cds.climate.copernicus.eu/</div>
+            </div>
+
+            <div class="data-source-card">
+                <h4>Copernicus Land Monitoring Service <span class="badge free">免費</span></h4>
+                <p>土地覆蓋/利用、植被指標、水體監測</p>
+                <div class="url">https://land.copernicus.eu/</div>
+            </div>
+
+            <h3>主要服務類別</h3>
+
+            <table>
+                <tr>
+                    <th>服務</th>
+                    <th>內容</th>
+                    <th>農業應用</th>
+                </tr>
+                <tr>
+                    <td>大氣監測 (CAMS)</td>
+                    <td>空氣品質、太陽輻射、氣溶膠</td>
+                    <td>光合作用評估、噴藥時機</td>
+                </tr>
+                <tr>
+                    <td>海洋監測 (CMEMS)</td>
+                    <td>海水溫度、海流、水質</td>
+                    <td>沿海養殖、鹽害預警</td>
+                </tr>
+                <tr>
+                    <td>土地監測 (CLMS)</td>
+                    <td>植被、土地覆蓋、水體</td>
+                    <td>作物監測、灌溉管理</td>
+                </tr>
+                <tr>
+                    <td>氣候變遷 (C3S)</td>
+                    <td>氣候再分析、季節預報</td>
+                    <td>長期規劃、災害預警</td>
+                </tr>
+                <tr>
+                    <td>緊急管理 (EMS)</td>
+                    <td>洪水、火災、乾旱監測</td>
+                    <td>災害評估、保險理賠</td>
+                </tr>
+            </table>
+
+            <h3>使用 CDS API 下載氣候資料</h3>
+
+            <div class="tip-box warning">
+                <h4>前置準備</h4>
+                <ol>
+                    <li>在 CDS 網站註冊帳號：<a href="https://cds.climate.copernicus.eu/" style="color: #f6ad55;">https://cds.climate.copernicus.eu/</a></li>
+                    <li>取得 API Key（在個人資料頁面）</li>
+                    <li>建立 <code>~/.cdsapirc</code> 檔案儲存認證資訊</li>
+                </ol>
+            </div>
+
+            <div class="code-block"><code><span class="comment"># 安裝 CDS API 套件</span>
+<span class="comment"># pip install cdsapi</span>
+
+<span class="keyword">import</span> cdsapi
+
+<span class="comment"># 建立 API 客戶端</span>
+client = cdsapi.Client()
+
+<span class="comment"># 下載 ERA5 再分析資料（溫度、降水）</span>
+client.retrieve(
+    <span class="string">'reanalysis-era5-single-levels'</span>,
+    {
+        <span class="string">'product_type'</span>: <span class="string">'reanalysis'</span>,
+        <span class="string">'variable'</span>: [
+            <span class="string">'2m_temperature'</span>,
+            <span class="string">'total_precipitation'</span>,
+            <span class="string">'soil_temperature_level_1'</span>,
+            <span class="string">'volumetric_soil_water_layer_1'</span>
+        ],
+        <span class="string">'year'</span>: <span class="string">'2024'</span>,
+        <span class="string">'month'</span>: [<span class="string">'01'</span>, <span class="string">'02'</span>, <span class="string">'03'</span>],
+        <span class="string">'day'</span>: [<span class="string">f'{i:02d}'</span> <span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">32</span>)],
+        <span class="string">'time'</span>: [<span class="string">'00:00'</span>, <span class="string">'06:00'</span>, <span class="string">'12:00'</span>, <span class="string">'18:00'</span>],
+        <span class="string">'area'</span>: [<span class="number">26</span>, <span class="number">119</span>, <span class="number">21</span>, <span class="number">123</span>],  <span class="comment"># 北、西、南、東（台灣範圍）</span>
+        <span class="string">'format'</span>: <span class="string">'netcdf'</span>
+    },
+    <span class="string">'taiwan_era5_2024_q1.nc'</span>
+)
+
+<span class="keyword">print</span>(<span class="string">"資料下載完成！"</span>)</code></div>
+
+            <h3>讀取與分析 ERA5 資料</h3>
+
+            <div class="code-block"><code><span class="keyword">import</span> xarray <span class="keyword">as</span> xr
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+
+<span class="comment"># 讀取 NetCDF 檔案</span>
+ds = xr.open_dataset(<span class="string">'taiwan_era5_2024_q1.nc'</span>)
+
+<span class="comment"># 查看資料集結構</span>
+<span class="keyword">print</span>(ds)
+
+<span class="comment"># 取得溫度資料（轉換為攝氏度）</span>
+temp = ds[<span class="string">'t2m'</span>] - <span class="number">273.15</span>  <span class="comment"># Kelvin 轉 Celsius</span>
+
+<span class="comment"># 計算月平均溫度</span>
+monthly_temp = temp.resample(time=<span class="string">'1M'</span>).mean()
+
+<span class="comment"># 繪製時間序列</span>
+plt.figure(figsize=(<span class="number">12</span>, <span class="number">5</span>))
+monthly_temp.mean(dim=[<span class="string">'latitude'</span>, <span class="string">'longitude'</span>]).plot()
+plt.title(<span class="string">'台灣區域平均溫度'</span>)
+plt.ylabel(<span class="string">'溫度 (°C)'</span>)
+plt.grid(<span class="keyword">True</span>, alpha=<span class="number">0.3</span>)
+plt.savefig(<span class="string">'taiwan_temperature.png'</span>, dpi=<span class="number">150</span>)
+plt.show()</code></div>
+        </section>
+
+        <!-- Sentinel -->
+        <section class="section" id="sentinel">
+            <h2>4. Sentinel 衛星資料</h2>
+
+            <p>Sentinel 是 Copernicus 計畫的衛星系列，提供多種類型的地球觀測資料：</p>
+
+            <table>
+                <tr>
+                    <th>衛星</th>
+                    <th>類型</th>
+                    <th>解析度</th>
+                    <th>重訪週期</th>
+                    <th>農業應用</th>
+                </tr>
+                <tr>
+                    <td>Sentinel-1</td>
+                    <td>雷達 (SAR)</td>
+                    <td>5-20m</td>
+                    <td>6 天</td>
+                    <td>水稻監測、洪水偵測</td>
+                </tr>
+                <tr>
+                    <td>Sentinel-2</td>
+                    <td>多光譜</td>
+                    <td>10-60m</td>
+                    <td>5 天</td>
+                    <td>植生指標、作物分類</td>
+                </tr>
+                <tr>
+                    <td>Sentinel-3</td>
+                    <td>多用途</td>
+                    <td>300m</td>
+                    <td>1 天</td>
+                    <td>大區域監測、海溫</td>
+                </tr>
+                <tr>
+                    <td>Sentinel-5P</td>
+                    <td>大氣成分</td>
+                    <td>7km</td>
+                    <td>1 天</td>
+                    <td>空氣品質、甲烷監測</td>
+                </tr>
+            </table>
+
+            <h3>Sentinel-2 波段配置</h3>
+
+            <table>
+                <tr>
+                    <th>波段</th>
+                    <th>中心波長</th>
+                    <th>解析度</th>
+                    <th>用途</th>
+                </tr>
+                <tr>
+                    <td>B2 (Blue)</td>
+                    <td>490 nm</td>
+                    <td>10m</td>
+                    <td>大氣校正、水體</td>
+                </tr>
+                <tr>
+                    <td>B3 (Green)</td>
+                    <td>560 nm</td>
+                    <td>10m</td>
+                    <td>植被活力、水質</td>
+                </tr>
+                <tr>
+                    <td>B4 (Red)</td>
+                    <td>665 nm</td>
+                    <td>10m</td>
+                    <td>葉綠素吸收</td>
+                </tr>
+                <tr>
+                    <td>B5 (Red Edge 1)</td>
+                    <td>705 nm</td>
+                    <td>20m</td>
+                    <td>植被分類</td>
+                </tr>
+                <tr>
+                    <td>B6 (Red Edge 2)</td>
+                    <td>740 nm</td>
+                    <td>20m</td>
+                    <td>葉面積指數</td>
+                </tr>
+                <tr>
+                    <td>B7 (Red Edge 3)</td>
+                    <td>783 nm</td>
+                    <td>20m</td>
+                    <td>植被健康</td>
+                </tr>
+                <tr>
+                    <td>B8 (NIR)</td>
+                    <td>842 nm</td>
+                    <td>10m</td>
+                    <td>生物量、NDVI</td>
+                </tr>
+                <tr>
+                    <td>B8A (NIR narrow)</td>
+                    <td>865 nm</td>
+                    <td>20m</td>
+                    <td>植被水分</td>
+                </tr>
+                <tr>
+                    <td>B11 (SWIR 1)</td>
+                    <td>1610 nm</td>
+                    <td>20m</td>
+                    <td>土壤/植被水分</td>
+                </tr>
+                <tr>
+                    <td>B12 (SWIR 2)</td>
+                    <td>2190 nm</td>
+                    <td>20m</td>
+                    <td>土壤礦物、枯落物</td>
+                </tr>
+            </table>
+
+            <h3>使用 Sentinel Hub 取得資料</h3>
+
+            <div class="data-source-card">
+                <h4>Sentinel Hub <span class="badge api">API</span></h4>
+                <p>雲端處理平台，提供即時衛星影像處理和分析</p>
+                <div class="url">https://www.sentinel-hub.com/</div>
+            </div>
+
+            <div class="code-block"><code><span class="comment"># 安裝: pip install sentinelhub</span>
+
+<span class="keyword">from</span> sentinelhub <span class="keyword">import</span> (
+    SHConfig, BBox, CRS, DataCollection,
+    SentinelHubRequest, MimeType, bbox_to_dimensions
+)
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="comment"># 設定認證（需要註冊 Sentinel Hub 帳號）</span>
+config = SHConfig()
+config.sh_client_id = <span class="string">'YOUR_CLIENT_ID'</span>
+config.sh_client_secret = <span class="string">'YOUR_CLIENT_SECRET'</span>
+
+<span class="comment"># 定義感興趣區域（台中農業區）</span>
+bbox = BBox(bbox=[<span class="number">120.5</span>, <span class="number">24.0</span>, <span class="number">120.8</span>, <span class="number">24.3</span>], crs=CRS.WGS84)
+resolution = <span class="number">10</span>  <span class="comment"># 10 公尺解析度</span>
+size = bbox_to_dimensions(bbox, resolution=resolution)
+
+<span class="comment"># 定義 NDVI 計算腳本</span>
+evalscript = <span class="string">"""
+//VERSION=3
+function setup() {
+    return {
+        input: ["B04", "B08"],
+        output: { bands: 1, sampleType: "FLOAT32" }
+    };
+}
+
+function evaluatePixel(sample) {
+    let ndvi = (sample.B08 - sample.B04) / (sample.B08 + sample.B04);
+    return [ndvi];
+}
+"""</span>
+
+<span class="comment"># 建立請求</span>
+request = SentinelHubRequest(
+    evalscript=evalscript,
+    input_data=[
+        SentinelHubRequest.input_data(
+            data_collection=DataCollection.SENTINEL2_L2A,
+            time_interval=(<span class="string">'2024-03-01'</span>, <span class="string">'2024-03-31'</span>),
+            maxcc=<span class="number">0.3</span>  <span class="comment"># 雲覆蓋率 < 30%</span>
+        )
+    ],
+    responses=[SentinelHubRequest.output_response(<span class="string">'default'</span>, MimeType.TIFF)],
+    bbox=bbox,
+    size=size,
+    config=config
+)
+
+<span class="comment"># 取得 NDVI 影像</span>
+ndvi_image = request.get_data()[<span class="number">0</span>]
+<span class="keyword">print</span>(<span class="string">f"NDVI 影像尺寸: {ndvi_image.shape}"</span>)
+<span class="keyword">print</span>(<span class="string">f"NDVI 範圍: {np.nanmin(ndvi_image):.2f} ~ {np.nanmax(ndvi_image):.2f}"</span>)</code></div>
+
+            <h3>使用 Google Earth Engine</h3>
+
+            <div class="tip-box info">
+                <h4>免費存取大量資料</h4>
+                <p>Google Earth Engine (GEE) 提供免費存取 Sentinel、Landsat 等衛星資料，並支援雲端運算，適合大規模分析。</p>
+            </div>
+
+            <div class="code-block"><code><span class="comment"># 安裝: pip install earthengine-api</span>
+<span class="comment"># 首次使用需要認證: earthengine authenticate</span>
+
+<span class="keyword">import</span> ee
+
+<span class="comment"># 初始化</span>
+ee.Initialize()
+
+<span class="comment"># 定義研究區域（台灣中部農業區）</span>
+roi = ee.Geometry.Rectangle([<span class="number">120.5</span>, <span class="number">24.0</span>, <span class="number">120.8</span>, <span class="number">24.3</span>])
+
+<span class="comment"># 載入 Sentinel-2 影像集</span>
+s2 = ee.ImageCollection(<span class="string">'COPERNICUS/S2_SR_HARMONIZED'</span>) \
+    .filterBounds(roi) \
+    .filterDate(<span class="string">'2024-03-01'</span>, <span class="string">'2024-06-30'</span>) \
+    .filter(ee.Filter.lt(<span class="string">'CLOUDY_PIXEL_PERCENTAGE'</span>, <span class="number">20</span>))
+
+<span class="keyword">print</span>(<span class="string">f"找到 {s2.size().getInfo()} 張影像"</span>)
+
+<span class="comment"># 計算 NDVI</span>
+<span class="keyword">def</span> <span class="function">add_ndvi</span>(image):
+    ndvi = image.normalizedDifference([<span class="string">'B8'</span>, <span class="string">'B4'</span>]).rename(<span class="string">'NDVI'</span>)
+    <span class="keyword">return</span> image.addBands(ndvi)
+
+s2_ndvi = s2.map(add_ndvi)
+
+<span class="comment"># 取得時間序列平均 NDVI</span>
+mean_ndvi = s2_ndvi.select(<span class="string">'NDVI'</span>).mean()
+
+<span class="comment"># 匯出到 Google Drive</span>
+task = ee.batch.Export.image.toDrive(
+    image=mean_ndvi,
+    description=<span class="string">'Taiwan_NDVI_2024'</span>,
+    folder=<span class="string">'GEE_Exports'</span>,
+    region=roi,
+    scale=<span class="number">10</span>,
+    maxPixels=<span class="number">1e9</span>
+)
+task.start()
+<span class="keyword">print</span>(<span class="string">"匯出任務已啟動"</span>)</code></div>
+        </section>
+
+        <!-- 其他資料來源 -->
+        <section class="section" id="other-sources">
+            <h2>5. 其他開源資料來源</h2>
+
+            <h3>全球土壤與環境資料</h3>
+
+            <div class="data-source-card">
+                <h4>OpenLandMap <span class="badge free">免費</span></h4>
+                <p>全球土地環境圖層，包含土壤、氣候、地形等資料</p>
+                <div class="url">https://openlandmap.org/</div>
+            </div>
+
+            <div class="data-source-card">
+                <h4>HiHydroSoil v2.0 <span class="badge free">免費</span></h4>
+                <p>全球土壤水力特性資料（滲透率、田間持水量等）</p>
+                <div class="url">https://www.futurewater.eu/projects/hihydrosoil/</div>
+            </div>
+
+            <div class="data-source-card">
+                <h4>HWSD (Harmonized World Soil Database) <span class="badge free">免費</span></h4>
+                <p>FAO 與 IIASA 聯合發布的全球土壤資料庫</p>
+                <div class="url">https://www.fao.org/soils-portal/data-hub/</div>
+            </div>
+
+            <h3>NASA 地球觀測資料</h3>
+
+            <div class="data-source-card">
+                <h4>NASA Earthdata <span class="badge free">免費</span><span class="badge api">API</span></h4>
+                <p>MODIS、Landsat、GPM 等資料存取</p>
+                <div class="url">https://earthdata.nasa.gov/</div>
+            </div>
+
+            <div class="data-source-card">
+                <h4>NASA POWER <span class="badge free">免費</span><span class="badge api">API</span></h4>
+                <p>全球氣象資料 API（溫度、日照、風速、降水）</p>
+                <div class="url">https://power.larc.nasa.gov/</div>
+            </div>
+
+            <div class="data-source-card">
+                <h4>SMAP (Soil Moisture Active Passive) <span class="badge free">免費</span></h4>
+                <p>全球土壤濕度遙測資料</p>
+                <div class="url">https://smap.jpl.nasa.gov/</div>
+            </div>
+
+            <h3>使用 NASA POWER API</h3>
+
+            <div class="code-block"><code><span class="keyword">import</span> requests
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+
+<span class="keyword">def</span> <span class="function">get_nasa_power_data</span>(lat, lon, start_date, end_date, parameters=<span class="keyword">None</span>):
+    <span class="string">"""
+    從 NASA POWER API 取得農業氣象資料
+
+    參數:
+        lat, lon: 座標
+        start_date, end_date: 日期 (YYYYMMDD 格式)
+        parameters: 氣象參數列表
+    """</span>
+
+    <span class="keyword">if</span> parameters <span class="keyword">is None</span>:
+        parameters = [
+            <span class="string">'T2M'</span>,      <span class="comment"># 2公尺氣溫</span>
+            <span class="string">'T2M_MAX'</span>,  <span class="comment"># 最高溫</span>
+            <span class="string">'T2M_MIN'</span>,  <span class="comment"># 最低溫</span>
+            <span class="string">'PRECTOTCORR'</span>,  <span class="comment"># 校正降水量</span>
+            <span class="string">'RH2M'</span>,     <span class="comment"># 相對濕度</span>
+            <span class="string">'ALLSKY_SFC_SW_DWN'</span>,  <span class="comment"># 日射量</span>
+            <span class="string">'WS2M'</span>,     <span class="comment"># 2公尺風速</span>
+            <span class="string">'GWETROOT'</span>  <span class="comment"># 根區土壤濕度</span>
+        ]
+
+    base_url = <span class="string">"https://power.larc.nasa.gov/api/temporal/daily/point"</span>
+
+    params = {
+        <span class="string">'parameters'</span>: <span class="string">','</span>.join(parameters),
+        <span class="string">'community'</span>: <span class="string">'AG'</span>,  <span class="comment"># 農業社群</span>
+        <span class="string">'longitude'</span>: lon,
+        <span class="string">'latitude'</span>: lat,
+        <span class="string">'start'</span>: start_date,
+        <span class="string">'end'</span>: end_date,
+        <span class="string">'format'</span>: <span class="string">'JSON'</span>
+    }
+
+    response = requests.get(base_url, params=params)
+    data = response.json()
+
+    <span class="comment"># 轉換為 DataFrame</span>
+    df = pd.DataFrame(data[<span class="string">'properties'</span>][<span class="string">'parameter'</span>])
+    df.index = pd.to_datetime(df.index, format=<span class="string">'%Y%m%d'</span>)
+
+    <span class="keyword">return</span> df
+
+<span class="comment"># 範例：取得台中地區過去一年的氣象資料</span>
+lat, lon = <span class="number">24.1477</span>, <span class="number">120.6736</span>
+df = get_nasa_power_data(lat, lon, <span class="string">'20230101'</span>, <span class="string">'20231231'</span>)
+
+<span class="keyword">print</span>(<span class="string">"資料範圍:"</span>, df.index.min(), <span class="string">"~"</span>, df.index.max())
+<span class="keyword">print</span>(<span class="string">"\n統計摘要:"</span>)
+<span class="keyword">print</span>(df.describe())</code></div>
+
+            <h3>台灣在地資料</h3>
+
+            <div class="data-source-card">
+                <h4>政府資料開放平台 <span class="badge free">免費</span></h4>
+                <p>農業統計、氣象觀測、土地利用等政府開放資料</p>
+                <div class="url">https://data.gov.tw/</div>
+            </div>
+
+            <div class="data-source-card">
+                <h4>中央氣象署開放資料 <span class="badge free">免費</span><span class="badge api">API</span></h4>
+                <p>即時氣象觀測、天氣預報、歷史資料</p>
+                <div class="url">https://opendata.cwa.gov.tw/</div>
+            </div>
+
+            <div class="data-source-card">
+                <h4>農業試驗所土壤資料庫 <span class="badge free">免費</span></h4>
+                <p>台灣土壤調查資料與土壤圖</p>
+                <div class="url">https://www.tari.gov.tw/</div>
+            </div>
+        </section>
+
+        <!-- Python 整合 -->
+        <section class="section" id="python-integration">
+            <h2>6. Python 整合應用</h2>
+
+            <h3>建立多源資料整合類別</h3>
+
+            <div class="code-block"><code><span class="keyword">import</span> requests
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass
+<span class="keyword">from</span> typing <span class="keyword">import</span> Dict, List, Optional
+<span class="keyword">import</span> time
+
+<span class="variable">@dataclass</span>
+<span class="keyword">class</span> <span class="function">LocationData</span>:
+    <span class="string">"""儲存單一位置的多源環境資料"""</span>
+    latitude: <span class="function">float</span>
+    longitude: <span class="function">float</span>
+    soil: Dict = <span class="keyword">None</span>
+    weather: pd.DataFrame = <span class="keyword">None</span>
+    vegetation: Dict = <span class="keyword">None</span>
+
+<span class="keyword">class</span> <span class="function">AgricultureDataHub</span>:
+    <span class="string">"""
+    農業地理資料整合中心
+    整合 SoilGrids、NASA POWER、Copernicus 等資料來源
+    """</span>
+
+    <span class="keyword">def</span> <span class="function">__init__</span>(self):
+        self.soilgrids_url = <span class="string">"https://rest.isric.org/soilgrids/v2.0/properties/query"</span>
+        self.nasa_power_url = <span class="string">"https://power.larc.nasa.gov/api/temporal/daily/point"</span>
+        self.cache = {}
+
+    <span class="keyword">def</span> <span class="function">get_soil_data</span>(self, lat: <span class="function">float</span>, lon: <span class="function">float</span>) -> Dict:
+        <span class="string">"""取得土壤資料"""</span>
+
+        cache_key = <span class="string">f"soil_{lat}_{lon}"</span>
+        <span class="keyword">if</span> cache_key <span class="keyword">in</span> self.cache:
+            <span class="keyword">return</span> self.cache[cache_key]
+
+        params = {
+            <span class="string">'lon'</span>: lon,
+            <span class="string">'lat'</span>: lat,
+            <span class="string">'property'</span>: [<span class="string">'soc'</span>, <span class="string">'phh2o'</span>, <span class="string">'clay'</span>, <span class="string">'sand'</span>, <span class="string">'nitrogen'</span>, <span class="string">'bdod'</span>],
+            <span class="string">'depth'</span>: [<span class="string">'0-5cm'</span>, <span class="string">'5-15cm'</span>, <span class="string">'15-30cm'</span>],
+            <span class="string">'value'</span>: <span class="string">'mean'</span>
+        }
+
+        <span class="keyword">try</span>:
+            response = requests.get(self.soilgrids_url, params=params, timeout=<span class="number">30</span>)
+            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:
+                raw_data = response.json()
+                soil_data = self._parse_soilgrids(raw_data)
+                self.cache[cache_key] = soil_data
+                <span class="keyword">return</span> soil_data
+        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+            <span class="keyword">print</span>(<span class="string">f"SoilGrids 查詢失敗: {e}"</span>)
+
+        <span class="keyword">return</span> {}
+
+    <span class="keyword">def</span> <span class="function">_parse_soilgrids</span>(self, raw_data: Dict) -> Dict:
+        <span class="string">"""解析 SoilGrids 回應"""</span>
+        result = {}
+
+        <span class="keyword">for</span> layer <span class="keyword">in</span> raw_data.get(<span class="string">'properties'</span>, {}).get(<span class="string">'layers'</span>, []):
+            prop_name = layer[<span class="string">'name'</span>]
+            result[prop_name] = {}
+
+            <span class="keyword">for</span> depth <span class="keyword">in</span> layer.get(<span class="string">'depths'</span>, []):
+                depth_label = depth[<span class="string">'label'</span>]
+                mean_value = depth[<span class="string">'values'</span>].get(<span class="string">'mean'</span>)
+                result[prop_name][depth_label] = mean_value
+
+        <span class="keyword">return</span> result
+
+    <span class="keyword">def</span> <span class="function">get_weather_data</span>(self, lat: <span class="function">float</span>, lon: <span class="function">float</span>,
+                           start_date: <span class="function">str</span>, end_date: <span class="function">str</span>) -> pd.DataFrame:
+        <span class="string">"""取得氣象資料"""</span>
+
+        params = {
+            <span class="string">'parameters'</span>: <span class="string">'T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,RH2M,ALLSKY_SFC_SW_DWN,WS2M'</span>,
+            <span class="string">'community'</span>: <span class="string">'AG'</span>,
+            <span class="string">'longitude'</span>: lon,
+            <span class="string">'latitude'</span>: lat,
+            <span class="string">'start'</span>: start_date,
+            <span class="string">'end'</span>: end_date,
+            <span class="string">'format'</span>: <span class="string">'JSON'</span>
+        }
+
+        <span class="keyword">try</span>:
+            response = requests.get(self.nasa_power_url, params=params, timeout=<span class="number">60</span>)
+            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:
+                data = response.json()
+                df = pd.DataFrame(data[<span class="string">'properties'</span>][<span class="string">'parameter'</span>])
+                df.index = pd.to_datetime(df.index, format=<span class="string">'%Y%m%d'</span>)
+                <span class="keyword">return</span> df
+        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+            <span class="keyword">print</span>(<span class="string">f"NASA POWER 查詢失敗: {e}"</span>)
+
+        <span class="keyword">return</span> pd.DataFrame()
+
+    <span class="keyword">def</span> <span class="function">get_complete_profile</span>(self, lat: <span class="function">float</span>, lon: <span class="function">float</span>,
+                               weather_start: <span class="function">str</span>, weather_end: <span class="function">str</span>) -> LocationData:
+        <span class="string">"""取得完整的位置環境資料"""</span>
+
+        <span class="keyword">print</span>(<span class="string">f"正在查詢位置 ({lat}, {lon})..."</span>)
+
+        <span class="comment"># 取得土壤資料</span>
+        <span class="keyword">print</span>(<span class="string">"  - 取得土壤資料..."</span>)
+        soil = self.get_soil_data(lat, lon)
+        time.sleep(<span class="number">0.5</span>)  <span class="comment"># 避免請求過快</span>
+
+        <span class="comment"># 取得氣象資料</span>
+        <span class="keyword">print</span>(<span class="string">"  - 取得氣象資料..."</span>)
+        weather = self.get_weather_data(lat, lon, weather_start, weather_end)
+
+        <span class="keyword">return</span> LocationData(
+            latitude=lat,
+            longitude=lon,
+            soil=soil,
+            weather=weather
+        )
+
+    <span class="keyword">def</span> <span class="function">generate_report</span>(self, data: LocationData) -> <span class="function">str</span>:
+        <span class="string">"""生成環境報告"""</span>
+
+        report = []
+        report.append(<span class="string">f"=== 農地環境報告 ==="</span>)
+        report.append(<span class="string">f"位置: ({data.latitude}, {data.longitude})"</span>)
+        report.append(<span class="string">""</span>)
+
+        <span class="comment"># 土壤摘要</span>
+        <span class="keyword">if</span> data.soil:
+            report.append(<span class="string">"【土壤特性】"</span>)
+            <span class="keyword">if</span> <span class="string">'phh2o'</span> <span class="keyword">in</span> data.soil:
+                ph = data.soil[<span class="string">'phh2o'</span>].get(<span class="string">'0-5cm'</span>, <span class="number">0</span>) / <span class="number">10</span>
+                report.append(<span class="string">f"  pH 值: {ph:.1f}"</span>)
+            <span class="keyword">if</span> <span class="string">'soc'</span> <span class="keyword">in</span> data.soil:
+                soc = data.soil[<span class="string">'soc'</span>].get(<span class="string">'0-5cm'</span>, <span class="number">0</span>) / <span class="number">10</span>
+                report.append(<span class="string">f"  有機碳: {soc:.1f} g/kg"</span>)
+            <span class="keyword">if</span> <span class="string">'clay'</span> <span class="keyword">in</span> data.soil:
+                clay = data.soil[<span class="string">'clay'</span>].get(<span class="string">'0-5cm'</span>, <span class="number">0</span>) / <span class="number">10</span>
+                report.append(<span class="string">f"  黏土含量: {clay:.1f}%"</span>)
+
+        <span class="comment"># 氣象摘要</span>
+        <span class="keyword">if</span> <span class="keyword">not</span> data.weather.empty:
+            report.append(<span class="string">""</span>)
+            report.append(<span class="string">"【氣象統計】"</span>)
+            report.append(<span class="string">f"  平均溫度: {data.weather['T2M'].mean():.1f}°C"</span>)
+            report.append(<span class="string">f"  總降水量: {data.weather['PRECTOTCORR'].sum():.1f} mm"</span>)
+            report.append(<span class="string">f"  平均日照: {data.weather['ALLSKY_SFC_SW_DWN'].mean():.1f} MJ/m²/day"</span>)
+
+        <span class="keyword">return</span> <span class="string">'\n'</span>.join(report)
+
+<span class="comment"># 使用範例</span>
+hub = AgricultureDataHub()
+
+<span class="comment"># 查詢台中某農田</span>
+profile = hub.get_complete_profile(
+    lat=<span class="number">24.1477</span>,
+    lon=<span class="number">120.6736</span>,
+    weather_start=<span class="string">'20240101'</span>,
+    weather_end=<span class="string">'20240331'</span>
+)
+
+<span class="comment"># 生成報告</span>
+<span class="keyword">print</span>(hub.generate_report(profile))</code></div>
+        </section>
+
+        <!-- 農業應用案例 -->
+        <section class="section" id="agriculture-cases">
+            <h2>7. 農業應用案例</h2>
+
+            <h3>案例 1：適地適種分析</h3>
+            <p>根據土壤特性和氣候條件，評估特定作物的種植適宜性。</p>
+
+            <div class="code-block"><code><span class="keyword">class</span> <span class="function">CropSuitabilityAnalyzer</span>:
+    <span class="string">"""作物適宜性分析器"""</span>
+
+    <span class="comment"># 作物需求參數（簡化版）</span>
+    CROP_REQUIREMENTS = {
+        <span class="string">'rice'</span>: {
+            <span class="string">'name'</span>: <span class="string">'水稻'</span>,
+            <span class="string">'ph_range'</span>: (<span class="number">5.5</span>, <span class="number">7.0</span>),
+            <span class="string">'temp_range'</span>: (<span class="number">20</span>, <span class="number">35</span>),
+            <span class="string">'clay_min'</span>: <span class="number">20</span>,  <span class="comment"># 需要保水性好的土壤</span>
+            <span class="string">'rainfall_min'</span>: <span class="number">1000</span>  <span class="comment"># mm/年</span>
+        },
+        <span class="string">'tomato'</span>: {
+            <span class="string">'name'</span>: <span class="string">'番茄'</span>,
+            <span class="string">'ph_range'</span>: (<span class="number">6.0</span>, <span class="number">7.0</span>),
+            <span class="string">'temp_range'</span>: (<span class="number">18</span>, <span class="number">30</span>),
+            <span class="string">'clay_max'</span>: <span class="number">35</span>,  <span class="comment"># 需要排水良好</span>
+            <span class="string">'soc_min'</span>: <span class="number">15</span>  <span class="comment"># 需要有機質</span>
+        },
+        <span class="string">'tea'</span>: {
+            <span class="string">'name'</span>: <span class="string">'茶葉'</span>,
+            <span class="string">'ph_range'</span>: (<span class="number">4.5</span>, <span class="number">5.5</span>),  <span class="comment"># 偏酸性</span>
+            <span class="string">'temp_range'</span>: (<span class="number">15</span>, <span class="number">25</span>),
+            <span class="string">'rainfall_min'</span>: <span class="number">1500</span>
+        }
+    }
+
+    <span class="keyword">def</span> <span class="function">analyze</span>(self, location_data: LocationData, crop: <span class="function">str</span>) -> Dict:
+        <span class="string">"""分析作物適宜性"""</span>
+
+        <span class="keyword">if</span> crop <span class="keyword">not in</span> self.CROP_REQUIREMENTS:
+            <span class="keyword">raise</span> ValueError(<span class="string">f"不支援的作物: {crop}"</span>)
+
+        req = self.CROP_REQUIREMENTS[crop]
+        scores = {}
+        issues = []
+
+        <span class="comment"># 評估 pH</span>
+        <span class="keyword">if</span> location_data.soil <span class="keyword">and</span> <span class="string">'phh2o'</span> <span class="keyword">in</span> location_data.soil:
+            ph = location_data.soil[<span class="string">'phh2o'</span>].get(<span class="string">'0-5cm'</span>, <span class="number">0</span>) / <span class="number">10</span>
+            ph_min, ph_max = req[<span class="string">'ph_range'</span>]
+
+            <span class="keyword">if</span> ph_min <= ph <= ph_max:
+                scores[<span class="string">'pH'</span>] = <span class="number">100</span>
+            <span class="keyword">elif</span> ph < ph_min:
+                scores[<span class="string">'pH'</span>] = max(<span class="number">0</span>, <span class="number">100</span> - (ph_min - ph) * <span class="number">30</span>)
+                issues.append(<span class="string">f"土壤 pH 偏低 ({ph:.1f})，建議施用石灰改良"</span>)
+            <span class="keyword">else</span>:
+                scores[<span class="string">'pH'</span>] = max(<span class="number">0</span>, <span class="number">100</span> - (ph - ph_max) * <span class="number">30</span>)
+                issues.append(<span class="string">f"土壤 pH 偏高 ({ph:.1f})，建議施用硫�ite改良"</span>)
+
+        <span class="comment"># 評估溫度</span>
+        <span class="keyword">if</span> <span class="keyword">not</span> location_data.weather.empty:
+            avg_temp = location_data.weather[<span class="string">'T2M'</span>].mean()
+            temp_min, temp_max = req[<span class="string">'temp_range'</span>]
+
+            <span class="keyword">if</span> temp_min <= avg_temp <= temp_max:
+                scores[<span class="string">'temperature'</span>] = <span class="number">100</span>
+            <span class="keyword">else</span>:
+                deviation = min(abs(avg_temp - temp_min), abs(avg_temp - temp_max))
+                scores[<span class="string">'temperature'</span>] = max(<span class="number">0</span>, <span class="number">100</span> - deviation * <span class="number">10</span>)
+                issues.append(<span class="string">f"溫度不在最適範圍內 (平均 {avg_temp:.1f}°C)"</span>)
+
+        <span class="comment"># 計算總分</span>
+        <span class="keyword">if</span> scores:
+            overall = sum(scores.values()) / len(scores)
+        <span class="keyword">else</span>:
+            overall = <span class="number">0</span>
+
+        <span class="comment"># 適宜性等級</span>
+        <span class="keyword">if</span> overall >= <span class="number">80</span>:
+            grade = <span class="string">"高度適宜"</span>
+        <span class="keyword">elif</span> overall >= <span class="number">60</span>:
+            grade = <span class="string">"中度適宜"</span>
+        <span class="keyword">elif</span> overall >= <span class="number">40</span>:
+            grade = <span class="string">"邊際適宜"</span>
+        <span class="keyword">else</span>:
+            grade = <span class="string">"不適宜"</span>
+
+        <span class="keyword">return</span> {
+            <span class="string">'crop'</span>: req[<span class="string">'name'</span>],
+            <span class="string">'overall_score'</span>: overall,
+            <span class="string">'grade'</span>: grade,
+            <span class="string">'detail_scores'</span>: scores,
+            <span class="string">'issues'</span>: issues
+        }
+
+<span class="comment"># 使用範例</span>
+analyzer = CropSuitabilityAnalyzer()
+result = analyzer.analyze(profile, <span class="string">'rice'</span>)
+
+<span class="keyword">print</span>(<span class="string">f"作物: {result['crop']}"</span>)
+<span class="keyword">print</span>(<span class="string">f"適宜性: {result['grade']} ({result['overall_score']:.0f}分)"</span>)
+<span class="keyword">print</span>(<span class="string">"問題與建議:"</span>)
+<span class="keyword">for</span> issue <span class="keyword">in</span> result[<span class="string">'issues'</span>]:
+    <span class="keyword">print</span>(<span class="string">f"  - {issue}"</span>)</code></div>
+
+            <h3>案例 2：NDVI 時間序列分析</h3>
+
+            <div class="code-block"><code><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="keyword">def</span> <span class="function">analyze_ndvi_timeseries</span>(ndvi_data: np.ndarray, dates: <span class="function">list</span>):
+    <span class="string">"""
+    分析 NDVI 時間序列
+
+    參數:
+        ndvi_data: NDVI 值陣列
+        dates: 對應日期列表
+    """</span>
+
+    <span class="comment"># 計算統計值</span>
+    stats = {
+        <span class="string">'mean'</span>: np.nanmean(ndvi_data),
+        <span class="string">'max'</span>: np.nanmax(ndvi_data),
+        <span class="string">'min'</span>: np.nanmin(ndvi_data),
+        <span class="string">'std'</span>: np.nanstd(ndvi_data)
+    }
+
+    <span class="comment"># 找出生長季節</span>
+    threshold = <span class="number">0.4</span>  <span class="comment"># NDVI > 0.4 視為健康植被</span>
+    growing_mask = ndvi_data > threshold
+    growing_days = np.sum(growing_mask)
+
+    <span class="comment"># 偵測異常（可能的病蟲害或乾旱）</span>
+    anomaly_threshold = stats[<span class="string">'mean'</span>] - <span class="number">2</span> * stats[<span class="string">'std'</span>]
+    anomalies = np.where(ndvi_data < anomaly_threshold)[<span class="number">0</span>]
+
+    <span class="comment"># 繪製圖表</span>
+    fig, ax = plt.subplots(figsize=(<span class="number">12</span>, <span class="number">5</span>))
+
+    ax.plot(dates, ndvi_data, <span class="string">'g-'</span>, linewidth=<span class="number">2</span>, label=<span class="string">'NDVI'</span>)
+    ax.axhline(y=stats[<span class="string">'mean'</span>], color=<span class="string">'blue'</span>, linestyle=<span class="string">'--'</span>, alpha=<span class="number">0.5</span>, label=<span class="string">'平均值'</span>)
+    ax.axhline(y=threshold, color=<span class="string">'orange'</span>, linestyle=<span class="string">':'</span>, alpha=<span class="number">0.5</span>, label=<span class="string">'健康閾值'</span>)
+
+    <span class="comment"># 標記異常點</span>
+    <span class="keyword">if</span> len(anomalies) > <span class="number">0</span>:
+        ax.scatter([dates[i] <span class="keyword">for</span> i <span class="keyword">in</span> anomalies],
+                   ndvi_data[anomalies],
+                   color=<span class="string">'red'</span>, s=<span class="number">100</span>, zorder=<span class="number">5</span>, label=<span class="string">'異常點'</span>)
+
+    ax.set_xlabel(<span class="string">'日期'</span>)
+    ax.set_ylabel(<span class="string">'NDVI'</span>)
+    ax.set_title(<span class="string">'農田 NDVI 時間序列分析'</span>)
+    ax.legend()
+    ax.grid(<span class="keyword">True</span>, alpha=<span class="number">0.3</span>)
+
+    plt.tight_layout()
+    plt.savefig(<span class="string">'ndvi_analysis.png'</span>, dpi=<span class="number">150</span>)
+
+    <span class="keyword">return</span> {
+        <span class="string">'statistics'</span>: stats,
+        <span class="string">'growing_days'</span>: growing_days,
+        <span class="string">'anomaly_dates'</span>: [dates[i] <span class="keyword">for</span> i <span class="keyword">in</span> anomalies]
+    }</code></div>
+
+            <h3>案例 3：智慧灌溉決策</h3>
+
+            <div class="code-block"><code><span class="keyword">class</span> <span class="function">IrrigationAdvisor</span>:
+    <span class="string">"""智慧灌溉建議系統"""</span>
+
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, crop_type: <span class="function">str</span> = <span class="string">'general'</span>):
+        self.crop_type = crop_type
+
+        <span class="comment"># 作物水分需求係數 (Kc)</span>
+        self.kc_values = {
+            <span class="string">'rice'</span>: <span class="number">1.2</span>,
+            <span class="string">'vegetables'</span>: <span class="number">1.0</span>,
+            <span class="string">'fruits'</span>: <span class="number">0.85</span>,
+            <span class="string">'general'</span>: <span class="number">1.0</span>
+        }
+
+    <span class="keyword">def</span> <span class="function">calculate_et</span>(self, temp: <span class="function">float</span>, humidity: <span class="function">float</span>,
+                       solar_rad: <span class="function">float</span>, wind_speed: <span class="function">float</span>) -> <span class="function">float</span>:
+        <span class="string">"""
+        計算作物蒸發散量 (簡化 FAO Penman-Monteith)
+
+        回傳: mm/day
+        """</span>
+
+        <span class="comment"># 參考蒸發散量（簡化公式）</span>
+        et0 = <span class="number">0.0023</span> * (temp + <span class="number">17.8</span>) * np.sqrt(solar_rad) * (<span class="number">1</span> - humidity/<span class="number">100</span>) * <span class="number">0.5</span>
+
+        <span class="comment"># 作物蒸發散量</span>
+        kc = self.kc_values.get(self.crop_type, <span class="number">1.0</span>)
+        etc = et0 * kc
+
+        <span class="keyword">return</span> max(<span class="number">0</span>, etc)
+
+    <span class="keyword">def</span> <span class="function">get_recommendation</span>(self, soil_moisture: <span class="function">float</span>,
+                              weather_forecast: pd.DataFrame) -> Dict:
+        <span class="string">"""
+        取得灌溉建議
+
+        參數:
+            soil_moisture: 當前土壤含水量 (0-1)
+            weather_forecast: 未來幾天的天氣預報
+        """</span>
+
+        <span class="comment"># 計算預期蒸發散量</span>
+        total_et = <span class="number">0</span>
+        total_rain = <span class="number">0</span>
+
+        <span class="keyword">for</span> _, row <span class="keyword">in</span> weather_forecast.iterrows():
+            et = self.calculate_et(
+                row.get(<span class="string">'T2M'</span>, <span class="number">25</span>),
+                row.get(<span class="string">'RH2M'</span>, <span class="number">70</span>),
+                row.get(<span class="string">'ALLSKY_SFC_SW_DWN'</span>, <span class="number">15</span>),
+                row.get(<span class="string">'WS2M'</span>, <span class="number">2</span>)
+            )
+            total_et += et
+            total_rain += row.get(<span class="string">'PRECTOTCORR'</span>, <span class="number">0</span>)
+
+        <span class="comment"># 水分平衡</span>
+        water_balance = total_rain - total_et
+
+        <span class="comment"># 決策邏輯</span>
+        <span class="keyword">if</span> soil_moisture > <span class="number">0.7</span>:
+            action = <span class="string">"不需灌溉"</span>
+            urgency = <span class="string">"低"</span>
+            amount = <span class="number">0</span>
+        <span class="keyword">elif</span> soil_moisture > <span class="number">0.4</span> <span class="keyword">and</span> water_balance > <span class="number">0</span>:
+            action = <span class="string">"暫緩灌溉"</span>
+            urgency = <span class="string">"低"</span>
+            amount = <span class="number">0</span>
+        <span class="keyword">elif</span> soil_moisture > <span class="number">0.4</span>:
+            action = <span class="string">"輕度灌溉"</span>
+            urgency = <span class="string">"中"</span>
+            amount = abs(water_balance) * <span class="number">0.5</span>
+        <span class="keyword">else</span>:
+            action = <span class="string">"立即灌溉"</span>
+            urgency = <span class="string">"高"</span>
+            amount = abs(water_balance) + (<span class="number">0.6</span> - soil_moisture) * <span class="number">50</span>
+
+        <span class="keyword">return</span> {
+            <span class="string">'action'</span>: action,
+            <span class="string">'urgency'</span>: urgency,
+            <span class="string">'recommended_amount_mm'</span>: round(amount, <span class="number">1</span>),
+            <span class="string">'expected_et_mm'</span>: round(total_et, <span class="number">1</span>),
+            <span class="string">'expected_rain_mm'</span>: round(total_rain, <span class="number">1</span>),
+            <span class="string">'water_balance_mm'</span>: round(water_balance, <span class="number">1</span>)
+        }
+
+<span class="comment"># 使用範例</span>
+advisor = IrrigationAdvisor(crop_type=<span class="string">'vegetables'</span>)
+
+<span class="comment"># 假設當前土壤濕度為 45%</span>
+soil_moisture = <span class="number">0.45</span>
+
+<span class="comment"># 使用氣象資料</span>
+<span class="keyword">if</span> <span class="keyword">not</span> profile.weather.empty:
+    forecast = profile.weather.head(<span class="number">3</span>)  <span class="comment"># 未來 3 天</span>
+    rec = advisor.get_recommendation(soil_moisture, forecast)
+
+    <span class="keyword">print</span>(<span class="string">"=== 灌溉建議 ==="</span>)
+    <span class="keyword">print</span>(<span class="string">f"建議動作: {rec['action']}"</span>)
+    <span class="keyword">print</span>(<span class="string">f"緊急程度: {rec['urgency']}"</span>)
+    <span class="keyword">print</span>(<span class="string">f"建議灌溉量: {rec['recommended_amount_mm']} mm"</span>)
+    <span class="keyword">print</span>(<span class="string">f"預期蒸發散: {rec['expected_et_mm']} mm"</span>)
+    <span class="keyword">print</span>(<span class="string">f"預期降雨: {rec['expected_rain_mm']} mm"</span>)</code></div>
+
+            <div class="tip-box">
+                <h4>資料整合最佳實踐</h4>
+                <ul>
+                    <li><strong>資料快取</strong>：對於不常變動的資料（如土壤），建立本地快取減少 API 請求</li>
+                    <li><strong>錯誤處理</strong>：API 可能不穩定，確保有適當的例外處理和重試機制</li>
+                    <li><strong>資料驗證</strong>：檢查回傳資料的合理性，過濾異常值</li>
+                    <li><strong>空間對齊</strong>：不同資料來源的空間解析度可能不同，需要適當內插或聚合</li>
+                    <li><strong>時間同步</strong>：確保比較的資料在時間上對應正確</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 頁尾 -->
+        <div style="text-align: center; margin-top: 50px; padding: 30px; border-top: 1px solid rgba(79, 209, 197, 0.3);">
+            <p style="color: #a0aec0;">智慧農業課程 - 開源地理空間資料教學</p>
+            <p style="color: #718096; font-size: 0.9em;">善用開源資料，打造精準農業</p>
+        </div>
+    </div>
+</body>
+</html>

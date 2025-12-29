@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOLO 物件偵測詳細教學 - 從入門到實戰</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e8e8e8;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #f97316, #eab308);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a0aec0;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+
+        .section {
+            background: rgba(45, 55, 72, 0.6);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 4px solid #f97316;
+        }
+
+        h2 {
+            color: #fb923c;
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            color: #fdba74;
+            font-size: 1.3em;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(251, 146, 60, 0.3);
+        }
+
+        h4 {
+            color: #fed7aa;
+            font-size: 1.1em;
+            margin: 20px 0 10px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #cbd5e0;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+            border: 1px solid #30363d;
+        }
+
+        .code-block code {
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 0.9em;
+            color: #e6edf3;
+            white-space: pre;
+        }
+
+        .code-block .comment { color: #8b949e; }
+        .code-block .keyword { color: #ff7b72; }
+        .code-block .string { color: #a5d6ff; }
+        .code-block .function { color: #d2a8ff; }
+        .code-block .number { color: #79c0ff; }
+        .code-block .variable { color: #ffa657; }
+        .code-block .decorator { color: #f97316; }
+
+        .tip-box {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(74, 222, 128, 0.1));
+            border: 1px solid rgba(74, 222, 128, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .tip-box h4 {
+            color: #4ade80;
+            margin-top: 0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(248, 113, 113, 0.1));
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #f87171;
+            margin-top: 0;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(96, 165, 250, 0.1));
+            border: 1px solid rgba(96, 165, 250, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 {
+            color: #60a5fa;
+            margin-top: 0;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 25px;
+            color: #cbd5e0;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(26, 32, 44, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(249, 115, 22, 0.2);
+        }
+
+        th {
+            background: rgba(249, 115, 22, 0.2);
+            color: #fb923c;
+            font-weight: 600;
+        }
+
+        td {
+            color: #cbd5e0;
+        }
+
+        .version-card {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .version-card:hover {
+            border-color: rgba(249, 115, 22, 0.6);
+            transform: translateX(5px);
+        }
+
+        .version-card h4 {
+            color: #fb923c;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+
+        .badge-recommended {
+            background: #166534;
+            color: #86efac;
+        }
+
+        .badge-latest {
+            background: #1e40af;
+            color: #93c5fd;
+        }
+
+        .badge-classic {
+            background: #713f12;
+            color: #fde047;
+        }
+
+        .diagram {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px dashed rgba(249, 115, 22, 0.4);
+        }
+
+        .flow-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .flow-box {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.3), rgba(234, 179, 8, 0.2));
+            border: 1px solid rgba(249, 115, 22, 0.5);
+            border-radius: 10px;
+            padding: 15px 20px;
+            min-width: 120px;
+        }
+
+        .flow-arrow {
+            font-size: 1.5em;
+            color: #fb923c;
+        }
+
+        .file-structure {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: "Consolas", monospace;
+            font-size: 0.9em;
+            color: #8b949e;
+        }
+
+        .file-structure .folder { color: #79c0ff; }
+        .file-structure .file { color: #a5d6ff; }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .toc {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(249, 115, 22, 0.3);
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            border-bottom: none;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+            column-count: 2;
+        }
+
+        .toc li {
+            margin-bottom: 10px;
+        }
+
+        .toc a {
+            color: #fdba74;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            color: #fed7aa;
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #fb923c;
+            text-decoration: none;
+            font-size: 0.95em;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .terminal {
+            background: #000;
+            border-radius: 8px;
+            padding: 15px 20px;
+            font-family: "Consolas", monospace;
+            color: #00ff00;
+            margin: 15px 0;
+        }
+
+        .terminal::before {
+            content: "$ ";
+            color: #888;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(234, 179, 8, 0.1));
+            border: 1px solid rgba(249, 115, 22, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .section { padding: 20px; }
+            .flow-diagram { flex-direction: column; }
+            .flow-arrow { transform: rotate(90deg); }
+            .toc ul { column-count: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="文件索引.html" class="back-link">← 返回文件索引</a>
+
+        <h1>YOLO 物件偵測詳細教學</h1>
+        <p class="subtitle">You Only Look Once - 從原理到實戰的完整指南</p>
+
+        <!-- 目錄 -->
+        <div class="toc">
+            <h3>目錄</h3>
+            <ul>
+                <li><a href="#intro">1. YOLO 簡介</a></li>
+                <li><a href="#versions">2. YOLO 版本演進</a></li>
+                <li><a href="#principle">3. 工作原理</a></li>
+                <li><a href="#install">4. 安裝與環境設定</a></li>
+                <li><a href="#quickstart">5. 快速開始</a></li>
+                <li><a href="#dataset">6. 資料集準備</a></li>
+                <li><a href="#labeling">7. 圖片標註</a></li>
+                <li><a href="#training">8. 訓練自己的模型</a></li>
+                <li><a href="#evaluation">9. 模型評估</a></li>
+                <li><a href="#inference">10. 推論與應用</a></li>
+                <li><a href="#optimization">11. 效能優化</a></li>
+                <li><a href="#agriculture">12. 農業應用案例</a></li>
+            </ul>
+        </div>
+
+        <!-- 簡介 -->
+        <section class="section" id="intro">
+            <h2>1. YOLO 簡介</h2>
+
+            <p><strong>YOLO（You Only Look Once）</strong> 是一種革命性的即時物件偵測演算法。與傳統方法需要掃描圖片多次不同，YOLO 只需要「看一眼」就能同時偵測出圖片中所有物件的位置和類別。</p>
+
+            <div class="highlight-box">
+                <h4 style="color: #fb923c; margin-top: 0;">為什麼選擇 YOLO？</h4>
+                <ul>
+                    <li><strong>速度快</strong>：可達到 30-60+ FPS 的即時偵測</li>
+                    <li><strong>準確度高</strong>：最新版本 mAP 可達 50% 以上</li>
+                    <li><strong>易於使用</strong>：Ultralytics 提供簡潔的 API</li>
+                    <li><strong>開源免費</strong>：可商用的開源授權</li>
+                    <li><strong>社群活躍</strong>：豐富的文件和社群支援</li>
+                </ul>
+            </div>
+
+            <h3>物件偵測 vs 圖像分類</h3>
+
+            <table>
+                <tr>
+                    <th>任務</th>
+                    <th>輸入</th>
+                    <th>輸出</th>
+                    <th>範例</th>
+                </tr>
+                <tr>
+                    <td>圖像分類</td>
+                    <td>一張圖片</td>
+                    <td>類別標籤</td>
+                    <td>「這是一顆蘋果」</td>
+                </tr>
+                <tr>
+                    <td>物件偵測</td>
+                    <td>一張圖片</td>
+                    <td>多個物件的位置 + 類別</td>
+                    <td>「左邊有蘋果、右邊有橘子」</td>
+                </tr>
+                <tr>
+                    <td>語意分割</td>
+                    <td>一張圖片</td>
+                    <td>每個像素的類別</td>
+                    <td>「這些像素是蘋果」</td>
+                </tr>
+            </table>
+
+            <div class="diagram">
+                <p style="margin-bottom: 15px; color: #a0aec0;">YOLO 物件偵測流程</p>
+                <div class="flow-diagram">
+                    <div class="flow-box">輸入圖片<br><small>640×640</small></div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box">神經網路<br><small>特徵提取</small></div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box">預測輸出<br><small>邊界框+類別</small></div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box">NMS 過濾<br><small>去除重複</small></div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box">最終結果<br><small>偵測物件</small></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 版本演進 -->
+        <section class="section" id="versions">
+            <h2>2. YOLO 版本演進</h2>
+
+            <div class="version-card">
+                <h4>YOLOv1 (2015) <span class="version-badge badge-classic">經典</span></h4>
+                <p>Joseph Redmon 發表的開創性論文，首次實現端到端的即時物件偵測。</p>
+                <ul>
+                    <li>將圖片分成 7×7 網格</li>
+                    <li>每個網格預測 2 個邊界框</li>
+                    <li>速度 45 FPS，但準確度較低</li>
+                </ul>
+            </div>
+
+            <div class="version-card">
+                <h4>YOLOv2/YOLO9000 (2016)</h4>
+                <p>引入 Batch Normalization、Anchor Boxes，支援 9000+ 類別偵測。</p>
+            </div>
+
+            <div class="version-card">
+                <h4>YOLOv3 (2018)</h4>
+                <p>多尺度預測、更深的網路（Darknet-53），準確度大幅提升。</p>
+            </div>
+
+            <div class="version-card">
+                <h4>YOLOv4 (2020)</h4>
+                <p>Alexey Bochkovskiy 接手開發，引入 CSPNet、Mish 激活函數、資料增強技術。</p>
+            </div>
+
+            <div class="version-card">
+                <h4>YOLOv5 (2020) <span class="version-badge badge-recommended">推薦使用</span></h4>
+                <p>Ultralytics 開發，使用 PyTorch 實現，易於使用和部署。</p>
+                <ul>
+                    <li>多種尺寸：n/s/m/l/x</li>
+                    <li>完整的訓練工具鏈</li>
+                    <li>支援 ONNX、TensorRT、CoreML 等格式匯出</li>
+                </ul>
+            </div>
+
+            <div class="version-card">
+                <h4>YOLOv8 (2023) <span class="version-badge badge-latest">最新版本</span></h4>
+                <p>Ultralytics 最新力作，支援偵測、分割、姿態估計、追蹤等多種任務。</p>
+                <ul>
+                    <li>Anchor-free 設計</li>
+                    <li>更高的準確度和速度</li>
+                    <li>統一的 CLI 和 Python API</li>
+                    <li>內建資料增強和超參數調優</li>
+                </ul>
+            </div>
+
+            <div class="version-card">
+                <h4>YOLO11 (2024) <span class="version-badge badge-latest">最新</span></h4>
+                <p>Ultralytics 最新版本，效能進一步提升。</p>
+            </div>
+
+            <h3>版本選擇建議</h3>
+
+            <table>
+                <tr>
+                    <th>使用場景</th>
+                    <th>推薦版本</th>
+                    <th>原因</th>
+                </tr>
+                <tr>
+                    <td>初學入門</td>
+                    <td>YOLOv8</td>
+                    <td>API 簡潔、文件完整</td>
+                </tr>
+                <tr>
+                    <td>生產部署</td>
+                    <td>YOLOv5 / YOLOv8</td>
+                    <td>穩定、社群支援好</td>
+                </tr>
+                <tr>
+                    <td>邊緣裝置</td>
+                    <td>YOLOv8n / YOLOv5n</td>
+                    <td>模型小、速度快</td>
+                </tr>
+                <tr>
+                    <td>高精度需求</td>
+                    <td>YOLOv8x / YOLO11</td>
+                    <td>準確度最高</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 工作原理 -->
+        <section class="section" id="principle">
+            <h2>3. 工作原理</h2>
+
+            <h3>核心概念</h3>
+
+            <h4>1. 網格劃分 (Grid Division)</h4>
+            <p>YOLO 將輸入圖片劃分成 S×S 的網格（如 13×13）。每個網格負責偵測中心點落在該網格內的物件。</p>
+
+            <h4>2. 邊界框預測 (Bounding Box)</h4>
+            <p>每個網格預測多個邊界框，包含：</p>
+            <ul>
+                <li><strong>x, y</strong>：邊界框中心座標（相對於網格）</li>
+                <li><strong>w, h</strong>：邊界框寬度和高度（相對於圖片）</li>
+                <li><strong>confidence</strong>：物件存在的信心度</li>
+            </ul>
+
+            <h4>3. 類別預測 (Class Prediction)</h4>
+            <p>每個邊界框預測各類別的機率分布，判斷物件屬於哪個類別。</p>
+
+            <h4>4. 非極大值抑制 (NMS)</h4>
+            <p>同一個物件可能被多個邊界框偵測到。NMS 會保留信心度最高的框，去除重疊的框。</p>
+
+            <div class="diagram">
+                <p style="margin-bottom: 15px; color: #a0aec0;">邊界框格式：x, y, w, h</p>
+                <div style="display: inline-block; width: 200px; height: 150px; border: 2px solid #fb923c; position: relative; border-radius: 5px;">
+                    <div style="position: absolute; width: 80px; height: 60px; border: 3px solid #4ade80; left: 60px; top: 40px;">
+                        <div style="position: absolute; width: 8px; height: 8px; background: #4ade80; border-radius: 50%; left: 50%; top: 50%; transform: translate(-50%, -50%);"></div>
+                    </div>
+                    <div style="position: absolute; left: 65px; top: 100px; color: #a0aec0; font-size: 0.8em;">
+                        (x, y) = 中心點
+                    </div>
+                </div>
+            </div>
+
+            <h3>關鍵術語</h3>
+
+            <table>
+                <tr>
+                    <th>術語</th>
+                    <th>說明</th>
+                </tr>
+                <tr>
+                    <td>IoU (Intersection over Union)</td>
+                    <td>預測框與真實框的重疊程度，用於評估偵測準確度</td>
+                </tr>
+                <tr>
+                    <td>Confidence Score</td>
+                    <td>模型對預測結果的信心度 (0-1)</td>
+                </tr>
+                <tr>
+                    <td>Anchor Box</td>
+                    <td>預設的邊界框形狀，幫助模型學習不同比例的物件</td>
+                </tr>
+                <tr>
+                    <td>mAP (mean Average Precision)</td>
+                    <td>物件偵測的主要評估指標</td>
+                </tr>
+                <tr>
+                    <td>FPS (Frames Per Second)</td>
+                    <td>每秒可處理的圖片數，衡量速度</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 安裝 -->
+        <section class="section" id="install">
+            <h2>4. 安裝與環境設定</h2>
+
+            <h3>系統需求</h3>
+            <ul>
+                <li>Python 3.8 以上</li>
+                <li>PyTorch 1.8 以上</li>
+                <li>GPU（建議）：NVIDIA GPU + CUDA</li>
+                <li>記憶體：8GB 以上（訓練建議 16GB+）</li>
+            </ul>
+
+            <h3>安裝 Ultralytics (YOLOv8)</h3>
+
+            <div class="terminal">pip install ultralytics</div>
+
+            <h3>安裝 YOLOv5</h3>
+
+            <div class="code-block"><code><span class="comment"># 方法 1：pip 安裝</span>
+pip install yolov5
+
+<span class="comment"># 方法 2：從 GitHub 克隆</span>
+git clone https://github.com/ultralytics/yolov5
+cd yolov5
+pip install -r requirements.txt</code></div>
+
+            <h3>驗證安裝</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+
+<span class="comment"># 載入預訓練模型</span>
+model = YOLO(<span class="string">'yolov8n.pt'</span>)
+
+<span class="comment"># 進行預測</span>
+results = model(<span class="string">'https://ultralytics.com/images/bus.jpg'</span>)
+
+<span class="comment"># 顯示結果</span>
+results[<span class="number">0</span>].show()</code></div>
+
+            <div class="tip-box">
+                <h4>GPU 加速</h4>
+                <p>如果有 NVIDIA GPU，確保安裝了正確版本的 CUDA 和 cuDNN。YOLO 會自動使用 GPU 進行訓練和推論。</p>
+                <div class="terminal">python -c "import torch; print(torch.cuda.is_available())"</div>
+            </div>
+        </section>
+
+        <!-- 快速開始 -->
+        <section class="section" id="quickstart">
+            <h2>5. 快速開始</h2>
+
+            <h3>使用預訓練模型進行偵測</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+<span class="keyword">import</span> cv2
+
+<span class="comment"># 載入預訓練模型（自動下載）</span>
+model = YOLO(<span class="string">'yolov8n.pt'</span>)  <span class="comment"># n=nano, s=small, m=medium, l=large, x=xlarge</span>
+
+<span class="comment"># 對單張圖片進行預測</span>
+results = model(<span class="string">'path/to/image.jpg'</span>)
+
+<span class="comment"># 遍歷結果</span>
+<span class="keyword">for</span> result <span class="keyword">in</span> results:
+    boxes = result.boxes  <span class="comment"># 邊界框</span>
+
+    <span class="keyword">for</span> box <span class="keyword">in</span> boxes:
+        <span class="comment"># 取得座標 (x1, y1, x2, y2)</span>
+        x1, y1, x2, y2 = box.xyxy[<span class="number">0</span>].tolist()
+
+        <span class="comment"># 取得信心度</span>
+        confidence = box.conf[<span class="number">0</span>].item()
+
+        <span class="comment"># 取得類別</span>
+        class_id = <span class="function">int</span>(box.cls[<span class="number">0</span>])
+        class_name = model.names[class_id]
+
+        <span class="keyword">print</span>(<span class="string">f"偵測到: {class_name}, 信心度: {confidence:.2f}"</span>)
+        <span class="keyword">print</span>(<span class="string">f"位置: ({x1:.0f}, {y1:.0f}) - ({x2:.0f}, {y2:.0f})"</span>)</code></div>
+
+            <h3>處理影片</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+
+model = YOLO(<span class="string">'yolov8n.pt'</span>)
+
+<span class="comment"># 處理影片檔案</span>
+results = model(<span class="string">'path/to/video.mp4'</span>, save=<span class="keyword">True</span>)
+
+<span class="comment"># 或使用攝影機即時偵測</span>
+results = model(source=<span class="number">0</span>, show=<span class="keyword">True</span>)  <span class="comment"># 0 = 預設攝影機</span></code></div>
+
+            <h3>儲存偵測結果</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+
+model = YOLO(<span class="string">'yolov8n.pt'</span>)
+
+<span class="comment"># 預測並儲存結果</span>
+results = model(
+    <span class="string">'path/to/images/'</span>,
+    save=<span class="keyword">True</span>,          <span class="comment"># 儲存標註後的圖片</span>
+    save_txt=<span class="keyword">True</span>,      <span class="comment"># 儲存標籤檔</span>
+    save_conf=<span class="keyword">True</span>,     <span class="comment"># 在標籤檔中包含信心度</span>
+    project=<span class="string">'runs/detect'</span>,
+    name=<span class="string">'exp'</span>
+)</code></div>
+
+            <h3>命令列介面 (CLI)</h3>
+
+            <div class="terminal">yolo detect predict model=yolov8n.pt source=image.jpg</div>
+            <div class="terminal">yolo detect predict model=yolov8n.pt source=0 show=True</div>
+        </section>
+
+        <!-- 資料集準備 -->
+        <section class="section" id="dataset">
+            <h2>6. 資料集準備</h2>
+
+            <h3>YOLO 資料集格式</h3>
+
+            <p>YOLO 使用特定的資料集結構和標籤格式：</p>
+
+            <div class="file-structure">
+<span class="folder">dataset/</span>
+├── <span class="folder">images/</span>
+│   ├── <span class="folder">train/</span>
+│   │   ├── <span class="file">image001.jpg</span>
+│   │   ├── <span class="file">image002.jpg</span>
+│   │   └── ...
+│   └── <span class="folder">val/</span>
+│       ├── <span class="file">image101.jpg</span>
+│       └── ...
+├── <span class="folder">labels/</span>
+│   ├── <span class="folder">train/</span>
+│   │   ├── <span class="file">image001.txt</span>
+│   │   ├── <span class="file">image002.txt</span>
+│   │   └── ...
+│   └── <span class="folder">val/</span>
+│       ├── <span class="file">image101.txt</span>
+│       └── ...
+└── <span class="file">data.yaml</span>
+            </div>
+
+            <h3>標籤檔格式</h3>
+
+            <p>每張圖片對應一個 .txt 標籤檔，每行代表一個物件：</p>
+
+            <div class="code-block"><code><span class="comment"># 格式：class_id  x_center  y_center  width  height</span>
+<span class="comment"># 所有數值都是相對於圖片尺寸的比例 (0-1)</span>
+
+0 0.45 0.32 0.12 0.18
+1 0.72 0.65 0.08 0.15
+0 0.21 0.48 0.15 0.22</code></div>
+
+            <div class="info-box">
+                <h4>座標格式說明</h4>
+                <ul>
+                    <li><strong>class_id</strong>：類別編號（從 0 開始）</li>
+                    <li><strong>x_center</strong>：邊界框中心 x 座標 / 圖片寬度</li>
+                    <li><strong>y_center</strong>：邊界框中心 y 座標 / 圖片高度</li>
+                    <li><strong>width</strong>：邊界框寬度 / 圖片寬度</li>
+                    <li><strong>height</strong>：邊界框高度 / 圖片高度</li>
+                </ul>
+            </div>
+
+            <h3>建立 data.yaml 設定檔</h3>
+
+            <div class="code-block"><code><span class="comment"># data.yaml</span>
+
+<span class="variable">path</span>: /path/to/dataset  <span class="comment"># 資料集根目錄</span>
+<span class="variable">train</span>: images/train     <span class="comment"># 訓練圖片路徑 (相對於 path)</span>
+<span class="variable">val</span>: images/val         <span class="comment"># 驗證圖片路徑</span>
+<span class="variable">test</span>: images/test       <span class="comment"># 測試圖片路徑 (可選)</span>
+
+<span class="comment"># 類別設定</span>
+<span class="variable">names</span>:
+  <span class="number">0</span>: healthy_apple
+  <span class="number">1</span>: diseased_apple
+  <span class="number">2</span>: rotten_apple
+
+<span class="comment"># 或使用列表格式</span>
+<span class="comment"># names: ['healthy_apple', 'diseased_apple', 'rotten_apple']</span></code></div>
+
+            <h3>資料集分割腳本</h3>
+
+            <div class="code-block"><code><span class="keyword">import</span> os
+<span class="keyword">import</span> shutil
+<span class="keyword">import</span> random
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+
+<span class="keyword">def</span> <span class="function">split_dataset</span>(source_images, source_labels, output_dir,
+                   train_ratio=<span class="number">0.8</span>, val_ratio=<span class="number">0.1</span>, test_ratio=<span class="number">0.1</span>):
+    <span class="string">"""
+    將資料集分割為訓練、驗證、測試集
+    """</span>
+
+    <span class="comment"># 建立目錄結構</span>
+    <span class="keyword">for</span> split <span class="keyword">in</span> [<span class="string">'train'</span>, <span class="string">'val'</span>, <span class="string">'test'</span>]:
+        (Path(output_dir) / <span class="string">'images'</span> / split).mkdir(parents=<span class="keyword">True</span>, exist_ok=<span class="keyword">True</span>)
+        (Path(output_dir) / <span class="string">'labels'</span> / split).mkdir(parents=<span class="keyword">True</span>, exist_ok=<span class="keyword">True</span>)
+
+    <span class="comment"># 取得所有圖片檔案</span>
+    images = [f <span class="keyword">for</span> f <span class="keyword">in</span> os.listdir(source_images)
+              <span class="keyword">if</span> f.endswith((<span class="string">'.jpg'</span>, <span class="string">'.jpeg'</span>, <span class="string">'.png'</span>))]
+    random.shuffle(images)
+
+    <span class="comment"># 計算分割點</span>
+    n = <span class="function">len</span>(images)
+    train_end = <span class="function">int</span>(n * train_ratio)
+    val_end = train_end + <span class="function">int</span>(n * val_ratio)
+
+    splits = {
+        <span class="string">'train'</span>: images[:train_end],
+        <span class="string">'val'</span>: images[train_end:val_end],
+        <span class="string">'test'</span>: images[val_end:]
+    }
+
+    <span class="comment"># 複製檔案</span>
+    <span class="keyword">for</span> split, files <span class="keyword">in</span> splits.items():
+        <span class="keyword">for</span> img_file <span class="keyword">in</span> files:
+            <span class="comment"># 複製圖片</span>
+            src_img = Path(source_images) / img_file
+            dst_img = Path(output_dir) / <span class="string">'images'</span> / split / img_file
+            shutil.copy(src_img, dst_img)
+
+            <span class="comment"># 複製標籤</span>
+            label_file = Path(img_file).stem + <span class="string">'.txt'</span>
+            src_label = Path(source_labels) / label_file
+            dst_label = Path(output_dir) / <span class="string">'labels'</span> / split / label_file
+
+            <span class="keyword">if</span> src_label.exists():
+                shutil.copy(src_label, dst_label)
+
+    <span class="keyword">print</span>(<span class="string">f"訓練集: {len(splits['train'])} 張"</span>)
+    <span class="keyword">print</span>(<span class="string">f"驗證集: {len(splits['val'])} 張"</span>)
+    <span class="keyword">print</span>(<span class="string">f"測試集: {len(splits['test'])} 張"</span>)
+
+<span class="comment"># 使用範例</span>
+split_dataset(
+    source_images=<span class="string">'raw_data/images'</span>,
+    source_labels=<span class="string">'raw_data/labels'</span>,
+    output_dir=<span class="string">'dataset'</span>
+)</code></div>
+        </section>
+
+        <!-- 標註 -->
+        <section class="section" id="labeling">
+            <h2>7. 圖片標註</h2>
+
+            <h3>標註工具推薦</h3>
+
+            <table>
+                <tr>
+                    <th>工具</th>
+                    <th>特點</th>
+                    <th>適用場景</th>
+                </tr>
+                <tr>
+                    <td><strong>LabelImg</strong></td>
+                    <td>簡單易用、支援 YOLO 格式、離線使用</td>
+                    <td>小型專案、初學者</td>
+                </tr>
+                <tr>
+                    <td><strong>Roboflow</strong></td>
+                    <td>雲端平台、團隊協作、資料增強</td>
+                    <td>團隊專案、需要增強</td>
+                </tr>
+                <tr>
+                    <td><strong>CVAT</strong></td>
+                    <td>功能強大、支援影片標註</td>
+                    <td>大型專案、影片資料</td>
+                </tr>
+                <tr>
+                    <td><strong>Label Studio</strong></td>
+                    <td>開源、可自架、多種標註類型</td>
+                    <td>企業應用</td>
+                </tr>
+            </table>
+
+            <h3>使用 LabelImg</h3>
+
+            <div class="terminal">pip install labelImg</div>
+            <div class="terminal">labelImg</div>
+
+            <h4>LabelImg 操作步驟：</h4>
+            <ol>
+                <li>點擊 <strong>Open Dir</strong> 開啟圖片資料夾</li>
+                <li>點擊 <strong>Change Save Dir</strong> 設定標籤儲存位置</li>
+                <li>左側選擇 <strong>YOLO</strong> 格式</li>
+                <li>按 <strong>W</strong> 開始畫框</li>
+                <li>拖曳滑鼠框選物件</li>
+                <li>輸入類別名稱</li>
+                <li>按 <strong>Ctrl+S</strong> 儲存</li>
+                <li>按 <strong>D</strong> 下一張圖片</li>
+            </ol>
+
+            <h3>使用 Python 轉換標註格式</h3>
+
+            <div class="code-block"><code><span class="keyword">def</span> <span class="function">convert_voc_to_yolo</span>(xml_path, output_path, class_names):
+    <span class="string">"""
+    將 Pascal VOC 格式轉換為 YOLO 格式
+    """</span>
+    <span class="keyword">import</span> xml.etree.ElementTree <span class="keyword">as</span> ET
+
+    tree = ET.parse(xml_path)
+    root = tree.getroot()
+
+    <span class="comment"># 取得圖片尺寸</span>
+    size = root.find(<span class="string">'size'</span>)
+    img_w = <span class="function">int</span>(size.find(<span class="string">'width'</span>).text)
+    img_h = <span class="function">int</span>(size.find(<span class="string">'height'</span>).text)
+
+    yolo_lines = []
+
+    <span class="keyword">for</span> obj <span class="keyword">in</span> root.findall(<span class="string">'object'</span>):
+        class_name = obj.find(<span class="string">'name'</span>).text
+
+        <span class="keyword">if</span> class_name <span class="keyword">not in</span> class_names:
+            <span class="keyword">continue</span>
+
+        class_id = class_names.index(class_name)
+
+        bbox = obj.find(<span class="string">'bndbox'</span>)
+        xmin = <span class="function">float</span>(bbox.find(<span class="string">'xmin'</span>).text)
+        ymin = <span class="function">float</span>(bbox.find(<span class="string">'ymin'</span>).text)
+        xmax = <span class="function">float</span>(bbox.find(<span class="string">'xmax'</span>).text)
+        ymax = <span class="function">float</span>(bbox.find(<span class="string">'ymax'</span>).text)
+
+        <span class="comment"># 轉換為 YOLO 格式</span>
+        x_center = (xmin + xmax) / <span class="number">2</span> / img_w
+        y_center = (ymin + ymax) / <span class="number">2</span> / img_h
+        width = (xmax - xmin) / img_w
+        height = (ymax - ymin) / img_h
+
+        yolo_lines.append(<span class="string">f"{class_id} {x_center:.6f} {y_center:.6f} {width:.6f} {height:.6f}"</span>)
+
+    <span class="keyword">with</span> <span class="function">open</span>(output_path, <span class="string">'w'</span>) <span class="keyword">as</span> f:
+        f.write(<span class="string">'\n'</span>.join(yolo_lines))</code></div>
+        </section>
+
+        <!-- 訓練 -->
+        <section class="section" id="training">
+            <h2>8. 訓練自己的模型</h2>
+
+            <h3>基本訓練</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+
+<span class="comment"># 載入預訓練模型作為起點</span>
+model = YOLO(<span class="string">'yolov8n.pt'</span>)
+
+<span class="comment"># 訓練模型</span>
+results = model.train(
+    data=<span class="string">'path/to/data.yaml'</span>,  <span class="comment"># 資料集設定檔</span>
+    epochs=<span class="number">100</span>,                  <span class="comment"># 訓練週期</span>
+    imgsz=<span class="number">640</span>,                   <span class="comment"># 輸入圖片大小</span>
+    batch=<span class="number">16</span>,                    <span class="comment"># 批次大小</span>
+    device=<span class="number">0</span>,                    <span class="comment"># GPU 編號 (CPU 用 'cpu')</span>
+    project=<span class="string">'runs/train'</span>,        <span class="comment"># 儲存目錄</span>
+    name=<span class="string">'apple_detector'</span>        <span class="comment"># 實驗名稱</span>
+)</code></div>
+
+            <h3>進階訓練參數</h3>
+
+            <div class="code-block"><code>results = model.train(
+    data=<span class="string">'data.yaml'</span>,
+    epochs=<span class="number">100</span>,
+    imgsz=<span class="number">640</span>,
+    batch=<span class="number">16</span>,
+
+    <span class="comment"># 優化器設定</span>
+    optimizer=<span class="string">'Adam'</span>,           <span class="comment"># 優化器: SGD, Adam, AdamW</span>
+    lr0=<span class="number">0.01</span>,                   <span class="comment"># 初始學習率</span>
+    lrf=<span class="number">0.01</span>,                   <span class="comment"># 最終學習率 = lr0 * lrf</span>
+    momentum=<span class="number">0.937</span>,             <span class="comment"># SGD 動量</span>
+    weight_decay=<span class="number">0.0005</span>,        <span class="comment"># 權重衰減</span>
+
+    <span class="comment"># 資料增強</span>
+    hsv_h=<span class="number">0.015</span>,                <span class="comment"># 色相增強</span>
+    hsv_s=<span class="number">0.7</span>,                  <span class="comment"># 飽和度增強</span>
+    hsv_v=<span class="number">0.4</span>,                  <span class="comment"># 明度增強</span>
+    degrees=<span class="number">10.0</span>,               <span class="comment"># 旋轉角度</span>
+    translate=<span class="number">0.1</span>,              <span class="comment"># 平移比例</span>
+    scale=<span class="number">0.5</span>,                  <span class="comment"># 縮放範圍</span>
+    flipud=<span class="number">0.5</span>,                 <span class="comment"># 垂直翻轉機率</span>
+    fliplr=<span class="number">0.5</span>,                 <span class="comment"># 水平翻轉機率</span>
+    mosaic=<span class="number">1.0</span>,                 <span class="comment"># 馬賽克增強</span>
+    mixup=<span class="number">0.0</span>,                  <span class="comment"># MixUp 增強</span>
+
+    <span class="comment"># 其他設定</span>
+    patience=<span class="number">50</span>,                <span class="comment"># 早停耐心值</span>
+    save_period=<span class="number">10</span>,             <span class="comment"># 每 N 個 epoch 儲存一次</span>
+    workers=<span class="number">8</span>,                  <span class="comment"># 資料載入的工作程序數</span>
+    pretrained=<span class="keyword">True</span>,            <span class="comment"># 使用預訓練權重</span>
+    resume=<span class="keyword">False</span>,               <span class="comment"># 從上次中斷處繼續</span>
+    amp=<span class="keyword">True</span>,                   <span class="comment"># 自動混合精度訓練</span>
+)</code></div>
+
+            <h3>使用命令列訓練</h3>
+
+            <div class="terminal">yolo detect train data=data.yaml model=yolov8n.pt epochs=100 imgsz=640</div>
+
+            <h3>從中斷處繼續訓練</h3>
+
+            <div class="code-block"><code><span class="comment"># 方法 1：使用 resume</span>
+model = YOLO(<span class="string">'runs/train/exp/weights/last.pt'</span>)
+model.train(resume=<span class="keyword">True</span>)
+
+<span class="comment"># 方法 2：命令列</span></code></div>
+            <div class="terminal">yolo detect train resume model=runs/train/exp/weights/last.pt</div>
+
+            <div class="warning-box">
+                <h4>訓練注意事項</h4>
+                <ul>
+                    <li>確保資料集標籤正確，錯誤標籤會嚴重影響訓練結果</li>
+                    <li>小資料集建議使用更小的模型（如 yolov8n）避免過擬合</li>
+                    <li>監控驗證集的 mAP，如果開始下降表示過擬合</li>
+                    <li>GPU 記憶體不足時，減小 batch size 或 imgsz</li>
+                </ul>
+            </div>
+
+            <h3>訓練輸出說明</h3>
+
+            <div class="file-structure">
+<span class="folder">runs/train/exp/</span>
+├── <span class="folder">weights/</span>
+│   ├── <span class="file">best.pt</span>      <span class="comment"># 最佳模型（驗證 mAP 最高）</span>
+│   └── <span class="file">last.pt</span>      <span class="comment"># 最後一個 epoch 的模型</span>
+├── <span class="file">results.csv</span>       <span class="comment"># 訓練指標記錄</span>
+├── <span class="file">results.png</span>       <span class="comment"># 訓練曲線圖</span>
+├── <span class="file">confusion_matrix.png</span>  <span class="comment"># 混淆矩陣</span>
+├── <span class="file">F1_curve.png</span>      <span class="comment"># F1 曲線</span>
+├── <span class="file">PR_curve.png</span>      <span class="comment"># 精確率-召回率曲線</span>
+└── <span class="file">args.yaml</span>        <span class="comment"># 訓練參數記錄</span>
+            </div>
+        </section>
+
+        <!-- 評估 -->
+        <section class="section" id="evaluation">
+            <h2>9. 模型評估</h2>
+
+            <h3>驗證模型</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+
+<span class="comment"># 載入訓練好的模型</span>
+model = YOLO(<span class="string">'runs/train/exp/weights/best.pt'</span>)
+
+<span class="comment"># 在驗證集上評估</span>
+metrics = model.val()
+
+<span class="comment"># 查看指標</span>
+<span class="keyword">print</span>(<span class="string">f"mAP50: {metrics.box.map50:.4f}"</span>)      <span class="comment"># mAP@IoU=0.5</span>
+<span class="keyword">print</span>(<span class="string">f"mAP50-95: {metrics.box.map:.4f}"</span>)    <span class="comment"># mAP@IoU=0.5:0.95</span>
+<span class="keyword">print</span>(<span class="string">f"Precision: {metrics.box.mp:.4f}"</span>)    <span class="comment"># 平均精確率</span>
+<span class="keyword">print</span>(<span class="string">f"Recall: {metrics.box.mr:.4f}"</span>)       <span class="comment"># 平均召回率</span></code></div>
+
+            <h3>評估指標說明</h3>
+
+            <table>
+                <tr>
+                    <th>指標</th>
+                    <th>說明</th>
+                    <th>理想值</th>
+                </tr>
+                <tr>
+                    <td>mAP50</td>
+                    <td>IoU 閾值 0.5 時的平均精確率</td>
+                    <td>越高越好，通常 > 0.7</td>
+                </tr>
+                <tr>
+                    <td>mAP50-95</td>
+                    <td>IoU 從 0.5 到 0.95（間隔 0.05）的平均</td>
+                    <td>更嚴格的指標，通常 > 0.5</td>
+                </tr>
+                <tr>
+                    <td>Precision</td>
+                    <td>預測為正例中的真正例比例</td>
+                    <td>> 0.8</td>
+                </tr>
+                <tr>
+                    <td>Recall</td>
+                    <td>真正例中被正確預測的比例</td>
+                    <td>> 0.8</td>
+                </tr>
+            </table>
+
+            <h3>分析錯誤案例</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+<span class="keyword">import</span> cv2
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+
+<span class="keyword">def</span> <span class="function">analyze_false_predictions</span>(model_path, val_images_dir, conf_threshold=<span class="number">0.5</span>):
+    <span class="string">"""分析預測錯誤的案例"""</span>
+
+    model = YOLO(model_path)
+
+    false_positives = []  <span class="comment"># 誤報</span>
+    false_negatives = []  <span class="comment"># 漏報</span>
+
+    <span class="keyword">for</span> img_path <span class="keyword">in</span> Path(val_images_dir).glob(<span class="string">'*.jpg'</span>):
+        results = model(img_path, conf=conf_threshold)
+
+        <span class="comment"># 比較預測和真實標籤...</span>
+        <span class="comment"># 這裡需要讀取對應的標籤檔進行比較</span>
+
+    <span class="keyword">return</span> false_positives, false_negatives</code></div>
+        </section>
+
+        <!-- 推論 -->
+        <section class="section" id="inference">
+            <h2>10. 推論與應用</h2>
+
+            <h3>基本推論</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+<span class="keyword">import</span> cv2
+
+model = YOLO(<span class="string">'best.pt'</span>)
+
+<span class="comment"># 推論參數</span>
+results = model(
+    <span class="string">'image.jpg'</span>,
+    conf=<span class="number">0.5</span>,       <span class="comment"># 信心度閾值</span>
+    iou=<span class="number">0.45</span>,       <span class="comment"># NMS IoU 閾值</span>
+    max_det=<span class="number">100</span>,    <span class="comment"># 最多偵測數量</span>
+    classes=[<span class="number">0</span>, <span class="number">1</span>], <span class="comment"># 只偵測特定類別</span>
+    verbose=<span class="keyword">False</span>   <span class="comment"># 是否印出詳細資訊</span>
+)</code></div>
+
+            <h3>批次處理</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+<span class="keyword">import</span> json
+
+<span class="keyword">def</span> <span class="function">batch_inference</span>(model_path, images_dir, output_json):
+    <span class="string">"""批次處理圖片並輸出 JSON 結果"""</span>
+
+    model = YOLO(model_path)
+    all_results = []
+
+    image_paths = <span class="function">list</span>(Path(images_dir).glob(<span class="string">'*.jpg'</span>))
+
+    <span class="keyword">for</span> img_path <span class="keyword">in</span> image_paths:
+        results = model(img_path, verbose=<span class="keyword">False</span>)
+
+        detections = []
+        <span class="keyword">for</span> box <span class="keyword">in</span> results[<span class="number">0</span>].boxes:
+            detections.append({
+                <span class="string">'class'</span>: model.names[<span class="function">int</span>(box.cls[<span class="number">0</span>])],
+                <span class="string">'confidence'</span>: <span class="function">float</span>(box.conf[<span class="number">0</span>]),
+                <span class="string">'bbox'</span>: box.xyxy[<span class="number">0</span>].tolist()
+            })
+
+        all_results.append({
+            <span class="string">'image'</span>: img_path.name,
+            <span class="string">'detections'</span>: detections
+        })
+
+    <span class="keyword">with</span> <span class="function">open</span>(output_json, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+        json.dump(all_results, f, ensure_ascii=<span class="keyword">False</span>, indent=<span class="number">2</span>)
+
+    <span class="keyword">return</span> all_results
+
+<span class="comment"># 使用</span>
+results = batch_inference(<span class="string">'best.pt'</span>, <span class="string">'test_images/'</span>, <span class="string">'results.json'</span>)</code></div>
+
+            <h3>即時影像偵測</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+<span class="keyword">import</span> cv2
+
+<span class="keyword">def</span> <span class="function">realtime_detection</span>(model_path, camera_id=<span class="number">0</span>):
+    <span class="string">"""即時攝影機偵測"""</span>
+
+    model = YOLO(model_path)
+    cap = cv2.VideoCapture(camera_id)
+
+    <span class="keyword">while</span> <span class="keyword">True</span>:
+        ret, frame = cap.read()
+        <span class="keyword">if not</span> ret:
+            <span class="keyword">break</span>
+
+        <span class="comment"># 進行偵測</span>
+        results = model(frame, verbose=<span class="keyword">False</span>)
+
+        <span class="comment"># 繪製結果</span>
+        annotated_frame = results[<span class="number">0</span>].plot()
+
+        <span class="comment"># 顯示 FPS</span>
+        fps = <span class="number">1000</span> / results[<span class="number">0</span>].speed[<span class="string">'inference'</span>]
+        cv2.putText(annotated_frame, <span class="string">f'FPS: {fps:.1f}'</span>,
+                    (<span class="number">10</span>, <span class="number">30</span>), cv2.FONT_HERSHEY_SIMPLEX, <span class="number">1</span>, (<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>), <span class="number">2</span>)
+
+        cv2.imshow(<span class="string">'YOLO Detection'</span>, annotated_frame)
+
+        <span class="keyword">if</span> cv2.waitKey(<span class="number">1</span>) & <span class="number">0xFF</span> == <span class="function">ord</span>(<span class="string">'q'</span>):
+            <span class="keyword">break</span>
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+realtime_detection(<span class="string">'best.pt'</span>)</code></div>
+
+            <h3>模型匯出</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+
+model = YOLO(<span class="string">'best.pt'</span>)
+
+<span class="comment"># 匯出為 ONNX（通用格式）</span>
+model.export(format=<span class="string">'onnx'</span>)
+
+<span class="comment"># 匯出為 TensorRT（NVIDIA GPU 加速）</span>
+model.export(format=<span class="string">'engine'</span>)
+
+<span class="comment"># 匯出為 CoreML（Apple 裝置）</span>
+model.export(format=<span class="string">'coreml'</span>)
+
+<span class="comment"># 匯出為 TFLite（行動裝置）</span>
+model.export(format=<span class="string">'tflite'</span>)</code></div>
+
+            <table>
+                <tr>
+                    <th>格式</th>
+                    <th>用途</th>
+                    <th>命令</th>
+                </tr>
+                <tr>
+                    <td>ONNX</td>
+                    <td>通用格式，跨平台</td>
+                    <td><code>format='onnx'</code></td>
+                </tr>
+                <tr>
+                    <td>TensorRT</td>
+                    <td>NVIDIA GPU 加速</td>
+                    <td><code>format='engine'</code></td>
+                </tr>
+                <tr>
+                    <td>OpenVINO</td>
+                    <td>Intel CPU/GPU 加速</td>
+                    <td><code>format='openvino'</code></td>
+                </tr>
+                <tr>
+                    <td>TFLite</td>
+                    <td>Android、樹莓派</td>
+                    <td><code>format='tflite'</code></td>
+                </tr>
+                <tr>
+                    <td>CoreML</td>
+                    <td>iOS、macOS</td>
+                    <td><code>format='coreml'</code></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 優化 -->
+        <section class="section" id="optimization">
+            <h2>11. 效能優化</h2>
+
+            <h3>提升準確度</h3>
+
+            <ul>
+                <li><strong>增加訓練資料</strong>：更多樣化的資料能提升泛化能力</li>
+                <li><strong>資料增強</strong>：使用 mosaic、mixup、色彩增強等</li>
+                <li><strong>使用更大的模型</strong>：YOLOv8m/l/x 通常比 n/s 準確</li>
+                <li><strong>增加訓練週期</strong>：確保模型充分學習</li>
+                <li><strong>調整超參數</strong>：學習率、批次大小等</li>
+                <li><strong>使用 TTA（測試時增強）</strong>：推論時使用多種增強取平均</li>
+            </ul>
+
+            <h3>提升速度</h3>
+
+            <ul>
+                <li><strong>使用更小的模型</strong>：YOLOv8n 速度最快</li>
+                <li><strong>減小輸入尺寸</strong>：640 → 320，速度大幅提升</li>
+                <li><strong>模型量化</strong>：INT8 量化減少計算量</li>
+                <li><strong>使用 TensorRT</strong>：NVIDIA GPU 最佳化</li>
+                <li><strong>批次處理</strong>：同時處理多張圖片</li>
+            </ul>
+
+            <h3>模型量化範例</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+
+model = YOLO(<span class="string">'best.pt'</span>)
+
+<span class="comment"># INT8 量化匯出</span>
+model.export(
+    format=<span class="string">'onnx'</span>,
+    int8=<span class="keyword">True</span>,
+    data=<span class="string">'data.yaml'</span>  <span class="comment"># 需要校準資料</span>
+)
+
+<span class="comment"># FP16 半精度</span>
+model.export(
+    format=<span class="string">'engine'</span>,
+    half=<span class="keyword">True</span>
+)</code></div>
+
+            <h3>超參數調優</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+
+model = YOLO(<span class="string">'yolov8n.pt'</span>)
+
+<span class="comment"># 自動超參數調優</span>
+model.tune(
+    data=<span class="string">'data.yaml'</span>,
+    epochs=<span class="number">30</span>,
+    iterations=<span class="number">300</span>,  <span class="comment"># 嘗試的組合數</span>
+    optimizer=<span class="string">'AdamW'</span>,
+    plots=<span class="keyword">True</span>,
+    save=<span class="keyword">True</span>
+)</code></div>
+        </section>
+
+        <!-- 農業應用 -->
+        <section class="section" id="agriculture">
+            <h2>12. 農業應用案例</h2>
+
+            <h3>案例 1：水果品質分級</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+<span class="keyword">import</span> cv2
+
+<span class="keyword">class</span> <span class="function">FruitQualityGrader</span>:
+    <span class="string">"""水果品質自動分級系統"""</span>
+
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, model_path):
+        self.model = YOLO(model_path)
+        self.grade_mapping = {
+            <span class="string">'healthy'</span>: <span class="string">'A級 - 優質'</span>,
+            <span class="string">'minor_defect'</span>: <span class="string">'B級 - 良好'</span>,
+            <span class="string">'major_defect'</span>: <span class="string">'C級 - 次級'</span>,
+            <span class="string">'rotten'</span>: <span class="string">'廢棄'</span>
+        }
+
+    <span class="keyword">def</span> <span class="function">grade</span>(self, image_path):
+        <span class="string">"""對單張圖片進行分級"""</span>
+        results = self.model(image_path, verbose=<span class="keyword">False</span>)
+
+        detections = []
+        <span class="keyword">for</span> box <span class="keyword">in</span> results[<span class="number">0</span>].boxes:
+            class_name = self.model.names[<span class="function">int</span>(box.cls[<span class="number">0</span>])]
+            confidence = <span class="function">float</span>(box.conf[<span class="number">0</span>])
+            grade = self.grade_mapping.get(class_name, <span class="string">'未知'</span>)
+
+            detections.append({
+                <span class="string">'class'</span>: class_name,
+                <span class="string">'grade'</span>: grade,
+                <span class="string">'confidence'</span>: confidence,
+                <span class="string">'bbox'</span>: box.xyxy[<span class="number">0</span>].tolist()
+            })
+
+        <span class="keyword">return</span> detections
+
+    <span class="keyword">def</span> <span class="function">process_batch</span>(self, image_dir, output_csv):
+        <span class="string">"""批次處理並輸出統計"""</span>
+        <span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+        <span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+
+        results = []
+        <span class="keyword">for</span> img_path <span class="keyword">in</span> Path(image_dir).glob(<span class="string">'*.jpg'</span>):
+            detections = self.grade(img_path)
+            <span class="keyword">for</span> det <span class="keyword">in</span> detections:
+                det[<span class="string">'image'</span>] = img_path.name
+                results.append(det)
+
+        df = pd.DataFrame(results)
+        df.to_csv(output_csv, index=<span class="keyword">False</span>)
+
+        <span class="comment"># 統計各等級數量</span>
+        <span class="keyword">print</span>(<span class="string">"=== 分級統計 ==="</span>)
+        <span class="keyword">print</span>(df[<span class="string">'grade'</span>].value_counts())
+
+        <span class="keyword">return</span> df
+
+<span class="comment"># 使用範例</span>
+grader = FruitQualityGrader(<span class="string">'apple_grader.pt'</span>)
+grader.process_batch(<span class="string">'harvest_images/'</span>, <span class="string">'grading_results.csv'</span>)</code></div>
+
+            <h3>案例 2：病蟲害偵測</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+<span class="keyword">import</span> cv2
+<span class="keyword">from</span> datetime <span class="keyword">import</span> datetime
+
+<span class="keyword">class</span> <span class="function">PestDetector</span>:
+    <span class="string">"""作物病蟲害偵測系統"""</span>
+
+    PEST_INFO = {
+        <span class="string">'aphid'</span>: {
+            <span class="string">'name'</span>: <span class="string">'蚜蟲'</span>,
+            <span class="string">'severity'</span>: <span class="string">'中'</span>,
+            <span class="string">'treatment'</span>: <span class="string">'建議使用生物防治或低毒農藥'</span>
+        },
+        <span class="string">'spider_mite'</span>: {
+            <span class="string">'name'</span>: <span class="string">'紅蜘蛛'</span>,
+            <span class="string">'severity'</span>: <span class="string">'高'</span>,
+            <span class="string">'treatment'</span>: <span class="string">'立即使用殺蟎劑，注意通風'</span>
+        },
+        <span class="string">'powdery_mildew'</span>: {
+            <span class="string">'name'</span>: <span class="string">'白粉病'</span>,
+            <span class="string">'severity'</span>: <span class="string">'中'</span>,
+            <span class="string">'treatment'</span>: <span class="string">'改善通風，使用硫磺類殺菌劑'</span>
+        }
+    }
+
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, model_path):
+        self.model = YOLO(model_path)
+
+    <span class="keyword">def</span> <span class="function">detect</span>(self, image_path):
+        <span class="string">"""偵測並生成報告"""</span>
+        results = self.model(image_path, verbose=<span class="keyword">False</span>)
+
+        report = {
+            <span class="string">'timestamp'</span>: datetime.now().isoformat(),
+            <span class="string">'image'</span>: image_path,
+            <span class="string">'findings'</span>: [],
+            <span class="string">'alert_level'</span>: <span class="string">'正常'</span>
+        }
+
+        <span class="keyword">for</span> box <span class="keyword">in</span> results[<span class="number">0</span>].boxes:
+            class_name = self.model.names[<span class="function">int</span>(box.cls[<span class="number">0</span>])]
+            pest_info = self.PEST_INFO.get(class_name, {})
+
+            finding = {
+                <span class="string">'pest'</span>: pest_info.get(<span class="string">'name'</span>, class_name),
+                <span class="string">'confidence'</span>: <span class="function">float</span>(box.conf[<span class="number">0</span>]),
+                <span class="string">'severity'</span>: pest_info.get(<span class="string">'severity'</span>, <span class="string">'未知'</span>),
+                <span class="string">'treatment'</span>: pest_info.get(<span class="string">'treatment'</span>, <span class="string">'請諮詢專家'</span>),
+                <span class="string">'location'</span>: box.xyxy[<span class="number">0</span>].tolist()
+            }
+            report[<span class="string">'findings'</span>].append(finding)
+
+            <span class="comment"># 更新警戒等級</span>
+            <span class="keyword">if</span> pest_info.get(<span class="string">'severity'</span>) == <span class="string">'高'</span>:
+                report[<span class="string">'alert_level'</span>] = <span class="string">'緊急'</span>
+            <span class="keyword">elif</span> pest_info.get(<span class="string">'severity'</span>) == <span class="string">'中'</span> <span class="keyword">and</span> report[<span class="string">'alert_level'</span>] != <span class="string">'緊急'</span>:
+                report[<span class="string">'alert_level'</span>] = <span class="string">'注意'</span>
+
+        <span class="keyword">return</span> report
+
+    <span class="keyword">def</span> <span class="function">print_report</span>(self, report):
+        <span class="string">"""印出格式化報告"""</span>
+        <span class="keyword">print</span>(<span class="string">f"=== 病蟲害偵測報告 ==="</span>)
+        <span class="keyword">print</span>(<span class="string">f"時間: {report['timestamp']}"</span>)
+        <span class="keyword">print</span>(<span class="string">f"警戒等級: {report['alert_level']}"</span>)
+        <span class="keyword">print</span>(<span class="string">f"發現 {len(report['findings'])} 個問題"</span>)
+
+        <span class="keyword">for</span> i, finding <span class="keyword">in</span> <span class="function">enumerate</span>(report[<span class="string">'findings'</span>], <span class="number">1</span>):
+            <span class="keyword">print</span>(<span class="string">f"\n問題 {i}:"</span>)
+            <span class="keyword">print</span>(<span class="string">f"  類型: {finding['pest']}"</span>)
+            <span class="keyword">print</span>(<span class="string">f"  嚴重程度: {finding['severity']}"</span>)
+            <span class="keyword">print</span>(<span class="string">f"  建議處置: {finding['treatment']}"</span>)
+
+<span class="comment"># 使用範例</span>
+detector = PestDetector(<span class="string">'pest_detector.pt'</span>)
+report = detector.detect(<span class="string">'field_image.jpg'</span>)
+detector.print_report(report)</code></div>
+
+            <h3>案例 3：作物計數</h3>
+
+            <div class="code-block"><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="keyword">class</span> <span class="function">CropCounter</span>:
+    <span class="string">"""作物/果實計數系統"""</span>
+
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, model_path):
+        self.model = YOLO(model_path)
+
+    <span class="keyword">def</span> <span class="function">count</span>(self, image_path, conf_threshold=<span class="number">0.3</span>):
+        <span class="string">"""計算圖片中的物件數量"""</span>
+        results = self.model(image_path, conf=conf_threshold, verbose=<span class="keyword">False</span>)
+
+        counts = {}
+        <span class="keyword">for</span> box <span class="keyword">in</span> results[<span class="number">0</span>].boxes:
+            class_name = self.model.names[<span class="function">int</span>(box.cls[<span class="number">0</span>])]
+            counts[class_name] = counts.get(class_name, <span class="number">0</span>) + <span class="number">1</span>
+
+        <span class="keyword">return</span> counts
+
+    <span class="keyword">def</span> <span class="function">estimate_yield</span>(self, image_path, avg_weight_kg=<span class="number">0.2</span>):
+        <span class="string">"""估算產量"""</span>
+        counts = self.count(image_path)
+        total_count = <span class="function">sum</span>(counts.values())
+        estimated_weight = total_count * avg_weight_kg
+
+        <span class="keyword">return</span> {
+            <span class="string">'counts'</span>: counts,
+            <span class="string">'total'</span>: total_count,
+            <span class="string">'estimated_weight_kg'</span>: estimated_weight
+        }
+
+<span class="comment"># 使用範例</span>
+counter = CropCounter(<span class="string">'tomato_detector.pt'</span>)
+result = counter.estimate_yield(<span class="string">'greenhouse_image.jpg'</span>, avg_weight_kg=<span class="number">0.15</span>)
+
+<span class="keyword">print</span>(<span class="string">f"偵測到 {result['total']} 顆番茄"</span>)
+<span class="keyword">print</span>(<span class="string">f"預估重量: {result['estimated_weight_kg']:.2f} 公斤"</span>)</code></div>
+
+            <div class="tip-box">
+                <h4>農業應用建議</h4>
+                <ul>
+                    <li>訓練資料要涵蓋不同光線、角度、生長階段</li>
+                    <li>實際場景測試很重要，實驗室效果不等於田間效果</li>
+                    <li>考慮使用邊緣裝置（如 Jetson Nano）在現場運行</li>
+                    <li>定期更新模型，適應季節變化和新病蟲害</li>
+                    <li>結合其他感測器資料（如溫濕度）可提升判斷準確度</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 頁尾 -->
+        <div style="text-align: center; margin-top: 50px; padding: 30px; border-top: 1px solid rgba(249, 115, 22, 0.3);">
+            <p style="color: #a0aec0;">智慧農業課程 - YOLO 物件偵測教學</p>
+            <p style="color: #718096; font-size: 0.9em;">You Only Look Once - 讓 AI 成為你的田間助手</p>
+        </div>
+    </div>
+</body>
+</html>

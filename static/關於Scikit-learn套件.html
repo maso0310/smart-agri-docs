@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於Scikit-learn套件</title>
+<style>
+    body { font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; line-height: 1.8; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e8e8e8; min-height: 100vh; }
+    h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+    h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+    h3 { color: #81e6d9; margin-top: 20px; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+    th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+    th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+    tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+    code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+    pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid #2d3a4f; }
+    pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+    blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+    ul, ol { padding-left: 25px; }
+    li { margin: 5px 0; }
+    hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+    strong { color: #f6e05e; }
+    .floating-home { position: fixed; bottom: 25px; right: 25px; z-index: 9999; width: 55px; height: 55px; background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%); color: #1a1a2e; text-decoration: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .theme-toggle { position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%; border: none; cursor: pointer; z-index: 10000; font-size: 24px; background: linear-gradient(135deg, #4fd1c5, #63b3ed); color: #1a1a2e; display: flex; align-items: center; justify-content: center; }
+    [data-theme="light"] body { background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important; color: #2d3748 !important; }
+    [data-theme="light"] h1 { color: #2b6cb0 !important; }
+    [data-theme="light"] h2 { color: #2c5282 !important; }
+    [data-theme="light"] h3 { color: #2b6cb0 !important; }
+    [data-theme="light"] p, [data-theme="light"] li, [data-theme="light"] td { color: #4a5568 !important; }
+    [data-theme="light"] th { background-color: rgba(79, 209, 197, 0.25) !important; color: #2d3748 !important; }
+    [data-theme="light"] table { background-color: rgba(255, 255, 255, 0.9) !important; }
+    [data-theme="light"] code { background-color: rgba(79, 209, 197, 0.2) !important; color: #2b6cb0 !important; }
+    [data-theme="light"] pre { background-color: #f7fafc !important; }
+    [data-theme="light"] pre code { color: #2d3748 !important; }
+    [data-theme="light"] strong { color: #d69e2e !important; }
+    [data-theme="light"] .theme-toggle { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+</style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換主題"><span id="theme-icon">☀️</span></button>
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+    <h1>關於 Scikit-learn 套件</h1>
+    <p>Scikit-learn（sklearn）是 Python 最受歡迎的機器學習套件，提供簡潔一致的 API 來實作各種機器學習演算法。適合傳統機器學習任務，是入門 ML 的最佳選擇。</p>
+    <hr />
+
+    <h2>一、安裝與匯入</h2>
+    <pre><code class="language-bash"># 安裝
+pip install scikit-learn
+
+# 常用搭配
+pip install scikit-learn pandas numpy matplotlib</code></pre>
+
+    <pre><code class="language-python"># 匯入慣例
+import sklearn
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score, classification_report
+
+print(sklearn.__version__)</code></pre>
+    <hr />
+
+    <h2>二、核心 API 設計</h2>
+    <h3>一致的介面</h3>
+    <p>所有模型都遵循相同的介面：</p>
+    <pre><code class="language-python"># 所有模型的通用流程
+model = SomeModel(parameters)  # 初始化
+model.fit(X_train, y_train)    # 訓練
+predictions = model.predict(X_test)  # 預測
+score = model.score(X_test, y_test)  # 評估</code></pre>
+
+    <h3>Estimator 類型</h3>
+    <table>
+        <thead><tr><th>類型</th><th>方法</th><th>用途</th></tr></thead>
+        <tbody>
+            <tr><td>分類器</td><td>predict(), predict_proba()</td><td>分類任務</td></tr>
+            <tr><td>迴歸器</td><td>predict()</td><td>迴歸任務</td></tr>
+            <tr><td>轉換器</td><td>fit_transform(), transform()</td><td>資料轉換</td></tr>
+            <tr><td>分群器</td><td>fit_predict()</td><td>非監督式分群</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>三、資料前處理</h2>
+    <h3>資料分割</h3>
+    <pre><code class="language-python">from sklearn.model_selection import train_test_split
+
+# 分割訓練與測試集
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,      # 20% 測試
+    random_state=42,    # 固定隨機種子
+    stratify=y          # 保持類別比例
+)</code></pre>
+
+    <h3>特徵縮放</h3>
+    <pre><code class="language-python">from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
+# 標準化 (Z-score)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)  # 注意：用 transform，不是 fit_transform
+
+# 正規化 (0-1)
+minmax = MinMaxScaler()
+X_normalized = minmax.fit_transform(X)</code></pre>
+
+    <h3>類別編碼</h3>
+    <pre><code class="language-python">from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+
+# 標籤編碼
+le = LabelEncoder()
+y_encoded = le.fit_transform(['蘋果', '香蕉', '橘子', '蘋果'])
+# [2, 0, 1, 2]
+
+# One-Hot 編碼
+ohe = OneHotEncoder(sparse=False)
+X_onehot = ohe.fit_transform(X_categorical.reshape(-1, 1))</code></pre>
+    <hr />
+
+    <h2>四、監督式學習</h2>
+    <h3>分類演算法</h3>
+    <pre><code class="language-python"># 邏輯迴歸
+from sklearn.linear_model import LogisticRegression
+clf = LogisticRegression()
+
+# 決策樹
+from sklearn.tree import DecisionTreeClassifier
+clf = DecisionTreeClassifier(max_depth=5)
+
+# 隨機森林
+from sklearn.ensemble import RandomForestClassifier
+clf = RandomForestClassifier(n_estimators=100)
+
+# 支援向量機
+from sklearn.svm import SVC
+clf = SVC(kernel='rbf', C=1.0)
+
+# K 近鄰
+from sklearn.neighbors import KNeighborsClassifier
+clf = KNeighborsClassifier(n_neighbors=5)
+
+# 梯度提升
+from sklearn.ensemble import GradientBoostingClassifier
+clf = GradientBoostingClassifier(n_estimators=100)</code></pre>
+
+    <h3>迴歸演算法</h3>
+    <pre><code class="language-python"># 線性迴歸
+from sklearn.linear_model import LinearRegression
+reg = LinearRegression()
+
+# Ridge 迴歸 (L2)
+from sklearn.linear_model import Ridge
+reg = Ridge(alpha=1.0)
+
+# Lasso 迴歸 (L1)
+from sklearn.linear_model import Lasso
+reg = Lasso(alpha=0.1)
+
+# 隨機森林迴歸
+from sklearn.ensemble import RandomForestRegressor
+reg = RandomForestRegressor(n_estimators=100)
+
+# SVR
+from sklearn.svm import SVR
+reg = SVR(kernel='rbf')</code></pre>
+    <hr />
+
+    <h2>五、模型評估</h2>
+    <h3>分類指標</h3>
+    <pre><code class="language-python">from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score, f1_score,
+    classification_report, confusion_matrix
+)
+
+# 準確率
+acc = accuracy_score(y_test, y_pred)
+
+# 精確率、召回率、F1
+precision = precision_score(y_test, y_pred, average='weighted')
+recall = recall_score(y_test, y_pred, average='weighted')
+f1 = f1_score(y_test, y_pred, average='weighted')
+
+# 完整報告
+print(classification_report(y_test, y_pred))
+
+# 混淆矩陣
+cm = confusion_matrix(y_test, y_pred)</code></pre>
+
+    <h3>迴歸指標</h3>
+    <pre><code class="language-python">from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
+mse = mean_squared_error(y_test, y_pred)
+rmse = mean_squared_error(y_test, y_pred, squared=False)
+mae = mean_absolute_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)</code></pre>
+
+    <h3>交叉驗證</h3>
+    <pre><code class="language-python">from sklearn.model_selection import cross_val_score, KFold
+
+# 5 折交叉驗證
+scores = cross_val_score(model, X, y, cv=5, scoring='accuracy')
+print(f"準確率: {scores.mean():.3f} (+/- {scores.std()*2:.3f})")
+
+# 自訂 K 折
+kfold = KFold(n_splits=10, shuffle=True, random_state=42)
+scores = cross_val_score(model, X, y, cv=kfold)</code></pre>
+    <hr />
+
+    <h2>六、非監督式學習</h2>
+    <h3>分群</h3>
+    <pre><code class="language-python"># K-Means
+from sklearn.cluster import KMeans
+kmeans = KMeans(n_clusters=3, random_state=42)
+labels = kmeans.fit_predict(X)
+centers = kmeans.cluster_centers_
+
+# 階層式分群
+from sklearn.cluster import AgglomerativeClustering
+agg = AgglomerativeClustering(n_clusters=3)
+labels = agg.fit_predict(X)
+
+# DBSCAN
+from sklearn.cluster import DBSCAN
+dbscan = DBSCAN(eps=0.5, min_samples=5)
+labels = dbscan.fit_predict(X)</code></pre>
+
+    <h3>降維</h3>
+    <pre><code class="language-python"># PCA
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2)
+X_reduced = pca.fit_transform(X)
+print(f"解釋變異比例: {pca.explained_variance_ratio_}")
+
+# t-SNE（視覺化用）
+from sklearn.manifold import TSNE
+tsne = TSNE(n_components=2, random_state=42)
+X_embedded = tsne.fit_transform(X)</code></pre>
+    <hr />
+
+    <h2>七、Pipeline 與超參數調整</h2>
+    <h3>Pipeline</h3>
+    <pre><code class="language-python">from sklearn.pipeline import Pipeline
+
+# 建立 Pipeline
+pipe = Pipeline([
+    ('scaler', StandardScaler()),
+    ('pca', PCA(n_components=10)),
+    ('classifier', RandomForestClassifier())
+])
+
+# 訓練與預測
+pipe.fit(X_train, y_train)
+predictions = pipe.predict(X_test)</code></pre>
+
+    <h3>超參數搜尋</h3>
+    <pre><code class="language-python">from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+
+# Grid Search
+param_grid = {
+    'n_estimators': [50, 100, 200],
+    'max_depth': [3, 5, 10, None],
+    'min_samples_split': [2, 5, 10]
+}
+
+grid_search = GridSearchCV(
+    RandomForestClassifier(),
+    param_grid,
+    cv=5,
+    scoring='accuracy',
+    n_jobs=-1
+)
+grid_search.fit(X_train, y_train)
+
+print(f"最佳參數: {grid_search.best_params_}")
+print(f"最佳分數: {grid_search.best_score_:.3f}")
+best_model = grid_search.best_estimator_</code></pre>
+    <hr />
+
+    <h2>八、農業應用範例</h2>
+    <h3>作物分類</h3>
+    <pre><code class="language-python">import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+
+# 假設資料包含：NDVI, 溫度, 濕度, 土壤pH 等特徵
+data = pd.read_csv('crop_data.csv')
+X = data[['ndvi', 'temperature', 'humidity', 'soil_ph', 'rainfall']]
+y = data['crop_type']
+
+# 分割
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+# 訓練
+clf = RandomForestClassifier(n_estimators=100, random_state=42)
+clf.fit(X_train, y_train)
+
+# 評估
+y_pred = clf.predict(X_test)
+print(classification_report(y_test, y_pred))
+
+# 特徵重要性
+importance = pd.DataFrame({
+    'feature': X.columns,
+    'importance': clf.feature_importances_
+}).sort_values('importance', ascending=False)
+print(importance)</code></pre>
+
+    <h3>產量預測</h3>
+    <pre><code class="language-python">from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.metrics import mean_absolute_error, r2_score
+
+# 特徵：氣象、土壤、施肥量等
+X = data[['avg_temp', 'total_rainfall', 'fertilizer_n', 'soil_organic']]
+y = data['yield_kg_per_ha']
+
+# 訓練
+reg = GradientBoostingRegressor(n_estimators=100)
+reg.fit(X_train, y_train)
+
+# 預測與評估
+y_pred = reg.predict(X_test)
+print(f"MAE: {mean_absolute_error(y_test, y_pred):.2f} kg/ha")
+print(f"R²: {r2_score(y_test, y_pred):.3f}")</code></pre>
+    <hr />
+
+    <h2>九、模型儲存與載入</h2>
+    <pre><code class="language-python">import joblib
+
+# 儲存模型
+joblib.dump(model, 'crop_classifier.pkl')
+joblib.dump(scaler, 'scaler.pkl')
+
+# 載入模型
+loaded_model = joblib.load('crop_classifier.pkl')
+loaded_scaler = joblib.load('scaler.pkl')
+
+# 使用
+new_data_scaled = loaded_scaler.transform(new_data)
+predictions = loaded_model.predict(new_data_scaled)</code></pre>
+    <hr />
+
+    <h2>十、常用模組速查</h2>
+    <table>
+        <thead><tr><th>模組</th><th>功能</th></tr></thead>
+        <tbody>
+            <tr><td>sklearn.model_selection</td><td>資料分割、交叉驗證、超參數搜尋</td></tr>
+            <tr><td>sklearn.preprocessing</td><td>特徵縮放、編碼</td></tr>
+            <tr><td>sklearn.linear_model</td><td>線性模型</td></tr>
+            <tr><td>sklearn.tree</td><td>決策樹</td></tr>
+            <tr><td>sklearn.ensemble</td><td>集成方法</td></tr>
+            <tr><td>sklearn.svm</td><td>支援向量機</td></tr>
+            <tr><td>sklearn.neighbors</td><td>K 近鄰</td></tr>
+            <tr><td>sklearn.cluster</td><td>分群演算法</td></tr>
+            <tr><td>sklearn.decomposition</td><td>降維</td></tr>
+            <tr><td>sklearn.metrics</td><td>評估指標</td></tr>
+            <tr><td>sklearn.pipeline</td><td>流程管線</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">智慧農業課程教材</p>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            html.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+            icon.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+            localStorage.setItem('theme', currentTheme === 'dark' ? 'light' : 'dark');
+        }
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於RTK定位技術</title>
+
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* ===== 淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 { color: #2b6cb0 !important; border-bottom-color: #4fd1c5 !important; }
+        [data-theme="light"] h2 { color: #2c5282 !important; border-bottom-color: #90cdf4 !important; }
+        [data-theme="light"] h3 { color: #2b6cb0 !important; }
+        [data-theme="light"] h4 { color: #3182ce !important; }
+        [data-theme="light"] p, [data-theme="light"] li, [data-theme="light"] td { color: #4a5568 !important; }
+        [data-theme="light"] th { background-color: rgba(79, 209, 197, 0.25) !important; color: #2d3748 !important; }
+        [data-theme="light"] table { background-color: rgba(255, 255, 255, 0.9) !important; }
+        [data-theme="light"] tr:nth-child(even) { background-color: rgba(79, 209, 197, 0.08) !important; }
+        [data-theme="light"] tr:hover { background-color: rgba(79, 209, 197, 0.15) !important; }
+        [data-theme="light"] code { background-color: rgba(79, 209, 197, 0.2) !important; color: #2b6cb0 !important; }
+        [data-theme="light"] pre { background-color: #f7fafc !important; border: 1px solid rgba(79, 209, 197, 0.3) !important; }
+        [data-theme="light"] pre code { background-color: transparent !important; color: #2d3748 !important; }
+        [data-theme="light"] blockquote { background-color: rgba(79, 209, 197, 0.15) !important; color: #2d3748 !important; }
+        [data-theme="light"] a { color: #3182ce !important; }
+        [data-theme="light"] strong { color: #d69e2e !important; }
+        [data-theme="light"] hr { border-top-color: rgba(79, 209, 197, 0.3) !important; }
+    </style>
+
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+    <h1>關於 RTK 定位技術</h1>
+    <p>RTK（Real-Time Kinematic，即時動態定位）是一種高精度 GNSS 定位技術，可達到公分級甚至毫米級的定位精度。在智慧農業中，RTK 技術是實現自動駕駛農機、精準施肥、變量噴灑等應用的關鍵基礎。</p>
+    <hr />
+
+    <h2>一、GNSS 定位基礎</h2>
+    <h3>什麼是 GNSS</h3>
+    <p><strong>GNSS</strong>（Global Navigation Satellite System，全球導航衛星系統）是所有衛星定位系統的總稱：</p>
+    <table>
+        <thead>
+            <tr>
+                <th>系統名稱</th>
+                <th>營運國家</th>
+                <th>衛星數量</th>
+                <th>覆蓋範圍</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>GPS</td>
+                <td>美國</td>
+                <td>31 顆</td>
+                <td>全球</td>
+            </tr>
+            <tr>
+                <td>GLONASS</td>
+                <td>俄羅斯</td>
+                <td>24 顆</td>
+                <td>全球</td>
+            </tr>
+            <tr>
+                <td>Galileo</td>
+                <td>歐盟</td>
+                <td>30 顆</td>
+                <td>全球</td>
+            </tr>
+            <tr>
+                <td>BeiDou（北斗）</td>
+                <td>中國</td>
+                <td>35 顆</td>
+                <td>全球</td>
+            </tr>
+            <tr>
+                <td>QZSS</td>
+                <td>日本</td>
+                <td>4 顆</td>
+                <td>亞太區域</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>定位原理</h3>
+    <p>GNSS 定位基於<strong>三邊測量</strong>原理：</p>
+    <ol>
+        <li>接收器接收來自多顆衛星的訊號</li>
+        <li>計算訊號從衛星到接收器的傳播時間</li>
+        <li>時間 × 光速 = 距離</li>
+        <li>至少需要 4 顆衛星（3 顆定位 + 1 顆校正時間）</li>
+    </ol>
+
+    <h3>一般 GNSS 精度限制</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>誤差來源</th>
+                <th>影響範圍</th>
+                <th>說明</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>電離層延遲</td>
+                <td>±5 m</td>
+                <td>電離層影響電波傳播速度</td>
+            </tr>
+            <tr>
+                <td>對流層延遲</td>
+                <td>±0.5 m</td>
+                <td>大氣水氣影響</td>
+            </tr>
+            <tr>
+                <td>衛星軌道誤差</td>
+                <td>±2.5 m</td>
+                <td>衛星位置預測誤差</td>
+            </tr>
+            <tr>
+                <td>衛星時鐘誤差</td>
+                <td>±2 m</td>
+                <td>原子鐘誤差</td>
+            </tr>
+            <tr>
+                <td>多路徑效應</td>
+                <td>±1 m</td>
+                <td>訊號反射造成</td>
+            </tr>
+            <tr>
+                <td>接收器誤差</td>
+                <td>±0.5 m</td>
+                <td>設備精度限制</td>
+            </tr>
+        </tbody>
+    </table>
+    <blockquote>
+        一般手機 GPS 精度約 3-10 公尺，無法滿足精準農業需求。
+    </blockquote>
+    <hr />
+
+    <h2>二、RTK 技術原理</h2>
+    <h3>差分定位概念</h3>
+    <p>RTK 使用<strong>差分定位</strong>技術消除大部分誤差：</p>
+    <ol>
+        <li>在<strong>已知位置</strong>架設<strong>基準站（Base Station）</strong></li>
+        <li>基準站計算實際位置與衛星定位的差異（校正值）</li>
+        <li>透過無線電或網路將校正值即時傳送給<strong>移動站（Rover）</strong></li>
+        <li>移動站套用校正值，獲得高精度位置</li>
+    </ol>
+
+    <h3>RTK 工作模式</h3>
+    <pre><code>     衛星群
+    ↙  ↓  ↘
+   /   |   \
+  ↓    ↓    ↓
+┌────┐    ┌────┐
+│基準站│←→│移動站│  ← 即時通訊傳送校正值
+└────┘    └────┘
+  │         │
+已知座標   計算精確位置
+</code></pre>
+
+    <h3>載波相位測量</h3>
+    <p>RTK 的關鍵技術是<strong>載波相位測量</strong>：</p>
+    <ul>
+        <li><strong>碼相位</strong>：測量訊號碼的到達時間（精度：公尺級）</li>
+        <li><strong>載波相位</strong>：測量載波波長的相位（精度：公分級）</li>
+    </ul>
+    <p>GPS L1 載波波長約 19 cm，透過精確測量相位可達到毫米級精度。</p>
+
+    <h3>整數模糊度解算</h3>
+    <p>載波相位測量的挑戰是<strong>整數模糊度（Integer Ambiguity）</strong>問題：</p>
+    <ul>
+        <li>接收器只能測量相位的小數部分</li>
+        <li>需要確定訊號經過了幾個完整波長</li>
+        <li><strong>固定解（Fixed Solution）</strong>：成功解算整數模糊度，精度最高</li>
+        <li><strong>浮動解（Float Solution）</strong>：未能確定整數，精度較低</li>
+    </ul>
+    <hr />
+
+    <h2>三、RTK 系統架構</h2>
+    <h3>傳統 RTK</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>組件</th>
+                <th>說明</th>
+                <th>通訊方式</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>基準站</td>
+                <td>固定於已知座標點</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td>移動站</td>
+                <td>裝載於農機或手持</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td>無線電數據鏈</td>
+                <td>傳輸校正資料</td>
+                <td>UHF 電台（2-10 km）</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>網路 RTK（NRTK）</h3>
+    <p>使用連續運作參考站網路（CORS）提供校正服務：</p>
+    <table>
+        <thead>
+            <tr>
+                <th>類型</th>
+                <th>說明</th>
+                <th>特點</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>VRS</td>
+                <td>虛擬參考站</td>
+                <td>網路產生虛擬基準站資料</td>
+            </tr>
+            <tr>
+                <td>FKP</td>
+                <td>區域校正參數</td>
+                <td>傳送區域校正模型</td>
+            </tr>
+            <tr>
+                <td>MAC</td>
+                <td>主輔站概念</td>
+                <td>傳送主站資料+輔助校正</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4>台灣 CORS 服務</h4>
+    <ul>
+        <li><strong>e-GNSS</strong>：內政部國土測繪中心建置，約 170 站</li>
+        <li><strong>中央氣象署 GNSS 網</strong>：氣象與地震監測用</li>
+        <li>商業服務：Trimble VRS Now、各廠商 CORS 服務</li>
+    </ul>
+
+    <h3>PPK vs RTK</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>項目</th>
+                <th>RTK（即時動態）</th>
+                <th>PPK（後處理動態）</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>校正時機</td>
+                <td>即時</td>
+                <td>事後處理</td>
+            </tr>
+            <tr>
+                <td>通訊需求</td>
+                <td>需要即時通訊</td>
+                <td>不需要</td>
+            </tr>
+            <tr>
+                <td>精度</td>
+                <td>公分級</td>
+                <td>公分級（可能更高）</td>
+            </tr>
+            <tr>
+                <td>應用場景</td>
+                <td>自動駕駛、即時導航</td>
+                <td>航測、測量</td>
+            </tr>
+            <tr>
+                <td>優點</td>
+                <td>即時可用</td>
+                <td>不受通訊限制</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>四、定位精度等級</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>技術</th>
+                <th>水平精度</th>
+                <th>垂直精度</th>
+                <th>收斂時間</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>一般 GNSS</td>
+                <td>3-10 m</td>
+                <td>5-15 m</td>
+                <td>即時</td>
+            </tr>
+            <tr>
+                <td>SBAS 增強</td>
+                <td>1-3 m</td>
+                <td>2-5 m</td>
+                <td>即時</td>
+            </tr>
+            <tr>
+                <td>DGNSS</td>
+                <td>0.5-1 m</td>
+                <td>1-2 m</td>
+                <td>即時</td>
+            </tr>
+            <tr>
+                <td>RTK 浮動解</td>
+                <td>20-50 cm</td>
+                <td>30-80 cm</td>
+                <td>數秒</td>
+            </tr>
+            <tr>
+                <td>RTK 固定解</td>
+                <td>1-2 cm</td>
+                <td>2-3 cm</td>
+                <td>數秒~1分鐘</td>
+            </tr>
+            <tr>
+                <td>PPP</td>
+                <td>5-20 cm</td>
+                <td>10-30 cm</td>
+                <td>15-30 分鐘</td>
+            </tr>
+            <tr>
+                <td>PPP-RTK</td>
+                <td>2-5 cm</td>
+                <td>5-10 cm</td>
+                <td>1-5 分鐘</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>五、農業 RTK 應用</h2>
+    <h3>1. 自動駕駛農機</h3>
+    <p>RTK 是農機自動駕駛的核心技術：</p>
+    <ul>
+        <li><strong>直線導引</strong>：確保作業路徑筆直，減少重疊與漏作</li>
+        <li><strong>自動轉向</strong>：公分級精度的路徑追蹤</li>
+        <li><strong>地頭迴轉</strong>：精確的迴轉路徑規劃</li>
+        <li><strong>夜間作業</strong>：不依賴視覺導航</li>
+    </ul>
+
+    <h3>2. 變量作業</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>應用</th>
+                <th>精度需求</th>
+                <th>說明</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>變量施肥</td>
+                <td>10-30 cm</td>
+                <td>依處方圖調整施肥量</td>
+            </tr>
+            <tr>
+                <td>變量噴藥</td>
+                <td>10-30 cm</td>
+                <td>精準噴灑減少農藥用量</td>
+            </tr>
+            <tr>
+                <td>變量播種</td>
+                <td>2-5 cm</td>
+                <td>精準株距控制</td>
+            </tr>
+            <tr>
+                <td>精準收穫</td>
+                <td>10-30 cm</td>
+                <td>產量地圖記錄</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>3. 農地測量與管理</h3>
+    <ul>
+        <li><strong>田區邊界測量</strong>：精確記錄農地範圍</li>
+        <li><strong>地形測量</strong>：整地、排水規劃</li>
+        <li><strong>樣點定位</strong>：土壤取樣點精確定位</li>
+        <li><strong>設施定位</strong>：灌溉設施、感測器布設</li>
+    </ul>
+
+    <h3>4. 無人機應用</h3>
+    <ul>
+        <li><strong>精準航測</strong>：高精度正射影像</li>
+        <li><strong>精準噴灑</strong>：RTK 導航的植保無人機</li>
+        <li><strong>地面控制點減少</strong>：PPK/RTK 減少 GCP 需求</li>
+    </ul>
+    <hr />
+
+    <h2>六、RTK 設備選擇</h2>
+    <h3>接收器規格考量</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>規格項目</th>
+                <th>說明</th>
+                <th>建議</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>頻率支援</td>
+                <td>單頻/雙頻/三頻</td>
+                <td>雙頻以上較佳</td>
+            </tr>
+            <tr>
+                <td>系統支援</td>
+                <td>GPS/GLONASS/BeiDou/Galileo</td>
+                <td>多系統提升可用性</td>
+            </tr>
+            <tr>
+                <td>通道數</td>
+                <td>可同時追蹤的衛星數</td>
+                <td>184+ 通道</td>
+            </tr>
+            <tr>
+                <td>更新率</td>
+                <td>位置輸出頻率</td>
+                <td>農機導航 5-20 Hz</td>
+            </tr>
+            <tr>
+                <td>通訊方式</td>
+                <td>電台/4G/WiFi</td>
+                <td>依環境選擇</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>常見品牌與產品</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>品牌</th>
+                <th>特點</th>
+                <th>價位</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Trimble</td>
+                <td>業界領導，農機整合佳</td>
+                <td>高</td>
+            </tr>
+            <tr>
+                <td>Topcon</td>
+                <td>精度高，測量專業</td>
+                <td>高</td>
+            </tr>
+            <tr>
+                <td>Leica</td>
+                <td>歐洲品牌，品質佳</td>
+                <td>高</td>
+            </tr>
+            <tr>
+                <td>u-blox</td>
+                <td>模組化，價格親民</td>
+                <td>中低</td>
+            </tr>
+            <tr>
+                <td>Emlid</td>
+                <td>開源友善，CP 值高</td>
+                <td>中低</td>
+            </tr>
+            <tr>
+                <td>SparkFun / ArduSimple</td>
+                <td>DIY 套件，學習用</td>
+                <td>低</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>七、實作範例</h2>
+    <h3>NMEA 訊息解析</h3>
+    <p>GNSS 接收器通常輸出 NMEA 0183 格式的資料：</p>
+    <pre><code class="language-python">import serial
+import pynmea2
+
+def parse_gnss_data(port='/dev/ttyUSB0', baudrate=115200):
+    """
+    解析 GNSS NMEA 訊息
+    """
+    ser = serial.Serial(port, baudrate, timeout=1)
+
+    while True:
+        line = ser.readline().decode('ascii', errors='replace').strip()
+
+        if line.startswith('$'):
+            try:
+                msg = pynmea2.parse(line)
+
+                # GGA - 定位資訊
+                if isinstance(msg, pynmea2.GGA):
+                    print(f"時間: {msg.timestamp}")
+                    print(f"緯度: {msg.latitude:.8f}")
+                    print(f"經度: {msg.longitude:.8f}")
+                    print(f"高度: {msg.altitude} m")
+                    print(f"定位品質: {msg.gps_qual}")
+                    # 0=無效, 1=GPS, 2=DGPS, 4=RTK Fixed, 5=RTK Float
+                    print(f"衛星數: {msg.num_sats}")
+                    print(f"HDOP: {msg.horizontal_dil}")
+                    print("-" * 40)
+
+            except pynmea2.ParseError:
+                continue
+
+# RTK 定位品質代碼
+RTK_QUALITY = {
+    0: '無效定位',
+    1: '單點定位 (GPS)',
+    2: '差分定位 (DGPS)',
+    4: 'RTK 固定解',
+    5: 'RTK 浮動解',
+    6: '推估模式'
+}
+</code></pre>
+
+    <h3>NTRIP 客戶端連接</h3>
+    <pre><code class="language-python">import socket
+import base64
+
+class NTRIPClient:
+    """
+    NTRIP 客戶端 - 連接網路 RTK 服務
+    """
+    def __init__(self, host, port, mountpoint, user, password):
+        self.host = host
+        self.port = port
+        self.mountpoint = mountpoint
+        self.user = user
+        self.password = password
+        self.socket = None
+
+    def connect(self):
+        """建立連接"""
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.connect((self.host, self.port))
+
+        # 建立認證字串
+        auth = base64.b64encode(
+            f"{self.user}:{self.password}".encode()
+        ).decode()
+
+        # 發送請求
+        request = (
+            f"GET /{self.mountpoint} HTTP/1.1\r\n"
+            f"Host: {self.host}\r\n"
+            f"Ntrip-Version: Ntrip/2.0\r\n"
+            f"User-Agent: NTRIP PythonClient\r\n"
+            f"Authorization: Basic {auth}\r\n"
+            f"\r\n"
+        )
+        self.socket.send(request.encode())
+
+        # 讀取回應
+        response = self.socket.recv(1024).decode()
+        if 'ICY 200 OK' in response or '200 OK' in response:
+            print("NTRIP 連接成功！")
+            return True
+        else:
+            print(f"連接失敗: {response}")
+            return False
+
+    def send_gga(self, gga_sentence):
+        """發送 GGA 訊息給伺服器（回報位置）"""
+        if self.socket:
+            self.socket.send(gga_sentence.encode())
+
+    def receive_rtcm(self):
+        """接收 RTCM 校正資料"""
+        if self.socket:
+            return self.socket.recv(4096)
+        return None
+
+# 使用範例
+# client = NTRIPClient(
+#     host='ntrip.example.com',
+#     port=2101,
+#     mountpoint='VRS_RTCM3',
+#     user='username',
+#     password='password'
+# )
+</code></pre>
+
+    <h3>座標轉換</h3>
+    <pre><code class="language-python">import math
+
+def wgs84_to_twd97(lat, lon):
+    """
+    WGS84 經緯度轉 TWD97 二度分帶座標
+    """
+    # 中央經線 121 度
+    lon0 = 121.0 * math.pi / 180
+
+    # WGS84 橢球參數
+    a = 6378137.0           # 半長軸
+    f = 1 / 298.257223563   # 扁率
+
+    # 轉弧度
+    lat_rad = lat * math.pi / 180
+    lon_rad = lon * math.pi / 180
+
+    # 計算參數
+    e2 = 2 * f - f * f
+    e4 = e2 * e2
+    e6 = e4 * e2
+
+    N = a / math.sqrt(1 - e2 * math.sin(lat_rad)**2)
+    T = math.tan(lat_rad)**2
+    C = e2 / (1 - e2) * math.cos(lat_rad)**2
+    A = (lon_rad - lon0) * math.cos(lat_rad)
+
+    # 子午線弧長
+    M = a * (
+        (1 - e2/4 - 3*e4/64 - 5*e6/256) * lat_rad
+        - (3*e2/8 + 3*e4/32 + 45*e6/1024) * math.sin(2*lat_rad)
+        + (15*e4/256 + 45*e6/1024) * math.sin(4*lat_rad)
+        - (35*e6/3072) * math.sin(6*lat_rad)
+    )
+
+    # 計算 E, N
+    k0 = 0.9999  # 中央經線尺度因子
+
+    E = k0 * N * (
+        A + (1-T+C) * A**3 / 6
+        + (5-18*T+T**2+72*C-58*e2/(1-e2)) * A**5 / 120
+    ) + 250000  # 假東距
+
+    N_coord = k0 * (
+        M + N * math.tan(lat_rad) * (
+            A**2 / 2
+            + (5-T+9*C+4*C**2) * A**4 / 24
+            + (61-58*T+T**2+600*C-330*e2/(1-e2)) * A**6 / 720
+        )
+    )
+
+    return E, N_coord
+
+# 範例
+lat, lon = 25.0330, 121.5654  # 台北
+e, n = wgs84_to_twd97(lat, lon)
+print(f"TWD97: E={e:.3f}, N={n:.3f}")
+</code></pre>
+    <hr />
+
+    <h2>八、RTK 使用注意事項</h2>
+    <h3>影響定位品質的因素</h3>
+    <ul>
+        <li><strong>天空遮蔽</strong>：建築物、樹木會遮擋衛星訊號</li>
+        <li><strong>多路徑效應</strong>：訊號反射造成誤差</li>
+        <li><strong>基線長度</strong>：與基準站距離越遠，精度越低</li>
+        <li><strong>衛星幾何分布</strong>：PDOP 值越低越好</li>
+        <li><strong>電離層活動</strong>：太陽活動影響電離層</li>
+    </ul>
+
+    <h3>最佳實踐</h3>
+    <ol>
+        <li>確保天線有良好的天空視野（仰角 > 15°）</li>
+        <li>使用抗多路徑天線</li>
+        <li>基線長度盡量控制在 10 km 以內</li>
+        <li>等待固定解再開始作業</li>
+        <li>定期檢查基準站座標是否正確</li>
+        <li>記錄原始觀測資料以備事後處理</li>
+    </ol>
+
+    <h3>常見問題排解</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>問題</th>
+                <th>可能原因</th>
+                <th>解決方法</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>無法獲得固定解</td>
+                <td>衛星數不足、基線過長</td>
+                <td>改善天線位置、縮短基線</td>
+            </tr>
+            <tr>
+                <td>定位跳動</td>
+                <td>多路徑效應</td>
+                <td>遠離反射面、使用抑制天線</td>
+            </tr>
+            <tr>
+                <td>校正資料中斷</td>
+                <td>通訊問題</td>
+                <td>檢查網路/電台連線</td>
+            </tr>
+            <tr>
+                <td>座標偏移</td>
+                <td>座標系統不一致</td>
+                <td>確認使用相同座標框架</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>九、未來發展</h2>
+    <ul>
+        <li><strong>PPP-RTK</strong>：結合 PPP 與 RTK 優點，減少基礎設施依賴</li>
+        <li><strong>多頻多系統</strong>：更快收斂、更高精度</li>
+        <li><strong>低軌衛星增強</strong>：LEO 衛星提供快速收斂</li>
+        <li><strong>5G 整合</strong>：低延遲的校正資料傳輸</li>
+        <li><strong>視覺慣性融合</strong>：GNSS + IMU + 視覺導航</li>
+        <li><strong>成本持續下降</strong>：RTK 設備普及化</li>
+    </ul>
+    <hr />
+
+    <p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

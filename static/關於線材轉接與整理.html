@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於線材轉接與整理</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="_1">關於線材轉接與整理</h1>
+<p>在電子專案中，線材的轉接與整理是維持電路清晰、方便除錯、延長使用壽命的重要技能。</p>
+<hr />
+<h2 id="_2">一、為什麼需要線材轉接</h2>
+<h3 id="11">1.1 常見的轉接需求</h3>
+<table>
+<thead>
+<tr>
+<th>情境</th>
+<th>問題</th>
+<th>解決方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>杜邦線接感測器</td>
+<td>接頭規格不符</td>
+<td>使用轉接頭或焊接</td>
+</tr>
+<tr>
+<td>電源供應</td>
+<td>DC接頭尺寸不合</td>
+<td>使用轉接線或轉接頭</td>
+</tr>
+<tr>
+<td>麵包板接模組</td>
+<td>公母頭方向不對</td>
+<td>使用延長線或轉接線</td>
+</tr>
+<tr>
+<td>多條線材匯集</td>
+<td>接線雜亂</td>
+<td>使用端子台或接線盒</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12">1.2 轉接的基本原則</h3>
+<ol>
+<li><strong>確保電氣連接可靠</strong> - 接觸良好、不易鬆脫</li>
+<li><strong>維持正確的極性</strong> - 正負極不可接反</li>
+<li><strong>注意電流容量</strong> - 轉接頭須能承受電流</li>
+<li><strong>便於拆裝維護</strong> - 選擇適當的連接方式</li>
+</ol>
+<hr />
+<h2 id="_3">二、常見轉接配件</h2>
+<h3 id="21">2.1 杜邦線轉接</h3>
+<h4 id="_4">公母轉接線</h4>
+<pre><code>公對公（M-M）：兩端都是針
+┌───┐          ┌───┐
+│ ║ │──────────│ ║ │
+└───┘          └───┘
+用途：麵包板對麵包板
+
+公對母（M-F）：一端針、一端孔
+┌───┐          ┌───┐
+│ ║ │──────────│ ◯ │
+└───┘          └───┘
+用途：Arduino 排針接麵包板
+
+母對母（F-F）：兩端都是孔
+┌───┐          ┌───┐
+│ ◯ │──────────│ ◯ │
+└───┘          └───┘
+用途：模組對模組
+</code></pre>
+<h4 id="_5">排線轉單線</h4>
+<pre><code>    ┌─────────────────┐
+    │  10P 排線接頭   │
+    └─┬─┬─┬─┬─┬─┬─┬─┬─┬─┘
+      │ │ │ │ │ │ │ │ │ │
+      ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓
+    分離成 10 條獨立單線
+</code></pre>
+<h3 id="22">2.2 電源轉接頭</h3>
+<h4 id="dc">DC 電源接頭規格</h4>
+<table>
+<thead>
+<tr>
+<th>規格</th>
+<th>外徑 x 內徑</th>
+<th>常見用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.5 x 2.1mm</td>
+<td>最常見</td>
+<td>Arduino、LED燈條</td>
+</tr>
+<tr>
+<td>5.5 x 2.5mm</td>
+<td>略大</td>
+<td>部分筆電、設備</td>
+</tr>
+<tr>
+<td>3.5 x 1.35mm</td>
+<td>小型</td>
+<td>小型裝置</td>
+</tr>
+<tr>
+<td>4.0 x 1.7mm</td>
+<td>中型</td>
+<td>部分路由器</td>
+</tr>
+</tbody>
+</table>
+<h4 id="dc_1">DC 電源轉接方式</h4>
+<pre><code>母座轉螺絲端子：
+┌────────────┐
+│  DC 母座   │
+│   ◯        │──→ 接電源供應器
+└────┬───────┘
+     │
+┌────┴───────┐
+│  螺絲端子  │
+│  ⊕    ⊖   │──→ 接到電路板
+└────────────┘
+
+公頭轉鱷魚夾：
+┌────────────┐
+│  DC 公頭   │──→ 插入電源供應器
+└────┬───────┘
+     │
+   ──┼──
+  紅 │ 黑
+     ↓
+  鱷魚夾（方便夾接測試）
+</code></pre>
+<h3 id="23-usb">2.3 USB 轉接</h3>
+<h4 id="usb">USB 接頭類型</h4>
+<table>
+<thead>
+<tr>
+<th>接頭</th>
+<th>外觀特徵</th>
+<th>常見裝置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>USB-A</td>
+<td>扁平長方形</td>
+<td>電腦主機</td>
+</tr>
+<tr>
+<td>USB-B</td>
+<td>正方形</td>
+<td>印表機、Arduino UNO</td>
+</tr>
+<tr>
+<td>Mini USB</td>
+<td>小型梯形</td>
+<td>舊款相機、MP3</td>
+</tr>
+<tr>
+<td>Micro USB</td>
+<td>薄型梯形</td>
+<td>舊款手機、ESP8266</td>
+</tr>
+<tr>
+<td>USB-C</td>
+<td>橢圓對稱</td>
+<td>新款手機、ESP32-S3</td>
+</tr>
+</tbody>
+</table>
+<h4 id="usb_1">USB 轉接線</h4>
+<pre><code>USB-A 轉 Micro USB：
+┌─────┐          ┌─────┐
+│ ═══ │──────────│ ▽▽▽ │
+└─────┘          └─────┘
+USB-A            Micro USB
+(接電腦)          (接開發板)
+
+USB-A 轉 USB-C：
+┌─────┐          ┌─────┐
+│ ═══ │──────────│ ◯◯◯ │
+└─────┘          └─────┘
+USB-A            USB-C
+</code></pre>
+<h3 id="24">2.4 端子台與接線盒</h3>
+<h4 id="_6">螺絲端子台</h4>
+<pre><code>┌───┬───┬───┬───┬───┬───┐
+│ ⊙ │ ⊙ │ ⊙ │ ⊙ │ ⊙ │ ⊙ │  ← 螺絲（鎖緊線材）
+├───┼───┼───┼───┼───┼───┤
+│ ○ │ ○ │ ○ │ ○ │ ○ │ ○ │  ← 線材插入孔
+└───┴───┴───┴───┴───┴───┘
+  1   2   3   4   5   6
+
+優點：
+• 可重複使用
+• 連接牢固
+• 方便多線匯集
+</code></pre>
+<h4 id="wago">快速接線端子（WAGO 型）</h4>
+<pre><code>┌─────────────────┐
+│  ┌─┐ ┌─┐ ┌─┐   │
+│  │↓│ │↓│ │↓│   │  ← 按壓插入
+│  └─┘ └─┘ └─┘   │
+└─────────────────┘
+
+使用方式：
+1. 壓下橙色撥桿
+2. 插入剝好的線材
+3. 放開撥桿即鎖定
+</code></pre>
+<hr />
+<h2 id="_7">三、線材整理技巧</h2>
+<h3 id="31-cable-tie">3.1 束線帶（Cable Tie）</h3>
+<h4 id="_8">類型比較</h4>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>特點</th>
+<th>適用場合</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>一次性束線帶</td>
+<td>便宜、牢固、一次性</td>
+<td>永久固定</td>
+</tr>
+<tr>
+<td>可重複使用型</td>
+<td>有解鎖片、可拆卸</td>
+<td>需要調整的場合</td>
+</tr>
+<tr>
+<td>魔鬼氈束帶</td>
+<td>柔軟、可重複</td>
+<td>臨時整理</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_9">使用技巧</h4>
+<pre><code>正確的束線方式：
+
+     ╭─────╮
+    ╱       ╲
+   │  線材   │
+   │  束線   │
+    ╲       ╱
+     ╰─────╯
+       ↑
+    不要拉太緊
+    保留一點空間
+
+錯誤示範：
+- ✗ 拉到最緊（可能損傷線材）
+- ✗ 束在接頭處（造成應力集中）
+- ✗ 間距過大（線材仍然散亂）
+</code></pre>
+<h3 id="32">3.2 螺旋纏繞管</h3>
+<pre><code>將多條線材整合成一束：
+
+施工前：          施工後：
+  │ │ │ │          ╱═══╲
+  │ │ │ │         ║線束║
+  │ │ │ │          ╲═══╱
+  │ │ │ │            │
+  雜亂多線         整齊一束
+
+優點：
+• 保護線材
+• 可隨時拆裝
+• 美觀整齊
+</code></pre>
+<h3 id="33">3.3 熱縮管</h3>
+<pre><code>使用步驟：
+
+1. 選擇適當直徑
+   ┌─────────────┐
+   │  熱縮管     │ ← 直徑約為線材 1.5~2 倍
+   └─────────────┘
+
+2. 套入線材
+      ┌─────┐
+   ───┤     ├───
+      └─────┘
+
+3. 加熱收縮（使用熱風槍或打火機）
+      ┌───┐
+   ───┤   ├───
+      └───┘
+
+   收縮後緊密包覆
+</code></pre>
+<h3 id="34">3.4 線材標籤</h3>
+<h4 id="_10">標示方法</h4>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>工具</th>
+<th>適用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>數字標籤</td>
+<td>號碼管</td>
+<td>線路多時識別</td>
+</tr>
+<tr>
+<td>顏色區分</td>
+<td>彩色膠帶</td>
+<td>快速辨識</td>
+</tr>
+<tr>
+<td>文字標籤</td>
+<td>標籤機</td>
+<td>專業標示</td>
+</tr>
+<tr>
+<td>手寫標示</td>
+<td>白色膠帶+簽字筆</td>
+<td>簡易標示</td>
+</tr>
+</tbody>
+</table>
+<pre><code>號碼管使用：
+
+  ┌─┐
+  │3│ ← 號碼管套在線上
+──┴─┴──────────────────
+        線材
+
+建議標示位置：
+• 線材兩端都標示
+• 靠近接頭處 5cm
+• 分歧點處
+</code></pre>
+<hr />
+<h2 id="_11">四、線材收納方式</h2>
+<h3 id="41">4.1 短線收納</h3>
+<h4 id="_12">捲線收納</h4>
+<pre><code>將杜邦線捲成圈：
+
+   ╭───────╮
+  ╱    ○    ╲
+ │           │
+ │     ○     │  ← 繞成直徑約5cm的圈
+ │           │
+  ╲    ○    ╱
+   ╰───────╯
+
+用束線帶或橡皮筋固定
+</code></pre>
+<h4 id="_13">分類收納盒</h4>
+<pre><code>┌─────┬─────┬─────┬─────┐
+│ 公公 │ 公母 │ 母母 │ 10cm │
+├─────┼─────┼─────┼─────┤
+│ 20cm │ 30cm │ 排線 │ 其他 │
+└─────┴─────┴─────┴─────┘
+
+依長度、類型分類存放
+</code></pre>
+<h3 id="42">4.2 長線收納</h3>
+<h4 id="_14">八字繞線法</h4>
+<pre><code>步驟：
+1. 拇指和小指張開
+2. 線材繞八字形
+3. 最後用束帶固定
+
+    ╱╲
+   ╱  ╲
+  ╱    ╲
+ ╱      ╲
+╳        ╳
+ ╲      ╱
+  ╲    ╱
+   ╲  ╱
+    ╲╱
+
+優點：不會打結、方便展開
+</code></pre>
+<h4 id="_15">線材收納架</h4>
+<pre><code>牆面或桌面收納架：
+
+┌──────────────────────────┐
+│  ═══  ═══  ═══  ═══     │
+│  USB  電源  杜邦  排線   │
+│                          │
+│  掛鉤式收納              │
+└──────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_16">五、專案線材整理</h2>
+<h3 id="51">5.1 麵包板整理</h3>
+<h4 id="_17">線材長度選擇</h4>
+<pre><code>正確示範（線材長度適中）：
+
+    Arduino          麵包板
+┌──────────┐    ┌──────────┐
+│          │    │  ○ ○ ○   │
+│  [5V]────┼────┼──●       │
+│  [GND]───┼────┼──●       │
+│  [D2]────┼────┼──●       │
+└──────────┘    └──────────┘
+    線材平整，長度剛好
+
+錯誤示範（線材過長）：
+
+┌──────────┐    ┌──────────┐
+│          │    │          │
+│  [5V]────┼─╮  │    ●     │
+│          │ ╰──┼────╯     │
+│          │    │  亂成一團 │
+└──────────┘    └──────────┘
+</code></pre>
+<h4 id="_18">配色建議</h4>
+<table>
+<thead>
+<tr>
+<th>顏色</th>
+<th>用途</th>
+<th>記憶方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>紅色</td>
+<td>電源正極 (VCC/5V/3.3V)</td>
+<td>紅色=正極</td>
+</tr>
+<tr>
+<td>黑色</td>
+<td>電源負極 (GND)</td>
+<td>黑色=地線</td>
+</tr>
+<tr>
+<td>黃色</td>
+<td>訊號線</td>
+<td>依習慣</td>
+</tr>
+<tr>
+<td>白色</td>
+<td>資料線</td>
+<td>依習慣</td>
+</tr>
+<tr>
+<td>其他</td>
+<td>自定義</td>
+<td>保持一致即可</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52">5.2 專案盒內佈線</h3>
+<pre><code>分層整理原則：
+
+┌─────────────────────────────────┐
+│  上層：感測器、顯示器連接線      │
+├─────────────────────────────────┤
+│  中層：訊號線、通訊線           │
+├─────────────────────────────────┤
+│  下層：電源線                   │
+└─────────────────────────────────┘
+
+電源線與訊號線分開，減少干擾
+</code></pre>
+<h3 id="53">5.3 固定線材的方法</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>工具</th>
+<th>適用場合</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>熱熔膠固定</td>
+<td>熱熔膠槍</td>
+<td>永久固定</td>
+</tr>
+<tr>
+<td>雙面膠固定座</td>
+<td>束線帶座</td>
+<td>半永久固定</td>
+</tr>
+<tr>
+<td>走線槽</td>
+<td>塑膠走線槽</td>
+<td>專業整線</td>
+</tr>
+<tr>
+<td>螺絲固定夾</td>
+<td>P型夾</td>
+<td>管線固定</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_19">六、接線除錯技巧</h2>
+<h3 id="61">6.1 常見接線問題</h3>
+<table>
+<thead>
+<tr>
+<th>問題</th>
+<th>可能原因</th>
+<th>排查方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>無法通電</td>
+<td>接觸不良</td>
+<td>檢查所有接點</td>
+</tr>
+<tr>
+<td>訊號不穩</td>
+<td>線材鬆動</td>
+<td>重新插拔確認</td>
+</tr>
+<tr>
+<td>短路</td>
+<td>裸線接觸</td>
+<td>檢查絕緣</td>
+</tr>
+<tr>
+<td>間歇性故障</td>
+<td>虛焊、接觸不良</td>
+<td>輕搖線材測試</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62">6.2 系統性排查</h3>
+<pre><code>排查順序：
+
+1. 電源確認
+   電源供應器 → 電源線 → 開發板電源腳位
+
+2. 接地確認
+   確保所有 GND 連通
+
+3. 訊號確認
+   逐一檢查每條訊號線
+
+4. 使用三用電表
+   • 電壓檔：確認電源
+   • 通斷檔：確認連接
+</code></pre>
+<h3 id="63">6.3 接線檢查清單</h3>
+<pre><code>□ 電源正負極確認
+□ 所有 GND 已連接
+□ 訊號線對應正確腳位
+□ 無裸線外露
+□ 接頭插緊
+□ 無線材交纏
+□ 電源線與訊號線分離
+□ 重要接點已標示
+</code></pre>
+<hr />
+<h2 id="_20">七、實用工具推薦</h2>
+<h3 id="71">7.1 基本工具</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>價格範圍</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>斜口鉗</td>
+<td>剪線、剝線</td>
+<td>NT$ 50-150</td>
+</tr>
+<tr>
+<td>剝線鉗</td>
+<td>精確剝線</td>
+<td>NT$ 100-300</td>
+</tr>
+<tr>
+<td>尖嘴鉗</td>
+<td>彎折、夾取</td>
+<td>NT$ 50-150</td>
+</tr>
+<tr>
+<td>三用電表</td>
+<td>測量電壓、通斷</td>
+<td>NT$ 200-500</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72">7.2 整理工具</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>價格範圍</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>束線帶（包）</td>
+<td>線材固定</td>
+<td>NT$ 30-80</td>
+</tr>
+<tr>
+<td>螺旋纏繞管（米）</td>
+<td>線束整理</td>
+<td>NT$ 20-50</td>
+</tr>
+<tr>
+<td>熱縮管組</td>
+<td>接點保護</td>
+<td>NT$ 50-100</td>
+</tr>
+<tr>
+<td>號碼管</td>
+<td>線材標示</td>
+<td>NT$ 30-80</td>
+</tr>
+<tr>
+<td>標籤機</td>
+<td>專業標示</td>
+<td>NT$ 500+</td>
+</tr>
+</tbody>
+</table>
+<h3 id="73">7.3 收納工具</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>價格範圍</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>零件盒</td>
+<td>分類收納</td>
+<td>NT$ 50-200</td>
+</tr>
+<tr>
+<td>工具袋</td>
+<td>攜帶收納</td>
+<td>NT$ 100-300</td>
+</tr>
+<tr>
+<td>掛勾架</td>
+<td>線材懸掛</td>
+<td>NT$ 50-150</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="faq">八、常見問題 FAQ</h2>
+<h3 id="q1">Q1：杜邦線接頭鬆動怎麼辦？</h3>
+<p><strong>解決方法：</strong><br />
+1. 用尖嘴鉗輕輕夾緊母頭金屬片<br />
+2. 使用較新的杜邦線<br />
+3. 必要時用熱熔膠加固</p>
+<h3 id="q2">Q2：如何判斷需要多粗的線材？</h3>
+<p><strong>參考原則：</strong><br />
+- 訊號線：細線即可（24~28 AWG）<br />
+- 小電流電源（&lt;1A）：22~24 AWG<br />
+- 中電流電源（1~3A）：18~20 AWG<br />
+- 大電流電源（&gt;3A）：16 AWG 以上</p>
+<h3 id="q3">Q3：焊接還是使用接頭？</h3>
+<table>
+<thead>
+<tr>
+<th>考量</th>
+<th>建議焊接</th>
+<th>建議接頭</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>永久固定</td>
+<td>✓</td>
+<td></td>
+</tr>
+<tr>
+<td>需要拆裝</td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>震動環境</td>
+<td>✓</td>
+<td></td>
+</tr>
+<tr>
+<td>原型測試</td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>空間受限</td>
+<td>✓</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="q4">Q4：線材顏色不夠用怎麼辦？</h3>
+<p><strong>替代方案：</strong><br />
+1. 使用號碼管標示<br />
+2. 在線材上貼彩色膠帶<br />
+3. 用簽字筆標記<br />
+4. 製作對照表記錄</p>
+<h3 id="q5">Q5：如何防止線材老化？</h3>
+<p><strong>保養建議：</strong><br />
+- 避免過度彎折<br />
+- 遠離高溫熱源<br />
+- 不要拉扯接頭<br />
+- 定期檢查接點<br />
+- 妥善收納存放</p>
+<hr />
+<h2 id="_21">九、重點整理</h2>
+<h3 id="_22">線材轉接原則</h3>
+<ol>
+<li><strong>確認規格</strong> - 接頭類型、電壓電流</li>
+<li><strong>可靠連接</strong> - 牢固不鬆脫</li>
+<li><strong>正確極性</strong> - 正負不可反</li>
+<li><strong>適當容量</strong> - 線徑符合電流需求</li>
+</ol>
+<h3 id="_23">線材整理原則</h3>
+<ol>
+<li><strong>長度適中</strong> - 不過長不過短</li>
+<li><strong>顏色區分</strong> - 電源、訊號分色</li>
+<li><strong>分層佈線</strong> - 電源、訊號分離</li>
+<li><strong>清楚標示</strong> - 方便維護除錯</li>
+</ol>
+<h3 id="_24">常備工具</h3>
+<ul>
+<li>各規格杜邦線</li>
+<li>束線帶、熱縮管</li>
+<li>端子台</li>
+<li>三用電表</li>
+</ul>
+<hr />
+<p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

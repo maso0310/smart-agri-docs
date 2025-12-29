@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於繼電器模組</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="_1">關於繼電器模組</h1>
+<h2 id="_2">前言：為什麼需要繼電器？</h2>
+<p>Arduino 的輸出腳位只能提供 <strong>5V / 40mA</strong> 的微小電力，這對於控制 LED 燈已經足夠，但如果想控制：</p>
+<ul>
+<li>110V 的電燈或風扇</li>
+<li>12V 的抽水馬達</li>
+<li>5V 但需要大電流的霧化器</li>
+</ul>
+<p>Arduino 就無法直接驅動了。這時候就需要<strong>繼電器（Relay）</strong>來當作「電子開關」！</p>
+<hr />
+<h2 id="_3">一、繼電器是什麼？</h2>
+<h3 id="_4">一句話解釋</h3>
+<blockquote>
+<p>繼電器就是一個「用小電流控制大電流」的電子開關。</p>
+</blockquote>
+<h3 id="_5">生活比喻</h3>
+<pre><code>想像繼電器是一個「遙控門鎖」：
+
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│  你（Arduino）  ──按遙控器──→  門鎖  ──開門──→  大門  │
+│   （小力氣）      （小電流）  （繼電器） （大電流） （負載）│
+│                                                     │
+└─────────────────────────────────────────────────────┘
+
+你不需要親自去推開沉重的大門，
+只要按一下遙控器（送出小電流），
+門鎖（繼電器）就會幫你開門（接通大電流）。
+</code></pre>
+<hr />
+<h2 id="_6">二、繼電器的工作原理</h2>
+<h3 id="_7">內部結構</h3>
+<pre><code>繼電器內部構造：
+
+        控制端（Arduino 接這邊）
+              │
+              ▼
+         ┌─────────┐
+         │  線圈   │ ← 通電時產生磁力
+         │  ████   │
+         └────┬────┘
+              │ 磁力吸引
+              ▼
+         ┌─────────┐
+    NC ──┤  彈簧片  ├── COM（共用端）
+         │    ↕    │
+    NO ──┤         │
+         └─────────┘
+              │
+              ▼
+        負載端（馬達、燈泡接這邊）
+</code></pre>
+<h3 id="_8">工作流程</h3>
+<pre><code>【未通電狀態】
+                    彈簧片在上方
+線圈 ○              ┌───●───┐ NC（常閉）
+（無磁力）          │       │
+                   │   ○   │ COM（共用）
+                   │       │
+                   └───○───┘ NO（常開）
+
+結果：COM 與 NC 接通，COM 與 NO 斷開
+
+【通電狀態】
+                    彈簧片被吸到下方
+線圈 ●              ┌───○───┐ NC（常閉）
+（產生磁力）        │       │
+                   │   ●   │ COM（共用）
+                   │   │   │
+                   └───●───┘ NO（常開）
+
+結果：COM 與 NO 接通，COM 與 NC 斷開
+</code></pre>
+<h3 id="_9">重要名詞</h3>
+<table>
+<thead>
+<tr>
+<th>名詞</th>
+<th>英文</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>COM</strong></td>
+<td>Common</td>
+<td>共用端，負載的一端接這裡</td>
+</tr>
+<tr>
+<td><strong>NO</strong></td>
+<td>Normally Open</td>
+<td>常開端，平時斷開，通電後接通</td>
+</tr>
+<tr>
+<td><strong>NC</strong></td>
+<td>Normally Closed</td>
+<td>常閉端，平時接通，通電後斷開</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_10">三、繼電器模組介紹</h2>
+<h3 id="_11">為什麼用模組而不是單顆繼電器？</h3>
+<p>單顆繼電器需要額外的：<br />
+- 驅動電晶體（Arduino 無法直接驅動線圈）<br />
+- 保護二極體（防止反向電壓損壞 Arduino）<br />
+- 指示 LED（顯示狀態）</p>
+<p><strong>繼電器模組</strong>把這些都整合好了，接線更簡單！</p>
+<h3 id="_12">常見繼電器模組外觀</h3>
+<pre><code>單路繼電器模組：
+
+     高壓側（危險！）              低壓側（安全）
+    ┌─────────────────────────────────────────┐
+    │                                         │
+    │   NC  COM  NO              VCC GND IN   │
+    │    ○   ○   ○                ○   ○   ○   │
+    │    │   │   │                │   │   │   │
+    │  ┌─┴───┴───┴─┐            ┌─┴───┴───┴─┐ │
+    │  │ 接負載    │            │ 接Arduino │ │
+    │  │(馬達/燈泡)│            │           │ │
+    │  └───────────┘            └───────────┘ │
+    │                                         │
+    │   [====繼電器====]    ●LED    [電路板]  │
+    │                      狀態燈              │
+    └─────────────────────────────────────────┘
+</code></pre>
+<h3 id="_13">模組腳位說明</h3>
+<table>
+<thead>
+<tr>
+<th>腳位</th>
+<th>說明</th>
+<th>接線</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VCC</strong></td>
+<td>電源正極</td>
+<td>接 Arduino 5V</td>
+</tr>
+<tr>
+<td><strong>GND</strong></td>
+<td>電源負極</td>
+<td>接 Arduino GND</td>
+</tr>
+<tr>
+<td><strong>IN</strong></td>
+<td>控制訊號輸入</td>
+<td>接 Arduino 數位腳位</td>
+</tr>
+<tr>
+<td><strong>COM</strong></td>
+<td>共用端</td>
+<td>接負載的一端</td>
+</tr>
+<tr>
+<td><strong>NO</strong></td>
+<td>常開端</td>
+<td>接電源（通電時接通）</td>
+</tr>
+<tr>
+<td><strong>NC</strong></td>
+<td>常閉端</td>
+<td>接電源（斷電時接通）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="vs">四、高電平觸發 vs 低電平觸發</h2>
+<p>繼電器模組有兩種觸發方式，<strong>購買前一定要確認</strong>！</p>
+<h3 id="high-level-trigger">高電平觸發（High Level Trigger）</h3>
+<pre><code>控制訊號：HIGH (5V) → 繼電器動作（吸合）
+控制訊號：LOW  (0V) → 繼電器不動作（釋放）
+
+程式邏輯：
+digitalWrite(RELAY_PIN, HIGH);  // 繼電器 ON
+digitalWrite(RELAY_PIN, LOW);   // 繼電器 OFF
+</code></pre>
+<h3 id="low-level-trigger">低電平觸發（Low Level Trigger）</h3>
+<pre><code>控制訊號：LOW  (0V) → 繼電器動作（吸合）
+控制訊號：HIGH (5V) → 繼電器不動作（釋放）
+
+程式邏輯：
+digitalWrite(RELAY_PIN, LOW);   // 繼電器 ON
+digitalWrite(RELAY_PIN, HIGH);  // 繼電器 OFF
+</code></pre>
+<h3 id="_14">如何判斷模組類型？</h3>
+<pre><code>方法 1：看模組標示
+┌─────────────────────┐
+│ High/Low Level      │ ← 有些模組會標示
+│ Trigger: High       │
+└─────────────────────┘
+
+方法 2：看電路板跳線帽
+┌─────────────────────┐
+│  [H] [L]            │ ← 有跳線帽可切換
+│   ●───○             │    ● 位置 = 目前模式
+└─────────────────────┘
+
+方法 3：實際測試
+1. 接好 VCC、GND
+2. IN 腳接 5V → LED 亮 = 高電平觸發
+3. IN 腳接 GND → LED 亮 = 低電平觸發
+</code></pre>
+<h3 id="_15">比較表</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>高電平觸發</th>
+<th>低電平觸發</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>觸發電壓</td>
+<td>HIGH (5V)</td>
+<td>LOW (0V)</td>
+</tr>
+<tr>
+<td>Arduino 開機時</td>
+<td>預設 LOW，繼電器關閉</td>
+<td>預設 LOW，繼電器開啟！</td>
+</tr>
+<tr>
+<td>程式直覺性</td>
+<td>HIGH=ON，較直覺</td>
+<td>LOW=ON，較不直覺</td>
+</tr>
+<tr>
+<td>抗干擾能力</td>
+<td>較弱</td>
+<td>較強</td>
+</tr>
+<tr>
+<td>常見程度</td>
+<td>較少</td>
+<td>較常見</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_16">低電平觸發的開機問題</h3>
+<pre><code>⚠️ 重要提醒：
+
+低電平觸發模組在 Arduino 開機時，
+腳位預設為 LOW，會導致繼電器短暫啟動！
+
+解決方法：
+1. 在 setup() 最開始就設定腳位為 HIGH
+2. 或使用上拉電阻
+
+void setup() {
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, HIGH);  // 先關閉繼電器！
+}
+</code></pre>
+<hr />
+<h2 id="_17">五、接線方式</h2>
+<h3 id="led">基本接線（控制 LED 示意）</h3>
+<pre><code>Arduino 控制繼電器點亮 LED：
+
+                    ┌─────────────────┐
+                    │   繼電器模組     │
+     Arduino        │                 │        LED 負載
+    ┌───────┐       │  VCC GND  IN    │       ┌─────┐
+    │    5V ├───────┼──●              │       │     │
+    │       │       │      ●──────────┼───────┤ LED │
+    │   GND ├───────┼─────●           │   ┌───┤     │
+    │       │       │                 │   │   └─────┘
+    │    D7 ├───────┼────────────●    │   │
+    └───────┘       │                 │   │
+                    │  NC  COM  NO    │   │
+                    │   ○   ●────┐    │   │
+                    │       │    │    │   │
+                    └───────┼────┼────┘   │
+                            │    │        │
+                         接負載  接電源────┘
+                         （LED-）（LED+）
+</code></pre>
+<h3 id="12v">控制 12V 馬達</h3>
+<pre><code>Arduino 控制 12V 抽水馬達：
+
+                         繼電器模組
+    Arduino            ┌───────────┐         12V 馬達
+   ┌───────┐           │           │        ┌───────┐
+   │    5V ├───────────┤ VCC       │        │   M   │
+   │   GND ├───────────┤ GND       │     ┌──┤       │
+   │    D7 ├───────────┤ IN        │     │  └───┬───┘
+   └───────┘           │           │     │      │
+                       │    NC  ○  │     │      │
+                       │    COM ●──┼─────┘      │
+                       │    NO  ●──┼────────────┼──┐
+                       └───────────┘            │  │
+                                                │  │
+    12V 電源供應器                               │  │
+   ┌───────────┐                               │  │
+   │  DC 12V   │                               │  │
+   │    (+) ───┼───────────────────────────────┘  │
+   │    (-) ───┼──────────────────────────────────┘
+   └───────────┘
+
+   ⚠️ 注意：Arduino 和馬達電源的 GND 要共地！
+</code></pre>
+<h3 id="110v">控制 110V 家電（危險！僅供參考）</h3>
+<pre><code>⚠️⚠️⚠️ 警告：110V 市電非常危險！⚠️⚠️⚠️
+若無電工經驗，請勿嘗試！
+
+                         繼電器模組
+    Arduino            ┌───────────┐         110V 電燈
+   ┌───────┐           │           │        ┌───────┐
+   │    5V ├───────────┤ VCC       │    ┌───┤   💡  │
+   │   GND ├───────────┤ GND       │    │   └───┬───┘
+   │    D7 ├───────────┤ IN        │    │       │
+   └───────┘           │           │    │       │
+                       │    NC  ○  │    │       │
+                       │    COM ●──┼────┘       │
+                       │    NO  ●──┼──┐         │
+                       └───────────┘  │         │
+                                      │         │
+    110V 市電插座                      │         │
+   ┌───────────┐                     │         │
+   │    (火線) ├──────────────────────┘         │
+   │    (中性) ├────────────────────────────────┘
+   └───────────┘
+
+   必要安全措施：
+   1. 使用額定電壓/電流足夠的繼電器
+   2. 接線確實，避免短路
+   3. 外殼絕緣處理
+   4. 加裝保險絲
+</code></pre>
+<hr />
+<h2 id="arduino">六、Arduino 程式範例</h2>
+<h3 id="1">範例 1：基本開關控制（高電平觸發）</h3>
+<pre><code class="language-cpp">/*
+ * 繼電器基本控制 - 高電平觸發版
+ * 每 2 秒切換一次繼電器狀態
+ */
+
+const int RELAY_PIN = 7;  // 繼電器接在 D7
+
+void setup() {
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, LOW);  // 初始狀態：關閉
+
+  Serial.begin(9600);
+  Serial.println(&quot;繼電器控制測試（高電平觸發）&quot;);
+}
+
+void loop() {
+  // 開啟繼電器
+  digitalWrite(RELAY_PIN, HIGH);
+  Serial.println(&quot;繼電器：ON&quot;);
+  delay(2000);
+
+  // 關閉繼電器
+  digitalWrite(RELAY_PIN, LOW);
+  Serial.println(&quot;繼電器：OFF&quot;);
+  delay(2000);
+}
+</code></pre>
+<h3 id="2">範例 2：基本開關控制（低電平觸發）</h3>
+<pre><code class="language-cpp">/*
+ * 繼電器基本控制 - 低電平觸發版
+ * 注意：LOW = ON, HIGH = OFF
+ */
+
+const int RELAY_PIN = 7;
+
+// 定義方便閱讀的常數
+#define RELAY_ON  LOW
+#define RELAY_OFF HIGH
+
+void setup() {
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, RELAY_OFF);  // 重要：先關閉！
+
+  Serial.begin(9600);
+  Serial.println(&quot;繼電器控制測試（低電平觸發）&quot;);
+}
+
+void loop() {
+  digitalWrite(RELAY_PIN, RELAY_ON);
+  Serial.println(&quot;繼電器：ON&quot;);
+  delay(2000);
+
+  digitalWrite(RELAY_PIN, RELAY_OFF);
+  Serial.println(&quot;繼電器：OFF&quot;);
+  delay(2000);
+}
+</code></pre>
+<h3 id="3">範例 3：按鈕控制繼電器</h3>
+<pre><code class="language-cpp">/*
+ * 使用按鈕切換繼電器狀態
+ * 按一下開，再按一下關
+ */
+
+const int RELAY_PIN = 7;
+const int BUTTON_PIN = 2;
+
+bool relayState = false;
+bool lastButtonState = HIGH;
+
+void setup() {
+  pinMode(RELAY_PIN, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);  // 使用內部上拉電阻
+
+  digitalWrite(RELAY_PIN, LOW);
+
+  Serial.begin(9600);
+  Serial.println(&quot;按鈕控制繼電器&quot;);
+}
+
+void loop() {
+  bool currentButtonState = digitalRead(BUTTON_PIN);
+
+  // 偵測按鈕按下（從 HIGH 變成 LOW）
+  if (lastButtonState == HIGH &amp;&amp; currentButtonState == LOW) {
+    delay(50);  // 消除彈跳
+
+    // 切換繼電器狀態
+    relayState = !relayState;
+    digitalWrite(RELAY_PIN, relayState ? HIGH : LOW);
+
+    Serial.print(&quot;繼電器狀態：&quot;);
+    Serial.println(relayState ? &quot;ON&quot; : &quot;OFF&quot;);
+  }
+
+  lastButtonState = currentButtonState;
+}
+</code></pre>
+<h3 id="4">範例 4：溫度自動控制風扇</h3>
+<pre><code class="language-cpp">/*
+ * 溫度超過門檻時自動開啟風扇
+ * 使用 DHT11 感測器 + 繼電器控制風扇
+ */
+
+#include &lt;DHT.h&gt;
+
+const int DHT_PIN = 2;
+const int RELAY_PIN = 7;
+const float TEMP_THRESHOLD = 28.0;  // 溫度門檻（攝氏）
+
+DHT dht(DHT_PIN, DHT11);
+
+void setup() {
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, LOW);
+
+  dht.begin();
+  Serial.begin(9600);
+  Serial.println(&quot;溫度自動控制風扇&quot;);
+}
+
+void loop() {
+  float temperature = dht.readTemperature();
+
+  if (isnan(temperature)) {
+    Serial.println(&quot;讀取 DHT11 失敗！&quot;);
+    delay(2000);
+    return;
+  }
+
+  Serial.print(&quot;溫度：&quot;);
+  Serial.print(temperature);
+  Serial.print(&quot;°C → &quot;);
+
+  if (temperature &gt; TEMP_THRESHOLD) {
+    digitalWrite(RELAY_PIN, HIGH);
+    Serial.println(&quot;風扇 ON&quot;);
+  } else {
+    digitalWrite(RELAY_PIN, LOW);
+    Serial.println(&quot;風扇 OFF&quot;);
+  }
+
+  delay(2000);
+}
+</code></pre>
+<h3 id="5">範例 5：帶有遲滯控制（防止頻繁切換）</h3>
+<pre><code class="language-cpp">/*
+ * 遲滯控制（Hysteresis）
+ * 避免溫度在門檻附近時繼電器頻繁開關
+ *
+ * 開啟門檻：28°C
+ * 關閉門檻：26°C
+ *
+ * 溫度曲線：
+ *           ON ──────────────┐
+ *                            │
+ *     28°C  ─ ─ ─ ─ ─ ─ ─ ─ ┼ ─ ─ 開啟點
+ *                            │
+ *     27°C        (不動作區) │
+ *                            │
+ *     26°C  ─ ─ ─ ─ ─ ─ ─ ─ ┼ ─ ─ 關閉點
+ *                            │
+ *          OFF ──────────────┘
+ */
+
+#include &lt;DHT.h&gt;
+
+const int DHT_PIN = 2;
+const int RELAY_PIN = 7;
+
+const float TEMP_ON = 28.0;   // 高於此溫度開啟
+const float TEMP_OFF = 26.0;  // 低於此溫度關閉
+
+DHT dht(DHT_PIN, DHT11);
+bool fanState = false;
+
+void setup() {
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, LOW);
+
+  dht.begin();
+  Serial.begin(9600);
+  Serial.println(&quot;遲滯溫度控制&quot;);
+}
+
+void loop() {
+  float temperature = dht.readTemperature();
+
+  if (isnan(temperature)) {
+    delay(2000);
+    return;
+  }
+
+  // 遲滯控制邏輯
+  if (temperature &gt;= TEMP_ON &amp;&amp; !fanState) {
+    fanState = true;
+    digitalWrite(RELAY_PIN, HIGH);
+    Serial.print(temperature);
+    Serial.println(&quot;°C - 超過上限，開啟風扇&quot;);
+  }
+  else if (temperature &lt;= TEMP_OFF &amp;&amp; fanState) {
+    fanState = false;
+    digitalWrite(RELAY_PIN, LOW);
+    Serial.print(temperature);
+    Serial.println(&quot;°C - 低於下限，關閉風扇&quot;);
+  }
+  else {
+    Serial.print(temperature);
+    Serial.print(&quot;°C - 維持狀態：&quot;);
+    Serial.println(fanState ? &quot;ON&quot; : &quot;OFF&quot;);
+  }
+
+  delay(2000);
+}
+</code></pre>
+<hr />
+<h2 id="_18">七、多路繼電器模組</h2>
+<h3 id="248">2路/4路/8路模組</h3>
+<pre><code>4 路繼電器模組：
+
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│   [繼電器1] [繼電器2] [繼電器3] [繼電器4]            │
+│                                                     │
+│   NC1 COM1 NO1  NC2 COM2 NO2  NC3 COM3 NO3  NC4... │
+│    ○   ○   ○    ○   ○   ○    ○   ○   ○    ○  ... │
+│                                                     │
+│                     VCC GND IN1 IN2 IN3 IN4         │
+│                      ○   ○   ○   ○   ○   ○         │
+└─────────────────────────────────────────────────────┘
+
+接線：
+VCC → Arduino 5V
+GND → Arduino GND
+IN1 → Arduino D4
+IN2 → Arduino D5
+IN3 → Arduino D6
+IN4 → Arduino D7
+</code></pre>
+<h3 id="_19">多路繼電器程式範例</h3>
+<pre><code class="language-cpp">/*
+ * 4 路繼電器依序控制
+ */
+
+const int RELAY_PINS[] = {4, 5, 6, 7};
+const int NUM_RELAYS = 4;
+
+void setup() {
+  for (int i = 0; i &lt; NUM_RELAYS; i++) {
+    pinMode(RELAY_PINS[i], OUTPUT);
+    digitalWrite(RELAY_PINS[i], LOW);
+  }
+
+  Serial.begin(9600);
+  Serial.println(&quot;4 路繼電器控制&quot;);
+}
+
+void loop() {
+  // 依序開啟
+  for (int i = 0; i &lt; NUM_RELAYS; i++) {
+    digitalWrite(RELAY_PINS[i], HIGH);
+    Serial.print(&quot;繼電器 &quot;);
+    Serial.print(i + 1);
+    Serial.println(&quot; ON&quot;);
+    delay(500);
+  }
+
+  delay(1000);
+
+  // 依序關閉
+  for (int i = 0; i &lt; NUM_RELAYS; i++) {
+    digitalWrite(RELAY_PINS[i], LOW);
+    Serial.print(&quot;繼電器 &quot;);
+    Serial.print(i + 1);
+    Serial.println(&quot; OFF&quot;);
+    delay(500);
+  }
+
+  delay(1000);
+}
+</code></pre>
+<hr />
+<h2 id="_20">八、繼電器規格解讀</h2>
+<h3 id="_21">常見規格標示</h3>
+<pre><code>繼電器本體標示解讀：
+
+┌─────────────────────────┐
+│                         │
+│    SRD-05VDC-SL-C       │
+│                         │
+│    10A 250VAC           │
+│    10A 30VDC            │
+│                         │
+└─────────────────────────┘
+
+SRD = 廠牌型號
+05VDC = 線圈電壓 5V DC
+SL = 單組常開常閉
+C = 有常閉接點
+
+10A 250VAC = 交流最大 10A / 250V
+10A 30VDC = 直流最大 10A / 30V
+</code></pre>
+<h3 id="_22">規格選擇要點</h3>
+<table>
+<thead>
+<tr>
+<th>參數</th>
+<th>說明</th>
+<th>建議</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>線圈電壓</strong></td>
+<td>驅動繼電器的電壓</td>
+<td>Arduino 用選 5V</td>
+</tr>
+<tr>
+<td><strong>接點容量</strong></td>
+<td>能承受的最大負載</td>
+<td>選比實際負載大 20% 以上</td>
+</tr>
+<tr>
+<td><strong>接點形式</strong></td>
+<td>NO/NC/COM 組合</td>
+<td>一般用 1C（單刀雙擲）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_23">負載電流計算</h3>
+<pre><code>計算公式：
+
+電流 (A) = 功率 (W) ÷ 電壓 (V)
+
+範例：
+- 60W 燈泡 / 110V = 0.55A ✓ 10A 繼電器 OK
+- 1500W 電暖器 / 110V = 13.6A ✗ 10A 繼電器不夠！
+
+安全建議：
+- 實際負載不要超過繼電器額定的 80%
+- 10A 繼電器建議控制 8A 以下負載
+</code></pre>
+<hr />
+<h2 id="_24">九、安全注意事項</h2>
+<h3 id="_25">危險警告</h3>
+<pre><code>⚠️ 高壓電危險 ⚠️
+
+1. 110V/220V 市電可能致命！
+2. 沒有電工經驗請勿操作高壓電路
+3. 操作前務必斷電
+4. 使用絕緣工具
+5. 高壓側和低壓側要確實隔離
+</code></pre>
+<h3 id="_26">常見安全問題</h3>
+<table>
+<thead>
+<tr>
+<th>問題</th>
+<th>原因</th>
+<th>解決方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>繼電器發熱</td>
+<td>負載過大</td>
+<td>更換更大容量繼電器</td>
+</tr>
+<tr>
+<td>接點燒蝕</td>
+<td>頻繁開關或超載</td>
+<td>減少開關次數、加裝滅弧電路</td>
+</tr>
+<tr>
+<td>Arduino 重啟</td>
+<td>繼電器切換時產生雜訊</td>
+<td>加裝退耦電容、分開電源</td>
+</tr>
+<tr>
+<td>干擾其他電路</td>
+<td>電磁干擾</td>
+<td>繼電器遠離敏感元件</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_27">保護措施</h3>
+<pre><code>建議的保護電路：
+
+1. 退耦電容（穩定電源）
+   VCC ──┬── 繼電器模組 VCC
+         │
+        ═╧═ 100μF 電解電容
+         │
+   GND ──┴── 繼電器模組 GND
+
+2. 獨立電源供應（大負載時）
+
+   USB        Arduino        繼電器模組
+    │            │               │
+    └──→ 5V ────┤               │
+                 │        獨立 5V 電源
+                 │               │
+    GND ────────┴───────────────┘（共地）
+</code></pre>
+<hr />
+<h2 id="ssr">十、固態繼電器（SSR）</h2>
+<h3 id="_28">與機械繼電器的比較</h3>
+<pre><code>機械繼電器 vs 固態繼電器：
+
+┌─────────────┬─────────────┬─────────────┐
+│    特性     │  機械繼電器  │  固態繼電器  │
+├─────────────┼─────────────┼─────────────┤
+│   切換方式   │ 機械接點    │ 半導體開關  │
+│   切換聲音   │ 有「喀」聲  │ 無聲        │
+│   切換速度   │ 較慢(~10ms) │ 快(&lt;1ms)    │
+│   使用壽命   │ 有限(10萬次)│ 幾乎無限    │
+│   發熱      │ 低          │ 較高        │
+│   價格      │ 便宜        │ 較貴        │
+│   適用場合   │ 低頻切換    │ 高頻切換    │
+└─────────────┴─────────────┴─────────────┘
+</code></pre>
+<h3 id="ssr_1">SSR 外觀</h3>
+<pre><code>固態繼電器（Solid State Relay）：
+
+    ┌───────────────────────┐
+    │    FOTEK SSR-40DA     │
+    │                       │
+    │  3-32VDC    24-380VAC │
+    │  ●──────    ──────●   │
+    │  INPUT      OUTPUT    │
+    │  (+) (-)    (L1) (L2) │
+    │   ○   ○      ○    ○   │
+    └───────────────────────┘
+
+    INPUT: 3-32V DC 控制訊號（接 Arduino）
+    OUTPUT: 24-380V AC 負載（接市電設備）
+</code></pre>
+<hr />
+<h2 id="_29">十一、常見問題排解</h2>
+<h3 id="1_1">問題 1：繼電器不動作</h3>
+<pre><code>檢查步驟：
+
+□ 1. VCC、GND 有接嗎？
+□ 2. IN 腳有接到 Arduino 腳位嗎？
+□ 3. 確認觸發電平（高/低電平觸發）
+□ 4. 用三用電表量 IN 腳電壓
+□ 5. 模組上的 LED 有亮嗎？
+□ 6. 聽聽看有沒有「喀」聲
+</code></pre>
+<h3 id="2_1">問題 2：繼電器一直動作/不停切換</h3>
+<pre><code>可能原因：
+
+1. 低電平觸發 + Arduino 開機預設 LOW
+   → 在 setup() 先設 HIGH
+
+2. 浮動腳位
+   → 加上拉/下拉電阻
+
+3. 電源不穩
+   → 加退耦電容、使用獨立電源
+</code></pre>
+<h3 id="3arduino">問題 3：Arduino 不斷重啟</h3>
+<pre><code>原因：繼電器切換時產生電源雜訊
+
+解決方法：
+1. 在繼電器模組 VCC-GND 間加 100μF 電容
+2. 使用獨立電源供應繼電器
+3. 繼電器模組遠離 Arduino
+4. 控制線使用較短的杜邦線
+</code></pre>
+<h3 id="4_1">問題 4：負載無法正常運作</h3>
+<pre><code>檢查步驟：
+
+□ 1. COM、NO/NC 接線正確嗎？
+□ 2. 負載電源有接嗎？
+□ 3. 負載電流是否超過繼電器額定值？
+□ 4. 用三用電表量 COM-NO 之間的導通狀態
+</code></pre>
+<hr />
+<h2 id="_30">十二、實際應用場景</h2>
+<h3 id="_31">智慧溫室應用</h3>
+<pre><code>┌─────────────────────────────────────────────────────┐
+│                    智慧溫室系統                      │
+├─────────────────────────────────────────────────────┤
+│                                                     │
+│   DHT11 ──→ Arduino ──→ 繼電器1 ──→ 風扇           │
+│   (溫度)      │                     (降溫)          │
+│               │                                     │
+│               ├──→ 繼電器2 ──→ 霧化器              │
+│   (濕度)      │                (加濕)               │
+│               │                                     │
+│   土壤感測器 ─┴──→ 繼電器3 ──→ 抽水馬達            │
+│                                (灌溉)               │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="_32">控制邏輯表</h3>
+<table>
+<thead>
+<tr>
+<th>感測器</th>
+<th>條件</th>
+<th>繼電器動作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>溫度 &gt; 28°C</td>
+<td>過熱</td>
+<td>開啟風扇</td>
+</tr>
+<tr>
+<td>溫度 &lt; 26°C</td>
+<td>正常</td>
+<td>關閉風扇</td>
+</tr>
+<tr>
+<td>濕度 &lt; 60%</td>
+<td>太乾</td>
+<td>開啟霧化器</td>
+</tr>
+<tr>
+<td>濕度 &gt; 70%</td>
+<td>正常</td>
+<td>關閉霧化器</td>
+</tr>
+<tr>
+<td>土壤濕度 &lt; 30%</td>
+<td>缺水</td>
+<td>開啟抽水馬達</td>
+</tr>
+<tr>
+<td>土壤濕度 &gt; 60%</td>
+<td>足夠</td>
+<td>關閉抽水馬達</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_33">快速參考表</h2>
+<h3 id="_34">接線速查</h3>
+<table>
+<thead>
+<tr>
+<th>繼電器模組</th>
+<th>Arduino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VCC</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>IN</td>
+<td>任意數位腳位（如 D7）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_35">程式速查</h3>
+<pre><code class="language-cpp">// 高電平觸發
+digitalWrite(pin, HIGH);  // ON
+digitalWrite(pin, LOW);   // OFF
+
+// 低電平觸發
+digitalWrite(pin, LOW);   // ON
+digitalWrite(pin, HIGH);  // OFF
+
+// 建議用 #define 提升可讀性
+#define RELAY_ON  LOW   // 根據實際模組調整
+#define RELAY_OFF HIGH
+</code></pre>
+<hr />
+<h2 id="_36">延伸學習</h2>
+<ul>
+<li><strong>關於電源供應.md</strong> - 了解如何為繼電器和負載提供足夠電源</li>
+<li><strong>關於上拉電阻與下拉電阻.md</strong> - 理解為何需要固定腳位電平</li>
+<li><strong>關於基礎電子學與Arduino.md</strong> - 電流、電壓的基本概念</li>
+</ul>
+<hr />
+<blockquote>
+<p>繼電器是連接 Arduino 微控制器與實際電器設備的重要橋樑，掌握它的使用方法，就能讓你的專案從「閃燈」進化到「控制真實世界」！</p>
+</blockquote>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

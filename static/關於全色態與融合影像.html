@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於全色態與融合影像 (Panchromatic & Pan-sharpening)</title>
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --text-color: #eee;
+            --card-bg: #16213e;
+            --accent-color: #0f3460;
+            --highlight-color: #e94560;
+            --code-bg: #0d1117;
+            --border-color: #30475e;
+            --link-color: #4da6ff;
+            --table-header: #1f4068;
+            --table-row-even: #1a1a2e;
+            --table-row-odd: #16213e;
+        }
+        .light-mode {
+            --bg-color: #f5f5f5;
+            --text-color: #333;
+            --card-bg: #fff;
+            --accent-color: #e3e3e3;
+            --highlight-color: #d32f2f;
+            --code-bg: #f8f8f8;
+            --border-color: #ddd;
+            --link-color: #1976d2;
+            --table-header: #4a6fa5;
+            --table-row-even: #f0f0f0;
+            --table-row-odd: #fff;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin: 20px 0 30px;
+            color: var(--highlight-color);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 40px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--highlight-color);
+            color: var(--highlight-color);
+            font-size: 1.5rem;
+        }
+        h3 {
+            margin-top: 25px;
+            color: var(--link-color);
+            font-size: 1.2rem;
+        }
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        pre {
+            background-color: var(--code-bg);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid var(--highlight-color);
+        }
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95rem;
+            color: #e6e6e6;
+        }
+        .light-mode code {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+        th {
+            background-color: var(--table-header);
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: var(--table-row-even);
+        }
+        tr:nth-child(odd) {
+            background-color: var(--table-row-odd);
+        }
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .home-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 25px;
+            background-color: var(--highlight-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: transform 0.3s, background-color 0.3s;
+            text-decoration: none;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .home-btn:hover {
+            transform: scale(1.1);
+            background-color: #c82333;
+            text-decoration: none;
+        }
+        .theme-toggle {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: transform 0.3s;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .highlight {
+            background-color: var(--accent-color);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        .tip {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #4caf50;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .warning {
+            background-color: rgba(255, 152, 0, 0.1);
+            border-left: 4px solid #ff9800;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .formula {
+            background-color: var(--accent-color);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.1rem;
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .image-box {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        .image-placeholder {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 150px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .pan-placeholder {
+            background: linear-gradient(135deg, #434343 0%, #000000 100%);
+        }
+        .ms-placeholder {
+            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%);
+        }
+        .fused-placeholder {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            h1 { font-size: 1.7rem; }
+            pre { padding: 12px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="home-btn" title="返回首頁">🏠</a>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換主題">🌓</button>
+
+    <div class="container">
+        <h1>關於全色態與融合影像</h1>
+
+        <div class="card">
+            <h2>基本概念</h2>
+            <p>
+                在遙感影像中，<strong>全色影像 (Panchromatic, PAN)</strong> 和<strong>多光譜影像 (Multispectral, MS)</strong>
+                是兩種最基本的影像類型。它們各有優缺點，而<strong>影像融合 (Pan-sharpening)</strong> 技術則是結合
+                兩者優點，產生同時具有高空間解析度和豐富光譜資訊的影像。
+            </p>
+        </div>
+
+        <h2>全色影像 (Panchromatic)</h2>
+
+        <div class="card">
+            <p>
+                全色影像是一種<strong>單波段灰階影像</strong>，其感測器在較寬的可見光波段範圍內（約 450-900nm）
+                收集輻射能量。由於整合了多個波段的能量，全色影像通常具有較高的空間解析度。
+            </p>
+
+            <h3>全色影像特點</h3>
+            <table>
+                <tr>
+                    <th>特性</th>
+                    <th>說明</th>
+                </tr>
+                <tr>
+                    <td>波段數</td>
+                    <td>單波段（灰階）</td>
+                </tr>
+                <tr>
+                    <td>波長範圍</td>
+                    <td>約 450-900nm（涵蓋可見光至近紅外）</td>
+                </tr>
+                <tr>
+                    <td>空間解析度</td>
+                    <td>通常較高（如 Sentinel-2: 10m, WorldView-3: 0.31m）</td>
+                </tr>
+                <tr>
+                    <td>光譜資訊</td>
+                    <td>無法區分不同波長（無色彩資訊）</td>
+                </tr>
+                <tr>
+                    <td>資料量</td>
+                    <td>較小（單波段）</td>
+                </tr>
+                <tr>
+                    <td>主要用途</td>
+                    <td>地物辨識、幾何製圖、影像配準</td>
+                </tr>
+            </table>
+        </div>
+
+        <h2>多光譜影像 (Multispectral)</h2>
+
+        <div class="card">
+            <p>
+                多光譜影像包含<strong>多個獨立波段</strong>，每個波段記錄特定波長範圍的電磁輻射。
+                這使得多光譜影像能夠捕捉地物的光譜特徵，但通常空間解析度較低。
+            </p>
+
+            <h3>常見衛星多光譜波段</h3>
+            <table>
+                <tr>
+                    <th>波段名稱</th>
+                    <th>波長範圍 (nm)</th>
+                    <th>農業應用</th>
+                </tr>
+                <tr>
+                    <td>藍光 (Blue)</td>
+                    <td>450-520</td>
+                    <td>水體識別、大氣校正</td>
+                </tr>
+                <tr>
+                    <td>綠光 (Green)</td>
+                    <td>520-600</td>
+                    <td>植被活力、葉綠素</td>
+                </tr>
+                <tr>
+                    <td>紅光 (Red)</td>
+                    <td>630-690</td>
+                    <td>葉綠素吸收、植被分類</td>
+                </tr>
+                <tr>
+                    <td>紅邊 (Red Edge)</td>
+                    <td>705-745</td>
+                    <td>植被健康、氮素含量</td>
+                </tr>
+                <tr>
+                    <td>近紅外 (NIR)</td>
+                    <td>760-900</td>
+                    <td>生物量、NDVI 計算</td>
+                </tr>
+                <tr>
+                    <td>短波紅外 (SWIR)</td>
+                    <td>1550-1750</td>
+                    <td>水分含量、作物脅迫</td>
+                </tr>
+            </table>
+        </div>
+
+        <h2>影像融合概念</h2>
+
+        <div class="comparison-grid">
+            <div class="image-box">
+                <div class="image-placeholder pan-placeholder">全色影像 (PAN)</div>
+                <p><strong>高解析度</strong><br>無色彩資訊</p>
+            </div>
+            <div class="image-box">
+                <div class="image-placeholder ms-placeholder">多光譜影像 (MS)</div>
+                <p><strong>豐富光譜</strong><br>解析度較低</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; font-size: 2rem; margin: 20px 0;">
+            ⬇️ 影像融合 (Pan-sharpening) ⬇️
+        </div>
+
+        <div class="image-box" style="max-width: 400px; margin: 0 auto;">
+            <div class="image-placeholder fused-placeholder">融合影像</div>
+            <p><strong>高解析度 + 豐富光譜</strong><br>結合兩者優點</p>
+        </div>
+
+        <h2>常見衛星解析度對比</h2>
+
+        <table>
+            <tr>
+                <th>衛星</th>
+                <th>全色解析度</th>
+                <th>多光譜解析度</th>
+                <th>融合後效果</th>
+            </tr>
+            <tr>
+                <td>Sentinel-2</td>
+                <td>無全色波段</td>
+                <td>10m / 20m / 60m</td>
+                <td>使用超解析度技術</td>
+            </tr>
+            <tr>
+                <td>Landsat-8</td>
+                <td>15m</td>
+                <td>30m</td>
+                <td>15m 多光譜</td>
+            </tr>
+            <tr>
+                <td>SPOT-6/7</td>
+                <td>1.5m</td>
+                <td>6m</td>
+                <td>1.5m 多光譜</td>
+            </tr>
+            <tr>
+                <td>WorldView-3</td>
+                <td>0.31m</td>
+                <td>1.24m</td>
+                <td>0.31m 多光譜</td>
+            </tr>
+            <tr>
+                <td>GeoEye-1</td>
+                <td>0.41m</td>
+                <td>1.65m</td>
+                <td>0.41m 多光譜</td>
+            </tr>
+            <tr>
+                <td>Pléiades</td>
+                <td>0.5m</td>
+                <td>2m</td>
+                <td>0.5m 多光譜</td>
+            </tr>
+        </table>
+
+        <h2>影像融合方法</h2>
+
+        <h3>1. IHS 轉換法 (Intensity-Hue-Saturation)</h3>
+        <div class="card">
+            <p>
+                IHS 方法是最經典的影像融合技術。它將 RGB 影像轉換到 IHS 色彩空間，
+                用全色影像替換強度分量，再轉換回 RGB。
+            </p>
+
+            <h4>處理流程</h4>
+            <ol>
+                <li>將多光譜 RGB 轉換到 IHS 空間</li>
+                <li>將全色影像匹配到強度 (I) 分量的直方圖</li>
+                <li>用全色影像替換 I 分量</li>
+                <li>將新的 IHS 轉換回 RGB</li>
+            </ol>
+
+            <div class="warning">
+                <strong>限制：</strong>IHS 方法只能處理 3 個波段，且可能產生光譜失真。
+            </div>
+        </div>
+
+        <h3>2. Brovey 轉換法</h3>
+        <div class="card">
+            <p>
+                Brovey 方法是一種簡單的比值融合方法，透過將多光譜波段與全色影像相乘，
+                並除以多光譜波段的總和來實現融合。
+            </p>
+
+            <div class="formula">
+                Fused<sub>i</sub> = MS<sub>i</sub> × PAN / Σ MS<sub>j</sub>
+            </div>
+
+            <p>其中 MS<sub>i</sub> 是第 i 個多光譜波段，PAN 是全色影像。</p>
+        </div>
+
+        <h3>3. PCA 轉換法 (Principal Component Analysis)</h3>
+        <div class="card">
+            <p>
+                PCA 方法利用主成分分析，將全色影像替換第一主成分（包含大部分空間資訊），
+                然後進行逆轉換。
+            </p>
+
+            <h4>處理流程</h4>
+            <ol>
+                <li>對多光譜影像進行 PCA 轉換</li>
+                <li>用全色影像替換第一主成分 (PC1)</li>
+                <li>進行逆 PCA 轉換</li>
+            </ol>
+        </div>
+
+        <h3>4. Gram-Schmidt 轉換法</h3>
+        <div class="card">
+            <p>
+                Gram-Schmidt 方法使用多光譜波段的加權平均來模擬全色波段，
+                然後進行 Gram-Schmidt 正交化處理。這種方法能較好地保持光譜特性。
+            </p>
+        </div>
+
+        <h3>5. 小波融合法 (Wavelet)</h3>
+        <div class="card">
+            <p>
+                小波融合使用多解析度分析，將全色影像的高頻細節注入到多光譜影像中，
+                能夠較好地保持光譜資訊。
+            </p>
+        </div>
+
+        <h2>Python 影像融合實作</h2>
+
+        <h3>使用 Rasterio 進行 Brovey 融合</h3>
+<pre><code>import numpy as np
+import rasterio
+from rasterio.enums import Resampling
+
+def brovey_pansharpening(pan_path, ms_path, output_path):
+    """
+    Brovey 影像融合
+
+    Args:
+        pan_path: 全色影像路徑
+        ms_path: 多光譜影像路徑 (RGB)
+        output_path: 融合影像輸出路徑
+    """
+    # 讀取全色影像
+    with rasterio.open(pan_path) as pan_src:
+        pan = pan_src.read(1).astype(np.float32)
+        pan_transform = pan_src.transform
+        pan_crs = pan_src.crs
+        pan_shape = pan.shape
+
+    # 讀取多光譜影像並重採樣到全色解析度
+    with rasterio.open(ms_path) as ms_src:
+        # 計算縮放因子
+        scale_x = pan_shape[1] / ms_src.width
+        scale_y = pan_shape[0] / ms_src.height
+
+        # 重採樣多光譜影像
+        ms_resampled = ms_src.read(
+            out_shape=(ms_src.count, pan_shape[0], pan_shape[1]),
+            resampling=Resampling.bilinear
+        ).astype(np.float32)
+
+    # Brovey 融合
+    # 計算多光譜波段總和
+    ms_sum = np.sum(ms_resampled, axis=0)
+    ms_sum[ms_sum == 0] = 1  # 避免除以零
+
+    # 融合各波段
+    fused = np.zeros_like(ms_resampled)
+    for i in range(ms_resampled.shape[0]):
+        fused[i] = ms_resampled[i] * pan / ms_sum
+
+    # 將值限制在有效範圍內
+    fused = np.clip(fused, 0, 65535).astype(np.uint16)
+
+    # 儲存融合影像
+    profile = {
+        'driver': 'GTiff',
+        'dtype': 'uint16',
+        'width': pan_shape[1],
+        'height': pan_shape[0],
+        'count': ms_resampled.shape[0],
+        'crs': pan_crs,
+        'transform': pan_transform,
+        'compress': 'lzw'
+    }
+
+    with rasterio.open(output_path, 'w', **profile) as dst:
+        dst.write(fused)
+
+    print(f"融合影像已儲存: {output_path}")
+    return fused
+
+
+# 使用範例
+brovey_pansharpening(
+    'landsat_pan_15m.tif',
+    'landsat_rgb_30m.tif',
+    'landsat_fused_15m.tif'
+)</code></pre>
+
+        <h3>IHS 影像融合實作</h3>
+<pre><code>import numpy as np
+import rasterio
+from rasterio.enums import Resampling
+from skimage import exposure
+
+def rgb_to_ihs(rgb):
+    """RGB 轉 IHS"""
+    r, g, b = rgb[0], rgb[1], rgb[2]
+
+    # 計算強度
+    intensity = (r + g + b) / 3.0
+
+    # 計算飽和度
+    min_rgb = np.minimum(np.minimum(r, g), b)
+    saturation = 1 - (3 * min_rgb / (r + g + b + 1e-10))
+
+    # 計算色相
+    num = 0.5 * ((r - g) + (r - b))
+    den = np.sqrt((r - g)**2 + (r - b) * (g - b)) + 1e-10
+    theta = np.arccos(np.clip(num / den, -1, 1))
+
+    hue = np.where(b > g, 2 * np.pi - theta, theta)
+
+    return np.array([intensity, hue, saturation])
+
+
+def ihs_to_rgb(ihs):
+    """IHS 轉 RGB"""
+    i, h, s = ihs[0], ihs[1], ihs[2]
+
+    # 根據色相區域計算 RGB
+    r = np.zeros_like(i)
+    g = np.zeros_like(i)
+    b = np.zeros_like(i)
+
+    # 區域 1: 0 <= H < 2π/3
+    mask1 = (h >= 0) & (h < 2 * np.pi / 3)
+    b[mask1] = i[mask1] * (1 - s[mask1])
+    r[mask1] = i[mask1] * (1 + s[mask1] * np.cos(h[mask1]) /
+                           np.cos(np.pi / 3 - h[mask1]))
+    g[mask1] = 3 * i[mask1] - (r[mask1] + b[mask1])
+
+    # 區域 2: 2π/3 <= H < 4π/3
+    mask2 = (h >= 2 * np.pi / 3) & (h < 4 * np.pi / 3)
+    h2 = h[mask2] - 2 * np.pi / 3
+    r[mask2] = i[mask2] * (1 - s[mask2])
+    g[mask2] = i[mask2] * (1 + s[mask2] * np.cos(h2) /
+                           np.cos(np.pi / 3 - h2))
+    b[mask2] = 3 * i[mask2] - (r[mask2] + g[mask2])
+
+    # 區域 3: 4π/3 <= H < 2π
+    mask3 = (h >= 4 * np.pi / 3) & (h < 2 * np.pi)
+    h3 = h[mask3] - 4 * np.pi / 3
+    g[mask3] = i[mask3] * (1 - s[mask3])
+    b[mask3] = i[mask3] * (1 + s[mask3] * np.cos(h3) /
+                           np.cos(np.pi / 3 - h3))
+    r[mask3] = 3 * i[mask3] - (g[mask3] + b[mask3])
+
+    return np.array([r, g, b])
+
+
+def ihs_pansharpening(pan_path, ms_path, output_path):
+    """
+    IHS 影像融合
+
+    Args:
+        pan_path: 全色影像路徑
+        ms_path: 多光譜影像路徑 (RGB)
+        output_path: 融合影像輸出路徑
+    """
+    # 讀取全色影像
+    with rasterio.open(pan_path) as pan_src:
+        pan = pan_src.read(1).astype(np.float32)
+        pan_transform = pan_src.transform
+        pan_crs = pan_src.crs
+        pan_shape = pan.shape
+
+    # 讀取並重採樣多光譜影像
+    with rasterio.open(ms_path) as ms_src:
+        ms_resampled = ms_src.read(
+            out_shape=(3, pan_shape[0], pan_shape[1]),
+            resampling=Resampling.bilinear
+        ).astype(np.float32)
+
+    # 正規化到 0-1
+    pan_norm = (pan - pan.min()) / (pan.max() - pan.min() + 1e-10)
+    ms_norm = np.zeros_like(ms_resampled)
+    for i in range(3):
+        ms_norm[i] = (ms_resampled[i] - ms_resampled[i].min()) / \
+                     (ms_resampled[i].max() - ms_resampled[i].min() + 1e-10)
+
+    # RGB 轉 IHS
+    ihs = rgb_to_ihs(ms_norm)
+
+    # 直方圖匹配：將全色影像匹配到原始強度分量
+    pan_matched = exposure.match_histograms(pan_norm, ihs[0])
+
+    # 用全色影像替換強度分量
+    ihs[0] = pan_matched
+
+    # IHS 轉回 RGB
+    fused_norm = ihs_to_rgb(ihs)
+
+    # 轉換回原始資料範圍
+    fused = np.zeros_like(ms_resampled)
+    for i in range(3):
+        fused[i] = fused_norm[i] * (ms_resampled[i].max() - ms_resampled[i].min()) + \
+                   ms_resampled[i].min()
+
+    fused = np.clip(fused, 0, 65535).astype(np.uint16)
+
+    # 儲存
+    profile = {
+        'driver': 'GTiff',
+        'dtype': 'uint16',
+        'width': pan_shape[1],
+        'height': pan_shape[0],
+        'count': 3,
+        'crs': pan_crs,
+        'transform': pan_transform,
+        'compress': 'lzw'
+    }
+
+    with rasterio.open(output_path, 'w', **profile) as dst:
+        dst.write(fused)
+
+    print(f"IHS 融合影像已儲存: {output_path}")
+    return fused</code></pre>
+
+        <h3>小波融合實作</h3>
+<pre><code>import numpy as np
+import pywt
+import rasterio
+from rasterio.enums import Resampling
+
+def wavelet_pansharpening(pan_path, ms_path, output_path, wavelet='db4', level=2):
+    """
+    小波影像融合
+
+    Args:
+        pan_path: 全色影像路徑
+        ms_path: 多光譜影像路徑
+        output_path: 融合影像輸出路徑
+        wavelet: 小波基底 (如 'db4', 'haar', 'sym4')
+        level: 分解層數
+    """
+    # 讀取全色影像
+    with rasterio.open(pan_path) as pan_src:
+        pan = pan_src.read(1).astype(np.float32)
+        pan_transform = pan_src.transform
+        pan_crs = pan_src.crs
+        pan_shape = pan.shape
+
+    # 讀取並重採樣多光譜影像
+    with rasterio.open(ms_path) as ms_src:
+        num_bands = ms_src.count
+        ms_resampled = ms_src.read(
+            out_shape=(num_bands, pan_shape[0], pan_shape[1]),
+            resampling=Resampling.bilinear
+        ).astype(np.float32)
+
+    # 對全色影像進行小波分解
+    pan_coeffs = pywt.wavedec2(pan, wavelet, level=level)
+
+    fused = np.zeros_like(ms_resampled)
+
+    # 對每個多光譜波段進行融合
+    for band_idx in range(num_bands):
+        ms_band = ms_resampled[band_idx]
+
+        # 對多光譜波段進行小波分解
+        ms_coeffs = pywt.wavedec2(ms_band, wavelet, level=level)
+
+        # 融合係數：保留多光譜的低頻（光譜資訊）和全色的高頻（空間細節）
+        fused_coeffs = [ms_coeffs[0]]  # 保留多光譜的近似係數
+
+        # 融合高頻細節係數
+        for j in range(1, len(pan_coeffs)):
+            # pan_coeffs[j] 是 (LH, HL, HH) 元組
+            fused_detail = []
+            for k in range(3):  # LH, HL, HH
+                # 使用最大值選擇或加權平均
+                # 這裡使用加權融合，保留更多全色影像的細節
+                fused_coeff = 0.3 * ms_coeffs[j][k] + 0.7 * pan_coeffs[j][k]
+                fused_detail.append(fused_coeff)
+            fused_coeffs.append(tuple(fused_detail))
+
+        # 小波重建
+        fused[band_idx] = pywt.waverec2(fused_coeffs, wavelet)
+
+        # 確保尺寸正確
+        if fused[band_idx].shape != pan_shape:
+            fused[band_idx] = fused[band_idx][:pan_shape[0], :pan_shape[1]]
+
+    # 限制值範圍
+    fused = np.clip(fused, 0, 65535).astype(np.uint16)
+
+    # 儲存
+    profile = {
+        'driver': 'GTiff',
+        'dtype': 'uint16',
+        'width': pan_shape[1],
+        'height': pan_shape[0],
+        'count': num_bands,
+        'crs': pan_crs,
+        'transform': pan_transform,
+        'compress': 'lzw'
+    }
+
+    with rasterio.open(output_path, 'w', **profile) as dst:
+        dst.write(fused)
+
+    print(f"小波融合影像已儲存: {output_path}")
+    return fused
+
+
+# 使用範例
+wavelet_pansharpening(
+    'worldview_pan_0.5m.tif',
+    'worldview_ms_2m.tif',
+    'worldview_fused_0.5m.tif',
+    wavelet='db4',
+    level=3
+)</code></pre>
+
+        <h2>融合品質評估</h2>
+
+        <div class="card">
+            <h3>常用評估指標</h3>
+            <table>
+                <tr>
+                    <th>指標</th>
+                    <th>全名</th>
+                    <th>說明</th>
+                    <th>理想值</th>
+                </tr>
+                <tr>
+                    <td>CC</td>
+                    <td>Correlation Coefficient</td>
+                    <td>與原始影像的相關性</td>
+                    <td>→ 1</td>
+                </tr>
+                <tr>
+                    <td>RMSE</td>
+                    <td>Root Mean Square Error</td>
+                    <td>均方根誤差</td>
+                    <td>→ 0</td>
+                </tr>
+                <tr>
+                    <td>SAM</td>
+                    <td>Spectral Angle Mapper</td>
+                    <td>光譜角度差異</td>
+                    <td>→ 0</td>
+                </tr>
+                <tr>
+                    <td>ERGAS</td>
+                    <td>Erreur Relative Globale</td>
+                    <td>相對全域誤差</td>
+                    <td>→ 0</td>
+                </tr>
+                <tr>
+                    <td>Q4/Q8</td>
+                    <td>Universal Image Quality Index</td>
+                    <td>通用影像品質指標</td>
+                    <td>→ 1</td>
+                </tr>
+                <tr>
+                    <td>SSIM</td>
+                    <td>Structural Similarity</td>
+                    <td>結構相似度</td>
+                    <td>→ 1</td>
+                </tr>
+            </table>
+        </div>
+
+        <h3>品質評估程式碼</h3>
+<pre><code>import numpy as np
+from skimage.metrics import structural_similarity as ssim
+
+def calculate_fusion_metrics(original_ms, fused_ms):
+    """
+    計算影像融合品質指標
+
+    Args:
+        original_ms: 原始多光譜影像 (bands, height, width)
+        fused_ms: 融合後影像（降取樣到原始解析度比較）
+
+    Returns:
+        dict: 各項品質指標
+    """
+    metrics = {}
+    num_bands = original_ms.shape[0]
+
+    # 1. 相關係數 (CC)
+    cc_values = []
+    for i in range(num_bands):
+        orig = original_ms[i].flatten()
+        fuse = fused_ms[i].flatten()
+        cc = np.corrcoef(orig, fuse)[0, 1]
+        cc_values.append(cc)
+    metrics['CC_mean'] = np.mean(cc_values)
+    metrics['CC_per_band'] = cc_values
+
+    # 2. 均方根誤差 (RMSE)
+    rmse_values = []
+    for i in range(num_bands):
+        diff = original_ms[i] - fused_ms[i]
+        rmse = np.sqrt(np.mean(diff ** 2))
+        rmse_values.append(rmse)
+    metrics['RMSE_mean'] = np.mean(rmse_values)
+    metrics['RMSE_per_band'] = rmse_values
+
+    # 3. 光譜角度 (SAM)
+    sam_values = []
+    for h in range(original_ms.shape[1]):
+        for w in range(original_ms.shape[2]):
+            orig_vec = original_ms[:, h, w]
+            fuse_vec = fused_ms[:, h, w]
+
+            # 計算向量夾角
+            dot_product = np.dot(orig_vec, fuse_vec)
+            norm_orig = np.linalg.norm(orig_vec)
+            norm_fuse = np.linalg.norm(fuse_vec)
+
+            if norm_orig > 0 and norm_fuse > 0:
+                cos_angle = dot_product / (norm_orig * norm_fuse)
+                cos_angle = np.clip(cos_angle, -1, 1)
+                angle = np.arccos(cos_angle)
+                sam_values.append(np.degrees(angle))
+
+    metrics['SAM_mean'] = np.mean(sam_values)
+
+    # 4. ERGAS (Erreur Relative Globale Adimensionnelle de Synthèse)
+    ratio = 4  # 假設解析度比例
+    ergas_sum = 0
+    for i in range(num_bands):
+        rmse = rmse_values[i]
+        mean_val = np.mean(original_ms[i])
+        if mean_val > 0:
+            ergas_sum += (rmse / mean_val) ** 2
+    metrics['ERGAS'] = 100 / ratio * np.sqrt(ergas_sum / num_bands)
+
+    # 5. SSIM
+    ssim_values = []
+    for i in range(num_bands):
+        # 確保資料範圍正確
+        orig = original_ms[i].astype(np.float64)
+        fuse = fused_ms[i].astype(np.float64)
+        data_range = max(orig.max(), fuse.max()) - min(orig.min(), fuse.min())
+        ssim_val = ssim(orig, fuse, data_range=data_range)
+        ssim_values.append(ssim_val)
+    metrics['SSIM_mean'] = np.mean(ssim_values)
+    metrics['SSIM_per_band'] = ssim_values
+
+    return metrics
+
+
+# 使用範例
+# metrics = calculate_fusion_metrics(original_ms, fused_downsampled)
+# print("融合品質評估:")
+# print(f"  CC (相關係數): {metrics['CC_mean']:.4f}")
+# print(f"  RMSE: {metrics['RMSE_mean']:.2f}")
+# print(f"  SAM (度): {metrics['SAM_mean']:.2f}")
+# print(f"  ERGAS: {metrics['ERGAS']:.2f}")
+# print(f"  SSIM: {metrics['SSIM_mean']:.4f}")</code></pre>
+
+        <h2>農業應用場景</h2>
+
+        <div class="tip">
+            <strong>高解析度作物監測：</strong>
+            <ul>
+                <li>使用融合影像可以獲得更精細的田區邊界</li>
+                <li>識別作物行間的雜草</li>
+                <li>早期發現局部病蟲害區域</li>
+                <li>精準農業的變量施肥決策</li>
+            </ul>
+        </div>
+
+        <div class="warning">
+            <strong>注意事項：</strong>
+            <ul>
+                <li>融合可能導致光譜失真，不適用於嚴格的光譜分析</li>
+                <li>計算 NDVI 等指數時，應評估融合對光譜的影響</li>
+                <li>對於定量遙感應用，需要進行光譜保真度驗證</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>延伸學習資源</h3>
+            <ul>
+                <li><a href="https://github.com/up42/pansharpening" target="_blank">Pan-sharpening Python 工具</a></li>
+                <li><a href="https://rasterio.readthedocs.io/" target="_blank">Rasterio 文件</a></li>
+                <li>論文：A Comprehensive Review of Pansharpening Algorithms</li>
+                <li>GDAL 工具：gdal_pansharpen.py</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        }
+
+        (function() {
+            if (localStorage.getItem('theme') === 'light') {
+                document.body.classList.add('light-mode');
+            }
+        })();
+    </script>
+</body>
+</html>

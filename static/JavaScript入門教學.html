@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript 入門教學</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #f7df1e, #e4c700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a0aec0;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h2 {
+            color: #f7df1e;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(247, 223, 30, 0.3);
+        }
+
+        h3 {
+            color: #63b3ed;
+            font-size: 1.2rem;
+            margin: 25px 0 15px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #cbd5e0;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+            border: 1px solid #30363d;
+        }
+
+        .code-block code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: #e6edf3;
+            white-space: pre;
+        }
+
+        .keyword { color: #ff7b72; }
+        .string { color: #a5d6ff; }
+        .number { color: #79c0ff; }
+        .function { color: #d2a8ff; }
+        .comment { color: #8b949e; }
+        .variable { color: #ffa657; }
+
+        .tip-box {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.1), rgba(99, 179, 237, 0.1));
+            border-left: 4px solid #4fd1c5;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .tip-box strong {
+            color: #4fd1c5;
+        }
+
+        .warning-box {
+            background: rgba(237, 137, 54, 0.1);
+            border-left: 4px solid #ed8936;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box strong {
+            color: #ed8936;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(247, 223, 30, 0.2);
+            color: #f7df1e;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .card h4 {
+            color: #f7df1e;
+            margin-bottom: 15px;
+        }
+
+        .home-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #f7df1e, #e4c700);
+            color: #1a1a2e;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(247, 223, 30, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(247, 223, 30, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ JavaScript 入門教學</h1>
+        <p class="subtitle">讓網頁動起來的程式語言</p>
+
+        <!-- 什麼是 JavaScript -->
+        <div class="section">
+            <h2>📚 什麼是 JavaScript？</h2>
+            <p>JavaScript 是網頁的程式語言，讓網頁能夠與使用者互動、動態更新內容、處理表單驗證等。</p>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h4>🖱️ 互動功能</h4>
+                    <p>點擊按鈕、表單驗證、彈出視窗</p>
+                </div>
+                <div class="card">
+                    <h4>🔄 動態更新</h4>
+                    <p>不重新整理頁面就更新內容</p>
+                </div>
+                <div class="card">
+                    <h4>🌐 API 通訊</h4>
+                    <p>從後端取得資料</p>
+                </div>
+                <div class="card">
+                    <h4>🎨 動畫效果</h4>
+                    <p>建立流暢的視覺效果</p>
+                </div>
+            </div>
+
+            <h3>JavaScript 加入網頁</h3>
+            <div class="code-block">
+<code><span class="comment">&lt;!-- 1. 內部腳本 --&gt;</span>
+&lt;script&gt;
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Hello World!'</span>);
+&lt;/script&gt;
+
+<span class="comment">&lt;!-- 2. 外部腳本（推薦！放在 body 結尾前）--&gt;</span>
+&lt;script src=<span class="string">"script.js"</span>&gt;&lt;/script&gt;</code>
+            </div>
+        </div>
+
+        <!-- 變數 -->
+        <div class="section">
+            <h2>📦 變數宣告</h2>
+
+            <div class="code-block">
+<code><span class="comment">// let - 可重新賦值的變數（推薦使用）</span>
+<span class="keyword">let</span> <span class="variable">temperature</span> = <span class="number">25</span>;
+<span class="variable">temperature</span> = <span class="number">30</span>;  <span class="comment">// 可以改變</span>
+
+<span class="comment">// const - 常數，不可重新賦值</span>
+<span class="keyword">const</span> <span class="variable">PI</span> = <span class="number">3.14159</span>;
+<span class="comment">// PI = 3;  // 錯誤！常數不能改變</span>
+
+<span class="comment">// var - 舊式宣告（不建議使用）</span>
+<span class="keyword">var</span> <span class="variable">oldStyle</span> = <span class="string">'避免使用'</span>;</code>
+            </div>
+
+            <h3>資料型態</h3>
+            <table>
+                <tr>
+                    <th>型態</th>
+                    <th>範例</th>
+                    <th>說明</th>
+                </tr>
+                <tr>
+                    <td>Number</td>
+                    <td><code>42, 3.14, -10</code></td>
+                    <td>數字（整數或小數）</td>
+                </tr>
+                <tr>
+                    <td>String</td>
+                    <td><code>'Hello', "World", `模板`</code></td>
+                    <td>文字字串</td>
+                </tr>
+                <tr>
+                    <td>Boolean</td>
+                    <td><code>true, false</code></td>
+                    <td>布林值</td>
+                </tr>
+                <tr>
+                    <td>Array</td>
+                    <td><code>[1, 2, 3]</code></td>
+                    <td>陣列</td>
+                </tr>
+                <tr>
+                    <td>Object</td>
+                    <td><code>{name: 'Tom', age: 20}</code></td>
+                    <td>物件</td>
+                </tr>
+                <tr>
+                    <td>null</td>
+                    <td><code>null</code></td>
+                    <td>空值</td>
+                </tr>
+                <tr>
+                    <td>undefined</td>
+                    <td><code>undefined</code></td>
+                    <td>未定義</td>
+                </tr>
+            </table>
+
+            <div class="code-block">
+<code><span class="comment">// 字串模板（推薦！）</span>
+<span class="keyword">const</span> <span class="variable">temp</span> = <span class="number">25</span>;
+<span class="keyword">const</span> <span class="variable">humidity</span> = <span class="number">60</span>;
+<span class="keyword">const</span> <span class="variable">message</span> = <span class="string">`目前溫度 ${temp}°C，濕度 ${humidity}%`</span>;
+
+<span class="comment">// 陣列</span>
+<span class="keyword">const</span> <span class="variable">crops</span> = [<span class="string">'水稻'</span>, <span class="string">'玉米'</span>, <span class="string">'小麥'</span>];
+<span class="function">console</span>.<span class="function">log</span>(<span class="variable">crops</span>[<span class="number">0</span>]);  <span class="comment">// '水稻'</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="variable">crops</span>.length);  <span class="comment">// 3</span>
+
+<span class="comment">// 物件</span>
+<span class="keyword">const</span> <span class="variable">sensor</span> = {
+    <span class="variable">type</span>: <span class="string">'溫度感測器'</span>,
+    <span class="variable">value</span>: <span class="number">25.5</span>,
+    <span class="variable">unit</span>: <span class="string">'°C'</span>,
+    <span class="variable">isActive</span>: <span class="keyword">true</span>
+};
+<span class="function">console</span>.<span class="function">log</span>(<span class="variable">sensor</span>.value);  <span class="comment">// 25.5</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="variable">sensor</span>[<span class="string">'type'</span>]);  <span class="comment">// '溫度感測器'</span></code>
+            </div>
+        </div>
+
+        <!-- 運算子 -->
+        <div class="section">
+            <h2>🔢 運算子</h2>
+
+            <div class="code-block">
+<code><span class="comment">// 算術運算子</span>
+<span class="keyword">let</span> <span class="variable">a</span> = <span class="number">10</span>, <span class="variable">b</span> = <span class="number">3</span>;
+<span class="function">console</span>.<span class="function">log</span>(<span class="variable">a</span> + <span class="variable">b</span>);  <span class="comment">// 13</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="variable">a</span> - <span class="variable">b</span>);  <span class="comment">// 7</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="variable">a</span> * <span class="variable">b</span>);  <span class="comment">// 30</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="variable">a</span> / <span class="variable">b</span>);  <span class="comment">// 3.333...</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="variable">a</span> % <span class="variable">b</span>);  <span class="comment">// 1 (餘數)</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="variable">a</span> ** <span class="variable">b</span>); <span class="comment">// 1000 (次方)</span>
+
+<span class="comment">// 比較運算子</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="number">5</span> == <span class="string">'5'</span>);   <span class="comment">// true（只比較值）</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="number">5</span> === <span class="string">'5'</span>);  <span class="comment">// false（比較值和型態，推薦！）</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="number">5</span> !== <span class="number">3</span>);   <span class="comment">// true</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="number">5</span> > <span class="number">3</span>);     <span class="comment">// true</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="number">5</span> >= <span class="number">5</span>);    <span class="comment">// true</span>
+
+<span class="comment">// 邏輯運算子</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="keyword">true</span> && <span class="keyword">false</span>);  <span class="comment">// false (且)</span>
+<span class="function">console</span>.<span class="function">log</span>(<span class="keyword">true</span> || <span class="keyword">false</span>);  <span class="comment">// true (或)</span>
+<span class="function">console</span>.<span class="function">log</span>(!<span class="keyword">true</span>);          <span class="comment">// false (非)</span></code>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ 請用 === 而非 ==</strong><br>
+                <code>===</code> 會同時比較值和型態，更加安全。<br>
+                例如：<code>5 == '5'</code> 是 true，但 <code>5 === '5'</code> 是 false
+            </div>
+        </div>
+
+        <!-- 條件判斷 -->
+        <div class="section">
+            <h2">🔀 條件判斷</h2>
+
+            <div class="code-block">
+<code><span class="keyword">const</span> <span class="variable">temperature</span> = <span class="number">28</span>;
+
+<span class="comment">// if...else</span>
+<span class="keyword">if</span> (<span class="variable">temperature</span> > <span class="number">35</span>) {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'溫度過高！需要降溫'</span>);
+} <span class="keyword">else if</span> (<span class="variable">temperature</span> > <span class="number">25</span>) {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'溫度適中'</span>);
+} <span class="keyword">else</span> {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'溫度偏低'</span>);
+}
+
+<span class="comment">// 三元運算子（簡潔寫法）</span>
+<span class="keyword">const</span> <span class="variable">status</span> = <span class="variable">temperature</span> > <span class="number">30</span> ? <span class="string">'過熱'</span> : <span class="string">'正常'</span>;
+
+<span class="comment">// switch</span>
+<span class="keyword">const</span> <span class="variable">sensorType</span> = <span class="string">'temperature'</span>;
+<span class="keyword">switch</span> (<span class="variable">sensorType</span>) {
+    <span class="keyword">case</span> <span class="string">'temperature'</span>:
+        <span class="function">console</span>.<span class="function">log</span>(<span class="string">'溫度感測器'</span>);
+        <span class="keyword">break</span>;
+    <span class="keyword">case</span> <span class="string">'humidity'</span>:
+        <span class="function">console</span>.<span class="function">log</span>(<span class="string">'濕度感測器'</span>);
+        <span class="keyword">break</span>;
+    <span class="keyword">default</span>:
+        <span class="function">console</span>.<span class="function">log</span>(<span class="string">'未知類型'</span>);
+}</code>
+            </div>
+        </div>
+
+        <!-- 迴圈 -->
+        <div class="section">
+            <h2>🔁 迴圈</h2>
+
+            <div class="code-block">
+<code><span class="keyword">const</span> <span class="variable">sensors</span> = [<span class="string">'溫度'</span>, <span class="string">'濕度'</span>, <span class="string">'光照'</span>, <span class="string">'土壤'</span>];
+
+<span class="comment">// for 迴圈</span>
+<span class="keyword">for</span> (<span class="keyword">let</span> <span class="variable">i</span> = <span class="number">0</span>; <span class="variable">i</span> < <span class="variable">sensors</span>.length; <span class="variable">i</span>++) {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="variable">sensors</span>[<span class="variable">i</span>]);
+}
+
+<span class="comment">// for...of（推薦！遍歷陣列元素）</span>
+<span class="keyword">for</span> (<span class="keyword">const</span> <span class="variable">sensor</span> <span class="keyword">of</span> <span class="variable">sensors</span>) {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="variable">sensor</span>);
+}
+
+<span class="comment">// for...in（遍歷物件屬性）</span>
+<span class="keyword">const</span> <span class="variable">data</span> = { temp: <span class="number">25</span>, humidity: <span class="number">60</span> };
+<span class="keyword">for</span> (<span class="keyword">const</span> <span class="variable">key</span> <span class="keyword">in</span> <span class="variable">data</span>) {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">`${key}: ${data[key]}`</span>);
+}
+
+<span class="comment">// forEach（陣列方法）</span>
+<span class="variable">sensors</span>.<span class="function">forEach</span>((<span class="variable">sensor</span>, <span class="variable">index</span>) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">`${index + 1}. ${sensor}`</span>);
+});
+
+<span class="comment">// while 迴圈</span>
+<span class="keyword">let</span> <span class="variable">count</span> = <span class="number">0</span>;
+<span class="keyword">while</span> (<span class="variable">count</span> < <span class="number">3</span>) {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="variable">count</span>);
+    <span class="variable">count</span>++;
+}</code>
+            </div>
+        </div>
+
+        <!-- 函式 -->
+        <div class="section">
+            <h2>⚙️ 函式</h2>
+
+            <div class="code-block">
+<code><span class="comment">// 函式宣告</span>
+<span class="keyword">function</span> <span class="function">checkTemperature</span>(<span class="variable">temp</span>) {
+    <span class="keyword">if</span> (<span class="variable">temp</span> > <span class="number">35</span>) {
+        <span class="keyword">return</span> <span class="string">'過熱'</span>;
+    } <span class="keyword">else if</span> (<span class="variable">temp</span> > <span class="number">20</span>) {
+        <span class="keyword">return</span> <span class="string">'適中'</span>;
+    } <span class="keyword">else</span> {
+        <span class="keyword">return</span> <span class="string">'偏冷'</span>;
+    }
+}
+<span class="function">console</span>.<span class="function">log</span>(<span class="function">checkTemperature</span>(<span class="number">28</span>));  <span class="comment">// '適中'</span>
+
+<span class="comment">// 箭頭函式（推薦！更簡潔）</span>
+<span class="keyword">const</span> <span class="function">add</span> = (<span class="variable">a</span>, <span class="variable">b</span>) => <span class="variable">a</span> + <span class="variable">b</span>;
+<span class="function">console</span>.<span class="function">log</span>(<span class="function">add</span>(<span class="number">5</span>, <span class="number">3</span>));  <span class="comment">// 8</span>
+
+<span class="comment">// 多行箭頭函式</span>
+<span class="keyword">const</span> <span class="function">getSensorStatus</span> = (<span class="variable">value</span>, <span class="variable">threshold</span>) => {
+    <span class="keyword">if</span> (<span class="variable">value</span> > <span class="variable">threshold</span>) {
+        <span class="keyword">return</span> { status: <span class="string">'warning'</span>, message: <span class="string">'超過閾值'</span> };
+    }
+    <span class="keyword">return</span> { status: <span class="string">'normal'</span>, message: <span class="string">'正常'</span> };
+};
+
+<span class="comment">// 預設參數</span>
+<span class="keyword">const</span> <span class="function">greet</span> = (<span class="variable">name</span> = <span class="string">'農友'</span>) => <span class="string">`你好，${name}！`</span>;
+<span class="function">console</span>.<span class="function">log</span>(<span class="function">greet</span>());  <span class="comment">// '你好，農友！'</span></code>
+            </div>
+        </div>
+
+        <!-- DOM 操作 -->
+        <div class="section">
+            <h2>🎮 DOM 操作</h2>
+            <p>DOM (Document Object Model) 讓 JavaScript 可以操作 HTML 元素。</p>
+
+            <h3>選取元素</h3>
+            <div class="code-block">
+<code><span class="comment">// 用 ID 選取（回傳單一元素）</span>
+<span class="keyword">const</span> <span class="variable">title</span> = document.<span class="function">getElementById</span>(<span class="string">'main-title'</span>);
+
+<span class="comment">// 用 CSS 選擇器選取（回傳第一個符合的）</span>
+<span class="keyword">const</span> <span class="variable">card</span> = document.<span class="function">querySelector</span>(<span class="string">'.sensor-card'</span>);
+
+<span class="comment">// 用 CSS 選擇器選取所有符合的（回傳 NodeList）</span>
+<span class="keyword">const</span> <span class="variable">allCards</span> = document.<span class="function">querySelectorAll</span>(<span class="string">'.sensor-card'</span>);
+
+<span class="comment">// 遍歷所有元素</span>
+<span class="variable">allCards</span>.<span class="function">forEach</span>(<span class="variable">card</span> => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="variable">card</span>.textContent);
+});</code>
+            </div>
+
+            <h3>修改元素</h3>
+            <div class="code-block">
+<code><span class="keyword">const</span> <span class="variable">tempDisplay</span> = document.<span class="function">getElementById</span>(<span class="string">'temp-value'</span>);
+
+<span class="comment">// 修改文字內容</span>
+<span class="variable">tempDisplay</span>.textContent = <span class="string">'28°C'</span>;
+
+<span class="comment">// 修改 HTML 內容</span>
+<span class="variable">tempDisplay</span>.innerHTML = <span class="string">'&lt;strong&gt;28&lt;/strong&gt;°C'</span>;
+
+<span class="comment">// 修改樣式</span>
+<span class="variable">tempDisplay</span>.style.color = <span class="string">'#ff0000'</span>;
+<span class="variable">tempDisplay</span>.style.fontSize = <span class="string">'24px'</span>;
+
+<span class="comment">// 修改 class</span>
+<span class="variable">tempDisplay</span>.classList.<span class="function">add</span>(<span class="string">'warning'</span>);
+<span class="variable">tempDisplay</span>.classList.<span class="function">remove</span>(<span class="string">'normal'</span>);
+<span class="variable">tempDisplay</span>.classList.<span class="function">toggle</span>(<span class="string">'active'</span>);
+
+<span class="comment">// 修改屬性</span>
+<span class="keyword">const</span> <span class="variable">img</span> = document.<span class="function">querySelector</span>(<span class="string">'img'</span>);
+<span class="variable">img</span>.<span class="function">setAttribute</span>(<span class="string">'src'</span>, <span class="string">'new-image.jpg'</span>);
+<span class="variable">img</span>.alt = <span class="string">'新圖片說明'</span>;</code>
+            </div>
+
+            <h3>建立與移除元素</h3>
+            <div class="code-block">
+<code><span class="comment">// 建立新元素</span>
+<span class="keyword">const</span> <span class="variable">newCard</span> = document.<span class="function">createElement</span>(<span class="string">'div'</span>);
+<span class="variable">newCard</span>.className = <span class="string">'sensor-card'</span>;
+<span class="variable">newCard</span>.innerHTML = <span class="string">`
+    &lt;h3&gt;新感測器&lt;/h3&gt;
+    &lt;p&gt;數值: 100&lt;/p&gt;
+`</span>;
+
+<span class="comment">// 加入到頁面</span>
+<span class="keyword">const</span> <span class="variable">container</span> = document.<span class="function">getElementById</span>(<span class="string">'sensor-container'</span>);
+<span class="variable">container</span>.<span class="function">appendChild</span>(<span class="variable">newCard</span>);
+
+<span class="comment">// 移除元素</span>
+<span class="variable">newCard</span>.<span class="function">remove</span>();</code>
+            </div>
+        </div>
+
+        <!-- 事件處理 -->
+        <div class="section">
+            <h2>🖱️ 事件處理</h2>
+
+            <div class="code-block">
+<code><span class="keyword">const</span> <span class="variable">button</span> = document.<span class="function">getElementById</span>(<span class="string">'irrigate-btn'</span>);
+
+<span class="comment">// 點擊事件</span>
+<span class="variable">button</span>.<span class="function">addEventListener</span>(<span class="string">'click'</span>, () => {
+    <span class="function">alert</span>(<span class="string">'開始灌溉！'</span>);
+});
+
+<span class="comment">// 帶有事件物件</span>
+<span class="variable">button</span>.<span class="function">addEventListener</span>(<span class="string">'click'</span>, (<span class="variable">event</span>) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'點擊位置:'</span>, <span class="variable">event</span>.clientX, <span class="variable">event</span>.clientY);
+    <span class="variable">event</span>.target.textContent = <span class="string">'已啟動'</span>;
+});
+
+<span class="comment">// 輸入事件</span>
+<span class="keyword">const</span> <span class="variable">input</span> = document.<span class="function">getElementById</span>(<span class="string">'threshold-input'</span>);
+<span class="variable">input</span>.<span class="function">addEventListener</span>(<span class="string">'input'</span>, (<span class="variable">e</span>) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'輸入值:'</span>, <span class="variable">e</span>.target.value);
+});
+
+<span class="comment">// 表單提交</span>
+<span class="keyword">const</span> <span class="variable">form</span> = document.<span class="function">getElementById</span>(<span class="string">'settings-form'</span>);
+<span class="variable">form</span>.<span class="function">addEventListener</span>(<span class="string">'submit'</span>, (<span class="variable">e</span>) => {
+    <span class="variable">e</span>.<span class="function">preventDefault</span>();  <span class="comment">// 阻止表單預設提交行為</span>
+    <span class="keyword">const</span> <span class="variable">formData</span> = <span class="keyword">new</span> <span class="function">FormData</span>(<span class="variable">form</span>);
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'表單資料:'</span>, Object.<span class="function">fromEntries</span>(<span class="variable">formData</span>));
+});</code>
+            </div>
+
+            <h3>常用事件類型</h3>
+            <table>
+                <tr>
+                    <th>事件</th>
+                    <th>說明</th>
+                </tr>
+                <tr><td>click</td><td>點擊</td></tr>
+                <tr><td>dblclick</td><td>雙擊</td></tr>
+                <tr><td>mouseover / mouseout</td><td>滑鼠移入/移出</td></tr>
+                <tr><td>input</td><td>輸入框內容改變</td></tr>
+                <tr><td>change</td><td>輸入框失焦且值改變</td></tr>
+                <tr><td>submit</td><td>表單提交</td></tr>
+                <tr><td>keydown / keyup</td><td>鍵盤按下/放開</td></tr>
+                <tr><td>load</td><td>頁面載入完成</td></tr>
+            </table>
+        </div>
+
+        <!-- Fetch API -->
+        <div class="section">
+            <h2>🌐 Fetch API（取得後端資料）</h2>
+
+            <div class="code-block">
+<code><span class="comment">// GET 請求</span>
+<span class="function">fetch</span>(<span class="string">'/api/sensors'</span>)
+    .<span class="function">then</span>(<span class="variable">response</span> => <span class="variable">response</span>.<span class="function">json</span>())
+    .<span class="function">then</span>(<span class="variable">data</span> => {
+        <span class="function">console</span>.<span class="function">log</span>(<span class="string">'感測器資料:'</span>, <span class="variable">data</span>);
+    })
+    .<span class="function">catch</span>(<span class="variable">error</span> => {
+        <span class="function">console</span>.<span class="function">error</span>(<span class="string">'錯誤:'</span>, <span class="variable">error</span>);
+    });
+
+<span class="comment">// 使用 async/await（推薦！更易讀）</span>
+<span class="keyword">async function</span> <span class="function">getSensorData</span>() {
+    <span class="keyword">try</span> {
+        <span class="keyword">const</span> <span class="variable">response</span> = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'/api/sensors'</span>);
+        <span class="keyword">const</span> <span class="variable">data</span> = <span class="keyword">await</span> <span class="variable">response</span>.<span class="function">json</span>();
+        <span class="function">console</span>.<span class="function">log</span>(<span class="variable">data</span>);
+        <span class="keyword">return</span> <span class="variable">data</span>;
+    } <span class="keyword">catch</span> (<span class="variable">error</span>) {
+        <span class="function">console</span>.<span class="function">error</span>(<span class="string">'錯誤:'</span>, <span class="variable">error</span>);
+    }
+}
+
+<span class="comment">// POST 請求</span>
+<span class="keyword">async function</span> <span class="function">sendCommand</span>(<span class="variable">command</span>) {
+    <span class="keyword">const</span> <span class="variable">response</span> = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'/api/control'</span>, {
+        method: <span class="string">'POST'</span>,
+        headers: {
+            <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span>
+        },
+        body: JSON.<span class="function">stringify</span>({ action: <span class="variable">command</span> })
+    });
+    <span class="keyword">return</span> <span class="variable">response</span>.<span class="function">json</span>();
+}</code>
+            </div>
+        </div>
+
+        <!-- 定時器 -->
+        <div class="section">
+            <h2>⏱️ 定時器</h2>
+
+            <div class="code-block">
+<code><span class="comment">// setTimeout - 延遲執行一次</span>
+<span class="function">setTimeout</span>(() => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'3 秒後執行'</span>);
+}, <span class="number">3000</span>);  <span class="comment">// 3000 毫秒 = 3 秒</span>
+
+<span class="comment">// setInterval - 每隔一段時間重複執行</span>
+<span class="keyword">let</span> <span class="variable">intervalId</span> = <span class="function">setInterval</span>(() => {
+    <span class="function">updateSensorDisplay</span>();
+}, <span class="number">5000</span>);  <span class="comment">// 每 5 秒更新一次</span>
+
+<span class="comment">// 停止定時器</span>
+<span class="function">clearInterval</span>(<span class="variable">intervalId</span>);
+
+<span class="comment">// 實際應用：即時更新感測器數據</span>
+<span class="keyword">async function</span> <span class="function">startRealTimeUpdate</span>() {
+    <span class="keyword">const</span> <span class="function">updateDisplay</span> = <span class="keyword">async</span> () => {
+        <span class="keyword">const</span> <span class="variable">data</span> = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'/api/sensors'</span>).<span class="function">then</span>(<span class="variable">r</span> => <span class="variable">r</span>.<span class="function">json</span>());
+        document.<span class="function">getElementById</span>(<span class="string">'temp'</span>).textContent = <span class="variable">data</span>.temperature + <span class="string">'°C'</span>;
+        document.<span class="function">getElementById</span>(<span class="string">'humidity'</span>).textContent = <span class="variable">data</span>.humidity + <span class="string">'%'</span>;
+    };
+
+    <span class="function">updateDisplay</span>();  <span class="comment">// 立即執行一次</span>
+    <span class="function">setInterval</span>(<span class="function">updateDisplay</span>, <span class="number">5000</span>);  <span class="comment">// 然後每 5 秒更新</span>
+}</code>
+            </div>
+        </div>
+
+        <!-- 農業應用範例 -->
+        <div class="section">
+            <h2>🌾 農業監控完整範例</h2>
+
+            <div class="code-block">
+<code><span class="comment">// 農場監控系統</span>
+<span class="keyword">const</span> <span class="variable">FarmMonitor</span> = {
+    <span class="comment">// 設定閾值</span>
+    <span class="variable">thresholds</span>: {
+        tempHigh: <span class="number">35</span>,
+        tempLow: <span class="number">10</span>,
+        humidityLow: <span class="number">30</span>
+    },
+
+    <span class="comment">// 初始化</span>
+    <span class="function">init</span>() {
+        <span class="keyword">this</span>.<span class="function">bindEvents</span>();
+        <span class="keyword">this</span>.<span class="function">startMonitoring</span>();
+    },
+
+    <span class="comment">// 綁定事件</span>
+    <span class="function">bindEvents</span>() {
+        document.<span class="function">getElementById</span>(<span class="string">'irrigate-btn'</span>)
+            .<span class="function">addEventListener</span>(<span class="string">'click'</span>, () => <span class="keyword">this</span>.<span class="function">startIrrigation</span>());
+
+        document.<span class="function">getElementById</span>(<span class="string">'fan-btn'</span>)
+            .<span class="function">addEventListener</span>(<span class="string">'click'</span>, () => <span class="keyword">this</span>.<span class="function">toggleFan</span>());
+    },
+
+    <span class="comment">// 開始監控</span>
+    <span class="function">startMonitoring</span>() {
+        <span class="keyword">this</span>.<span class="function">fetchAndUpdate</span>();
+        <span class="function">setInterval</span>(() => <span class="keyword">this</span>.<span class="function">fetchAndUpdate</span>(), <span class="number">5000</span>);
+    },
+
+    <span class="comment">// 取得並更新資料</span>
+    <span class="keyword">async</span> <span class="function">fetchAndUpdate</span>() {
+        <span class="keyword">try</span> {
+            <span class="keyword">const</span> <span class="variable">data</span> = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'/api/sensors'</span>).<span class="function">then</span>(<span class="variable">r</span> => <span class="variable">r</span>.<span class="function">json</span>());
+            <span class="keyword">this</span>.<span class="function">updateDisplay</span>(<span class="variable">data</span>);
+            <span class="keyword">this</span>.<span class="function">checkAlerts</span>(<span class="variable">data</span>);
+        } <span class="keyword">catch</span> (<span class="variable">err</span>) {
+            <span class="function">console</span>.<span class="function">error</span>(<span class="string">'資料取得失敗:'</span>, <span class="variable">err</span>);
+        }
+    },
+
+    <span class="comment">// 更新顯示</span>
+    <span class="function">updateDisplay</span>(<span class="variable">data</span>) {
+        document.<span class="function">getElementById</span>(<span class="string">'temp-value'</span>).textContent = <span class="string">`${data.temp}°C`</span>;
+        document.<span class="function">getElementById</span>(<span class="string">'humidity-value'</span>).textContent = <span class="string">`${data.humidity}%`</span>;
+    },
+
+    <span class="comment">// 檢查警報</span>
+    <span class="function">checkAlerts</span>(<span class="variable">data</span>) {
+        <span class="keyword">const</span> <span class="variable">tempEl</span> = document.<span class="function">getElementById</span>(<span class="string">'temp-value'</span>);
+        <span class="keyword">if</span> (<span class="variable">data</span>.temp > <span class="keyword">this</span>.thresholds.tempHigh) {
+            <span class="variable">tempEl</span>.classList.<span class="function">add</span>(<span class="string">'danger'</span>);
+            <span class="keyword">this</span>.<span class="function">showNotification</span>(<span class="string">'溫度過高！'</span>);
+        } <span class="keyword">else</span> {
+            <span class="variable">tempEl</span>.classList.<span class="function">remove</span>(<span class="string">'danger'</span>);
+        }
+    },
+
+    <span class="comment">// 啟動灌溉</span>
+    <span class="keyword">async</span> <span class="function">startIrrigation</span>() {
+        <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'/api/irrigate'</span>, { method: <span class="string">'POST'</span> });
+        <span class="keyword">this</span>.<span class="function">showNotification</span>(<span class="string">'灌溉已啟動！'</span>);
+    },
+
+    <span class="comment">// 顯示通知</span>
+    <span class="function">showNotification</span>(<span class="variable">message</span>) {
+        <span class="keyword">const</span> <span class="variable">notification</span> = document.<span class="function">createElement</span>(<span class="string">'div'</span>);
+        <span class="variable">notification</span>.className = <span class="string">'notification'</span>;
+        <span class="variable">notification</span>.textContent = <span class="variable">message</span>;
+        document.body.<span class="function">appendChild</span>(<span class="variable">notification</span>);
+        <span class="function">setTimeout</span>(() => <span class="variable">notification</span>.<span class="function">remove</span>(), <span class="number">3000</span>);
+    }
+};
+
+<span class="comment">// 頁面載入後初始化</span>
+document.<span class="function">addEventListener</span>(<span class="string">'DOMContentLoaded'</span>, () => {
+    <span class="variable">FarmMonitor</span>.<span class="function">init</span>();
+});</code>
+            </div>
+        </div>
+
+        <a href="文件索引.html" class="home-btn">🏠 返回首頁</a>
+    </div>
+</body>
+</html>

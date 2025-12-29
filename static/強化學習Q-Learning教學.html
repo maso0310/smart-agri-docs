@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>強化學習 Q-Learning 教學</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e2e8f0; min-height: 100vh; line-height: 1.8;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        h1 {
+            text-align: center; font-size: 2.5rem; margin-bottom: 10px;
+            background: linear-gradient(135deg, #9f7aea, #667eea);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #a0aec0; margin-bottom: 40px; font-size: 1.1rem; }
+        .section {
+            background: rgba(255, 255, 255, 0.05); border-radius: 16px;
+            padding: 30px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h2 { color: #9f7aea; font-size: 1.5rem; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid rgba(159, 122, 234, 0.3); }
+        h3 { color: #63b3ed; font-size: 1.2rem; margin: 25px 0 15px 0; }
+        p { margin-bottom: 15px; color: #cbd5e0; }
+        .code-block {
+            background: #0d1117; border-radius: 8px; padding: 20px; margin: 15px 0;
+            overflow-x: auto; border: 1px solid #30363d;
+        }
+        .code-block code { font-family: 'Consolas', monospace; font-size: 0.9rem; color: #e6edf3; white-space: pre; }
+        .keyword { color: #ff7b72; }
+        .string { color: #a5d6ff; }
+        .number { color: #79c0ff; }
+        .function { color: #d2a8ff; }
+        .comment { color: #8b949e; }
+        .tip-box {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.1), rgba(99, 179, 237, 0.1));
+            border-left: 4px solid #4fd1c5; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0;
+        }
+        .tip-box strong { color: #4fd1c5; }
+        .formula-box {
+            background: linear-gradient(135deg, rgba(159, 122, 234, 0.15), rgba(102, 126, 234, 0.1));
+            border: 2px solid rgba(159, 122, 234, 0.4); border-radius: 12px;
+            padding: 25px; margin: 20px 0; text-align: center;
+        }
+        .formula { font-size: 1.5rem; color: #9f7aea; font-family: 'Cambria Math', serif; margin: 15px 0; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card {
+            background: rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .card h4 { color: #9f7aea; margin-bottom: 15px; }
+        .home-btn {
+            position: fixed; bottom: 30px; right: 30px;
+            background: linear-gradient(135deg, #9f7aea, #667eea);
+            color: white; padding: 15px 25px; border-radius: 50px;
+            text-decoration: none; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(159, 122, 234, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .home-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(159, 122, 234, 0.4); }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px 15px; text-align: left; border: 1px solid rgba(255, 255, 255, 0.1); }
+        th { background: rgba(159, 122, 234, 0.2); color: #9f7aea; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 強化學習 Q-Learning 教學</h1>
+        <p class="subtitle">讓 AI 學會智慧決策的訓練方法</p>
+
+        <div class="section">
+            <h2>📚 什麼是強化學習？</h2>
+            <p>強化學習 (Reinforcement Learning, RL) 是一種讓 AI 透過「試錯」來學習的方法。就像訓練小狗一樣，做對了給獎勵，做錯了給懲罰，AI 慢慢學會什麼行為能獲得最多獎勵。</p>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h4>🤖 代理人 Agent</h4>
+                    <p>做決策的 AI，例如：智慧灌溉控制器</p>
+                </div>
+                <div class="card">
+                    <h4>🌍 環境 Environment</h4>
+                    <p>代理人所處的世界，例如：農田、溫室</p>
+                </div>
+                <div class="card">
+                    <h4">📊 狀態 State</h4>
+                    <p>環境的當前情況，例如：溫度 30°C、濕度 40%</p>
+                </div>
+                <div class="card">
+                    <h4">⚡ 動作 Action</h4>
+                    <p>代理人可以執行的行為，例如：開灌溉、關風扇</p>
+                </div>
+                <div class="card">
+                    <h4">🏆 獎勵 Reward</h4>
+                    <p>對動作的評價，例如：+10（作物健康）、-5（浪費水）</p>
+                </div>
+                <div class="card">
+                    <h4">🎯 目標</h4>
+                    <p>累積最多獎勵，學會最佳策略</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">🧮 Q-Learning 演算法</h2>
+            <p>Q-Learning 是最基礎的強化學習演算法，透過建立一個「Q 表」來記錄每個狀態下採取每個動作的價值。</p>
+
+            <div class="formula-box">
+                <p style="color: #a0aec0;">Q 值更新公式</p>
+                <div class="formula">Q(s,a) ← Q(s,a) + α × [R + γ × max Q(s',a') - Q(s,a)]</div>
+                <p style="color: #a0aec0; margin-top: 15px;">
+                    α = 學習率 | γ = 折扣因子 | R = 即時獎勵 | s' = 下一個狀態
+                </p>
+            </div>
+
+            <table>
+                <tr>
+                    <th>參數</th>
+                    <th>說明</th>
+                    <th>常用值</th>
+                </tr>
+                <tr>
+                    <td>α (alpha)</td>
+                    <td>學習率，決定新經驗的權重</td>
+                    <td>0.1 ~ 0.5</td>
+                </tr>
+                <tr>
+                    <td>γ (gamma)</td>
+                    <td>折扣因子，決定對未來獎勵的重視程度</td>
+                    <td>0.9 ~ 0.99</td>
+                </tr>
+                <tr>
+                    <td>ε (epsilon)</td>
+                    <td>探索率，隨機嘗試新動作的機率</td>
+                    <td>0.1 ~ 0.3（逐漸降低）</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2">💻 Q-Learning 實作</h2>
+            <div class="code-block">
+<code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> random
+
+<span class="keyword">class</span> <span class="function">QLearningAgent</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, n_states, n_actions, alpha=<span class="number">0.1</span>, gamma=<span class="number">0.95</span>, epsilon=<span class="number">0.3</span>):
+        <span class="string">"""
+        初始化 Q-Learning 代理人
+
+        參數:
+            n_states: 狀態數量
+            n_actions: 動作數量
+            alpha: 學習率
+            gamma: 折扣因子
+            epsilon: 探索率
+        """</span>
+        self.n_states = n_states
+        self.n_actions = n_actions
+        self.alpha = alpha
+        self.gamma = gamma
+        self.epsilon = epsilon
+
+        <span class="comment"># 初始化 Q 表（全部設為 0）</span>
+        self.q_table = np.zeros((n_states, n_actions))
+
+    <span class="keyword">def</span> <span class="function">choose_action</span>(self, state):
+        <span class="string">"""選擇動作（ε-greedy 策略）"""</span>
+        <span class="keyword">if</span> random.random() < self.epsilon:
+            <span class="comment"># 探索：隨機選擇</span>
+            <span class="keyword">return</span> random.randint(<span class="number">0</span>, self.n_actions - <span class="number">1</span>)
+        <span class="keyword">else</span>:
+            <span class="comment"># 利用：選擇最佳動作</span>
+            <span class="keyword">return</span> np.argmax(self.q_table[state])
+
+    <span class="keyword">def</span> <span class="function">learn</span>(self, state, action, reward, next_state):
+        <span class="string">"""更新 Q 值"""</span>
+        <span class="comment"># Q-Learning 更新公式</span>
+        best_next = np.max(self.q_table[next_state])
+        td_target = reward + self.gamma * best_next
+        td_error = td_target - self.q_table[state, action]
+        self.q_table[state, action] += self.alpha * td_error
+
+    <span class="keyword">def</span> <span class="function">decay_epsilon</span>(self, decay_rate=<span class="number">0.995</span>, min_epsilon=<span class="number">0.01</span>):
+        <span class="string">"""逐漸降低探索率"""</span>
+        self.epsilon = max(min_epsilon, self.epsilon * decay_rate)</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">🌾 農業灌溉模擬器</h2>
+            <div class="code-block">
+<code><span class="keyword">class</span> <span class="function">IrrigationEnvironment</span>:
+    <span class="string">"""簡易灌溉環境"""</span>
+
+    <span class="keyword">def</span> <span class="function">__init__</span>(self):
+        <span class="comment"># 狀態：土壤濕度等級 (0=乾燥, 1=適中, 2=潮濕)</span>
+        self.state = <span class="number">1</span>
+        self.day = <span class="number">0</span>
+
+    <span class="keyword">def</span> <span class="function">reset</span>(self):
+        <span class="string">"""重置環境"""</span>
+        self.state = random.randint(<span class="number">0</span>, <span class="number">2</span>)
+        self.day = <span class="number">0</span>
+        <span class="keyword">return</span> self.state
+
+    <span class="keyword">def</span> <span class="function">step</span>(self, action):
+        <span class="string">"""
+        執行動作
+
+        動作: 0=不灌溉, 1=灌溉
+        回傳: (下一狀態, 獎勵, 是否結束)
+        """</span>
+        self.day += <span class="number">1</span>
+
+        <span class="comment"># 模擬天氣影響（隨機蒸發）</span>
+        weather_effect = random.choice([-<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>])
+
+        <span class="comment"># 計算新狀態</span>
+        <span class="keyword">if</span> action == <span class="number">1</span>:  <span class="comment"># 灌溉</span>
+            self.state = min(<span class="number">2</span>, self.state + <span class="number">1</span>)
+        self.state = max(<span class="number">0</span>, self.state + weather_effect)
+
+        <span class="comment"># 計算獎勵</span>
+        <span class="keyword">if</span> self.state == <span class="number">1</span>:  <span class="comment"># 適中最好</span>
+            reward = <span class="number">10</span>
+        <span class="keyword">elif</span> self.state == <span class="number">0</span>:  <span class="comment"># 太乾</span>
+            reward = -<span class="number">5</span>
+        <span class="keyword">else</span>:  <span class="comment"># 太濕</span>
+            reward = -<span class="number">3</span>
+
+        <span class="comment"># 浪費水的懲罰</span>
+        <span class="keyword">if</span> action == <span class="number">1</span> <span class="keyword">and</span> self.state == <span class="number">2</span>:
+            reward -= <span class="number">5</span>
+
+        done = self.day >= <span class="number">30</span>  <span class="comment"># 30 天為一輪</span>
+        <span class="keyword">return</span> self.state, reward, done
+
+
+<span class="comment"># 訓練迴圈</span>
+env = IrrigationEnvironment()
+agent = QLearningAgent(n_states=<span class="number">3</span>, n_actions=<span class="number">2</span>)
+
+<span class="keyword">for</span> episode <span class="keyword">in</span> range(<span class="number">1000</span>):
+    state = env.reset()
+    total_reward = <span class="number">0</span>
+
+    <span class="keyword">while</span> <span class="keyword">True</span>:
+        action = agent.choose_action(state)
+        next_state, reward, done = env.step(action)
+        agent.learn(state, action, reward, next_state)
+
+        total_reward += reward
+        state = next_state
+
+        <span class="keyword">if</span> done:
+            <span class="keyword">break</span>
+
+    agent.decay_epsilon()
+
+    <span class="keyword">if</span> episode % <span class="number">100</span> == <span class="number">0</span>:
+        <span class="function">print</span>(<span class="string">f'Episode {episode}, Total Reward: {total_reward}, Epsilon: {agent.epsilon:.3f}'</span>)
+
+<span class="function">print</span>(<span class="string">'\\n學習完成！Q 表：'</span>)
+<span class="function">print</span>(<span class="string">'狀態\\動作   不灌溉    灌溉'</span>)
+<span class="keyword">for</span> i, row <span class="keyword">in</span> enumerate(agent.q_table):
+    <span class="function">print</span>(<span class="string">f'  {["乾燥", "適中", "潮濕"][i]}:    {row[0]:6.2f}   {row[1]:6.2f}'</span>)</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">🎯 訓練結果解讀</h2>
+            <div class="tip-box">
+                <strong>💡 理想的 Q 表應該顯示：</strong><br>
+                • 乾燥狀態 → 灌溉的 Q 值較高（應該灌溉）<br>
+                • 適中狀態 → 不灌溉的 Q 值較高（保持現狀）<br>
+                • 潮濕狀態 → 不灌溉的 Q 值明顯較高（避免浪費水）
+            </div>
+
+            <h3>應用場景</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4">🚿 智慧灌溉</h4>
+                    <p>根據土壤濕度、天氣預報自動決定灌溉時機和水量</p>
+                </div>
+                <div class="card">
+                    <h4">🌡️ 溫室控制</h4>
+                    <p>學習最佳的溫度、濕度控制策略</p>
+                </div>
+                <div class="card">
+                    <h4">🌱 施肥策略</h4>
+                    <p>根據作物生長階段決定施肥量</p>
+                </div>
+                <div class="card">
+                    <h4">🚜 路徑規劃</h4>
+                    <p>農機在田間的最佳行走路線</p>
+                </div>
+            </div>
+        </div>
+
+        <a href="文件索引.html" class="home-btn">🏠 返回首頁</a>
+    </div>
+</body>
+</html>

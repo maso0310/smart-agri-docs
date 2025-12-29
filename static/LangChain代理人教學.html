@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LangChain AI 代理人教學</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e2e8f0; min-height: 100vh; line-height: 1.8;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        h1 {
+            text-align: center; font-size: 2.5rem; margin-bottom: 10px;
+            background: linear-gradient(135deg, #38b2ac, #4fd1c5);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #a0aec0; margin-bottom: 40px; font-size: 1.1rem; }
+        .section {
+            background: rgba(255, 255, 255, 0.05); border-radius: 16px;
+            padding: 30px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h2 { color: #4fd1c5; font-size: 1.5rem; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid rgba(79, 209, 197, 0.3); }
+        h3 { color: #63b3ed; font-size: 1.2rem; margin: 25px 0 15px 0; }
+        p { margin-bottom: 15px; color: #cbd5e0; }
+        .code-block {
+            background: #0d1117; border-radius: 8px; padding: 20px; margin: 15px 0;
+            overflow-x: auto; border: 1px solid #30363d;
+        }
+        .code-block code { font-family: 'Consolas', monospace; font-size: 0.9rem; color: #e6edf3; white-space: pre; }
+        .keyword { color: #ff7b72; }
+        .string { color: #a5d6ff; }
+        .number { color: #79c0ff; }
+        .function { color: #d2a8ff; }
+        .comment { color: #8b949e; }
+        .decorator { color: #ffa657; }
+        .tip-box {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.1), rgba(99, 179, 237, 0.1));
+            border-left: 4px solid #4fd1c5; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0;
+        }
+        .tip-box strong { color: #4fd1c5; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .card {
+            background: rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08); text-align: center;
+        }
+        .card h4 { color: #4fd1c5; margin-bottom: 15px; }
+        .card-icon { font-size: 2.5rem; margin-bottom: 15px; }
+        .home-btn {
+            position: fixed; bottom: 30px; right: 30px;
+            background: linear-gradient(135deg, #38b2ac, #4fd1c5);
+            color: #1a1a2e; padding: 15px 25px; border-radius: 50px;
+            text-decoration: none; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .home-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(79, 209, 197, 0.4); }
+        .flow-chart {
+            display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+            gap: 15px; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;
+        }
+        .flow-item {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.2), rgba(56, 178, 172, 0.2));
+            padding: 15px 25px; border-radius: 12px; text-align: center;
+            border: 1px solid rgba(79, 209, 197, 0.3);
+        }
+        .flow-arrow { font-size: 1.5rem; color: #4fd1c5; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 LangChain AI 代理人教學</h1>
+        <p class="subtitle">建立能夠思考、決策、使用工具的 AI 助手</p>
+
+        <div class="section">
+            <h2>📚 什麼是 LangChain？</h2>
+            <p>LangChain 是一個用於建立 LLM（大型語言模型）應用的框架。它讓你能夠將 AI 模型與各種工具、資料來源串接，建立能夠「思考」和「行動」的智慧代理人。</p>
+
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-icon">🧠</div>
+                    <h4>LLM 整合</h4>
+                    <p>支援 OpenAI、Ollama 等多種模型</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔧</div>
+                    <h4">工具使用</h4>
+                    <p>讓 AI 能呼叫函式執行任務</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💭</div>
+                    <h4">推理鏈</h4>
+                    <p>逐步思考，做出複雜決策</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">🔄 Agent 運作流程</h2>
+            <div class="flow-chart">
+                <div class="flow-item">
+                    <div>👤</div>
+                    <div>使用者提問</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">
+                    <div>🧠</div>
+                    <div>LLM 思考</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">
+                    <div>🔧</div>
+                    <div>選擇工具</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">
+                    <div>⚡</div>
+                    <div>執行工具</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">
+                    <div>📊</div>
+                    <div>分析結果</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">
+                    <div>💬</div>
+                    <div>回覆使用者</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">🛠️ 安裝與設定</h2>
+            <div class="code-block">
+<code><span class="comment"># 安裝必要套件</span>
+pip install langchain langchain-community
+
+<span class="comment"># 如果使用 Ollama（本地 LLM）</span>
+pip install langchain-ollama
+
+<span class="comment"># 如果使用 OpenAI</span>
+pip install langchain-openai</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">🔧 定義工具</h2>
+            <p>工具是 Agent 可以使用的函式，讓 AI 能夠執行實際任務。</p>
+
+            <div class="code-block">
+<code><span class="keyword">from</span> langchain.tools <span class="keyword">import</span> tool
+
+<span class="decorator">@tool</span>
+<span class="keyword">def</span> <span class="function">get_sensor_data</span>(sensor_type: str) -> str:
+    <span class="string">"""
+    取得農場感測器數據
+
+    Args:
+        sensor_type: 感測器類型 (temperature, humidity, soil_moisture)
+
+    Returns:
+        感測器數據字串
+    """</span>
+    <span class="comment"># 模擬感測器數據</span>
+    data = {
+        <span class="string">'temperature'</span>: <span class="string">'目前溫度: 28.5°C'</span>,
+        <span class="string">'humidity'</span>: <span class="string">'目前濕度: 65%'</span>,
+        <span class="string">'soil_moisture'</span>: <span class="string">'土壤濕度: 45%'</span>
+    }
+    <span class="keyword">return</span> data.get(sensor_type, <span class="string">'未知的感測器類型'</span>)
+
+<span class="decorator">@tool</span>
+<span class="keyword">def</span> <span class="function">control_irrigation</span>(action: str, duration: int = <span class="number">10</span>) -> str:
+    <span class="string">"""
+    控制灌溉系統
+
+    Args:
+        action: 動作 (start 或 stop)
+        duration: 灌溉時間（分鐘）
+
+    Returns:
+        執行結果
+    """</span>
+    <span class="keyword">if</span> action == <span class="string">'start'</span>:
+        <span class="keyword">return</span> <span class="string">f'灌溉系統已啟動，預計運行 {duration} 分鐘'</span>
+    <span class="keyword">elif</span> action == <span class="string">'stop'</span>:
+        <span class="keyword">return</span> <span class="string">'灌溉系統已停止'</span>
+    <span class="keyword">return</span> <span class="string">'未知的動作'</span>
+
+<span class="decorator">@tool</span>
+<span class="keyword">def</span> <span class="function">analyze_crop_image</span>(image_path: str) -> str:
+    <span class="string">"""
+    分析作物影像，判斷健康狀態
+
+    Args:
+        image_path: 影像路徑
+
+    Returns:
+        分析結果
+    """</span>
+    <span class="comment"># 這裡可以整合 YOLO 或其他模型</span>
+    <span class="keyword">return</span> <span class="string">'影像分析結果: 作物健康狀態良好，NDVI 值 0.72，無明顯病蟲害'</span>
+
+<span class="comment"># 將工具收集起來</span>
+tools = [get_sensor_data, control_irrigation, analyze_crop_image]</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">🤖 建立 Agent</h2>
+            <div class="code-block">
+<code><span class="keyword">from</span> langchain_ollama <span class="keyword">import</span> ChatOllama
+<span class="keyword">from</span> langchain.agents <span class="keyword">import</span> create_tool_calling_agent, AgentExecutor
+<span class="keyword">from</span> langchain_core.prompts <span class="keyword">import</span> ChatPromptTemplate
+
+<span class="comment"># 使用 Ollama 本地模型</span>
+llm = ChatOllama(
+    model=<span class="string">"llama3.2"</span>,  <span class="comment"># 或其他支援的模型</span>
+    temperature=<span class="number">0</span>
+)
+
+<span class="comment"># 定義系統提示</span>
+system_prompt = <span class="string">"""你是一個智慧農業助手，專門協助農民管理農場。
+你可以使用以下工具來幫助使用者:
+- get_sensor_data: 取得感測器數據
+- control_irrigation: 控制灌溉系統
+- analyze_crop_image: 分析作物影像
+
+請根據使用者的需求，選擇適當的工具來完成任務。
+在回答時使用繁體中文，並提供具體的建議。"""</span>
+
+<span class="comment"># 建立提示模板</span>
+prompt = ChatPromptTemplate.from_messages([
+    (<span class="string">"system"</span>, system_prompt),
+    (<span class="string">"human"</span>, <span class="string">"{input}"</span>),
+    (<span class="string">"placeholder"</span>, <span class="string">"{agent_scratchpad}"</span>)
+])
+
+<span class="comment"># 建立 Agent</span>
+agent = create_tool_calling_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(
+    agent=agent,
+    tools=tools,
+    verbose=<span class="keyword">True</span>,  <span class="comment"># 顯示思考過程</span>
+    handle_parsing_errors=<span class="keyword">True</span>
+)</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">💬 使用 Agent</h2>
+            <div class="code-block">
+<code><span class="comment"># 與 Agent 對話</span>
+response = agent_executor.invoke({
+    <span class="string">"input"</span>: <span class="string">"現在農場的溫度和濕度是多少？需要灌溉嗎？"</span>
+})
+
+<span class="function">print</span>(response[<span class="string">"output"</span>])
+
+<span class="comment"># Agent 會自動：
+# 1. 呼叫 get_sensor_data("temperature") 取得溫度
+# 2. 呼叫 get_sensor_data("humidity") 取得濕度
+# 3. 根據數據判斷是否需要灌溉
+# 4. 如果需要，呼叫 control_irrigation("start")
+# 5. 回報結果給使用者</span></code>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 對話範例：</strong><br>
+                使用者：「幫我檢查作物狀態並決定要不要澆水」<br><br>
+                Agent 思考過程：<br>
+                → 呼叫 get_sensor_data("soil_moisture") 取得土壤濕度<br>
+                → 發現土壤濕度 45%（偏低）<br>
+                → 呼叫 control_irrigation("start", 15) 開始灌溉<br>
+                → 回覆：「土壤濕度目前為 45%，略低於理想值。已啟動灌溉系統，預計運行 15 分鐘。」
+            </div>
+        </div>
+
+        <div class="section">
+            <h2">🌾 農業 Agent 完整範例</h2>
+            <div class="code-block">
+<code><span class="keyword">from</span> langchain_ollama <span class="keyword">import</span> ChatOllama
+<span class="keyword">from</span> langchain.tools <span class="keyword">import</span> tool
+<span class="keyword">from</span> langchain.agents <span class="keyword">import</span> create_tool_calling_agent, AgentExecutor
+<span class="keyword">from</span> langchain_core.prompts <span class="keyword">import</span> ChatPromptTemplate
+
+<span class="comment"># ===== 定義工具 =====</span>
+
+<span class="decorator">@tool</span>
+<span class="keyword">def</span> <span class="function">get_weather_forecast</span>() -> str:
+    <span class="string">"""取得天氣預報"""</span>
+    <span class="keyword">return</span> <span class="string">"今日：晴，最高溫32°C，降雨機率10%。明日：多雲，最高溫28°C，降雨機率60%"</span>
+
+<span class="decorator">@tool</span>
+<span class="keyword">def</span> <span class="function">get_all_sensors</span>() -> dict:
+    <span class="string">"""取得所有感測器數據"""</span>
+    <span class="keyword">return</span> {
+        <span class="string">"temperature"</span>: <span class="number">28.5</span>,
+        <span class="string">"humidity"</span>: <span class="number">65</span>,
+        <span class="string">"soil_moisture"</span>: <span class="number">42</span>,
+        <span class="string">"light"</span>: <span class="number">850</span>
+    }
+
+<span class="decorator">@tool</span>
+<span class="keyword">def</span> <span class="function">generate_daily_report</span>() -> str:
+    <span class="string">"""產生每日農場報告"""</span>
+    <span class="keyword">return</span> <span class="string">"""
+    === 農場每日報告 ===
+    日期: 2024-01-15
+    作物狀態: 健康
+    今日灌溉: 2次，共45分鐘
+    用水量: 150公升
+    建議: 明日降雨機率高，建議減少灌溉
+    """</span>
+
+tools = [get_weather_forecast, get_all_sensors, generate_daily_report]
+
+<span class="comment"># ===== 建立 Agent =====</span>
+
+llm = ChatOllama(model=<span class="string">"llama3.2"</span>, temperature=<span class="number">0</span>)
+
+prompt = ChatPromptTemplate.from_messages([
+    (<span class="string">"system"</span>, <span class="string">"""你是智慧農業管理助手。
+    能夠監控農場狀態、分析數據、提供建議。
+    請用繁體中文回答，並提供具體可行的建議。"""</span>),
+    (<span class="string">"human"</span>, <span class="string">"{input}"</span>),
+    (<span class="string">"placeholder"</span>, <span class="string">"{agent_scratchpad}"</span>)
+])
+
+agent = create_tool_calling_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=<span class="keyword">True</span>)
+
+<span class="comment"># ===== 主程式 =====</span>
+
+<span class="keyword">def</span> <span class="function">chat</span>():
+    <span class="function">print</span>(<span class="string">"歡迎使用智慧農業助手！輸入 'exit' 離開"</span>)
+    <span class="keyword">while</span> <span class="keyword">True</span>:
+        user_input = <span class="function">input</span>(<span class="string">"\\n你: "</span>)
+        <span class="keyword">if</span> user_input.lower() == <span class="string">'exit'</span>:
+            <span class="keyword">break</span>
+
+        response = agent_executor.invoke({<span class="string">"input"</span>: user_input})
+        <span class="function">print</span>(<span class="string">f"\\n助手: {response['output']}"</span>)
+
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    chat()</code>
+            </div>
+        </div>
+
+        <a href="文件索引.html" class="home-btn">🏠 返回首頁</a>
+    </div>
+</body>
+</html>

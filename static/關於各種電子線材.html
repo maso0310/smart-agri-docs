@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於各種電子線材</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="_1">關於各種電子線材</h1>
+<p>走進電子材料行，各式各樣的線材讓人眼花撩亂。本文整理常見線材的種類、用途與選購要點，幫助你快速找到需要的線材。</p>
+<hr />
+<h2 id="jumper-wire">一、杜邦線（Jumper Wire）</h2>
+<p>最常用的 Arduino 接線工具，方便快速搭建電路原型。</p>
+<h3 id="11">1.1 三種接頭類型</h3>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>外觀</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>公對公（M-M）</td>
+<td>兩端都是針腳</td>
+<td>麵包板之間連接</td>
+</tr>
+<tr>
+<td>公對母（M-F）</td>
+<td>一端針腳、一端插孔</td>
+<td>Arduino 腳位接到麵包板</td>
+</tr>
+<tr>
+<td>母對母（F-F）</td>
+<td>兩端都是插孔</td>
+<td>連接模組的排針</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12">1.2 圖示說明</h3>
+<pre><code>公對公 (Male-to-Male)
+    ┌───┐          ┌───┐
+────┤   ├──────────┤   ├────
+    └───┘   導線   └───┘
+    針腳            針腳
+
+公對母 (Male-to-Female)
+    ┌───┐          ╔═══╗
+────┤   ├──────────╢   ╟────
+    └───┘   導線   ╚═══╝
+    針腳            插孔
+
+母對母 (Female-to-Female)
+    ╔═══╗          ╔═══╗
+────╢   ╟──────────╢   ╟────
+    ╚═══╝   導線   ╚═══╝
+    插孔            插孔
+</code></pre>
+<h3 id="13">1.3 常見規格</h3>
+<table>
+<thead>
+<tr>
+<th>長度</th>
+<th>適用場景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10cm</td>
+<td>緊湊接線，麵包板內部</td>
+</tr>
+<tr>
+<td>20cm</td>
+<td>最常用，一般接線</td>
+</tr>
+<tr>
+<td>30cm</td>
+<td>較遠距離連接</td>
+</tr>
+<tr>
+<td>40cm</td>
+<td>模組間連接</td>
+</tr>
+</tbody>
+</table>
+<h3 id="14">1.4 選購建議</h3>
+<ul>
+<li><strong>初學者套裝</strong>：三種類型各 40 條（120 條組合包）</li>
+<li><strong>顏色選擇</strong>：多色有助於識別不同訊號線</li>
+<li><strong>品質辨別</strong>：接頭要緊實，線材要柔軟</li>
+</ul>
+<hr />
+<h2 id="_2">二、單芯線與多芯線</h2>
+<h3 id="21-solid-core-wire">2.1 單芯線（Solid Core Wire）</h3>
+<pre><code>橫切面：
+    ┌─────────┐
+    │ ┌─────┐ │
+    │ │ 銅  │ │ ← 單一銅芯
+    │ └─────┘ │
+    │  絕緣層  │
+    └─────────┘
+</code></pre>
+<p><strong>特點：</strong><br />
+- 銅芯為單一實心導體<br />
+- 硬挺不易彎曲<br />
+- 適合插入麵包板<br />
+- 焊接後不易脫落</p>
+<p><strong>適用場景：</strong><br />
+- 麵包板接線<br />
+- PCB 焊接<br />
+- 固定式配線</p>
+<h3 id="22-stranded-wire">2.2 多芯線（Stranded Wire）</h3>
+<pre><code>橫切面：
+    ┌─────────┐
+    │ ○○○○○○ │
+    │ ○○○○○○ │ ← 多股細銅絲
+    │ ○○○○○○ │
+    │  絕緣層  │
+    └─────────┘
+</code></pre>
+<p><strong>特點：</strong><br />
+- 由多股細銅絲組成<br />
+- 柔軟可彎曲<br />
+- 耐反覆彎折<br />
+- 導電面積較大</p>
+<p><strong>適用場景：</strong><br />
+- 需要彎曲的配線<br />
+- 機器人、可動部件<br />
+- 長距離佈線</p>
+<h3 id="23">2.3 比較表</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>單芯線</th>
+<th>多芯線</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>柔軟度</td>
+<td>硬</td>
+<td>軟</td>
+</tr>
+<tr>
+<td>耐彎折</td>
+<td>差（易斷）</td>
+<td>佳</td>
+</tr>
+<tr>
+<td>麵包板適用</td>
+<td>適合</td>
+<td>不適合</td>
+</tr>
+<tr>
+<td>焊接難度</td>
+<td>簡單</td>
+<td>需先絞線</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>較便宜</td>
+<td>較貴</td>
+</tr>
+<tr>
+<td>載流量</td>
+<td>較小</td>
+<td>較大</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="silicone-wire">三、矽膠線（Silicone Wire）</h2>
+<p>高品質的多芯線，專業玩家首選。</p>
+<h3 id="31">3.1 特點</h3>
+<table>
+<thead>
+<tr>
+<th>優點</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>超柔軟</td>
+<td>比一般多芯線更柔軟</td>
+</tr>
+<tr>
+<td>耐高溫</td>
+<td>可耐 200°C 高溫</td>
+</tr>
+<tr>
+<td>耐低溫</td>
+<td>-60°C 也不會變硬</td>
+</tr>
+<tr>
+<td>抗老化</td>
+<td>不易氧化變質</td>
+</tr>
+<tr>
+<td>絕緣佳</td>
+<td>矽膠絕緣性能優異</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-awg">3.2 常見規格（AWG）</h3>
+<table>
+<thead>
+<tr>
+<th>AWG</th>
+<th>外徑約</th>
+<th>載流量</th>
+<th>適用場景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30</td>
+<td>0.8mm</td>
+<td>0.5A</td>
+<td>訊號線</td>
+</tr>
+<tr>
+<td>26</td>
+<td>1.3mm</td>
+<td>1.3A</td>
+<td>小電流</td>
+</tr>
+<tr>
+<td>22</td>
+<td>1.7mm</td>
+<td>3A</td>
+<td>一般用途</td>
+</tr>
+<tr>
+<td>20</td>
+<td>2.0mm</td>
+<td>5A</td>
+<td>LED 燈條</td>
+</tr>
+<tr>
+<td>18</td>
+<td>2.3mm</td>
+<td>7A</td>
+<td>馬達電源</td>
+</tr>
+<tr>
+<td>16</td>
+<td>2.7mm</td>
+<td>10A</td>
+<td>大電流</td>
+</tr>
+<tr>
+<td>14</td>
+<td>3.2mm</td>
+<td>15A</td>
+<td>電池連接</td>
+</tr>
+<tr>
+<td>12</td>
+<td>4.0mm</td>
+<td>20A</td>
+<td>高功率</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>AWG 數字越小，線越粗，可承載電流越大</strong></p>
+</blockquote>
+<h3 id="33">3.3 選購建議</h3>
+<ul>
+<li><strong>常備規格</strong>：22 AWG（一般用途）、18 AWG（電源線）</li>
+<li><strong>顏色慣例</strong>：紅色=正極、黑色=負極、其他=訊號</li>
+<li><strong>長度建議</strong>：每色各買 5-10 公尺</li>
+</ul>
+<hr />
+<h2 id="ribbon-cable">四、排線（Ribbon Cable）</h2>
+<p>多條導線並排的扁平線材。</p>
+<h3 id="41">4.1 結構</h3>
+<pre><code>┌──┬──┬──┬──┬──┬──┬──┬──┐
+│1 │2 │3 │4 │5 │6 │7 │8 │  ← 8 芯排線
+└──┴──┴──┴──┴──┴──┴──┴──┘
+│紅│橙│黃│綠│藍│紫│灰│白│  ← 彩虹色順序
+</code></pre>
+<h3 id="42">4.2 常見類型</h3>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>芯數</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>彩虹排線</td>
+<td>10/20/40 芯</td>
+<td>通用接線、GPIO</td>
+</tr>
+<tr>
+<td>IDC 排線</td>
+<td>10/16/20/40 pin</td>
+<td>連接擴充板</td>
+</tr>
+<tr>
+<td>FFC/FPC</td>
+<td>多種</td>
+<td>扁平軟性排線（如相機模組）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43">4.3 搭配接頭</h3>
+<table>
+<thead>
+<tr>
+<th>接頭類型</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>杜邦頭</td>
+<td>可自行壓接</td>
+</tr>
+<tr>
+<td>IDC 座</td>
+<td>排線專用，整排壓接</td>
+</tr>
+<tr>
+<td>2.54mm 插座</td>
+<td>標準間距</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="enameled-wire">五、漆包線（Enameled Wire）</h2>
+<p>表面塗有絕緣漆的銅線。</p>
+<h3 id="51">5.1 特點</h3>
+<pre><code>橫切面：
+    ┌───────┐
+    │┌─────┐│
+    ││ 銅 ││ ← 銅芯
+    │└─────┘│
+    │ 漆皮  │ ← 很薄的絕緣層
+    └───────┘
+</code></pre>
+<ul>
+<li>絕緣層極薄（僅漆皮）</li>
+<li>可密繞不短路</li>
+<li>需刮除或燒除漆皮才能焊接</li>
+</ul>
+<h3 id="52">5.2 用途</h3>
+<table>
+<thead>
+<tr>
+<th>應用</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>繞製線圈</td>
+<td>電感、變壓器</td>
+</tr>
+<tr>
+<td>電磁鐵</td>
+<td>DIY 電磁鐵、馬達</td>
+</tr>
+<tr>
+<td>RFID 天線</td>
+<td>自製感應線圈</td>
+</tr>
+<tr>
+<td>修復細線</td>
+<td>PCB 飛線修補</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53">5.3 常見規格</h3>
+<table>
+<thead>
+<tr>
+<th>線徑</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.1mm</td>
+<td>精細線圈、RFID</td>
+</tr>
+<tr>
+<td>0.2mm</td>
+<td>小型電感</td>
+</tr>
+<tr>
+<td>0.3mm</td>
+<td>一般線圈</td>
+</tr>
+<tr>
+<td>0.5mm</td>
+<td>較大電流線圈</td>
+</tr>
+<tr>
+<td>1.0mm</td>
+<td>大功率電感</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="coaxial-cable">六、同軸電纜（Coaxial Cable）</h2>
+<p>用於傳輸高頻訊號的專用線材。</p>
+<h3 id="61">6.1 結構</h3>
+<pre><code>橫切面：
+┌─────────────────┐
+│    外皮(黑)      │
+│ ┌─────────────┐ │
+│ │  編織屏蔽   │ │ ← 接地/屏蔽
+│ │ ┌─────────┐ │ │
+│ │ │ 絕緣層  │ │ │
+│ │ │ ┌─────┐ │ │ │
+│ │ │ │中心 │ │ │ │ ← 訊號線
+│ │ │ │導體 │ │ │ │
+│ │ │ └─────┘ │ │ │
+│ │ └─────────┘ │ │
+│ └─────────────┘ │
+└─────────────────┘
+</code></pre>
+<h3 id="62">6.2 常見類型</h3>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>阻抗</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RG58</td>
+<td>50Ω</td>
+<td>無線電、WiFi 天線</td>
+</tr>
+<tr>
+<td>RG59</td>
+<td>75Ω</td>
+<td>類比視訊</td>
+</tr>
+<tr>
+<td>RG6</td>
+<td>75Ω</td>
+<td>數位電視、衛星</td>
+</tr>
+<tr>
+<td>RG174</td>
+<td>50Ω</td>
+<td>小型天線、GPS</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63-arduino">6.3 Arduino 相關應用</h3>
+<ul>
+<li>GPS 模組天線延長</li>
+<li>LoRa 天線連接</li>
+<li>WiFi 外接天線</li>
+</ul>
+<hr />
+<h2 id="_3">七、電源線材</h2>
+<h3 id="71-dc">7.1 DC 電源線</h3>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>規格</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DC 插頭線</td>
+<td>5.5x2.1mm</td>
+<td>Arduino 外接電源</td>
+</tr>
+<tr>
+<td>端子線</td>
+<td>各種規格</td>
+<td>電源模組連接</td>
+</tr>
+<tr>
+<td>鱷魚夾線</td>
+<td>紅黑對</td>
+<td>電源測試</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-dc">7.2 DC 插頭尺寸</h3>
+<pre><code>常見 DC 插頭：
+
+5.5 x 2.1 mm（最常見）
+    ┌───────┐
+    │ ┌───┐ │
+    │ │2.1│ │  ← 內徑 2.1mm
+    │ └───┘ │
+    │  5.5  │  ← 外徑 5.5mm
+    └───────┘
+
+5.5 x 2.5 mm
+3.5 x 1.35 mm（小型設備）
+</code></pre>
+<h3 id="73">7.3 電源線顏色慣例</h3>
+<table>
+<thead>
+<tr>
+<th>顏色</th>
+<th>意義</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>紅色</td>
+<td>正極 (VCC, +)</td>
+</tr>
+<tr>
+<td>黑色</td>
+<td>負極 (GND, -)</td>
+</tr>
+<tr>
+<td>黃色</td>
+<td>+12V（電腦電源）</td>
+</tr>
+<tr>
+<td>橙色</td>
+<td>+3.3V（電腦電源）</td>
+</tr>
+<tr>
+<td>藍色</td>
+<td>-12V（電腦電源）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="usb">八、USB 線材</h2>
+<h3 id="81-usb">8.1 USB 接頭類型</h3>
+<pre><code>USB Type-A（標準）        USB Type-B（印表機）
+┌─────────────┐          ┌───────┐
+│ ┌─┐ ┌─┐ ┌─┐ │          │ ┌───┐ │
+│ └─┘ └─┘ └─┘ │          │ │   │ │
+│             │          │ └───┘ │
+└─────────────┘          └───────┘
+
+Mini USB                  Micro USB
+┌───────┐                ┌─────────┐
+│\_____/│                │_________|
+└───────┘                └─────────┘
+
+USB Type-C（可正反插）
+┌─────────────┐
+│ ─────────── │
+│ ─────────── │
+└─────────────┘
+</code></pre>
+<h3 id="82-usb">8.2 常見 USB 線材</h3>
+<table>
+<thead>
+<tr>
+<th>線材</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>USB-A 轉 Micro USB</td>
+<td>Arduino Nano、ESP8266</td>
+</tr>
+<tr>
+<td>USB-A 轉 Type-B</td>
+<td>Arduino UNO、Mega</td>
+</tr>
+<tr>
+<td>USB-A 轉 Type-C</td>
+<td>ESP32、新款開發板</td>
+</tr>
+<tr>
+<td>USB-A 轉 Mini USB</td>
+<td>舊款設備、MP3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="83">8.3 注意事項</h3>
+<ul>
+<li><strong>充電線 vs 數據線</strong>：純充電線無法傳輸資料</li>
+<li><strong>線材品質</strong>：劣質線可能造成上傳失敗</li>
+<li><strong>線長影響</strong>：過長可能導致電壓降或傳輸不穩</li>
+</ul>
+<hr />
+<h2 id="heat-shrink-tubing">九、熱縮套管（Heat Shrink Tubing）</h2>
+<p>保護焊接點與線材的絕緣套管。</p>
+<h3 id="91">9.1 使用方式</h3>
+<pre><code>步驟 1：套入熱縮管
+    ══════════════════
+    ▓▓▓▓║焊接點║▓▓▓▓
+    ══════════════════
+    ↑ 熱縮管
+
+步驟 2：加熱收縮
+    ════════════════
+    ▓▓▓焊接點▓▓▓
+    ════════════════
+    ↑ 緊密包覆
+</code></pre>
+<h3 id="92">9.2 常見規格</h3>
+<table>
+<thead>
+<tr>
+<th>收縮前直徑</th>
+<th>收縮後直徑</th>
+<th>適用線材</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.5mm</td>
+<td>0.75mm</td>
+<td>細訊號線</td>
+</tr>
+<tr>
+<td>2.0mm</td>
+<td>1.0mm</td>
+<td>杜邦線</td>
+</tr>
+<tr>
+<td>3.0mm</td>
+<td>1.5mm</td>
+<td>一般電線</td>
+</tr>
+<tr>
+<td>5.0mm</td>
+<td>2.5mm</td>
+<td>粗電線</td>
+</tr>
+<tr>
+<td>10mm</td>
+<td>5mm</td>
+<td>電纜、多線束</td>
+</tr>
+</tbody>
+</table>
+<h3 id="93">9.3 種類</h3>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>特點</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>普通型</td>
+<td>基本絕緣保護</td>
+</tr>
+<tr>
+<td>雙壁型</td>
+<td>內層有熱熔膠，防水</td>
+</tr>
+<tr>
+<td>彩色型</td>
+<td>識別不同線路</td>
+</tr>
+<tr>
+<td>透明型</td>
+<td>可看到內部焊點</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_4">十、端子與接頭</h2>
+<h3 id="101">10.1 常見端子類型</h3>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>圖示</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>杜邦端子</td>
+<td>2.54mm 間距</td>
+<td>Arduino 接線</td>
+</tr>
+<tr>
+<td>XH 端子</td>
+<td>2.5mm 間距</td>
+<td>電池、模組</td>
+</tr>
+<tr>
+<td>PH 端子</td>
+<td>2.0mm 間距</td>
+<td>小型設備</td>
+</tr>
+<tr>
+<td>螺絲端子</td>
+<td>可鎖螺絲</td>
+<td>電源、大電流</td>
+</tr>
+<tr>
+<td>快接端子</td>
+<td>免焊接</td>
+<td>快速連接</td>
+</tr>
+</tbody>
+</table>
+<h3 id="102">10.2 杜邦端子壓接</h3>
+<pre><code>壓接工具使用：
+         ┌───────────┐
+         │   壓接鉗   │
+         └─────┬─────┘
+               ↓
+    導線 ══════╪══════
+               │
+         ┌─────┴─────┐
+         │  端子金屬  │
+         └───────────┘
+</code></pre>
+<p><strong>步驟：</strong><br />
+1. 剝除約 3mm 絕緣皮<br />
+2. 將線插入端子<br />
+3. 用壓接鉗壓緊金屬片<br />
+4. 插入塑膠殼</p>
+<hr />
+<h2 id="_5">十一、線材規格速查</h2>
+<h3 id="111-awg">11.1 AWG 對照表</h3>
+<table>
+<thead>
+<tr>
+<th>AWG</th>
+<th>直徑 (mm)</th>
+<th>截面積 (mm²)</th>
+<th>最大電流 (A)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30</td>
+<td>0.255</td>
+<td>0.051</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>28</td>
+<td>0.321</td>
+<td>0.081</td>
+<td>0.8</td>
+</tr>
+<tr>
+<td>26</td>
+<td>0.405</td>
+<td>0.129</td>
+<td>1.3</td>
+</tr>
+<tr>
+<td>24</td>
+<td>0.511</td>
+<td>0.205</td>
+<td>2.1</td>
+</tr>
+<tr>
+<td>22</td>
+<td>0.644</td>
+<td>0.326</td>
+<td>3.0</td>
+</tr>
+<tr>
+<td>20</td>
+<td>0.812</td>
+<td>0.518</td>
+<td>5.0</td>
+</tr>
+<tr>
+<td>18</td>
+<td>1.024</td>
+<td>0.823</td>
+<td>7.0</td>
+</tr>
+<tr>
+<td>16</td>
+<td>1.291</td>
+<td>1.31</td>
+<td>10</td>
+</tr>
+<tr>
+<td>14</td>
+<td>1.628</td>
+<td>2.08</td>
+<td>15</td>
+</tr>
+<tr>
+<td>12</td>
+<td>2.053</td>
+<td>3.31</td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+<h3 id="112">11.2 線材選擇公式</h3>
+<pre><code>所需線徑計算：
+
+電流 (A) × 安全係數 (1.5~2) = 參考載流量
+
+例如：馬達需要 2A
+     2A × 1.5 = 3A
+     → 選擇 22 AWG（載流量 3A）或更粗
+</code></pre>
+<hr />
+<h2 id="_6">十二、選購指南</h2>
+<h3 id="121">12.1 初學者必備清單</h3>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>規格</th>
+<th>數量</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>杜邦線組合包</td>
+<td>公公/公母/母母各40條</td>
+<td>1組</td>
+<td>基本接線</td>
+</tr>
+<tr>
+<td>單芯線</td>
+<td>22 AWG 多色</td>
+<td>各色5m</td>
+<td>麵包板</td>
+</tr>
+<tr>
+<td>熱縮管組合</td>
+<td>多規格</td>
+<td>1組</td>
+<td>絕緣保護</td>
+</tr>
+<tr>
+<td>USB 線</td>
+<td>Type-B + Micro</td>
+<td>各1條</td>
+<td>開發板連接</td>
+</tr>
+<tr>
+<td>鱷魚夾線</td>
+<td>紅黑對</td>
+<td>2對</td>
+<td>測試用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="122">12.2 進階玩家加購</h3>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>規格</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>矽膠線</td>
+<td>18/22 AWG</td>
+<td>高品質配線</td>
+</tr>
+<tr>
+<td>排線</td>
+<td>40 芯彩虹</td>
+<td>GPIO 接線</td>
+</tr>
+<tr>
+<td>壓接端子組</td>
+<td>杜邦/XH</td>
+<td>自製線材</td>
+</tr>
+<tr>
+<td>壓接鉗</td>
+<td>SN-28B 或類似</td>
+<td>壓接端子</td>
+</tr>
+</tbody>
+</table>
+<h3 id="123">12.3 價格參考</h3>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>價格範圍 (NT$)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>杜邦線 40 條</td>
+<td>30-60</td>
+</tr>
+<tr>
+<td>杜邦線組合包 120 條</td>
+<td>80-150</td>
+</tr>
+<tr>
+<td>單芯線 10m</td>
+<td>20-40</td>
+</tr>
+<tr>
+<td>矽膠線 5m</td>
+<td>40-80</td>
+</tr>
+<tr>
+<td>熱縮管組合包</td>
+<td>50-100</td>
+</tr>
+<tr>
+<td>USB 數據線</td>
+<td>30-80</td>
+</tr>
+<tr>
+<td>壓接鉗</td>
+<td>150-400</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="faq">十三、常見問題 FAQ</h2>
+<h3 id="q1">Q1：麵包板該用什麼線？</h3>
+<p><strong>單芯線或實心杜邦線。</strong> 多芯線太軟，插不進麵包板孔。</p>
+<h3 id="q2">Q2：如何分辨充電線和數據線？</h3>
+<ul>
+<li>數據線較粗（有 4 條內芯）</li>
+<li>充電線較細（只有 2 條電源線）</li>
+<li>測試方法：連接電腦看能否識別裝置</li>
+</ul>
+<h3 id="q3">Q3：線材顏色有規定嗎？</h3>
+<p><strong>建議遵循慣例但非強制：</strong><br />
+- 紅色 = VCC（正極）<br />
+- 黑色 = GND（負極）<br />
+- 其他顏色 = 訊號線</p>
+<h3 id="q4">Q4：電源線要選多粗？</h3>
+<p><strong>根據電流選擇：</strong><br />
+- 500mA 以下：26-28 AWG<br />
+- 1-3A：22-24 AWG<br />
+- 3-5A：20 AWG<br />
+- 5A 以上：18 AWG 或更粗</p>
+<h3 id="q5">Q5：熱縮管用什麼加熱？</h3>
+<ul>
+<li>熱風槍（最佳）</li>
+<li>打火機（小心燒焦）</li>
+<li>烙鐵側面（應急用）</li>
+<li>吹風機（效果較差）</li>
+</ul>
+<h3 id="q6">Q6：杜邦線品質怎麼看？</h3>
+<ul>
+<li>接頭插拔順暢不鬆脫</li>
+<li>線材柔軟不易斷</li>
+<li>顏色鮮明好辨識</li>
+<li>標示線號 AWG 規格</li>
+</ul>
+<hr />
+<h2 id="_7">十四、線材整理技巧</h2>
+<h3 id="141">14.1 收納建議</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>適用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>分隔收納盒</td>
+<td>杜邦線、端子</td>
+</tr>
+<tr>
+<td>繞線器</td>
+<td>長線材</td>
+</tr>
+<tr>
+<td>夾鏈袋分類</td>
+<td>不同規格線材</td>
+</tr>
+<tr>
+<td>標籤標示</td>
+<td>快速識別</td>
+</tr>
+</tbody>
+</table>
+<h3 id="142">14.2 線材管理</h3>
+<pre><code>整理前：
+    ╭─────╮
+   ╱ 亂成 ╲
+  │ 一團  │
+   ╲     ╱
+    ╰───╯
+
+整理後：
+┌────────────────────┐
+│ 紅 │ 黑 │ 黃 │ 綠 │
+├────┼────┼────┼────┤
+│ 電 │ 地 │ 訊 │ 訊 │
+│ 源 │ 線 │ 號 │ 號 │
+└────┴────┴────┴────┘
+</code></pre>
+<hr />
+<p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

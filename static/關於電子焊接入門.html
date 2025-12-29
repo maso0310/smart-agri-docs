@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於電子焊接入門</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="_1">關於電子焊接入門</h1>
+<p>焊接是電子製作的基本技能。掌握正確的焊接技巧，可以讓你的電路穩定耐用，也是從麵包板原型走向成品的必經之路。</p>
+<hr />
+<h2 id="_2">一、為什麼要學焊接？</h2>
+<h3 id="11">1.1 焊接的目的</h3>
+<table>
+<thead>
+<tr>
+<th>目的</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>電氣連接</td>
+<td>讓電流能穩定通過接點</td>
+</tr>
+<tr>
+<td>機械固定</td>
+<td>將元件牢固地固定在電路板上</td>
+</tr>
+<tr>
+<td>永久連接</td>
+<td>比麵包板更穩定、更持久</td>
+</tr>
+<tr>
+<td>專業成品</td>
+<td>從原型到實際產品的必要步驟</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-vs">1.2 焊接 vs 麵包板</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>麵包板</th>
+<th>焊接電路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>穩定性</td>
+<td>易鬆脫</td>
+<td>非常穩固</td>
+</tr>
+<tr>
+<td>適合場景</td>
+<td>測試、原型</td>
+<td>成品、長期使用</td>
+</tr>
+<tr>
+<td>修改難度</td>
+<td>隨時可改</td>
+<td>需要拆焊</td>
+</tr>
+<tr>
+<td>體積</td>
+<td>較大</td>
+<td>可以很小</td>
+</tr>
+<tr>
+<td>振動耐受</td>
+<td>差</td>
+<td>佳</td>
+</tr>
+<tr>
+<td>成本</td>
+<td>可重複使用</td>
+<td>需要材料</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13">1.3 什麼時候該焊接？</h3>
+<ul>
+<li>專案進入最終版本</li>
+<li>需要長時間運作的設備</li>
+<li>會移動或有振動的裝置</li>
+<li>空間受限需要縮小體積</li>
+<li>戶外或惡劣環境使用</li>
+</ul>
+<hr />
+<h2 id="_3">二、焊接工具與材料</h2>
+<h3 id="21">2.1 必備工具</h3>
+<h4 id="soldering-iron">烙鐵（Soldering Iron）</h4>
+<pre><code>烙鐵結構：
+                    ┌─────────────────┐
+    ┌───────────────┤    握把         ├───────┐
+    │               └─────────────────┘       │
+    │                                         │
+  電源線                                    烙鐵頭
+                                              ↓
+                                         加熱區域
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>價格範圍</th>
+<th>特點</th>
+<th>適合對象</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基本型烙鐵</td>
+<td>NT$ 100-300</td>
+<td>固定功率，無溫控</td>
+<td>偶爾使用</td>
+</tr>
+<tr>
+<td>溫控烙鐵</td>
+<td>NT$ 300-800</td>
+<td>可調溫度</td>
+<td>一般玩家</td>
+</tr>
+<tr>
+<td>焊接工作站</td>
+<td>NT$ 1000-3000</td>
+<td>精確溫控、快速加熱</td>
+<td>進階玩家</td>
+</tr>
+<tr>
+<td>專業焊台</td>
+<td>NT$ 3000+</td>
+<td>高精度、多功能</td>
+<td>專業工作</td>
+</tr>
+</tbody>
+</table>
+<p><strong>初學者建議：</strong> 選擇 40-60W 溫控烙鐵，可調溫度範圍 200-450°C</p>
+<h4 id="_4">烙鐵頭形狀</h4>
+<pre><code>常見烙鐵頭：
+
+尖頭（Conical）      斜面頭（Chisel）     刀頭（Knife）
+      /\                  ___                 /|
+     /  \                /   |               / |
+    /    \              /    |              /  |
+   適合精細           適合一般            適合拖焊
+   SMD 焊接           直插元件            多腳 IC
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>烙鐵頭類型</th>
+<th>適用場景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>尖頭 (B型)</td>
+<td>SMD 元件、精細焊接</td>
+</tr>
+<tr>
+<td>斜面頭 (D型)</td>
+<td>一般焊接、最常用</td>
+</tr>
+<tr>
+<td>刀頭 (K型)</td>
+<td>拖焊、大面積加熱</td>
+</tr>
+<tr>
+<td>圓頭 (BC型)</td>
+<td>除錫、大焊點</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-solder">2.2 焊錫（Solder）</h3>
+<h4 id="_5">焊錫類型</h4>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>成分</th>
+<th>熔點</th>
+<th>特點</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>有鉛焊錫</td>
+<td>63% 錫 + 37% 鉛</td>
+<td>183°C</td>
+<td>易焊、流動性好</td>
+</tr>
+<tr>
+<td>無鉛焊錫</td>
+<td>錫銀銅合金</td>
+<td>217°C</td>
+<td>環保、較難焊</td>
+</tr>
+</tbody>
+</table>
+<p><strong>初學者建議：</strong> 使用有鉛焊錫（63/37）較容易上手</p>
+<h4 id="_6">焊錫直徑</h4>
+<table>
+<thead>
+<tr>
+<th>直徑</th>
+<th>適用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.5mm</td>
+<td>SMD 小元件</td>
+</tr>
+<tr>
+<td>0.8mm</td>
+<td>一般電子焊接（推薦）</td>
+</tr>
+<tr>
+<td>1.0mm</td>
+<td>較大焊點</td>
+</tr>
+<tr>
+<td>1.2mm+</td>
+<td>粗線、大元件</td>
+</tr>
+</tbody>
+</table>
+<h4 id="flux">助焊劑（Flux）</h4>
+<pre><code>焊錫絲結構（含松香芯）：
+
+    橫切面：
+    ┌─────────────┐
+    │ ┌─────────┐ │
+    │ │ 松香芯  │ │ ← 助焊劑
+    │ │ (Flux)  │ │
+    │ └─────────┘ │
+    │   焊錫外層   │
+    └─────────────┘
+</code></pre>
+<ul>
+<li><strong>功能</strong>：清除氧化物、幫助焊錫流動</li>
+<li><strong>類型</strong>：松香芯焊錫（內含）、額外助焊劑膏</li>
+</ul>
+<h3 id="23">2.3 輔助工具</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>必要性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>烙鐵架</td>
+<td>放置熱烙鐵</td>
+<td>必備</td>
+</tr>
+<tr>
+<td>海綿/銅絲球</td>
+<td>清潔烙鐵頭</td>
+<td>必備</td>
+</tr>
+<tr>
+<td>吸錫器/吸錫線</td>
+<td>除錯、拆焊</td>
+<td>必備</td>
+</tr>
+<tr>
+<td>尖嘴鉗</td>
+<td>彎曲元件腳</td>
+<td>必備</td>
+</tr>
+<tr>
+<td>斜口鉗</td>
+<td>剪斷元件腳</td>
+<td>必備</td>
+</tr>
+<tr>
+<td>鑷子</td>
+<td>夾取小元件</td>
+<td>建議</td>
+</tr>
+<tr>
+<td>放大鏡/頭燈</td>
+<td>看清小焊點</td>
+<td>建議</td>
+</tr>
+<tr>
+<td>第三手/固定夾</td>
+<td>固定電路板</td>
+<td>建議</td>
+</tr>
+<tr>
+<td>防靜電手環</td>
+<td>保護敏感元件</td>
+<td>建議</td>
+</tr>
+</tbody>
+</table>
+<h3 id="24">2.4 材料選購清單</h3>
+<h4 id="nt-500-800">初學者套裝（約 NT$ 500-800）</h4>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>規格</th>
+<th>數量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>溫控烙鐵</td>
+<td>60W 可調溫</td>
+<td>1 支</td>
+</tr>
+<tr>
+<td>烙鐵架</td>
+<td>含海綿</td>
+<td>1 個</td>
+</tr>
+<tr>
+<td>焊錫絲</td>
+<td>63/37 0.8mm 50g</td>
+<td>1 卷</td>
+</tr>
+<tr>
+<td>吸錫器</td>
+<td>手動式</td>
+<td>1 支</td>
+</tr>
+<tr>
+<td>洞洞板</td>
+<td>5x7cm</td>
+<td>3-5 片</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_7">進階工具（選購）</h4>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>規格</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>助焊劑膏</td>
+<td>松香膏</td>
+<td>難焊表面</td>
+</tr>
+<tr>
+<td>吸錫線</td>
+<td>2mm 寬</td>
+<td>精細除錫</td>
+</tr>
+<tr>
+<td>耐熱墊</td>
+<td>矽膠材質</td>
+<td>保護桌面</td>
+</tr>
+<tr>
+<td>排煙風扇</td>
+<td>USB 供電</td>
+<td>吸除煙霧</td>
+</tr>
+<tr>
+<td>熱風槍</td>
+<td>可調溫</td>
+<td>SMD 焊接</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_8">三、焊接基本原理</h2>
+<h3 id="31">3.1 焊接三要素</h3>
+<pre><code>良好焊接需要三者配合：
+
+        溫度
+         /\
+        /  \
+       /    \
+      / 良好  \
+     /  焊接   \
+    /___________\
+   時間 ←────→ 焊錫量
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>要素</th>
+<th>說明</th>
+<th>常見問題</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>溫度</td>
+<td>足夠熔化焊錫與加熱焊點</td>
+<td>溫度不足=冷焊</td>
+</tr>
+<tr>
+<td>時間</td>
+<td>加熱時間適當</td>
+<td>太久=燒壞元件</td>
+</tr>
+<tr>
+<td>焊錫量</td>
+<td>適量的焊錫</td>
+<td>太多=短路、太少=虛焊</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32">3.2 熱傳導原理</h3>
+<pre><code>正確的加熱方式：
+
+    烙鐵頭
+       ↓
+    ┌──────┐
+    │加熱點│ ──→ 同時接觸焊盤和元件腳
+    └──┬───┘
+       │
+    ═══╪═══  ← 焊盤（PCB 上的銅箔）
+       │
+    ───┴───  ← 元件腳
+</code></pre>
+<p><strong>要點：</strong> 烙鐵頭要同時接觸焊盤和元件腳，讓兩者都被加熱</p>
+<h3 id="33">3.3 良好焊點的特徵</h3>
+<pre><code>焊點形狀比較：
+
+良好焊點          焊錫過多          焊錫過少          冷焊
+   ∩                ●                 .              ∩
+  / \              /|\               / \            | |
+ /   \            / | \             /   \           | |
+─────────       ─────────         ─────────       ─────────
+光滑、圓錐形    圓球狀、可能短路   覆蓋不完全      粗糙、無光澤
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>焊點狀態</th>
+<th>外觀</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>良好</td>
+<td>光滑、有光澤、圓錐形</td>
+<td>正確操作</td>
+</tr>
+<tr>
+<td>冷焊</td>
+<td>粗糙、無光澤、灰暗</td>
+<td>溫度不足或移動太快</td>
+</tr>
+<tr>
+<td>過熱</td>
+<td>焊盤脫落、燒焦</td>
+<td>加熱時間過長</td>
+</tr>
+<tr>
+<td>虛焊</td>
+<td>看似焊上但不導電</td>
+<td>未正確加熱</td>
+</tr>
+<tr>
+<td>橋接</td>
+<td>兩焊點連在一起</td>
+<td>焊錫過多</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_9">四、焊接操作步驟</h2>
+<h3 id="41">4.1 焊接前準備</h3>
+<ol>
+<li><strong>設定溫度</strong></li>
+<li>有鉛焊錫：320-350°C</li>
+<li>
+<p>無鉛焊錫：350-380°C</p>
+</li>
+<li>
+<p><strong>清潔烙鐵頭</strong><br />
+   ```<br />
+   使用濕海綿或銅絲球清潔</p>
+</li>
+</ol>
+<p>銅絲球（推薦）        濕海綿<br />
+      ╱╲╱╲                ▓▓▓▓<br />
+     ╱╲╱╲╱╲              ▓▓▓▓<br />
+    ╱╲╱╲╱╲╱╲            ▓▓▓▓<br />
+   不降溫、清潔力強      會降溫、需保持濕潤<br />
+   ```</p>
+<ol>
+<li><strong>上錫（Tinning）</strong></li>
+<li>新烙鐵頭或清潔後要先上一層薄錫</li>
+<li>
+<p>保護烙鐵頭不氧化</p>
+</li>
+<li>
+<p><strong>固定工件</strong></p>
+</li>
+<li>使用第三手或夾具固定電路板</li>
+<li>確保焊接時不會移動</li>
+</ol>
+<h3 id="42">4.2 標準焊接流程</h3>
+<pre><code>步驟圖解：
+
+步驟 1：接觸          步驟 2：送錫          步驟 3：移開
+
+    烙鐵               烙鐵  焊錫
+      ↓                  ↓  ↓               完成！
+   ┌──┐              ┌──┐                    ∩
+   │  │              │  │≋≋               ╱   ╲
+═══╪══════         ═══╪═══════          ══════════
+   │                   │
+
+同時接觸焊盤        焊錫接觸加熱點         良好焊點
+和元件腳            讓焊錫自然流動
+（1-2秒預熱）       （1-2秒）
+</code></pre>
+<p><strong>詳細步驟：</strong></p>
+<ol>
+<li><strong>接觸</strong>（1-2 秒）</li>
+<li>烙鐵頭同時接觸焊盤和元件腳</li>
+<li>
+<p>預熱焊接點</p>
+</li>
+<li>
+<p><strong>送錫</strong>（1-2 秒）</p>
+</li>
+<li>焊錫絲接觸焊點（不是烙鐵頭）</li>
+<li>
+<p>讓焊錫自然流動覆蓋</p>
+</li>
+<li>
+<p><strong>移開焊錫</strong></p>
+</li>
+<li>
+<p>先移開焊錫絲</p>
+</li>
+<li>
+<p><strong>移開烙鐵</strong></p>
+</li>
+<li>最後移開烙鐵</li>
+<li>保持靜止讓焊錫凝固</li>
+</ol>
+<p><strong>總時間：3-5 秒</strong></p>
+<h3 id="43">4.3 常見焊接情境</h3>
+<h4 id="through-hole">直插元件（Through-Hole）</h4>
+<pre><code>LED、電阻、電容等：
+
+    元件
+      │
+      │    ← 元件腳穿過孔
+══════╪══════  ← PCB 正面
+      │
+    ──┴──    ← PCB 背面，在這裡焊接
+      ∩
+    焊點
+</code></pre>
+<p><strong>步驟：</strong><br />
+1. 元件腳從正面穿過孔<br />
+2. 背面稍微彎曲固定<br />
+3. 在背面焊接<br />
+4. 剪掉多餘的腳（留 1-2mm）</p>
+<h4 id="_10">導線焊接</h4>
+<pre><code>導線接到焊盤：
+
+1. 先將導線     2. 上錫到       3. 焊接到
+   剝皮絞緊        導線上          焊盤
+
+   ══════        ══∩∩══         ══∩∩══
+      │            ↓               │
+   ───┴───      ──────          ═══╪═══
+   露出銅絲      鍍上薄錫         完成焊接
+</code></pre>
+<h4 id="_11">元件維修（拆焊）</h4>
+<pre><code>使用吸錫器：
+
+1. 加熱焊點     2. 吸錫器就位    3. 按下釋放
+
+    烙鐵            烙鐵  吸錫器
+      ↓               ↓    ↓         元件可
+   ┌──∩──┐        ┌──∩──┐ ○        取下了！
+═══╧════════    ═══╧═══════      ═══════════
+</code></pre>
+<hr />
+<h2 id="_12">五、焊接技巧與訣竅</h2>
+<h3 id="51">5.1 提升焊接品質的技巧</h3>
+<table>
+<thead>
+<tr>
+<th>技巧</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>保持烙鐵頭清潔</td>
+<td>每次焊接後都要清潔</td>
+</tr>
+<tr>
+<td>使用適量焊錫</td>
+<td>寧少勿多，不夠可以補</td>
+</tr>
+<tr>
+<td>預熱焊點</td>
+<td>確保焊盤和元件腳都被加熱</td>
+</tr>
+<tr>
+<td>焊錫接觸焊點</td>
+<td>不是接觸烙鐵頭</td>
+</tr>
+<tr>
+<td>不要移動</td>
+<td>焊錫凝固前保持靜止</td>
+</tr>
+<tr>
+<td>適當的速度</td>
+<td>太快冷焊，太慢燒壞</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52">5.2 常見錯誤與解決</h3>
+<table>
+<thead>
+<tr>
+<th>問題</th>
+<th>原因</th>
+<th>解決方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>焊錫不沾</td>
+<td>氧化、溫度不足</td>
+<td>使用助焊劑、提高溫度</td>
+</tr>
+<tr>
+<td>冷焊（灰暗粗糙）</td>
+<td>溫度不足或移動</td>
+<td>重新加熱讓焊錫流動</td>
+</tr>
+<tr>
+<td>焊盤脫落</td>
+<td>加熱過久</td>
+<td>縮短加熱時間</td>
+</tr>
+<tr>
+<td>橋接短路</td>
+<td>焊錫過多</td>
+<td>用吸錫線移除多餘焊錫</td>
+</tr>
+<tr>
+<td>元件損壞</td>
+<td>過熱</td>
+<td>使用散熱夾、縮短時間</td>
+</tr>
+<tr>
+<td>煙霧刺眼</td>
+<td>助焊劑燃燒</td>
+<td>使用排煙風扇、保持通風</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53">5.3 特殊情況處理</h3>
+<h4 id="_13">難焊的表面</h4>
+<pre><code>處理氧化焊盤：
+
+1. 用砂紙輕磨     2. 塗助焊劑     3. 正常焊接
+
+   ▓▓▓▓▓           ≋≋≋≋≋          ∩
+   ─────  →        ─────   →     ─────
+   氧化表面        塗上助焊劑      良好焊點
+</code></pre>
+<h4 id="ic">多腳 IC 焊接</h4>
+<pre><code>IC 焊接順序：
+
+    ┌─────────────┐
+    │  IC 晶片    │
+    │             │
+    └┬─┬─┬─┬─┬─┬─┬┘
+     1 2 3 4 5 6 7
+     ↓           ↓
+    先焊對角兩腳固定
+    再依序焊其他腳
+</code></pre>
+<p><strong>步驟：</strong><br />
+1. 先焊對角的兩隻腳固定位置<br />
+2. 確認對齊後焊其餘的腳<br />
+3. 使用較細的烙鐵頭<br />
+4. 可使用拖焊技巧</p>
+<hr />
+<h2 id="_14">六、安全注意事項</h2>
+<h3 id="61">6.1 人身安全</h3>
+<table>
+<thead>
+<tr>
+<th>危險</th>
+<th>預防措施</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>燙傷</td>
+<td>烙鐵使用中溫度達 300°C+，不要觸摸金屬部分</td>
+</tr>
+<tr>
+<td>煙霧吸入</td>
+<td>使用排煙風扇，保持通風</td>
+</tr>
+<tr>
+<td>眼睛傷害</td>
+<td>焊錫飛濺時戴護目鏡</td>
+</tr>
+<tr>
+<td>鉛中毒</td>
+<td>使用有鉛焊錫後洗手，不要邊吃東西邊焊接</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62">6.2 環境安全</h3>
+<table>
+<thead>
+<tr>
+<th>注意事項</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>使用烙鐵架</td>
+<td>絕對不要把熱烙鐵放在桌上</td>
+</tr>
+<tr>
+<td>遠離易燃物</td>
+<td>紙張、布料要遠離</td>
+</tr>
+<tr>
+<td>不用時關閉</td>
+<td>離開時關閉電源</td>
+</tr>
+<tr>
+<td>耐熱工作台</td>
+<td>使用矽膠墊或金屬桌面</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63">6.3 設備保護</h3>
+<table>
+<thead>
+<tr>
+<th>保護對象</th>
+<th>方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>烙鐵頭</td>
+<td>使用後上錫保護，避免空燒</td>
+</tr>
+<tr>
+<td>敏感元件</td>
+<td>使用防靜電措施</td>
+</tr>
+<tr>
+<td>電路板</td>
+<td>避免過度加熱導致焊盤脫落</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_15">七、練習建議</h2>
+<h3 id="71">7.1 學習階段</h3>
+<pre><code>學習路線圖：
+
+階段 1          階段 2          階段 3          階段 4
+基礎練習   →   直插元件   →   複雜電路   →   SMD 焊接
+
+在廢板上        LED、電阻      Arduino 擴展板   表面貼裝
+練習焊點        簡單電路       多元件專案       小元件
+
+約 1-2 小時     約 3-5 小時    依專案而定       進階技術
+</code></pre>
+<h3 id="72">7.2 練習專案建議</h3>
+<h4 id="_16">初級練習</h4>
+<table>
+<thead>
+<tr>
+<th>專案</th>
+<th>練習重點</th>
+<th>難度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>廢板焊點練習</td>
+<td>基本焊接手感</td>
+<td>★</td>
+</tr>
+<tr>
+<td>LED + 電阻</td>
+<td>極性辨識、簡單電路</td>
+<td>★</td>
+</tr>
+<tr>
+<td>杜邦線頭焊接</td>
+<td>導線焊接技巧</td>
+<td>★</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_17">中級練習</h4>
+<table>
+<thead>
+<tr>
+<th>專案</th>
+<th>練習重點</th>
+<th>難度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>洞洞板 LED 矩陣</td>
+<td>整齊排列、多焊點</td>
+<td>★★</td>
+</tr>
+<tr>
+<td>感測器模組</td>
+<td>多接點、元件保護</td>
+<td>★★</td>
+</tr>
+<tr>
+<td>Arduino Shield</td>
+<td>排針焊接</td>
+<td>★★</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_18">進階練習</h4>
+<table>
+<thead>
+<tr>
+<th>專案</th>
+<th>練習重點</th>
+<th>難度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SMD 元件焊接</td>
+<td>精細操作</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td>自製 PCB</td>
+<td>完整流程</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td>維修電路板</td>
+<td>拆焊、診斷</td>
+<td>★★★</td>
+</tr>
+</tbody>
+</table>
+<h3 id="73">7.3 自我評估標準</h3>
+<table>
+<thead>
+<tr>
+<th>等級</th>
+<th>能力描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>入門</td>
+<td>能焊出基本焊點，偶爾冷焊或橋接</td>
+</tr>
+<tr>
+<td>初級</td>
+<td>焊點品質穩定，能完成簡單電路</td>
+</tr>
+<tr>
+<td>中級</td>
+<td>能處理多種元件，焊點美觀一致</td>
+</tr>
+<tr>
+<td>高級</td>
+<td>能焊接 SMD，能維修電路板</td>
+</tr>
+<tr>
+<td>專業</td>
+<td>BGA、QFN 等高難度封裝</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_19">八、焊接套件推薦</h2>
+<h3 id="81">8.1 練習套件</h3>
+<table>
+<thead>
+<tr>
+<th>套件</th>
+<th>內容</th>
+<th>適合</th>
+<th>價格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LED 心型燈</td>
+<td>LED + 電阻</td>
+<td>初學者</td>
+<td>NT$ 50-100</td>
+</tr>
+<tr>
+<td>閃爍 LED</td>
+<td>含 IC 電路</td>
+<td>初學者</td>
+<td>NT$ 80-150</td>
+</tr>
+<tr>
+<td>FM 收音機</td>
+<td>較複雜電路</td>
+<td>中級</td>
+<td>NT$ 150-300</td>
+</tr>
+<tr>
+<td>電子時鐘</td>
+<td>多元件</td>
+<td>中級</td>
+<td>NT$ 200-400</td>
+</tr>
+</tbody>
+</table>
+<h3 id="82">8.2 工具套裝</h3>
+<table>
+<thead>
+<tr>
+<th>等級</th>
+<th>內容</th>
+<th>預算</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>入門套裝</td>
+<td>烙鐵+架+焊錫+吸錫器</td>
+<td>NT$ 300-500</td>
+</tr>
+<tr>
+<td>標準套裝</td>
+<td>+鉗子+鑷子+洞洞板</td>
+<td>NT$ 500-800</td>
+</tr>
+<tr>
+<td>完整套裝</td>
+<td>+第三手+放大鏡+耐熱墊</td>
+<td>NT$ 800-1200</td>
+</tr>
+<tr>
+<td>專業套裝</td>
+<td>焊台+熱風槍+完整工具</td>
+<td>NT$ 2000+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="faq">九、常見問題 FAQ</h2>
+<h3 id="q1">Q1：初學者該買有鉛還是無鉛焊錫？</h3>
+<p><strong>建議有鉛焊錫（63/37）。</strong><br />
+- 熔點較低，較容易操作<br />
+- 流動性好，焊點較漂亮<br />
+- 使用後記得洗手</p>
+<h3 id="q2">Q2：烙鐵要多少瓦比較好？</h3>
+<p><strong>40-60W 溫控烙鐵最適合。</strong><br />
+- 功率太低：加熱慢，容易冷焊<br />
+- 功率太高：容易燒壞元件<br />
+- 有溫控最重要</p>
+<h3 id="q3">Q3：為什麼焊錫不沾？</h3>
+<p><strong>常見原因：</strong><br />
+1. 烙鐵頭氧化 → 清潔後上錫<br />
+2. 焊盤氧化 → 用砂紙輕磨或加助焊劑<br />
+3. 溫度不足 → 提高溫度<br />
+4. 焊錫品質差 → 換品質好的焊錫</p>
+<h3 id="q4">Q4：焊接時煙霧有毒嗎？</h3>
+<p><strong>助焊劑燃燒的煙霧會刺激呼吸道。</strong><br />
+- 保持通風<br />
+- 使用排煙風扇<br />
+- 不要直接吸入煙霧<br />
+- 長時間焊接建議戴口罩</p>
+<h3 id="q5">Q5：如何練習焊接？</h3>
+<p><strong>最佳練習方式：</strong><br />
+1. 找廢棄電路板練習拆焊<br />
+2. 買便宜的焊接練習套件<br />
+3. 在洞洞板上焊接 LED 和電阻<br />
+4. 逐步挑戰更複雜的專案</p>
+<h3 id="q6">Q6：元件焊反了怎麼辦？</h3>
+<p><strong>拆焊重焊：</strong><br />
+1. 用吸錫器或吸錫線移除焊錫<br />
+2. 加熱後輕輕取出元件<br />
+3. 清理焊孔<br />
+4. 正確方向重新焊接</p>
+<hr />
+<h2 id="_20">十、資源與延伸學習</h2>
+<h3 id="101">10.1 推薦學習資源</h3>
+<table>
+<thead>
+<tr>
+<th>資源類型</th>
+<th>推薦</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>YouTube</td>
+<td>搜尋「soldering tutorial」有大量教學影片</td>
+</tr>
+<tr>
+<td>書籍</td>
+<td>《圖解電子電路入門》系列</td>
+</tr>
+<tr>
+<td>練習套件</td>
+<td>電子材料行的 DIY 焊接套件</td>
+</tr>
+</tbody>
+</table>
+<h3 id="102">10.2 進階技術</h3>
+<p>學會基礎後，可以繼續學習：</p>
+<table>
+<thead>
+<tr>
+<th>技術</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SMD 焊接</td>
+<td>表面貼裝元件，需要更精細的操作</td>
+</tr>
+<tr>
+<td>熱風槍使用</td>
+<td>用於 SMD 拆焊和焊接</td>
+</tr>
+<tr>
+<td>回焊技術</td>
+<td>使用焊膏和加熱平台</td>
+</tr>
+<tr>
+<td>PCB 設計與製作</td>
+<td>從電路設計到自製電路板</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_21">十一、重點總結</h2>
+<h3 id="_22">必記要點</h3>
+<ol>
+<li><strong>溫度適當</strong> - 有鉛 320-350°C，無鉛 350-380°C</li>
+<li><strong>同時加熱</strong> - 烙鐵頭接觸焊盤和元件腳</li>
+<li><strong>焊錫接觸焊點</strong> - 不是接觸烙鐵頭</li>
+<li><strong>時間控制</strong> - 總共 3-5 秒，太久會燒壞</li>
+<li><strong>保持清潔</strong> - 烙鐵頭要經常清潔和上錫</li>
+</ol>
+<h3 id="_23">良好焊點檢查</h3>
+<pre><code>✓ 光滑有光澤
+✓ 圓錐形覆蓋完整
+✓ 焊錫量適中
+✓ 無冷焊或橋接
+✓ 元件腳可見輪廓
+</code></pre>
+<h3 id="_24">安全守則</h3>
+<pre><code>✓ 使用烙鐵架
+✓ 保持通風
+✓ 使用後洗手
+✓ 不用時關閉電源
+✓ 遠離易燃物
+</code></pre>
+<hr />
+<p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

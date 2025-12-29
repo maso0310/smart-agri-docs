@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>分組任務總覽</title>
+    
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1>智慧溫室分組教學 - 任務總覽</h1>
+<h2>課程簡介</h2>
+<p>本課程將學生分成六組，每組使用一套 Arduino + 麵包板，各自負責智慧溫室系統的不同功能模組。透過分組合作，學生可以深入了解各項技術，最後整合成完整的智慧溫室系統。</p>
+<hr />
+<h2>分組架構圖</h2>
+<pre><code>                    ┌─────────────────────────────────────┐
+                    │         智慧溫室系統                │
+                    └─────────────────────────────────────┘
+                                    │
+        ┌───────────────────────────┼───────────────────────────┐
+        │                           │                           │
+        ▼                           ▼                           ▼
+┌───────────────┐         ┌───────────────┐         ┌───────────────┐
+│  感測器組別   │         │  控制器組別   │         │  介面組別     │
+├───────────────┤         ├───────────────┤         ├───────────────┤
+│ G1 光線控制   │         │ G5 遠端遙控   │         │ G4 螢幕顯示   │
+│ G2 溫溼度控制 │         │ G6 網路控制   │         │               │
+│ G3 土壤水份   │         │               │         │               │
+└───────────────┘         └───────────────┘         └───────────────┘
+</code></pre>
+<hr />
+<h2>各組任務概述</h2>
+<h3>第一組：光線控制組 🌞</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>主要任務</strong></td>
+<td>環境光線感測與自動補光控制</td>
+</tr>
+<tr>
+<td><strong>核心元件</strong></td>
+<td>光敏電阻(LDR)、電位器、LED</td>
+</tr>
+<tr>
+<td><strong>學習重點</strong></td>
+<td>類比輸入、PWM輸出、map()函數</td>
+</tr>
+<tr>
+<td><strong>最終目標</strong></td>
+<td>製作自動補光系統原型</td>
+</tr>
+</tbody>
+</table>
+<p><strong>功能說明：</strong>
+- 使用光敏電阻感測環境光線強度
+- 電位器設定光線門檻值
+- 光線不足時自動開啟補光燈
+- LED亮度與環境光線成反比</p>
+<hr />
+<h3>第二組：溫溼度控制組 🌡️</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>主要任務</strong></td>
+<td>溫溼度感測與環境調控</td>
+</tr>
+<tr>
+<td><strong>核心元件</strong></td>
+<td>DHT11感測器、繼電器、LED（模擬風扇/霧化器）</td>
+</tr>
+<tr>
+<td><strong>學習重點</strong></td>
+<td>數位感測器、繼電器控制、遲滯控制</td>
+</tr>
+<tr>
+<td><strong>最終目標</strong></td>
+<td>製作自動溫溼度控制系統</td>
+</tr>
+</tbody>
+</table>
+<p><strong>功能說明：</strong>
+- DHT11 感測溫度與濕度
+- 溫度過高時啟動風扇（繼電器控制）
+- 濕度過低時啟動霧化器
+- 包含遲滯控制避免頻繁開關</p>
+<hr />
+<h3>第三組：土壤水份控制組 💧</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>主要任務</strong></td>
+<td>土壤濕度感測與自動灌溉</td>
+</tr>
+<tr>
+<td><strong>核心元件</strong></td>
+<td>土壤濕度感測器、繼電器、LED（模擬抽水馬達）</td>
+</tr>
+<tr>
+<td><strong>學習重點</strong></td>
+<td>感測器校正、安全保護機制、millis()時間管理</td>
+</tr>
+<tr>
+<td><strong>最終目標</strong></td>
+<td>製作自動灌溉系統原型</td>
+</tr>
+</tbody>
+</table>
+<p><strong>功能說明：</strong>
+- 土壤濕度感測器偵測土壤乾燥程度
+- 土壤過乾時自動啟動澆水
+- 最大澆水時間限制（安全保護）
+- 澆水間隔冷卻時間</p>
+<hr />
+<h3>第四組：螢幕顯示組 📺</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>主要任務</strong></td>
+<td>資訊顯示與人機介面</td>
+</tr>
+<tr>
+<td><strong>核心元件</strong></td>
+<td>LCD 1602（I2C）、8x8 LED點矩陣（MAX7219）</td>
+</tr>
+<tr>
+<td><strong>學習重點</strong></td>
+<td>I2C通訊、自訂字元、圖形顯示</td>
+</tr>
+<tr>
+<td><strong>最終目標</strong></td>
+<td>製作溫室監控面板</td>
+</tr>
+</tbody>
+</table>
+<p><strong>功能說明：</strong>
+- LCD 顯示溫度、濕度、土壤等數值
+- 自訂符號（溫度計、水滴、太陽等圖示）
+- LED 點矩陣顯示狀態圖案
+- 多頁面自動切換顯示</p>
+<hr />
+<h3>第五組：遠端遙控組 🎮</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>主要任務</strong></td>
+<td>紅外線遙控與機械控制</td>
+</tr>
+<tr>
+<td><strong>核心元件</strong></td>
+<td>紅外線接收器、伺服馬達、步進馬達</td>
+</tr>
+<tr>
+<td><strong>學習重點</strong></td>
+<td>紅外線解碼、馬達控制、平滑移動</td>
+</tr>
+<tr>
+<td><strong>最終目標</strong></td>
+<td>製作遙控通風窗/窗簾系統</td>
+</tr>
+</tbody>
+</table>
+<p><strong>功能說明：</strong>
+- 紅外線接收器解碼遙控器訊號
+- 伺服馬達控制通風窗角度（0°-90°）
+- 步進馬達控制窗簾開合
+- 預設位置快速切換</p>
+<hr />
+<h3>第六組：網路控制組 🌐</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>主要任務</strong></td>
+<td>物聯網連線與雲端通訊</td>
+</tr>
+<tr>
+<td><strong>核心元件</strong></td>
+<td>ESP-01 WiFi模組</td>
+</tr>
+<tr>
+<td><strong>學習重點</strong></td>
+<td>WiFi連線、MQTT協定、JSON資料格式</td>
+</tr>
+<tr>
+<td><strong>最終目標</strong></td>
+<td>手機即時監控溫室資料</td>
+</tr>
+</tbody>
+</table>
+<p><strong>功能說明：</strong>
+- ESP-01 連接 WiFi 網路
+- 透過 MQTT 發送模擬感測器資料
+- 發送到公開 Broker（broker.hivemq.com）
+- 手機使用 IoT MQTT Panel 即時查看</p>
+<hr />
+<h2>材料分配表</h2>
+<table>
+<thead>
+<tr>
+<th>組別</th>
+<th>Arduino</th>
+<th>麵包板</th>
+<th>專屬元件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1 光線控制</td>
+<td>1</td>
+<td>1</td>
+<td>光敏電阻、電位器、LED×2</td>
+</tr>
+<tr>
+<td>G2 溫溼度控制</td>
+<td>1</td>
+<td>1</td>
+<td>DHT11、繼電器×2、LED×2</td>
+</tr>
+<tr>
+<td>G3 土壤水份</td>
+<td>1</td>
+<td>1</td>
+<td>土壤感測器、繼電器、電位器、LED×3</td>
+</tr>
+<tr>
+<td>G4 螢幕顯示</td>
+<td>1</td>
+<td>1</td>
+<td>LCD 1602 I2C、LED點矩陣</td>
+</tr>
+<tr>
+<td>G5 遠端遙控</td>
+<td>1</td>
+<td>1</td>
+<td>紅外線接收器+遙控器、伺服馬達、步進馬達+驅動板、LED×3</td>
+</tr>
+<tr>
+<td>G6 網路控制</td>
+<td>-</td>
+<td>1</td>
+<td>ESP-01、USB燒錄板</td>
+</tr>
+</tbody>
+</table>
+<p><strong>共用材料：</strong> 杜邦線、220Ω電阻、USB傳輸線</p>
+<hr />
+<h2>學習進度建議</h2>
+<h3>第一階段：基礎認識（範例 1-2）</h3>
+<ul>
+<li>認識元件與接線</li>
+<li>基本輸入輸出操作</li>
+<li>序列埠監視器使用</li>
+</ul>
+<h3>第二階段：功能實作（範例 3-4）</h3>
+<ul>
+<li>感測器數值讀取與處理</li>
+<li>控制邏輯設計</li>
+<li>門檻值與狀態判斷</li>
+</ul>
+<h3>第三階段：系統整合（範例 5）</h3>
+<ul>
+<li>完整功能整合</li>
+<li>安全保護機制</li>
+<li>狀態顯示與監控</li>
+</ul>
+<h3>第四階段：跨組整合（進階）</h3>
+<ul>
+<li>組間資料交換</li>
+<li>系統整合測試</li>
+<li>完整溫室展示</li>
+</ul>
+<hr />
+<h2>組間整合關係</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│   G1 光線 ──────┐                                           │
+│                 │                                           │
+│   G2 溫溼度 ────┼──→ G4 螢幕顯示 ←── 顯示各組數據          │
+│                 │         ↑                                 │
+│   G3 土壤 ──────┘         │                                 │
+│                           │                                 │
+│         ┌─────────────────┘                                 │
+│         │                                                   │
+│         ▼                                                   │
+│   G6 網路 ←──────────────────────→ 手機 APP               │
+│         │                              │                    │
+│         │                              │                    │
+│         ▼                              ▼                    │
+│   G5 遠端遙控 ←─────────────────── 遠端控制指令            │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<p><strong>整合方向：</strong>
+1. <strong>G1/G2/G3 → G4</strong>：感測器資料傳送到顯示組
+2. <strong>G1/G2/G3 → G6</strong>：感測器資料透過網路上傳
+3. <strong>手機 → G6 → G5</strong>：遠端控制指令傳送到遙控組
+4. <strong>G6 → G4</strong>：網路接收資料顯示在螢幕</p>
+<hr />
+<h2>教材檔案結構</h2>
+<pre><code>06_GROUP/
+├── 分組任務總覽.md          ← 本文件
+│
+├── G1_光線控制組/
+│   ├── 操作手冊.md
+│   └── code/
+│       ├── 01_led_blink.ino
+│       ├── 02_led_pwm.ino
+│       ├── 03_potentiometer_led.ino
+│       ├── 04_light_sensor.ino
+│       └── 05_auto_light.ino
+│
+├── G2_溫溼度控制組/
+│   ├── 操作手冊.md
+│   └── code/
+│       ├── 01_dht11_basic.ino
+│       ├── 02_relay_control.ino
+│       ├── 03_temp_fan.ino
+│       ├── 04_humidity_humidifier.ino
+│       └── 05_climate_control.ino
+│
+├── G3_土壤水份控制組/
+│   ├── 操作手冊.md
+│   └── code/
+│       ├── 01_soil_sensor.ino
+│       ├── 02_moisture_indicator.ino
+│       ├── 03_pump_control.ino
+│       ├── 04_safe_watering.ino
+│       └── 05_auto_irrigation.ino
+│
+├── G4_螢幕顯示組/
+│   ├── 操作手冊.md
+│   └── code/
+│       ├── 01_lcd_basic.ino
+│       ├── 02_lcd_dynamic.ino
+│       ├── 03_lcd_custom_char.ino
+│       ├── 04_led_matrix.ino
+│       └── 05_monitor_panel.ino
+│
+├── G5_遠端遙控組/
+│   ├── 操作手冊.md
+│   └── code/
+│       ├── 01_ir_receive.ino
+│       ├── 02_ir_led_control.ino
+│       ├── 03_servo_control.ino
+│       ├── 04_stepper_control.ino
+│       └── 05_remote_control_system.ino
+│
+└── G6_網路控制組/
+    ├── 操作手冊.md
+    └── code/
+        ├── 01_wifi_connect.ino
+        ├── 02_mqtt_connect.ino
+        ├── 03_fake_sensor_data.ino
+        ├── 04_greenhouse_simulation.ino
+        └── 05_iot_greenhouse.ino
+</code></pre>
+<hr />
+<h2>評分建議</h2>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>比重</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基礎實作</td>
+<td>40%</td>
+<td>完成範例 1-3，正確接線與程式執行</td>
+</tr>
+<tr>
+<td>進階整合</td>
+<td>30%</td>
+<td>完成範例 4-5，系統正常運作</td>
+</tr>
+<tr>
+<td>理解程度</td>
+<td>20%</td>
+<td>能解釋程式邏輯與元件原理</td>
+</tr>
+<tr>
+<td>團隊合作</td>
+<td>10%</td>
+<td>組間溝通與整合協作</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>注意事項</h2>
+<h3>安全提醒</h3>
+<ul>
+<li>⚠️ ESP-01 使用 <strong>3.3V</strong>，不可接 5V</li>
+<li>⚠️ 繼電器控制 AC 電源時務必注意安全</li>
+<li>⚠️ 馬達可能需要外接電源，注意電流限制</li>
+</ul>
+<h3>常見問題排除</h3>
+<ol>
+<li><strong>程式上傳失敗</strong> → 檢查 COM Port 選擇</li>
+<li><strong>感測器讀值異常</strong> → 檢查接線與腳位定義</li>
+<li><strong>WiFi 連不上</strong> → 確認 2.4GHz、密碼正確</li>
+<li><strong>MQTT 無法連線</strong> → 檢查網路、Broker 位址</li>
+</ol>
+<h3>教學建議</h3>
+<ul>
+<li>每組先獨立完成基礎範例</li>
+<li>確認各組都能成功後再進行整合</li>
+<li>整合時可先用序列埠模擬資料交換</li>
+<li>最後再進行完整的系統串接</li>
+</ul>
+<hr />
+<h2>延伸學習</h2>
+<p>完成本課程後，可以進一步學習：
+- <strong>進階感測器</strong>：CO2、pH值、EC值感測
+- <strong>進階控制</strong>：PID控制、模糊控制
+- <strong>雲端平台</strong>：ThingSpeak、Blynk、自架伺服器
+- <strong>機器學習</strong>：環境預測、異常偵測
+- <strong>商業應用</strong>：實際溫室案例研究</p>
+<hr />
+<p><em>本教材適用於 Arduino 入門至中階學習者</em>
+<em>建議搭配實體元件進行操作練習</em></p>
+
+<a href="文件索引.html" class="home-btn" title="回到首頁">🏠</a>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

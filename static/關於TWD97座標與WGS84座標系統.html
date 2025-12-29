@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於TWD97座標與WGS84座標系統</title>
+<style>
+    body { font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; line-height: 1.8; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e8e8e8; min-height: 100vh; }
+    h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+    h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+    h3 { color: #81e6d9; margin-top: 20px; }
+    h4 { color: #90cdf4; margin-top: 15px; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+    th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+    th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+    tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+    tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+    code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+    pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+    pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+    blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+    a { color: #63b3ed; text-decoration: none; }
+    a:hover { color: #4fd1c5; text-decoration: underline; }
+    ul, ol { padding-left: 25px; }
+    li { margin: 5px 0; }
+    hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+    strong { color: #f6e05e; }
+    .floating-home { position: fixed; bottom: 25px; right: 25px; z-index: 9999; display: flex; align-items: center; justify-content: center; width: 55px; height: 55px; background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%); color: #1a1a2e; text-decoration: none; border-radius: 50%; box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4); font-size: 24px; transition: all 0.3s ease; }
+    .floating-home:hover { transform: scale(1.1); box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6); }
+    .theme-toggle { position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%; border: none; cursor: pointer; z-index: 10000; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); background: linear-gradient(135deg, #4fd1c5, #63b3ed); color: #1a1a2e; }
+    .theme-toggle:hover { transform: scale(1.1) rotate(15deg); }
+    [data-theme="light"] body { background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important; color: #2d3748 !important; }
+    [data-theme="light"] h1 { color: #2b6cb0 !important; border-bottom-color: #4fd1c5 !important; }
+    [data-theme="light"] h2 { color: #2c5282 !important; border-bottom-color: #90cdf4 !important; }
+    [data-theme="light"] h3 { color: #2b6cb0 !important; }
+    [data-theme="light"] p, [data-theme="light"] li, [data-theme="light"] td { color: #4a5568 !important; }
+    [data-theme="light"] th { background-color: rgba(79, 209, 197, 0.25) !important; color: #2d3748 !important; }
+    [data-theme="light"] table { background-color: rgba(255, 255, 255, 0.9) !important; }
+    [data-theme="light"] code { background-color: rgba(79, 209, 197, 0.2) !important; color: #2b6cb0 !important; }
+    [data-theme="light"] pre { background-color: #f7fafc !important; border: 1px solid rgba(79, 209, 197, 0.3) !important; }
+    [data-theme="light"] pre code { color: #2d3748 !important; }
+    [data-theme="light"] blockquote { background-color: rgba(79, 209, 197, 0.15) !important; color: #2d3748 !important; }
+    [data-theme="light"] strong { color: #d69e2e !important; }
+    [data-theme="light"] .theme-toggle { background: linear-gradient(135deg, #667eea, #764ba2); color: #ffffff; }
+    [data-theme="light"] .floating-home { color: #ffffff; }
+</style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+    <h1>關於 TWD97 座標與 WGS84 座標系統</h1>
+    <p>座標系統是地理資訊系統（GIS）的基礎。在台灣進行農業測量、定位導航時，經常會遇到 TWD97 和 WGS84 兩種座標系統。了解它們的差異與轉換方法，對於正確處理空間資料至關重要。</p>
+    <hr />
+
+    <h2>一、座標系統基礎概念</h2>
+    <h3>什麼是座標系統</h3>
+    <p>座標系統定義了如何用數字來描述地球表面上的位置，主要包含三個要素：</p>
+    <ul>
+        <li><strong>大地基準（Datum）</strong>：定義地球的形狀和大小</li>
+        <li><strong>橢球體（Ellipsoid）</strong>：數學模型近似地球形狀</li>
+        <li><strong>投影方式（Projection）</strong>：將球面座標轉換到平面</li>
+    </ul>
+
+    <h3>地理座標 vs 投影座標</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>類型</th>
+                <th>單位</th>
+                <th>特點</th>
+                <th>範例</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>地理座標</td>
+                <td>度（°）</td>
+                <td>經緯度，球面座標</td>
+                <td>121.5654°E, 25.0330°N</td>
+            </tr>
+            <tr>
+                <td>投影座標</td>
+                <td>公尺（m）</td>
+                <td>平面座標，適合計算</td>
+                <td>E: 302500, N: 2770500</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>二、WGS84 座標系統</h2>
+    <h3>定義與特點</h3>
+    <p><strong>WGS84</strong>（World Geodetic System 1984）是全球通用的大地座標系統：</p>
+    <table>
+        <thead>
+            <tr>
+                <th>項目</th>
+                <th>說明</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>全名</td>
+                <td>1984 世界大地座標系統</td>
+            </tr>
+            <tr>
+                <td>建立單位</td>
+                <td>美國國防部</td>
+            </tr>
+            <tr>
+                <td>EPSG 代碼</td>
+                <td>EPSG:4326（地理座標）</td>
+            </tr>
+            <tr>
+                <td>座標原點</td>
+                <td>地球質心</td>
+            </tr>
+            <tr>
+                <td>應用</td>
+                <td>GPS、Google Maps、航空導航</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>WGS84 橢球參數</h3>
+    <pre><code># WGS84 橢球體參數
+半長軸 (a) = 6,378,137.0 m
+半短軸 (b) = 6,356,752.314245 m
+扁率 (f)   = 1 / 298.257223563
+第一離心率平方 (e²) = 0.00669437999014
+</code></pre>
+
+    <h3>WGS84 座標表示方式</h3>
+    <pre><code># 度 (Decimal Degrees)
+緯度: 25.0330°
+經度: 121.5654°
+
+# 度分秒 (DMS)
+緯度: 25° 01' 58.8" N
+經度: 121° 33' 55.4" E
+
+# 度分 (DM)
+緯度: 25° 1.98' N
+經度: 121° 33.92' E
+</code></pre>
+    <hr />
+
+    <h2>三、TWD97 座標系統</h2>
+    <h3>定義與特點</h3>
+    <p><strong>TWD97</strong>（Taiwan Datum 1997）是台灣現行的國家座標系統：</p>
+    <table>
+        <thead>
+            <tr>
+                <th>項目</th>
+                <th>說明</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>全名</td>
+                <td>1997 台灣大地基準</td>
+            </tr>
+            <tr>
+                <td>建立單位</td>
+                <td>內政部國土測繪中心</td>
+            </tr>
+            <tr>
+                <td>採用橢球</td>
+                <td>GRS80（與 WGS84 幾乎相同）</td>
+            </tr>
+            <tr>
+                <td>投影方式</td>
+                <td>橫麥卡托投影（TM）二度分帶</td>
+            </tr>
+            <tr>
+                <td>EPSG 代碼</td>
+                <td>EPSG:3826（TM2 121分帶）</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>TWD97 投影參數</h3>
+    <pre><code># TWD97 TM2（二度分帶）投影參數
+中央經線: 121°E（台灣本島）/ 119°E（澎湖）
+原點緯度: 0°（赤道）
+假東距 (False Easting): 250,000 m
+假北距 (False Northing): 0 m
+尺度因子 (Scale Factor): 0.9999
+</code></pre>
+
+    <h3>TWD97 座標原點詳解</h3>
+    <p>TWD97 座標系統的原點設計是其重要特徵，直接影響座標值的計算與解讀：</p>
+
+    <h4>1. 地理原點（投影原點）</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>參數</th>
+                <th>數值</th>
+                <th>說明</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>原點緯度</td>
+                <td>0°（赤道）</td>
+                <td>橫麥卡托投影的標準設置</td>
+            </tr>
+            <tr>
+                <td>中央經線</td>
+                <td>121°E</td>
+                <td>通過台灣本島中心的經線</td>
+            </tr>
+            <tr>
+                <td>原點位置</td>
+                <td>赤道與東經 121° 交點</td>
+                <td>實際位於印度尼西亞海域</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4>2. 假原點（False Origin）</h4>
+    <p>為了避免負座標值，TWD97 使用「假原點」（偏移量）：</p>
+    <ul>
+        <li><strong>假東距（False Easting）</strong>：250,000 公尺
+            <ul>
+                <li>使台灣本島的 X 座標都是正值</li>
+                <li>東經 121° 中央經線上的點 X = 250,000</li>
+                <li>中央經線以東的點 X > 250,000</li>
+                <li>中央經線以西的點 X < 250,000</li>
+            </ul>
+        </li>
+        <li><strong>假北距（False Northing）</strong>：0 公尺
+            <ul>
+                <li>赤道上的點 Y = 0</li>
+                <li>台灣位於北半球，所有 Y 座標皆為正值（約 2,400,000 ~ 2,900,000）</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h4>3. 台灣各區域的中央經線</h4>
+    <p>為了減少投影變形，台灣採用「二度分帶」系統，不同區域使用不同中央經線：</p>
+    <table>
+        <thead>
+            <tr>
+                <th>區域</th>
+                <th>中央經線</th>
+                <th>EPSG 代碼</th>
+                <th>假東距</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>台灣本島</td>
+                <td>121°E</td>
+                <td>EPSG:3826</td>
+                <td>250,000 m</td>
+            </tr>
+            <tr>
+                <td>澎湖群島</td>
+                <td>119°E</td>
+                <td>EPSG:3825</td>
+                <td>250,000 m</td>
+            </tr>
+            <tr>
+                <td>金門、馬祖</td>
+                <td>117°E 或 119°E</td>
+                <td>EPSG:3824 或 3825</td>
+                <td>250,000 m</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4>4. 原點的實際意義</h4>
+    <blockquote>
+        <strong>為什麼原點在赤道？</strong><br>
+        橫麥卡托投影（TM）的標準設計是以赤道為緯度原點，這樣可以：
+        <ul>
+            <li>保持投影的數學一致性</li>
+            <li>簡化座標轉換公式</li>
+            <li>與國際標準接軌</li>
+        </ul>
+        雖然原點不在台灣境內，但通過「假東距」和「假北距」的設計，確保台灣地區的所有座標值都是正值且易於使用。
+    </blockquote>
+
+    <h4>5. 座標範例說明</h4>
+    <pre><code># 台北市中心（台北 101 附近）
+WGS84: 121.5654°E, 25.0330°N
+TWD97: X = 302,500 m, Y = 2,770,500 m
+
+# 座標解讀：
+X = 302,500 m
+  → 比假東距 250,000 多了 52,500 m
+  → 表示在中央經線（121°E）以東約 52.5 km
+
+Y = 2,770,500 m
+  → 從赤道（0°）向北約 2,770.5 km
+  → 對應北緯約 25°
+</code></pre>
+
+    <h4>6. 與其他座標系統的原點比較</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>座標系統</th>
+                <th>原點位置</th>
+                <th>假原點</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>WGS84</td>
+                <td>地球質心</td>
+                <td>無（使用經緯度）</td>
+            </tr>
+            <tr>
+                <td>TWD97（121°分帶）</td>
+                <td>赤道 × 東經 121°</td>
+                <td>E: 250,000 m, N: 0 m</td>
+            </tr>
+            <tr>
+                <td>TWD67（舊系統）</td>
+                <td>中央山脈基準點</td>
+                <td>不同的偏移值</td>
+            </tr>
+            <tr>
+                <td>UTM（國際通用）</td>
+                <td>赤道 × 各帶中央經線</td>
+                <td>E: 500,000 m, N: 0 m（北半球）</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>為什麼使用 TWD97</h3>
+    <ul>
+        <li><strong>最佳化</strong>：針對台灣地區設計，變形最小</li>
+        <li><strong>實用單位</strong>：使用公尺，便於計算距離、面積</li>
+        <li><strong>法定座標</strong>：政府地籍、都市計畫使用</li>
+        <li><strong>相容性</strong>：與舊系統 TWD67 可轉換</li>
+    </ul>
+    <hr />
+
+    <h2>四、TWD97 與 WGS84 的差異</h2>
+    <h3>主要差異比較</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>項目</th>
+                <th>WGS84</th>
+                <th>TWD97</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>類型</td>
+                <td>地理座標系統</td>
+                <td>投影座標系統</td>
+            </tr>
+            <tr>
+                <td>單位</td>
+                <td>度</td>
+                <td>公尺</td>
+            </tr>
+            <tr>
+                <td>適用範圍</td>
+                <td>全球</td>
+                <td>台灣地區</td>
+            </tr>
+            <tr>
+                <td>用途</td>
+                <td>GPS、全球定位</td>
+                <td>測量、地籍、GIS</td>
+            </tr>
+            <tr>
+                <td>橢球體</td>
+                <td>WGS84</td>
+                <td>GRS80</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>橢球體差異（極小）</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>參數</th>
+                <th>WGS84</th>
+                <th>GRS80</th>
+                <th>差異</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>半長軸 a</td>
+                <td>6,378,137 m</td>
+                <td>6,378,137 m</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>扁率倒數 1/f</td>
+                <td>298.257223563</td>
+                <td>298.257222101</td>
+                <td>0.000001462</td>
+            </tr>
+        </tbody>
+    </table>
+    <blockquote>
+        <strong>實務上</strong>：WGS84 和 TWD97 的大地基準幾乎相同，主要差異在於 TWD97 多了投影轉換。
+    </blockquote>
+    <hr />
+
+    <h2>五、座標轉換</h2>
+    <h3>轉換流程</h3>
+    <pre><code>WGS84 經緯度 ←→ TWD97 TM2
+
+轉換步驟：
+1. WGS84 → TWD97：經緯度 → TM 投影計算 → E, N 座標
+2. TWD97 → WGS84：E, N 座標 → TM 反投影 → 經緯度
+</code></pre>
+
+    <h3>Python 轉換程式</h3>
+    <pre><code class="language-python">import math
+
+class CoordinateConverter:
+    """TWD97 與 WGS84 座標轉換器"""
+
+    def __init__(self):
+        # GRS80 橢球參數
+        self.a = 6378137.0  # 半長軸
+        self.f = 1 / 298.257222101  # 扁率
+        self.b = self.a * (1 - self.f)  # 半短軸
+
+        # 計算離心率
+        self.e2 = (self.a**2 - self.b**2) / self.a**2  # 第一離心率平方
+        self.ep2 = (self.a**2 - self.b**2) / self.b**2  # 第二離心率平方
+
+        # TWD97 TM2 投影參數
+        self.lon0 = 121.0  # 中央經線（度）
+        self.k0 = 0.9999   # 尺度因子
+        self.dx = 250000   # 假東距
+        self.dy = 0        # 假北距
+
+    def wgs84_to_twd97(self, lat, lon):
+        """
+        WGS84 經緯度轉 TWD97 TM2
+
+        參數:
+            lat: 緯度（度）
+            lon: 經度（度）
+
+        回傳:
+            (E, N): TWD97 座標（公尺）
+        """
+        # 轉弧度
+        lat_rad = math.radians(lat)
+        lon_rad = math.radians(lon)
+        lon0_rad = math.radians(self.lon0)
+
+        # 計算參數
+        N = self.a / math.sqrt(1 - self.e2 * math.sin(lat_rad)**2)
+        T = math.tan(lat_rad)**2
+        C = self.ep2 * math.cos(lat_rad)**2
+        A = (lon_rad - lon0_rad) * math.cos(lat_rad)
+
+        # 子午線弧長
+        M = self.a * (
+            (1 - self.e2/4 - 3*self.e2**2/64 - 5*self.e2**3/256) * lat_rad
+            - (3*self.e2/8 + 3*self.e2**2/32 + 45*self.e2**3/1024) * math.sin(2*lat_rad)
+            + (15*self.e2**2/256 + 45*self.e2**3/1024) * math.sin(4*lat_rad)
+            - (35*self.e2**3/3072) * math.sin(6*lat_rad)
+        )
+
+        # 計算 E, N
+        E = self.dx + self.k0 * N * (
+            A + (1-T+C) * A**3 / 6
+            + (5-18*T+T**2+72*C-58*self.ep2) * A**5 / 120
+        )
+
+        N_coord = self.dy + self.k0 * (
+            M + N * math.tan(lat_rad) * (
+                A**2 / 2
+                + (5-T+9*C+4*C**2) * A**4 / 24
+                + (61-58*T+T**2+600*C-330*self.ep2) * A**6 / 720
+            )
+        )
+
+        return E, N_coord
+
+    def twd97_to_wgs84(self, E, N):
+        """
+        TWD97 TM2 轉 WGS84 經緯度
+
+        參數:
+            E: 東距（公尺）
+            N: 北距（公尺）
+
+        回傳:
+            (lat, lon): WGS84 座標（度）
+        """
+        # 移除假座標
+        x = E - self.dx
+        y = N - self.dy
+
+        # 計算底點緯度
+        M = y / self.k0
+        mu = M / (self.a * (1 - self.e2/4 - 3*self.e2**2/64 - 5*self.e2**3/256))
+
+        e1 = (1 - math.sqrt(1 - self.e2)) / (1 + math.sqrt(1 - self.e2))
+
+        phi1 = mu + (3*e1/2 - 27*e1**3/32) * math.sin(2*mu)
+        phi1 += (21*e1**2/16 - 55*e1**4/32) * math.sin(4*mu)
+        phi1 += (151*e1**3/96) * math.sin(6*mu)
+        phi1 += (1097*e1**4/512) * math.sin(8*mu)
+
+        # 計算參數
+        N1 = self.a / math.sqrt(1 - self.e2 * math.sin(phi1)**2)
+        T1 = math.tan(phi1)**2
+        C1 = self.ep2 * math.cos(phi1)**2
+        R1 = self.a * (1 - self.e2) / (1 - self.e2 * math.sin(phi1)**2)**1.5
+        D = x / (N1 * self.k0)
+
+        # 計算緯度
+        lat = phi1 - (N1 * math.tan(phi1) / R1) * (
+            D**2 / 2
+            - (5 + 3*T1 + 10*C1 - 4*C1**2 - 9*self.ep2) * D**4 / 24
+            + (61 + 90*T1 + 298*C1 + 45*T1**2 - 252*self.ep2 - 3*C1**2) * D**6 / 720
+        )
+
+        # 計算經度
+        lon = self.lon0 + math.degrees(
+            (D - (1 + 2*T1 + C1) * D**3 / 6
+             + (5 - 2*C1 + 28*T1 - 3*C1**2 + 8*self.ep2 + 24*T1**2) * D**5 / 120)
+            / math.cos(phi1)
+        )
+
+        lat = math.degrees(lat)
+
+        return lat, lon
+
+
+# 使用範例
+converter = CoordinateConverter()
+
+# WGS84 轉 TWD97
+lat, lon = 25.0330, 121.5654  # 台北
+e, n = converter.wgs84_to_twd97(lat, lon)
+print(f"WGS84: ({lat}, {lon})")
+print(f"TWD97: E={e:.3f}, N={n:.3f}")
+
+# TWD97 轉 WGS84
+lat2, lon2 = converter.twd97_to_wgs84(e, n)
+print(f"轉回 WGS84: ({lat2:.6f}, {lon2:.6f})")
+</code></pre>
+
+    <h3>使用 pyproj 套件（推薦）</h3>
+    <pre><code class="language-python">from pyproj import Transformer, CRS
+
+# 建立轉換器
+# WGS84 (EPSG:4326) ←→ TWD97 TM2 (EPSG:3826)
+wgs84_to_twd97 = Transformer.from_crs("EPSG:4326", "EPSG:3826", always_xy=True)
+twd97_to_wgs84 = Transformer.from_crs("EPSG:3826", "EPSG:4326", always_xy=True)
+
+# WGS84 轉 TWD97
+lon, lat = 121.5654, 25.0330
+e, n = wgs84_to_twd97.transform(lon, lat)
+print(f"TWD97: E={e:.3f}, N={n:.3f}")
+
+# TWD97 轉 WGS84
+lon2, lat2 = twd97_to_wgs84.transform(e, n)
+print(f"WGS84: ({lat2:.6f}, {lon2:.6f})")
+
+# 批次轉換
+import numpy as np
+lons = np.array([121.5, 121.6, 121.7])
+lats = np.array([25.0, 25.1, 25.2])
+es, ns = wgs84_to_twd97.transform(lons, lats)
+</code></pre>
+    <hr />
+
+    <h2>六、度分秒轉換</h2>
+    <pre><code class="language-python">def dms_to_dd(degrees, minutes, seconds, direction='N'):
+    """度分秒轉十進位度"""
+    dd = degrees + minutes/60 + seconds/3600
+    if direction in ['S', 'W']:
+        dd = -dd
+    return dd
+
+def dd_to_dms(dd):
+    """十進位度轉度分秒"""
+    direction = 'N' if dd >= 0 else 'S'
+    dd = abs(dd)
+    degrees = int(dd)
+    minutes = int((dd - degrees) * 60)
+    seconds = (dd - degrees - minutes/60) * 3600
+    return degrees, minutes, seconds, direction
+
+# 範例
+lat_dms = (25, 1, 58.8, 'N')  # 25° 01' 58.8" N
+lat_dd = dms_to_dd(*lat_dms)
+print(f"十進位度: {lat_dd:.6f}°")
+
+d, m, s, dir = dd_to_dms(25.033)
+print(f"度分秒: {d}° {m}' {s:.1f}\" {dir}")
+</code></pre>
+    <hr />
+
+    <h2>七、常見 EPSG 代碼</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>EPSG</th>
+                <th>名稱</th>
+                <th>說明</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>4326</td>
+                <td>WGS 84</td>
+                <td>GPS、Google Maps 使用</td>
+            </tr>
+            <tr>
+                <td>3826</td>
+                <td>TWD97 / TM2 zone 121</td>
+                <td>台灣本島（中央經線 121°）</td>
+            </tr>
+            <tr>
+                <td>3825</td>
+                <td>TWD97 / TM2 zone 119</td>
+                <td>澎湖（中央經線 119°）</td>
+            </tr>
+            <tr>
+                <td>3857</td>
+                <td>Web Mercator</td>
+                <td>網路地圖服務使用</td>
+            </tr>
+            <tr>
+                <td>4269</td>
+                <td>NAD83</td>
+                <td>北美使用</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>八、農業應用注意事項</h2>
+    <h3>GPS 設備座標設定</h3>
+    <ul>
+        <li>大多數 GPS 預設輸出 <strong>WGS84</strong></li>
+        <li>RTK 設備可能可設定輸出 TWD97</li>
+        <li>確認設備與軟體使用相同座標系統</li>
+    </ul>
+
+    <h3>GIS 軟體設定</h3>
+    <pre><code class="language-python"># QGIS Python 設定座標系統
+from qgis.core import QgsCoordinateReferenceSystem
+
+# 設定為 TWD97
+crs_twd97 = QgsCoordinateReferenceSystem("EPSG:3826")
+
+# 設定為 WGS84
+crs_wgs84 = QgsCoordinateReferenceSystem("EPSG:4326")
+</code></pre>
+
+    <h3>常見問題</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>問題</th>
+                <th>原因</th>
+                <th>解決方法</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>圖層無法對齊</td>
+                <td>座標系統不同</td>
+                <td>統一轉換為同一系統</td>
+            </tr>
+            <tr>
+                <td>位置偏移數百公尺</td>
+                <td>使用錯誤的座標系統</td>
+                <td>確認 EPSG 代碼</td>
+            </tr>
+            <tr>
+                <td>面積計算錯誤</td>
+                <td>使用地理座標計算</td>
+                <td>轉為投影座標再計算</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <blockquote>
+        <strong>最佳實務</strong>：儲存原始 GPS 資料（WGS84），處理分析時轉為 TWD97，輸出成果時標註座標系統。
+    </blockquote>
+    <hr />
+
+    <h2>九、線上轉換資源</h2>
+    <ul>
+        <li><strong>內政部座標轉換服務</strong>：<a href="https://www.tgos.tw">TGOS 地理資訊圖資雲</a></li>
+        <li><strong>EPSG.io</strong>：座標系統查詢與轉換</li>
+        <li><strong>GPS Visualizer</strong>：線上座標轉換工具</li>
+    </ul>
+    <hr />
+
+    <p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">智慧農業課程教材 | 最後更新：2025年12月</p>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) { icon.textContent = savedTheme === 'light' ? '🌙' : '☀️'; }
+        })();
+    </script>
+</body>
+</html>

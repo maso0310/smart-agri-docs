@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於LCD液晶螢幕</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="lcd">關於 LCD 液晶螢幕</h1>
+<h2 id="lcd_1">前言：為什麼需要 LCD 螢幕？</h2>
+<p>在 Arduino 專案中，我們常常需要顯示資訊給使用者看：</p>
+<ul>
+<li>感測器數值（溫度、濕度、距離）</li>
+<li>系統狀態（開/關、運轉中、錯誤）</li>
+<li>選單介面</li>
+<li>時間日期</li>
+</ul>
+<p>雖然可以透過 Serial Monitor 在電腦上看，但如果專案要獨立運作，就需要一個顯示裝置。LCD 液晶螢幕是最經濟實惠的選擇！</p>
+<hr />
+<h2 id="lcd_2">一、LCD 液晶螢幕是什麼？</h2>
+<h3 id="_1">一句話解釋</h3>
+<blockquote>
+<p>LCD（Liquid Crystal Display）液晶螢幕是一種利用液晶分子控制光線通過來顯示文字和圖案的顯示器。</p>
+</blockquote>
+<h3 id="_2">常見型號</h3>
+<pre><code>LCD 1602（最常用）              LCD 2004
+┌────────────────────────┐    ┌────────────────────────┐
+│ ████████████████████████│    │ ████████████████████████│
+│ ████████████████████████│    │ ████████████████████████│
+└────────────────────────┘    │ ████████████████████████│
+                              │ ████████████████████████│
+16 字元 x 2 行 = 32 字元       └────────────────────────┘
+
+                              20 字元 x 4 行 = 80 字元
+
+型號命名規則：
+LCD 1602 = 16 字元 x 02 行
+LCD 2004 = 20 字元 x 04 行
+</code></pre>
+<h3 id="lcd-1602">LCD 1602 外觀</h3>
+<pre><code>LCD 1602 模組（不含 I2C）：
+
+    ┌──────────────────────────────────────────┐
+    │  ┌────────────────────────────────────┐  │
+    │  │                                    │  │
+    │  │  Line 1: Hello World!              │  │ ← 顯示區域
+    │  │  Line 2: Temperature: 25C          │  │
+    │  │                                    │  │
+    │  └────────────────────────────────────┘  │
+    │                                          │
+    │  VSS VDD V0 RS RW E D0 D1 D2 D3 D4 D5 D6 D7 A  K │
+    │   1   2  3  4  5 6  7  8  9 10 11 12 13 14 15 16 │
+    │   ○   ○  ○  ○  ○ ○  ○  ○  ○  ○  ○  ○  ○  ○  ○  ○ │
+    └──────────────────────────────────────────────────┘
+
+    16 個腳位！接線很麻煩...
+</code></pre>
+<h3 id="i2c">I2C 背板模組</h3>
+<pre><code>LCD + I2C 背板（推薦！）：
+
+    ┌──────────────────────────────────────────┐
+    │  ┌────────────────────────────────────┐  │
+    │  │                                    │  │
+    │  │  顯示區域                          │  │
+    │  │                                    │  │
+    │  └────────────────────────────────────┘  │
+    │                                          │
+    │  ┌────────────────────────────────────┐  │
+    │  │  I2C 背板（PCF8574）               │  │
+    │  │  ┌──┐                              │  │
+    │  │  │藍│ ← 對比度調整旋鈕             │  │
+    │  │  └──┘                              │  │
+    │  │                                    │  │
+    │  │     GND  VCC  SDA  SCL             │  │
+    │  │      ○    ○    ○    ○              │  │
+    │  └──────┼────┼────┼────┼──────────────┘  │
+    └─────────┴────┴────┴────┴─────────────────┘
+
+    只需要 4 條線！（GND, VCC, SDA, SCL）
+</code></pre>
+<hr />
+<h2 id="vs-i2c">二、並列介面 vs I2C 介面</h2>
+<h3 id="_3">比較表</h3>
+<pre><code>┌─────────────┬────────────────────┬────────────────────┐
+│    特性     │    並列介面         │     I2C 介面       │
+├─────────────┼────────────────────┼────────────────────┤
+│  接線數量   │ 6-10 條            │ 4 條               │
+│  佔用腳位   │ 6-10 個數位腳位    │ 2 個（A4, A5）     │
+│  接線難度   │ 複雜               │ 簡單               │
+│  傳輸速度   │ 快                 │ 較慢（但夠用）     │
+│  價格      │ 便宜               │ 稍貴（多 I2C 板）  │
+│  推薦程度   │ 不推薦初學者       │ 強烈推薦           │
+└─────────────┴────────────────────┴────────────────────┘
+
+結論：初學者請直接買「LCD + I2C 背板」組合！
+</code></pre>
+<h3 id="i2c_1">I2C 的優點</h3>
+<pre><code>使用 I2C 的好處：
+
+1. 節省腳位
+   並列：D2, D3, D4, D5, D6, D7（至少 6 個）
+   I2C：A4(SDA), A5(SCL)（只要 2 個）
+
+2. 可串接多個裝置
+   ┌─────────┐
+   │ Arduino │
+   │  A4 A5  │
+   └──┬──┬───┘
+      │  │
+   ┌──┴──┴───┐   ┌──────────┐   ┌──────────┐
+   │  LCD    │───│  OLED    │───│   RTC    │
+   │ 位址0x27│   │ 位址0x3C │   │ 位址0x68 │
+   └─────────┘   └──────────┘   └──────────┘
+
+   同一組 I2C 線可以接多個不同位址的裝置！
+</code></pre>
+<hr />
+<h2 id="lcd_3">三、LCD 的顯示原理</h2>
+<h3 id="_4">座標系統</h3>
+<pre><code>LCD 1602 座標系統：
+
+     列（Column）
+     0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+    ┌─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬──┬──┬──┬──┬──┬──┐
+  0 │H│e│l│l│o│ │W│o│r│l│d │! │  │  │  │  │ ← 第一行（row 0）
+    ├─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼──┼──┼──┼──┼──┼──┤
+行 1 │T│e│m│p│:│ │2│5│.│5│C │  │  │  │  │  │ ← 第二行（row 1）
+    └─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴──┴──┴──┴──┴──┴──┘
+
+座標表示：lcd.setCursor(列, 行)
+範例：
+- lcd.setCursor(0, 0)  → 第一行第一個字元
+- lcd.setCursor(5, 0)  → 第一行第六個字元
+- lcd.setCursor(0, 1)  → 第二行第一個字元
+</code></pre>
+<h3 id="_5">字元顯示</h3>
+<pre><code>LCD 每個字元是 5x8 像素的點陣：
+
+  01234
+0 █░░░█   ← 可以自訂字元圖案
+1 █░░░█
+2 █░░░█
+3 █████
+4 █░░░█
+5 █░░░█
+6 █░░░█
+7 ░░░░░   ← 通常留空（給游標用）
+
+內建字元：
+- 英文字母 A-Z, a-z
+- 數字 0-9
+- 常用符號 !@#$%^&amp;*() 等
+- 日文假名（部分型號）
+
+⚠️ 不支援中文！（需要用自訂字元拼湊或用其他螢幕）
+</code></pre>
+<hr />
+<h2 id="_6">四、接線方式</h2>
+<h3 id="i2c_2">I2C 介面接線（推薦）</h3>
+<pre><code>Arduino Uno 與 LCD I2C 接線：
+
+    Arduino UNO              LCD I2C 模組
+    ┌─────────┐             ┌─────────────┐
+    │         │             │    LCD      │
+    │      5V ├─────────────┤ VCC         │
+    │         │             │             │
+    │     GND ├─────────────┤ GND         │
+    │         │             │             │
+    │      A4 ├─────────────┤ SDA         │  ← I2C 資料線
+    │         │             │             │
+    │      A5 ├─────────────┤ SCL         │  ← I2C 時脈線
+    │         │             │             │
+    └─────────┘             └─────────────┘
+
+    只需要 4 條線！
+
+    Arduino Uno I2C 腳位：
+    - SDA = A4
+    - SCL = A5
+
+    其他 Arduino 板子：
+    - Mega: SDA = 20, SCL = 21
+    - Leonardo: SDA = 2, SCL = 3
+</code></pre>
+<h3 id="4-bit">並列介面接線（4-bit 模式）</h3>
+<pre><code>Arduino Uno 與 LCD 並列接線（不推薦，太複雜）：
+
+    Arduino              LCD 1602
+    ┌───────┐           ┌────────────────────┐
+    │   GND ├───────────┤ 1  VSS (GND)       │
+    │    5V ├───────────┤ 2  VDD (5V)        │
+    │       │    ┌──────┤ 3  V0  (對比度)    │
+    │       │   ┌┴┐     │                    │
+    │       │   │ │10K  │                    │
+    │       │   └┬┘     │                    │
+    │   GND ├────┘      │                    │
+    │    D7 ├───────────┤ 4  RS              │
+    │   GND ├───────────┤ 5  RW (接地=寫入)  │
+    │    D6 ├───────────┤ 6  E               │
+    │       │    ×      │ 7  D0 (不接)       │
+    │       │    ×      │ 8  D1 (不接)       │
+    │       │    ×      │ 9  D2 (不接)       │
+    │       │    ×      │ 10 D3 (不接)       │
+    │    D5 ├───────────┤ 11 D4              │
+    │    D4 ├───────────┤ 12 D5              │
+    │    D3 ├───────────┤ 13 D6              │
+    │    D2 ├───────────┤ 14 D7              │
+    │    5V ├───────────┤ 15 A  (背光+)      │
+    │   GND ├───────────┤ 16 K  (背光-)      │
+    └───────┘           └────────────────────┘
+
+    太複雜了！請用 I2C 版本！
+</code></pre>
+<hr />
+<h2 id="_7">五、程式庫安裝</h2>
+<h3 id="i2c-lcd">I2C LCD 程式庫安裝</h3>
+<pre><code>Arduino IDE 安裝 LiquidCrystal_I2C 程式庫：
+
+1. 開啟 Arduino IDE
+
+2. 點選選單：草稿碼 → 匯入程式庫 → 管理程式庫
+   (Sketch → Include Library → Manage Libraries)
+
+3. 在搜尋框輸入「LiquidCrystal I2C」
+
+4. 找到「LiquidCrystal I2C」by Frank de Brabander
+   ┌────────────────────────────────────────┐
+   │ LiquidCrystal I2C                      │
+   │ by Frank de Brabander                  │
+   │ Version: 1.1.x                         │
+   │                          [安裝] ←點這  │
+   └────────────────────────────────────────┘
+
+5. 安裝完成！
+</code></pre>
+<h3 id="i2c_3">找出 I2C 位址</h3>
+<pre><code>不同廠商的 I2C 背板位址可能不同：
+
+常見位址：
+- 0x27（最常見）
+- 0x3F（次常見）
+- 0x20 ~ 0x27（可調整）
+
+如果不知道位址，使用 I2C Scanner 程式掃描：
+</code></pre>
+<pre><code class="language-cpp">/*
+ * I2C 位址掃描器
+ * 上傳後開啟 Serial Monitor 查看結果
+ */
+
+#include &lt;Wire.h&gt;
+
+void setup() {
+  Wire.begin();
+  Serial.begin(9600);
+  Serial.println(&quot;I2C Scanner&quot;);
+  Serial.println(&quot;掃描中...&quot;);
+}
+
+void loop() {
+  byte error, address;
+  int deviceCount = 0;
+
+  for (address = 1; address &lt; 127; address++) {
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+
+    if (error == 0) {
+      Serial.print(&quot;找到 I2C 裝置，位址：0x&quot;);
+      if (address &lt; 16) Serial.print(&quot;0&quot;);
+      Serial.println(address, HEX);
+      deviceCount++;
+    }
+  }
+
+  if (deviceCount == 0) {
+    Serial.println(&quot;未找到任何 I2C 裝置！&quot;);
+  } else {
+    Serial.print(&quot;共找到 &quot;);
+    Serial.print(deviceCount);
+    Serial.println(&quot; 個裝置&quot;);
+  }
+
+  delay(5000);  // 每 5 秒掃描一次
+}
+</code></pre>
+<hr />
+<h2 id="arduino">六、Arduino 程式範例</h2>
+<h3 id="1hello-world">範例 1：Hello World</h3>
+<pre><code class="language-cpp">/*
+ * LCD I2C 基本測試
+ * 顯示 Hello World
+ */
+
+#include &lt;Wire.h&gt;
+#include &lt;LiquidCrystal_I2C.h&gt;
+
+// 建立 LCD 物件（I2C位址, 字元數, 行數）
+// 如果位址 0x27 不行，試試 0x3F
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+void setup() {
+  lcd.init();         // 初始化 LCD
+  lcd.backlight();    // 開啟背光
+
+  lcd.setCursor(0, 0);      // 游標移到第一行第一格
+  lcd.print(&quot;Hello World!&quot;);
+
+  lcd.setCursor(0, 1);      // 游標移到第二行第一格
+  lcd.print(&quot;Arduino LCD&quot;);
+}
+
+void loop() {
+  // 不需要做任何事
+}
+</code></pre>
+<h3 id="2">範例 2：顯示感測器數值</h3>
+<pre><code class="language-cpp">/*
+ * 顯示溫溼度感測器數值
+ */
+
+#include &lt;Wire.h&gt;
+#include &lt;LiquidCrystal_I2C.h&gt;
+#include &lt;DHT.h&gt;
+
+#define DHT_PIN 2
+#define DHT_TYPE DHT11
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+DHT dht(DHT_PIN, DHT_TYPE);
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+  dht.begin();
+
+  lcd.setCursor(0, 0);
+  lcd.print(&quot;Temp:     Humi:&quot;);
+}
+
+void loop() {
+  float temp = dht.readTemperature();
+  float humi = dht.readHumidity();
+
+  // 顯示溫度
+  lcd.setCursor(5, 0);
+  if (isnan(temp)) {
+    lcd.print(&quot;ERR&quot;);
+  } else {
+    lcd.print(temp, 1);  // 顯示一位小數
+    lcd.print(&quot;C&quot;);
+  }
+
+  // 顯示濕度
+  lcd.setCursor(11, 1);
+  if (isnan(humi)) {
+    lcd.print(&quot;ERR&quot;);
+  } else {
+    lcd.print(humi, 0);  // 不顯示小數
+    lcd.print(&quot;%&quot;);
+  }
+
+  delay(2000);
+}
+</code></pre>
+<h3 id="3">範例 3：文字捲動效果</h3>
+<pre><code class="language-cpp">/*
+ * 文字捲動效果
+ */
+
+#include &lt;Wire.h&gt;
+#include &lt;LiquidCrystal_I2C.h&gt;
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+String message = &quot;Welcome to Smart Agriculture Course!   &quot;;
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+
+  lcd.setCursor(0, 0);
+  lcd.print(&quot;=== Message ===&quot;);
+}
+
+void loop() {
+  // 捲動顯示長訊息
+  for (int i = 0; i &lt; message.length(); i++) {
+    lcd.setCursor(0, 1);
+    lcd.print(message.substring(i, i + 16));
+
+    // 補空白（如果不足 16 字元）
+    for (int j = message.substring(i, i + 16).length(); j &lt; 16; j++) {
+      lcd.print(&quot; &quot;);
+    }
+
+    delay(300);
+  }
+}
+</code></pre>
+<h3 id="4">範例 4：自訂字元（圖示）</h3>
+<pre><code class="language-cpp">/*
+ * 建立自訂字元
+ * LCD 最多可以存 8 個自訂字元（編號 0-7）
+ */
+
+#include &lt;Wire.h&gt;
+#include &lt;LiquidCrystal_I2C.h&gt;
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// 自訂字元資料（5x8 像素）
+// 1 = 亮點，0 = 暗點
+
+// 溫度計圖示
+byte thermometer[8] = {
+  B00100,
+  B01010,
+  B01010,
+  B01010,
+  B01110,
+  B11111,
+  B11111,
+  B01110
+};
+
+// 水滴圖示
+byte droplet[8] = {
+  B00100,
+  B00100,
+  B01010,
+  B01010,
+  B10001,
+  B10001,
+  B10001,
+  B01110
+};
+
+// 太陽圖示
+byte sun[8] = {
+  B00100,
+  B10101,
+  B01110,
+  B11111,
+  B01110,
+  B10101,
+  B00100,
+  B00000
+};
+
+// 愛心圖示
+byte heart[8] = {
+  B00000,
+  B01010,
+  B11111,
+  B11111,
+  B11111,
+  B01110,
+  B00100,
+  B00000
+};
+
+// 勾勾圖示
+byte check[8] = {
+  B00000,
+  B00001,
+  B00011,
+  B10110,
+  B11100,
+  B01000,
+  B00000,
+  B00000
+};
+
+// 叉叉圖示
+byte cross[8] = {
+  B00000,
+  B10001,
+  B01010,
+  B00100,
+  B01010,
+  B10001,
+  B00000,
+  B00000
+};
+
+// 上箭頭
+byte arrowUp[8] = {
+  B00100,
+  B01110,
+  B11111,
+  B00100,
+  B00100,
+  B00100,
+  B00100,
+  B00000
+};
+
+// 下箭頭
+byte arrowDown[8] = {
+  B00100,
+  B00100,
+  B00100,
+  B00100,
+  B11111,
+  B01110,
+  B00100,
+  B00000
+};
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+
+  // 建立自訂字元（編號 0-7）
+  lcd.createChar(0, thermometer);
+  lcd.createChar(1, droplet);
+  lcd.createChar(2, sun);
+  lcd.createChar(3, heart);
+  lcd.createChar(4, check);
+  lcd.createChar(5, cross);
+  lcd.createChar(6, arrowUp);
+  lcd.createChar(7, arrowDown);
+
+  // 顯示所有自訂字元
+  lcd.setCursor(0, 0);
+  lcd.print(&quot;Custom Chars:&quot;);
+
+  lcd.setCursor(0, 1);
+  for (int i = 0; i &lt; 8; i++) {
+    lcd.write(byte(i));  // 顯示自訂字元
+    lcd.print(&quot; &quot;);
+  }
+}
+
+void loop() {
+  // 示範使用自訂字元
+  delay(3000);
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.write(byte(0));  // 溫度計
+  lcd.print(&quot; Temp: 25.5C&quot;);
+
+  lcd.setCursor(0, 1);
+  lcd.write(byte(1));  // 水滴
+  lcd.print(&quot; Humi: 65%&quot;);
+
+  delay(3000);
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print(&quot;Status: &quot;);
+  lcd.write(byte(4));  // 勾勾
+  lcd.print(&quot; OK&quot;);
+
+  lcd.setCursor(0, 1);
+  lcd.write(byte(2));  // 太陽
+  lcd.print(&quot; Sunny Day &quot;);
+  lcd.write(byte(3));  // 愛心
+}
+</code></pre>
+<h3 id="5">範例 5：簡易選單系統</h3>
+<pre><code class="language-cpp">/*
+ * 使用按鈕操作的簡易選單
+ */
+
+#include &lt;Wire.h&gt;
+#include &lt;LiquidCrystal_I2C.h&gt;
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+const int BTN_UP = 2;
+const int BTN_DOWN = 3;
+const int BTN_SELECT = 4;
+
+const char* menuItems[] = {
+  &quot;1. Show Temp&quot;,
+  &quot;2. Show Humidity&quot;,
+  &quot;3. LED Control&quot;,
+  &quot;4. Fan Control&quot;,
+  &quot;5. Settings&quot;
+};
+const int menuSize = 5;
+
+int currentItem = 0;
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+
+  pinMode(BTN_UP, INPUT_PULLUP);
+  pinMode(BTN_DOWN, INPUT_PULLUP);
+  pinMode(BTN_SELECT, INPUT_PULLUP);
+
+  updateDisplay();
+}
+
+void loop() {
+  // 向上按鈕
+  if (digitalRead(BTN_UP) == LOW) {
+    currentItem--;
+    if (currentItem &lt; 0) currentItem = menuSize - 1;
+    updateDisplay();
+    delay(200);
+  }
+
+  // 向下按鈕
+  if (digitalRead(BTN_DOWN) == LOW) {
+    currentItem++;
+    if (currentItem &gt;= menuSize) currentItem = 0;
+    updateDisplay();
+    delay(200);
+  }
+
+  // 選擇按鈕
+  if (digitalRead(BTN_SELECT) == LOW) {
+    executeMenuItem(currentItem);
+    delay(200);
+  }
+}
+
+void updateDisplay() {
+  lcd.clear();
+
+  // 顯示標題
+  lcd.setCursor(0, 0);
+  lcd.print(&quot;&gt; &quot;);
+  lcd.print(menuItems[currentItem]);
+
+  // 顯示下一項（如果有的話）
+  lcd.setCursor(0, 1);
+  int nextItem = (currentItem + 1) % menuSize;
+  lcd.print(&quot;  &quot;);
+  lcd.print(menuItems[nextItem]);
+}
+
+void executeMenuItem(int item) {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+
+  switch (item) {
+    case 0:
+      lcd.print(&quot;Temperature:&quot;);
+      lcd.setCursor(0, 1);
+      lcd.print(&quot;25.5 C&quot;);
+      break;
+    case 1:
+      lcd.print(&quot;Humidity:&quot;);
+      lcd.setCursor(0, 1);
+      lcd.print(&quot;65 %&quot;);
+      break;
+    case 2:
+      lcd.print(&quot;LED Control&quot;);
+      lcd.setCursor(0, 1);
+      lcd.print(&quot;Toggle LED...&quot;);
+      break;
+    case 3:
+      lcd.print(&quot;Fan Control&quot;);
+      lcd.setCursor(0, 1);
+      lcd.print(&quot;Fan ON&quot;);
+      break;
+    case 4:
+      lcd.print(&quot;Settings&quot;);
+      lcd.setCursor(0, 1);
+      lcd.print(&quot;Coming soon...&quot;);
+      break;
+  }
+
+  delay(2000);
+  updateDisplay();
+}
+</code></pre>
+<h3 id="6">範例 6：進度條顯示</h3>
+<pre><code class="language-cpp">/*
+ * LCD 進度條效果
+ */
+
+#include &lt;Wire.h&gt;
+#include &lt;LiquidCrystal_I2C.h&gt;
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// 自訂進度條字元
+byte progressChar[8][8] = {
+  {B00000, B00000, B00000, B00000, B00000, B00000, B00000, B00000},  // 0/5
+  {B10000, B10000, B10000, B10000, B10000, B10000, B10000, B10000},  // 1/5
+  {B11000, B11000, B11000, B11000, B11000, B11000, B11000, B11000},  // 2/5
+  {B11100, B11100, B11100, B11100, B11100, B11100, B11100, B11100},  // 3/5
+  {B11110, B11110, B11110, B11110, B11110, B11110, B11110, B11110},  // 4/5
+  {B11111, B11111, B11111, B11111, B11111, B11111, B11111, B11111},  // 5/5 (滿)
+};
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+
+  // 建立進度條字元
+  for (int i = 0; i &lt; 6; i++) {
+    lcd.createChar(i, progressChar[i]);
+  }
+}
+
+void loop() {
+  // 進度從 0% 到 100%
+  for (int percent = 0; percent &lt;= 100; percent++) {
+    displayProgress(percent);
+    delay(50);
+  }
+
+  delay(1000);
+
+  // 進度從 100% 到 0%
+  for (int percent = 100; percent &gt;= 0; percent--) {
+    displayProgress(percent);
+    delay(50);
+  }
+
+  delay(1000);
+}
+
+void displayProgress(int percent) {
+  lcd.setCursor(0, 0);
+  lcd.print(&quot;Loading...  &quot;);
+  lcd.print(percent);
+  lcd.print(&quot;%  &quot;);
+
+  lcd.setCursor(0, 1);
+
+  // 計算進度條（16 格，每格 5 段）
+  int totalSegments = percent * 80 / 100;  // 總共 80 段（16*5）
+  int fullChars = totalSegments / 5;
+  int remainder = totalSegments % 5;
+
+  // 顯示滿格
+  for (int i = 0; i &lt; fullChars; i++) {
+    lcd.write(byte(5));  // 滿格字元
+  }
+
+  // 顯示部分格
+  if (fullChars &lt; 16) {
+    lcd.write(byte(remainder));
+  }
+
+  // 填充空白
+  for (int i = fullChars + 1; i &lt; 16; i++) {
+    lcd.write(byte(0));  // 空白字元
+  }
+}
+</code></pre>
+<h3 id="7">範例 7：即時時鐘顯示</h3>
+<pre><code class="language-cpp">/*
+ * 使用 RTC 模組顯示時間
+ */
+
+#include &lt;Wire.h&gt;
+#include &lt;LiquidCrystal_I2C.h&gt;
+#include &lt;RTClib.h&gt;
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+RTC_DS3231 rtc;
+
+const char* daysOfWeek[] = {
+  &quot;Sun&quot;, &quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;
+};
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+
+  if (!rtc.begin()) {
+    lcd.print(&quot;RTC not found!&quot;);
+    while (1);
+  }
+
+  // 如果 RTC 沒有設定過時間，設定為編譯時間
+  if (rtc.lostPower()) {
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  }
+}
+
+void loop() {
+  DateTime now = rtc.now();
+
+  // 第一行：日期
+  lcd.setCursor(0, 0);
+  lcd.print(now.year());
+  lcd.print(&quot;/&quot;);
+  printTwoDigits(now.month());
+  lcd.print(&quot;/&quot;);
+  printTwoDigits(now.day());
+  lcd.print(&quot; &quot;);
+  lcd.print(daysOfWeek[now.dayOfTheWeek()]);
+
+  // 第二行：時間
+  lcd.setCursor(0, 1);
+  printTwoDigits(now.hour());
+  lcd.print(&quot;:&quot;);
+  printTwoDigits(now.minute());
+  lcd.print(&quot;:&quot;);
+  printTwoDigits(now.second());
+
+  delay(1000);
+}
+
+void printTwoDigits(int num) {
+  if (num &lt; 10) lcd.print(&quot;0&quot;);
+  lcd.print(num);
+}
+</code></pre>
+<h3 id="8">範例 8：智慧溫室監控面板</h3>
+<pre><code class="language-cpp">/*
+ * 智慧溫室 LCD 監控面板
+ * 顯示溫度、濕度、土壤濕度、系統狀態
+ */
+
+#include &lt;Wire.h&gt;
+#include &lt;LiquidCrystal_I2C.h&gt;
+#include &lt;DHT.h&gt;
+
+#define DHT_PIN 2
+#define SOIL_PIN A0
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+DHT dht(DHT_PIN, DHT11);
+
+// 自訂圖示
+byte thermometer[8] = {B00100,B01010,B01010,B01010,B01110,B11111,B11111,B01110};
+byte droplet[8] = {B00100,B00100,B01010,B01010,B10001,B10001,B10001,B01110};
+byte plant[8] = {B00100,B00100,B01110,B00100,B00100,B00100,B01110,B11111};
+byte fan[8] = {B00000,B10001,B01010,B00100,B01010,B10001,B00000,B00000};
+
+int displayMode = 0;
+unsigned long lastSwitch = 0;
+const unsigned long switchInterval = 3000;
+
+bool fanOn = false;
+bool pumpOn = false;
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+  dht.begin();
+
+  lcd.createChar(0, thermometer);
+  lcd.createChar(1, droplet);
+  lcd.createChar(2, plant);
+  lcd.createChar(3, fan);
+
+  lcd.setCursor(0, 0);
+  lcd.print(&quot;Smart Greenhouse&quot;);
+  lcd.setCursor(0, 1);
+  lcd.print(&quot;  Starting...   &quot;);
+  delay(2000);
+}
+
+void loop() {
+  // 讀取感測器
+  float temp = dht.readTemperature();
+  float humi = dht.readHumidity();
+  int soilRaw = analogRead(SOIL_PIN);
+  int soilPercent = map(soilRaw, 1023, 0, 0, 100);
+
+  // 控制邏輯
+  fanOn = (temp &gt; 28);
+  pumpOn = (soilPercent &lt; 30);
+
+  // 自動切換顯示頁面
+  if (millis() - lastSwitch &gt; switchInterval) {
+    displayMode = (displayMode + 1) % 3;
+    lastSwitch = millis();
+    lcd.clear();
+  }
+
+  // 顯示不同頁面
+  switch (displayMode) {
+    case 0:  // 溫濕度頁面
+      lcd.setCursor(0, 0);
+      lcd.write(byte(0));
+      lcd.print(&quot; Temp: &quot;);
+      if (!isnan(temp)) {
+        lcd.print(temp, 1);
+        lcd.print(&quot;C  &quot;);
+      } else {
+        lcd.print(&quot;ERR   &quot;);
+      }
+
+      lcd.setCursor(0, 1);
+      lcd.write(byte(1));
+      lcd.print(&quot; Humi: &quot;);
+      if (!isnan(humi)) {
+        lcd.print(humi, 0);
+        lcd.print(&quot;%   &quot;);
+      } else {
+        lcd.print(&quot;ERR   &quot;);
+      }
+      break;
+
+    case 1:  // 土壤頁面
+      lcd.setCursor(0, 0);
+      lcd.write(byte(2));
+      lcd.print(&quot; Soil Moisture&quot;);
+
+      lcd.setCursor(0, 1);
+      lcd.print(&quot;   &quot;);
+      lcd.print(soilPercent);
+      lcd.print(&quot;% &quot;);
+      if (soilPercent &lt; 30) {
+        lcd.print(&quot;[DRY!]  &quot;);
+      } else if (soilPercent &gt; 70) {
+        lcd.print(&quot;[WET]   &quot;);
+      } else {
+        lcd.print(&quot;[OK]    &quot;);
+      }
+      break;
+
+    case 2:  // 系統狀態頁面
+      lcd.setCursor(0, 0);
+      lcd.print(&quot;System Status:&quot;);
+
+      lcd.setCursor(0, 1);
+      lcd.print(&quot;Fan:&quot;);
+      lcd.print(fanOn ? &quot;ON &quot; : &quot;OFF&quot;);
+      lcd.print(&quot; Pump:&quot;);
+      lcd.print(pumpOn ? &quot;ON &quot; : &quot;OFF&quot;);
+      break;
+  }
+
+  delay(500);
+}
+</code></pre>
+<hr />
+<h2 id="_8">七、常用函數參考</h2>
+<h3 id="liquidcrystal_i2c">LiquidCrystal_I2C 函數表</h3>
+<table>
+<thead>
+<tr>
+<th>函數</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>init()</code></td>
+<td>初始化 LCD</td>
+<td><code>lcd.init();</code></td>
+</tr>
+<tr>
+<td><code>backlight()</code></td>
+<td>開啟背光</td>
+<td><code>lcd.backlight();</code></td>
+</tr>
+<tr>
+<td><code>noBacklight()</code></td>
+<td>關閉背光</td>
+<td><code>lcd.noBacklight();</code></td>
+</tr>
+<tr>
+<td><code>clear()</code></td>
+<td>清除螢幕</td>
+<td><code>lcd.clear();</code></td>
+</tr>
+<tr>
+<td><code>home()</code></td>
+<td>游標回到原點</td>
+<td><code>lcd.home();</code></td>
+</tr>
+<tr>
+<td><code>setCursor(col, row)</code></td>
+<td>設定游標位置</td>
+<td><code>lcd.setCursor(0, 1);</code></td>
+</tr>
+<tr>
+<td><code>print(data)</code></td>
+<td>顯示資料</td>
+<td><code>lcd.print("Hello");</code></td>
+</tr>
+<tr>
+<td><code>write(char)</code></td>
+<td>顯示單一字元</td>
+<td><code>lcd.write('A');</code></td>
+</tr>
+<tr>
+<td><code>createChar(num, data)</code></td>
+<td>建立自訂字元</td>
+<td><code>lcd.createChar(0, heart);</code></td>
+</tr>
+<tr>
+<td><code>cursor()</code></td>
+<td>顯示游標</td>
+<td><code>lcd.cursor();</code></td>
+</tr>
+<tr>
+<td><code>noCursor()</code></td>
+<td>隱藏游標</td>
+<td><code>lcd.noCursor();</code></td>
+</tr>
+<tr>
+<td><code>blink()</code></td>
+<td>游標閃爍</td>
+<td><code>lcd.blink();</code></td>
+</tr>
+<tr>
+<td><code>noBlink()</code></td>
+<td>游標不閃爍</td>
+<td><code>lcd.noBlink();</code></td>
+</tr>
+<tr>
+<td><code>scrollDisplayLeft()</code></td>
+<td>畫面左移</td>
+<td><code>lcd.scrollDisplayLeft();</code></td>
+</tr>
+<tr>
+<td><code>scrollDisplayRight()</code></td>
+<td>畫面右移</td>
+<td><code>lcd.scrollDisplayRight();</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_9">八、常見問題排解</h2>
+<h3 id="1">問題 1：螢幕沒有顯示任何東西</h3>
+<pre><code>檢查步驟：
+
+□ 1. 接線正確嗎？（VCC, GND, SDA, SCL）
+□ 2. I2C 位址正確嗎？（試試 0x27 或 0x3F）
+□ 3. 背光有開嗎？（lcd.backlight()）
+□ 4. 對比度調整旋鈕轉到正確位置了嗎？
+     → 用螺絲起子調整 I2C 背板上的藍色旋鈕
+□ 5. 程式有呼叫 lcd.init() 嗎？
+</code></pre>
+<h3 id="2_1">問題 2：只看到方塊，沒有文字</h3>
+<pre><code>可能原因：
+
+1. 對比度太高
+   → 調整 I2C 背板上的藍色旋鈕
+   → 慢慢逆時針轉動直到文字清晰
+
+2. 程式沒有正確初始化
+   → 確認 lcd.init() 和 lcd.backlight() 有執行
+
+3. I2C 位址錯誤
+   → 使用 I2C Scanner 程式確認位址
+</code></pre>
+<h3 id="3_1">問題 3：顯示亂碼</h3>
+<pre><code>可能原因與解決方法：
+
+1. LCD 尺寸設定錯誤
+   LiquidCrystal_I2C lcd(0x27, 16, 2);  // 確認是 16x2 還是 20x4
+
+2. I2C 通訊不穩定
+   → 使用較短的杜邦線
+   → 確認接線牢固
+
+3. 電源不穩定
+   → 使用外接電源供電
+</code></pre>
+<h3 id="4_1">問題 4：自訂字元不顯示</h3>
+<pre><code>注意事項：
+
+1. lcd.createChar() 必須在 lcd.init() 之後呼叫
+
+2. 顯示自訂字元時要用 lcd.write(byte(n))
+   不是 lcd.print(n)
+
+3. 自訂字元編號是 0-7，不是 1-8
+
+4. byte 陣列大小必須是 8（8 列像素）
+</code></pre>
+<hr />
+<h2 id="_10">九、對比度調整</h2>
+<pre><code>調整 LCD 對比度：
+
+I2C 背板上有一個藍色的可變電阻（電位器）：
+
+┌─────────────────┐
+│  ┌────────────┐ │
+│  │ LCD 螢幕   │ │
+│  └────────────┘ │
+│  ┌────────────┐ │
+│  │            │ │
+│  │   ┌──┐     │ │
+│  │   │藍│←────┼─┼── 用小螺絲起子調整
+│  │   └──┘     │ │
+│  │            │ │
+│  └────────────┘ │
+└─────────────────┘
+
+調整方法：
+1. 上傳測試程式（顯示文字）
+2. 用小螺絲起子旋轉藍色旋鈕
+3. 慢慢調整直到文字清晰可見
+4. 太暗看不到字，太亮只有方塊
+</code></pre>
+<hr />
+<h2 id="_11">十、接線與程式速查</h2>
+<h3 id="i2c-lcd_1">I2C LCD 接線速查</h3>
+<table>
+<thead>
+<tr>
+<th>LCD I2C 模組</th>
+<th>Arduino Uno</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VCC</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>SDA</td>
+<td>A4</td>
+</tr>
+<tr>
+<td>SCL</td>
+<td>A5</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_12">程式速查</h3>
+<pre><code class="language-cpp">#include &lt;Wire.h&gt;
+#include &lt;LiquidCrystal_I2C.h&gt;
+
+// 建立物件（位址, 字元數, 行數）
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+void setup() {
+  lcd.init();          // 初始化
+  lcd.backlight();     // 開背光
+
+  lcd.setCursor(0, 0); // 游標到第一行
+  lcd.print(&quot;Hello&quot;);  // 顯示文字
+
+  lcd.setCursor(0, 1); // 游標到第二行
+  lcd.print(123.45);   // 顯示數字
+}
+
+void loop() {
+  lcd.clear();         // 清除螢幕
+  lcd.home();          // 游標回原點
+}
+
+// 自訂字元
+byte heart[8] = {B00000,B01010,B11111,B11111,B11111,B01110,B00100,B00000};
+lcd.createChar(0, heart);  // 建立編號 0 的自訂字元
+lcd.write(byte(0));        // 顯示自訂字元
+</code></pre>
+<h3 id="i2c_4">常見 I2C 位址</h3>
+<table>
+<thead>
+<tr>
+<th>位址</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x27</td>
+<td>最常見（PCF8574）</td>
+</tr>
+<tr>
+<td>0x3F</td>
+<td>次常見（PCF8574A）</td>
+</tr>
+<tr>
+<td>0x20-0x27</td>
+<td>PCF8574 可調範圍</td>
+</tr>
+<tr>
+<td>0x38-0x3F</td>
+<td>PCF8574A 可調範圍</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_13">延伸學習</h2>
+<ul>
+<li><strong>關於資料通訊方式.md</strong> - 了解 I2C 通訊原理</li>
+<li><strong>關於DHT溫溼度感測器.md</strong> - 搭配感測器顯示數據</li>
+<li><strong>關於RTC時鐘.md</strong> - 搭配 RTC 顯示時間</li>
+<li><strong>關於LED點矩陣.md</strong> - 另一種顯示方式</li>
+</ul>
+<hr />
+<blockquote>
+<p>LCD 液晶螢幕是 Arduino 專案中最實用的顯示裝置，學會它就能讓你的作品「看得見」！</p>
+</blockquote>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

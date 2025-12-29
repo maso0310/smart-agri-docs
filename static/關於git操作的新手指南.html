@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於git操作的新手指南</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="git">Git 操作新手指南</h1>
+<h2 id="git_1">一、什麼是 Git？</h2>
+<p>Git 是一個<strong>版本控制系統</strong>，可以追蹤檔案的變更歷史，讓你能夠：</p>
+<ul>
+<li>記錄每次修改的內容</li>
+<li>隨時回復到之前的版本</li>
+<li>多人協作開發不衝突</li>
+<li>備份程式碼到雲端（GitHub）</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>名詞</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Repository (Repo)</strong></td>
+<td>儲存庫，一個專案的所有檔案和歷史紀錄</td>
+</tr>
+<tr>
+<td><strong>Commit</strong></td>
+<td>提交，記錄一次檔案變更</td>
+</tr>
+<tr>
+<td><strong>Branch</strong></td>
+<td>分支，獨立的開發線</td>
+</tr>
+<tr>
+<td><strong>Remote</strong></td>
+<td>遠端，雲端上的儲存庫（如 GitHub）</td>
+</tr>
+<tr>
+<td><strong>Clone</strong></td>
+<td>複製遠端儲存庫到本機</td>
+</tr>
+<tr>
+<td><strong>Push</strong></td>
+<td>將本機變更上傳到遠端</td>
+</tr>
+<tr>
+<td><strong>Pull</strong></td>
+<td>將遠端變更下載到本機</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="git_2">二、安裝 Git</h2>
+<h3 id="windows">Windows</h3>
+<ol>
+<li>下載：https://git-scm.com/download/win</li>
+<li>安裝時保持預設選項即可</li>
+<li>安裝完成後重新開啟終端機</li>
+</ol>
+<h3 id="_1">驗證安裝</h3>
+<pre><code class="language-cmd">git --version
+</code></pre>
+<p>顯示類似 <code>git version 2.43.0</code> 表示安裝成功</p>
+<hr />
+<h2 id="_2">三、初次設定</h2>
+<p>安裝 Git 後，需要設定使用者名稱和信箱（只需設定一次）：</p>
+<pre><code class="language-cmd">git config --global user.name &quot;你的名字&quot;
+git config --global user.email &quot;你的信箱@example.com&quot;
+</code></pre>
+<h3 id="_3">查看目前設定</h3>
+<pre><code class="language-cmd">git config --list
+</code></pre>
+<hr />
+<h2 id="_4">四、基本操作流程</h2>
+<h3 id="1-git">情境 1：建立新的 Git 專案</h3>
+<pre><code class="language-cmd"># 1. 進入專案資料夾
+cd D:\Course\my_project
+
+# 2. 初始化 Git 儲存庫
+git init
+
+# 3. 查看狀態
+git status
+</code></pre>
+<h3 id="2-github">情境 2：從 GitHub 下載專案</h3>
+<pre><code class="language-cmd"># 複製遠端儲存庫
+git clone https://github.com/username/repository.git
+
+# 進入專案資料夾
+cd repository
+</code></pre>
+<hr />
+<h2 id="git_3">五、Git 核心指令</h2>
+<h3 id="_5">查看狀態</h3>
+<pre><code class="language-cmd">git status
+</code></pre>
+<p>顯示：<br />
+- 紅色：未追蹤或已修改但未暫存的檔案<br />
+- 綠色：已暫存等待提交的檔案</p>
+<h3 id="stage">暫存檔案 (Stage)</h3>
+<pre><code class="language-cmd"># 暫存單一檔案
+git add 檔案名稱.py
+
+# 暫存所有變更
+git add .
+
+# 暫存特定類型檔案
+git add *.py
+</code></pre>
+<h3 id="commit">提交變更 (Commit)</h3>
+<pre><code class="language-cmd"># 提交並附上訊息
+git commit -m &quot;新增登入功能&quot;
+
+# 查看提交歷史
+git log
+
+# 簡潔版歷史
+git log --oneline
+</code></pre>
+<h3 id="_6">完整流程範例</h3>
+<pre><code class="language-cmd"># 1. 修改檔案後，查看狀態
+git status
+
+# 2. 暫存所有變更
+git add .
+
+# 3. 提交變更
+git commit -m &quot;修正 bug：使用者無法登入的問題&quot;
+
+# 4. 確認提交成功
+git log --oneline
+</code></pre>
+<hr />
+<h2 id="github">六、連結 GitHub</h2>
+<h3 id="github_1">建立 GitHub 帳號</h3>
+<ol>
+<li>前往 https://github.com</li>
+<li>註冊帳號</li>
+</ol>
+<h3 id="_7">建立新的遠端儲存庫</h3>
+<ol>
+<li>點擊右上角 <code>+</code> → <code>New repository</code></li>
+<li>輸入儲存庫名稱</li>
+<li>選擇 Public（公開）或 Private（私人）</li>
+<li>點擊 <code>Create repository</code></li>
+</ol>
+<h3 id="github_2">將本機專案連結到 GitHub</h3>
+<pre><code class="language-cmd"># 1. 新增遠端儲存庫連結
+git remote add origin https://github.com/你的帳號/儲存庫名稱.git
+
+# 2. 第一次推送（-u 設定預設上游分支）
+git push -u origin main
+
+# 3. 之後推送只需
+git push
+</code></pre>
+<h3 id="github_3">從 GitHub 下載更新</h3>
+<pre><code class="language-cmd">git pull
+</code></pre>
+<hr />
+<h2 id="branch">七、分支操作 (Branch)</h2>
+<p>分支讓你可以在不影響主線的情況下開發新功能。</p>
+<h3 id="_8">查看分支</h3>
+<pre><code class="language-cmd"># 查看本機分支
+git branch
+
+# 查看所有分支（含遠端）
+git branch -a
+</code></pre>
+<h3 id="_9">建立與切換分支</h3>
+<pre><code class="language-cmd"># 建立新分支
+git branch feature-login
+
+# 切換到該分支
+git checkout feature-login
+
+# 建立並切換（合併上面兩步）
+git checkout -b feature-login
+</code></pre>
+<h3 id="_10">合併分支</h3>
+<pre><code class="language-cmd"># 1. 先切換到主分支
+git checkout main
+
+# 2. 合併其他分支
+git merge feature-login
+
+# 3. 刪除已合併的分支（可選）
+git branch -d feature-login
+</code></pre>
+<hr />
+<h2 id="vs-code-git">八、VS Code 中使用 Git</h2>
+<p>VS Code 內建 Git 支援，可以用圖形介面操作。</p>
+<h3 id="_11">開啟原始檔控制面板</h3>
+<ul>
+<li>點擊左側邊欄的分支圖示</li>
+<li>或按 <code>Ctrl + Shift + G</code></li>
+</ul>
+<h3 id="_12">常用操作</h3>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>+</code> 號</td>
+<td>暫存檔案 (git add)</td>
+</tr>
+<tr>
+<td><code>-</code> 號</td>
+<td>取消暫存</td>
+</tr>
+<tr>
+<td>✓ 打勾</td>
+<td>提交變更 (git commit)</td>
+</tr>
+<tr>
+<td><code>...</code> 選單</td>
+<td>更多操作 (push, pull, 等)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">查看檔案變更</h3>
+<p>點擊已修改的檔案，VS Code 會顯示差異比較（Diff）</p>
+<hr />
+<h2 id="gitignore">九、.gitignore 檔案</h2>
+<p><code>.gitignore</code> 用來指定不要追蹤的檔案或資料夾。</p>
+<h3 id="gitignore_1">建立 .gitignore</h3>
+<p>在專案根目錄建立 <code>.gitignore</code> 檔案：</p>
+<pre><code class="language-gitignore"># 虛擬環境
+venv/
+.venv/
+
+# Python 快取
+__pycache__/
+*.pyc
+
+# IDE 設定
+.vscode/
+.idea/
+
+# 系統檔案
+.DS_Store
+Thumbs.db
+
+# 環境變數（含敏感資訊）
+.env
+
+# 大型資料檔案
+*.csv
+*.xlsx
+data/
+</code></pre>
+<h3 id="gitignore_2">常用 .gitignore 範本</h3>
+<ul>
+<li>Python：https://github.com/github/gitignore/blob/main/Python.gitignore</li>
+</ul>
+<hr />
+<h2 id="_14">十、常見問題排解</h2>
+<h3 id="q1-git-push">Q1: git push 要求輸入帳號密碼</h3>
+<p><strong>解決</strong>：使用 Personal Access Token (PAT)</p>
+<ol>
+<li>GitHub → Settings → Developer settings → Personal access tokens</li>
+<li>產生新的 Token</li>
+<li>推送時密碼欄位輸入 Token</li>
+</ol>
+<h3 id="q2-commit">Q2: 不小心 commit 了不該提交的檔案</h3>
+<pre><code class="language-cmd"># 取消最近一次 commit（保留檔案變更）
+git reset --soft HEAD~1
+
+# 從暫存區移除檔案（不刪除檔案）
+git reset HEAD 檔案名稱
+</code></pre>
+<h3 id="q3">Q3: 想放棄目前的修改</h3>
+<pre><code class="language-cmd"># 放棄單一檔案的修改
+git checkout -- 檔案名稱
+
+# 放棄所有修改（危險！）
+git checkout -- .
+</code></pre>
+<h3 id="q4-push-rejected">Q4: push 被拒絕 (rejected)</h3>
+<p><strong>原因</strong>：遠端有你沒有的變更</p>
+<pre><code class="language-cmd"># 先拉取遠端變更
+git pull
+
+# 解決衝突後再推送
+git push
+</code></pre>
+<h3 id="q5-conflict">Q5: 合併時發生衝突 (Conflict)</h3>
+<ol>
+<li>打開衝突的檔案，會看到類似：<br />
+   ```<br />
+   &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD<br />
+   你的版本<br />
+   =======<br />
+   別人的版本<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>branch-name<br />
+   ```</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</li>
+<li>手動編輯，保留需要的內容</li>
+<li>刪除衝突標記 (<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>)</li>
+<li>暫存並提交：<br />
+<code>cmd
+   git add .
+   git commit -m "解決合併衝突"</code></li>
+</ol>
+<hr />
+<h2 id="_15">十一、實用指令速查表</h2>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>git init</code></td>
+<td>初始化儲存庫</td>
+</tr>
+<tr>
+<td><code>git clone &lt;url&gt;</code></td>
+<td>複製遠端儲存庫</td>
+</tr>
+<tr>
+<td><code>git status</code></td>
+<td>查看狀態</td>
+</tr>
+<tr>
+<td><code>git add .</code></td>
+<td>暫存所有變更</td>
+</tr>
+<tr>
+<td><code>git commit -m "訊息"</code></td>
+<td>提交變更</td>
+</tr>
+<tr>
+<td><code>git push</code></td>
+<td>推送到遠端</td>
+</tr>
+<tr>
+<td><code>git pull</code></td>
+<td>拉取遠端變更</td>
+</tr>
+<tr>
+<td><code>git log --oneline</code></td>
+<td>查看簡潔歷史</td>
+</tr>
+<tr>
+<td><code>git branch</code></td>
+<td>查看分支</td>
+</tr>
+<tr>
+<td><code>git checkout -b &lt;名稱&gt;</code></td>
+<td>建立並切換分支</td>
+</tr>
+<tr>
+<td><code>git merge &lt;分支&gt;</code></td>
+<td>合併分支</td>
+</tr>
+<tr>
+<td><code>git diff</code></td>
+<td>查看未暫存的變更</td>
+</tr>
+<tr>
+<td><code>git stash</code></td>
+<td>暫時儲存變更</td>
+</tr>
+<tr>
+<td><code>git stash pop</code></td>
+<td>取回暫存的變更</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="git_4">十二、Git 工作流程圖解</h2>
+<pre><code>工作目錄          暫存區           本機儲存庫         遠端儲存庫
+(Working)        (Staging)       (Local Repo)      (Remote)
+    |                |                |                |
+    |-- git add ----&gt;|                |                |
+    |                |-- git commit -&gt;|                |
+    |                |                |-- git push ---&gt;|
+    |                |                |                |
+    |&lt;-------------- git pull -------------------------|
+    |                |                |                |
+</code></pre>
+<hr />
+<h2 id="_16">十三、學習資源</h2>
+<ul>
+<li><strong>官方文件</strong>：https://git-scm.com/doc</li>
+<li><strong>互動式學習</strong>：https://learngitbranching.js.org/</li>
+<li><strong>GitHub 教學</strong>：https://docs.github.com/en/get-started</li>
+</ul>
+<hr />
+<p><strong>最後更新：2025/12/12</strong></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於ESP-01_WiFi模組</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="esp-01-wifi">關於 ESP-01 WiFi 模組</h1>
+<h2 id="esp-01">為什麼需要 ESP-01？</h2>
+<p>在智慧農業專案中，我們經常需要：<br />
+- 遠端監控溫室環境數據<br />
+- 透過手機或網頁控制設備<br />
+- 將感測器資料上傳到雲端<br />
+- 接收遠端指令控制灌溉或通風</p>
+<p>Arduino Uno 本身沒有 WiFi 功能，ESP-01 是最經濟實惠的解決方案！</p>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                     物聯網溫室監控架構                           │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────┐      ┌─────────┐      ┌──────────┐               │
+│   │ Arduino │ ──→  │ ESP-01  │ ──→  │  WiFi    │               │
+│   │  Uno    │ UART │ (WiFi)  │      │  Router  │               │
+│   └─────────┘      └─────────┘      └────┬─────┘               │
+│        │                                  │                     │
+│   ┌────┴────┐                       ┌────┴─────┐               │
+│   │ 感測器  │                       │ Internet │               │
+│   │ DHT/土壤│                       └────┬─────┘               │
+│   └─────────┘                            │                     │
+│                                    ┌─────┴─────┐               │
+│                              ┌─────┴───┐ ┌─────┴───┐           │
+│                              │  手機   │ │  電腦   │           │
+│                              │   App   │ │  網頁   │           │
+│                              └─────────┘ └─────────┘           │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="esp-01_1">ESP-01 是什麼？</h2>
+<p>ESP-01 是基於 ESP8266 晶片的 WiFi 模組，體積小巧、價格便宜，非常適合為 Arduino 專案添加網路功能。</p>
+<h3 id="_1">外觀與腳位</h3>
+<pre><code>        ┌───────────────────┐
+        │  ┌─────────────┐  │
+        │  │   ESP8266   │  │
+        │  │    晶片     │  │
+        │  └─────────────┘  │
+        │                   │
+        │  ░░░░░░░░░░░░░░░  │ ← PCB 天線
+        │                   │
+        └───────┬───────────┘
+                │
+        ┌───┬───┬───┬───┐
+        │ 1 │ 2 │ 3 │ 4 │  ← 上排
+        ├───┼───┼───┼───┤
+        │ 5 │ 6 │ 7 │ 8 │  ← 下排
+        └───┴───┴───┴───┘
+
+腳位定義（從正面看，天線朝上）：
+┌──────┬──────────┬────────────────────────────┐
+│ 腳位 │ 名稱     │ 功能說明                   │
+├──────┼──────────┼────────────────────────────┤
+│  1   │ GND      │ 接地                       │
+│  2   │ GPIO2    │ 通用輸入/輸出（可當 TX）   │
+│  3   │ GPIO0    │ 開機模式選擇（重要！）     │
+│  4   │ RX       │ 接收資料（接 Arduino TX）  │
+│  5   │ TX       │ 發送資料（接 Arduino RX）  │
+│  6   │ CH_PD    │ 晶片致能（必須接高電平）   │
+│  7   │ RST      │ 重置腳位（低電平重置）     │
+│  8   │ VCC      │ 電源 3.3V（注意！非 5V）   │
+└──────┴──────────┴────────────────────────────┘
+</code></pre>
+<h3 id="_2">規格比較</h3>
+<pre><code>┌────────────────┬─────────────────┬─────────────────┐
+│ 規格           │ ESP-01          │ ESP-01S         │
+├────────────────┼─────────────────┼─────────────────┤
+│ 晶片           │ ESP8266         │ ESP8266         │
+│ Flash          │ 512KB (舊) /1MB │ 1MB             │
+│ GPIO 可用      │ GPIO0, GPIO2    │ GPIO0, GPIO2    │
+│ 工作電壓       │ 3.3V            │ 3.3V            │
+│ 工作電流       │ ~80mA (平均)    │ ~80mA (平均)    │
+│ 峰值電流       │ ~300mA          │ ~300mA          │
+│ WiFi 標準      │ 802.11 b/g/n    │ 802.11 b/g/n    │
+│ 板載 LED       │ 無              │ 有（藍色）      │
+│ 價格           │ ~NT$50          │ ~NT$60          │
+└────────────────┴─────────────────┴─────────────────┘
+</code></pre>
+<hr />
+<h2 id="_3">兩種使用模式</h2>
+<p>ESP-01 有兩種主要使用方式：</p>
+<h3 id="at-arduino">模式一：AT 指令模式（Arduino 作為主控）</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                      AT 指令模式架構                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────────┐          ┌─────────────┐                     │
+│   │   Arduino   │   UART   │   ESP-01    │                     │
+│   │    Uno      │ ───────→ │  (韌體)     │ ───→ WiFi          │
+│   │  (主控制器) │ ←─────── │  AT 指令    │                     │
+│   └─────────────┘          └─────────────┘                     │
+│                                                                 │
+│   特點：                                                        │
+│   - ESP-01 執行原廠 AT 韌體                                     │
+│   - Arduino 透過序列埠發送 AT 指令控制 WiFi                     │
+│   - 適合簡單的 HTTP 請求                                        │
+│   - 不需要燒錄 ESP-01                                           │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="esp-01_2">模式二：獨立運作模式（ESP-01 作為主控）</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                     獨立運作模式架構                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────────┐          ┌─────────────┐                     │
+│   │   Arduino   │   UART   │   ESP-01    │                     │
+│   │    Uno      │ ───────→ │ (自訂程式)  │ ───→ WiFi          │
+│   │  (感測器)   │ ←─────── │  主控制器   │                     │
+│   └─────────────┘          └─────────────┘                     │
+│                                                                 │
+│   特點：                                                        │
+│   - ESP-01 執行自訂 Arduino 程式                                │
+│   - 可使用 ESP8266WiFi 程式庫                                   │
+│   - 功能更強大、更靈活                                          │
+│   - 需要 USB to TTL 燒錄器                                      │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_4">重要警告：電壓問題</h2>
+<pre><code>╔══════════════════════════════════════════════════════════════════╗
+║  ⚠️ 重要警告：ESP-01 使用 3.3V 電壓！                           ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  1. 電源必須是 3.3V                                              ║
+║     - 直接接 5V 會燒毀 ESP-01！                                  ║
+║     - Arduino Uno 的 3.3V 腳位電流可能不足                       ║
+║     - 建議使用 AMS1117-3.3 穩壓模組                              ║
+║                                                                  ║
+║  2. 訊號電平也是 3.3V                                            ║
+║     - Arduino TX (5V) 接 ESP-01 RX (3.3V) 需要分壓               ║
+║     - ESP-01 TX (3.3V) 接 Arduino RX (5V) 可直接連接             ║
+║                                                                  ║
+║  3. 電流需求                                                     ║
+║     - 平均 80mA，峰值可達 300mA                                  ║
+║     - Arduino 3.3V 腳位只能提供約 50mA                           ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+</code></pre>
+<hr />
+<h2 id="_5">硬體接線</h2>
+<h3 id="_6">方案一：使用分壓電阻（基礎方案）</h3>
+<pre><code>電源部分（使用 AMS1117-3.3 穩壓）：
+
+    Arduino 5V ────────┬──────────────────────┐
+                       │                      │
+                  ┌────┴────┐                 │
+                  │ AMS1117 │                 │
+                  │  3.3V   │                 │
+                  └────┬────┘                 │
+                       │                      │
+    ESP-01 VCC ────────┤                      │
+    ESP-01 CH_PD ──────┤                      │
+                       │                      │
+    Arduino GND ───────┴──── ESP-01 GND ──────┘
+
+訊號部分（TX 需要分壓，RX 可直連）：
+
+    Arduino                          ESP-01
+    ┌─────────┐                    ┌─────────┐
+    │         │                    │         │
+    │     TX  │──┬── 1kΩ ──┬────→ │ RX      │
+    │         │  │         │       │         │
+    │         │  │        ─┴─      │         │
+    │         │  │        2kΩ      │         │
+    │         │  │        ─┬─      │         │
+    │         │  │         │       │         │
+    │     RX  │←─│─────────│─────← │ TX      │
+    │         │  │         │       │         │
+    │    GND  │──┴─────────┴─────→ │ GND     │
+    └─────────┘                    └─────────┘
+
+分壓計算：
+- 輸入 5V，經過 1kΩ 和 2kΩ 分壓
+- 輸出 = 5V × 2kΩ / (1kΩ + 2kΩ) = 3.3V ✓
+</code></pre>
+<h3 id="_7">方案二：使用邏輯電平轉換器（推薦）</h3>
+<pre><code>    Arduino                 電平轉換器                 ESP-01
+    ┌─────────┐          ┌───────────┐            ┌─────────┐
+    │         │          │  HV   LV  │            │         │
+    │      5V │─────────→│ HV    LV  │←────────── │ 3.3V    │
+    │         │          │           │            │         │
+    │     TX  │─────────→│ HV1  LV1  │───────────→│ RX      │
+    │         │          │           │            │         │
+    │     RX  │←─────────│ HV2  LV2  │←───────────│ TX      │
+    │         │          │           │            │         │
+    │    GND  │─────────→│ GND  GND  │←───────────│ GND     │
+    └─────────┘          └───────────┘            └─────────┘
+</code></pre>
+<h3 id="_8">完整接線表</h3>
+<pre><code>┌────────────────┬────────────────┬────────────────────────────┐
+│ ESP-01 腳位    │ 連接到         │ 說明                       │
+├────────────────┼────────────────┼────────────────────────────┤
+│ VCC            │ 3.3V (穩壓後)  │ 電源，必須 3.3V            │
+│ GND            │ Arduino GND    │ 共地                       │
+│ CH_PD (EN)     │ 3.3V           │ 晶片致能，必須接高         │
+│ RST            │ 3.3V 或懸空    │ 可接按鈕到 GND 做重置      │
+│ TX             │ Arduino RX     │ ESP 發送 → Arduino 接收    │
+│ RX             │ Arduino TX     │ 需分壓或電平轉換           │
+│ GPIO0          │ 3.3V (正常)    │ 接 GND 進入燒錄模式        │
+│ GPIO2          │ 懸空或 3.3V    │ 開機時必須為高電平         │
+└────────────────┴────────────────┴────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_9">開機模式</h2>
+<p>ESP-01 根據 GPIO0 的電平決定開機模式：</p>
+<pre><code>┌─────────────┬───────────┬───────────────────────────────┐
+│ 模式        │ GPIO0     │ 用途                          │
+├─────────────┼───────────┼───────────────────────────────┤
+│ 正常執行    │ 高 (3.3V) │ 執行 Flash 中的程式           │
+│ 燒錄模式    │ 低 (GND)  │ 透過 UART 燒錄新程式          │
+└─────────────┴───────────┴───────────────────────────────┘
+
+燒錄流程：
+1. GPIO0 接 GND
+2. 按下 RST 按鈕（或斷電重啟）
+3. 開始燒錄
+4. 燒錄完成後，GPIO0 接回 3.3V 或懸空
+5. 再次重啟即可執行程式
+</code></pre>
+<hr />
+<h2 id="at">AT 指令模式教學</h2>
+<h3 id="at_1">常用 AT 指令</h3>
+<pre><code>┌─────────────────────────┬─────────────────────────────────────┐
+│ 指令                    │ 功能                                │
+├─────────────────────────┼─────────────────────────────────────┤
+│ AT                      │ 測試模組是否正常回應                │
+│ AT+RST                  │ 重置模組                            │
+│ AT+GMR                  │ 查看韌體版本                        │
+│ AT+CWMODE=1             │ 設定為 Station 模式（連接 WiFi）    │
+│ AT+CWMODE=2             │ 設定為 AP 模式（自建熱點）          │
+│ AT+CWMODE=3             │ 設定為 Station + AP 模式            │
+│ AT+CWLAP                │ 列出附近的 WiFi                     │
+│ AT+CWJAP=&quot;SSID&quot;,&quot;PWD&quot;   │ 連接到指定 WiFi                     │
+│ AT+CWQAP                │ 斷開 WiFi 連接                      │
+│ AT+CIFSR                │ 查詢 IP 位址                        │
+│ AT+CIPMUX=0             │ 單連接模式                          │
+│ AT+CIPMUX=1             │ 多連接模式                          │
+│ AT+CIPSTART=...         │ 建立 TCP/UDP 連接                   │
+│ AT+CIPSEND=n            │ 發送 n 個位元組的資料               │
+│ AT+CIPCLOSE             │ 關閉連接                            │
+└─────────────────────────┴─────────────────────────────────────┘
+</code></pre>
+<h3 id="at_2">程式範例一：AT 指令測試</h3>
+<pre><code class="language-cpp">/*
+ * ESP-01 AT 指令測試
+ * 使用 SoftwareSerial 與 ESP-01 通訊
+ * 可透過 Serial Monitor 手動輸入 AT 指令測試
+ */
+
+#include &lt;SoftwareSerial.h&gt;
+
+// ESP-01 連接腳位
+const int ESP_RX = 2;  // Arduino D2 → ESP-01 TX
+const int ESP_TX = 3;  // Arduino D3 → ESP-01 RX (需分壓)
+
+SoftwareSerial espSerial(ESP_RX, ESP_TX);
+
+void setup() {
+    Serial.begin(9600);      // 電腦通訊
+    espSerial.begin(115200); // ESP-01 預設鮑率
+
+    Serial.println(&quot;ESP-01 AT 指令測試&quot;);
+    Serial.println(&quot;請輸入 AT 指令：&quot;);
+    Serial.println(&quot;------------------------&quot;);
+
+    delay(1000);
+
+    // 測試連接
+    espSerial.println(&quot;AT&quot;);
+}
+
+void loop() {
+    // 將 ESP-01 的回應傳到電腦
+    if (espSerial.available()) {
+        char c = espSerial.read();
+        Serial.write(c);
+    }
+
+    // 將電腦輸入傳到 ESP-01
+    if (Serial.available()) {
+        char c = Serial.read();
+        espSerial.write(c);
+    }
+}
+</code></pre>
+<h3 id="wifi">程式範例二：連接 WiFi</h3>
+<pre><code class="language-cpp">/*
+ * ESP-01 連接 WiFi 範例
+ * 使用 AT 指令連接到指定的 WiFi 網路
+ */
+
+#include &lt;SoftwareSerial.h&gt;
+
+const int ESP_RX = 2;
+const int ESP_TX = 3;
+
+SoftwareSerial espSerial(ESP_RX, ESP_TX);
+
+// WiFi 設定
+const char* WIFI_SSID = &quot;你的WiFi名稱&quot;;
+const char* WIFI_PASS = &quot;你的WiFi密碼&quot;;
+
+void setup() {
+    Serial.begin(9600);
+    espSerial.begin(115200);
+
+    Serial.println(&quot;正在初始化 ESP-01...&quot;);
+    delay(2000);
+
+    // 重置模組
+    sendCommand(&quot;AT+RST&quot;, 2000);
+
+    // 設定 Station 模式
+    sendCommand(&quot;AT+CWMODE=1&quot;, 1000);
+
+    // 連接 WiFi
+    String connectCmd = &quot;AT+CWJAP=\&quot;&quot;;
+    connectCmd += WIFI_SSID;
+    connectCmd += &quot;\&quot;,\&quot;&quot;;
+    connectCmd += WIFI_PASS;
+    connectCmd += &quot;\&quot;&quot;;
+
+    Serial.println(&quot;正在連接 WiFi...&quot;);
+    sendCommand(connectCmd.c_str(), 10000);
+
+    // 查詢 IP
+    sendCommand(&quot;AT+CIFSR&quot;, 1000);
+
+    Serial.println(&quot;初始化完成！&quot;);
+}
+
+void loop() {
+    // 持續讀取 ESP-01 回應
+    while (espSerial.available()) {
+        Serial.write(espSerial.read());
+    }
+}
+
+// 發送 AT 指令並等待回應
+void sendCommand(const char* cmd, int timeout) {
+    Serial.print(&quot;發送: &quot;);
+    Serial.println(cmd);
+
+    espSerial.println(cmd);
+
+    long startTime = millis();
+    while (millis() - startTime &lt; timeout) {
+        while (espSerial.available()) {
+            char c = espSerial.read();
+            Serial.write(c);
+        }
+    }
+    Serial.println();
+}
+</code></pre>
+<h3 id="http-get">程式範例三：HTTP GET 請求</h3>
+<pre><code class="language-cpp">/*
+ * ESP-01 HTTP GET 請求範例
+ * 向伺服器發送 GET 請求並接收回應
+ */
+
+#include &lt;SoftwareSerial.h&gt;
+
+const int ESP_RX = 2;
+const int ESP_TX = 3;
+
+SoftwareSerial espSerial(ESP_RX, ESP_TX);
+
+const char* WIFI_SSID = &quot;你的WiFi名稱&quot;;
+const char* WIFI_PASS = &quot;你的WiFi密碼&quot;;
+const char* HOST = &quot;api.example.com&quot;;
+const int PORT = 80;
+
+void setup() {
+    Serial.begin(9600);
+    espSerial.begin(115200);
+
+    Serial.println(&quot;初始化中...&quot;);
+    delay(2000);
+
+    // 連接 WiFi
+    connectWiFi();
+}
+
+void loop() {
+    // 每 30 秒發送一次請求
+    sendHttpGet(&quot;/api/data&quot;);
+    delay(30000);
+}
+
+void connectWiFi() {
+    sendCommand(&quot;AT+RST&quot;, 2000);
+    sendCommand(&quot;AT+CWMODE=1&quot;, 1000);
+
+    String cmd = &quot;AT+CWJAP=\&quot;&quot; + String(WIFI_SSID) + &quot;\&quot;,\&quot;&quot; + String(WIFI_PASS) + &quot;\&quot;&quot;;
+    sendCommand(cmd.c_str(), 10000);
+
+    sendCommand(&quot;AT+CIPMUX=0&quot;, 1000);  // 單連接模式
+}
+
+void sendHttpGet(const char* path) {
+    // 建立 TCP 連接
+    String connectCmd = &quot;AT+CIPSTART=\&quot;TCP\&quot;,\&quot;&quot; + String(HOST) + &quot;\&quot;,&quot; + String(PORT);
+    sendCommand(connectCmd.c_str(), 5000);
+
+    // 準備 HTTP 請求
+    String httpRequest = &quot;GET &quot; + String(path) + &quot; HTTP/1.1\r\n&quot;;
+    httpRequest += &quot;Host: &quot; + String(HOST) + &quot;\r\n&quot;;
+    httpRequest += &quot;Connection: close\r\n\r\n&quot;;
+
+    // 發送資料長度
+    String sendCmd = &quot;AT+CIPSEND=&quot; + String(httpRequest.length());
+    sendCommand(sendCmd.c_str(), 1000);
+
+    delay(100);
+
+    // 發送 HTTP 請求
+    espSerial.print(httpRequest);
+
+    // 等待並顯示回應
+    long startTime = millis();
+    while (millis() - startTime &lt; 10000) {
+        while (espSerial.available()) {
+            Serial.write(espSerial.read());
+        }
+    }
+    Serial.println();
+}
+
+void sendCommand(const char* cmd, int timeout) {
+    espSerial.println(cmd);
+
+    long startTime = millis();
+    while (millis() - startTime &lt; timeout) {
+        while (espSerial.available()) {
+            Serial.write(espSerial.read());
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="esp-01_3">ESP-01 獨立運作模式</h2>
+<h3 id="arduino-ide">Arduino IDE 設定</h3>
+<p>要對 ESP-01 燒錄自訂程式，需要先設定 Arduino IDE：</p>
+<pre><code>1. 開啟 Arduino IDE
+2. 檔案 → 偏好設定
+3. 在「額外的開發板管理員網址」加入：
+   http://arduino.esp8266.com/stable/package_esp8266com_index.json
+
+4. 工具 → 開發板 → 開發板管理員
+5. 搜尋 &quot;esp8266&quot;
+6. 安裝 &quot;esp8266 by ESP8266 Community&quot;
+
+7. 工具 → 開發板 → ESP8266 Boards → Generic ESP8266 Module
+
+8. 開發板設定：
+   - Board: Generic ESP8266 Module
+   - Flash Size: 1MB (FS:64KB OTA:~470KB)
+   - Upload Speed: 115200
+   - CPU Frequency: 80 MHz
+</code></pre>
+<h3 id="ch340">CH340 驅動程式安裝</h3>
+<p>許多便宜的 USB to TTL 燒錄器使用 CH340 晶片，Windows 可能無法自動識別，需要手動安裝驅動程式。</p>
+<pre><code>╔══════════════════════════════════════════════════════════════════╗
+║  CH340 驅動程式安裝步驟                                           ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  步驟 1：下載驅動程式                                             ║
+║  ────────────────────                                            ║
+║  官方下載頁面：https://www.wch.cn/downloads/CH341SER_EXE.html    ║
+║  （或搜尋「CH340 driver download」）                              ║
+║                                                                  ║
+║  步驟 2：安裝驅動程式                                             ║
+║  ────────────────────                                            ║
+║  1. 解壓縮下載的檔案                                              ║
+║  2. 以系統管理員身分執行 CH341SER.EXE                             ║
+║  3. 點擊「INSTALL」按鈕                                          ║
+║  4. 看到「Driver install success!」表示安裝成功                  ║
+║                                                                  ║
+║  步驟 3：確認安裝成功                                             ║
+║  ────────────────────                                            ║
+║  1. 插入 USB to TTL 燒錄器                                       ║
+║  2. 開啟「裝置管理員」                                            ║
+║     - 按 Win + X，選擇「裝置管理員」                              ║
+║     - 或在搜尋列輸入「裝置管理員」                                ║
+║  3. 展開「連接埠 (COM 和 LPT)」                                   ║
+║  4. 應該看到「USB-SERIAL CH340 (COM?)」                          ║
+║     - COM 後面的數字就是你要在 Arduino IDE 選擇的埠號             ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+裝置管理員正常顯示範例：
+┌─────────────────────────────────────────┐
+│ 📁 連接埠 (COM 和 LPT)                  │
+│    └─ USB-SERIAL CH340 (COM3)    ✓     │
+└─────────────────────────────────────────┘
+
+若顯示驚嘆號或問號，表示驅動未正確安裝：
+┌─────────────────────────────────────────┐
+│ 📁 其他裝置                              │
+│    └─ ⚠️ USB2.0-Serial           ✗     │
+└─────────────────────────────────────────┘
+</code></pre>
+<h4 id="ch340_troubleshoot">CH340 常見問題排除</h4>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│ 問題：安裝後仍顯示未知裝置                                        │
+├─────────────────────────────────────────────────────────────────┤
+│ 解決方案：                                                       │
+│ 1. 在裝置管理員中，右鍵點擊該裝置 → 解除安裝裝置                   │
+│ 2. 勾選「刪除此裝置的驅動程式軟體」                               │
+│ 3. 拔除 USB 裝置                                                 │
+│ 4. 重新執行 CH341SER.EXE 安裝                                    │
+│ 5. 重新插入 USB 裝置                                             │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ 問題：COM Port 編號太大（如 COM23）                               │
+├─────────────────────────────────────────────────────────────────┤
+│ 解決方案：                                                       │
+│ 1. 裝置管理員 → USB-SERIAL CH340 → 右鍵 → 內容                   │
+│ 2. 連接埠設定 → 進階                                             │
+│ 3. 在「COM 連接埠號碼」下拉選單選擇較小的數字（如 COM3）          │
+│ 4. 確定後拔除再重新插入                                          │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ 問題：Windows 11 無法安裝舊版驅動                                 │
+├─────────────────────────────────────────────────────────────────┤
+│ 解決方案：                                                       │
+│ 1. 下載最新版驅動（V3.8 或更新）                                  │
+│ 2. 關閉防毒軟體後再安裝                                          │
+│ 3. 或使用 Windows Update 自動搜尋驅動：                          │
+│    裝置管理員 → 未知裝置 → 右鍵 → 更新驅動程式                    │
+│    → 自動搜尋驅動程式                                            │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="_10">燒錄器接線</h3>
+<p>使用 USB to TTL（如 CH340、CP2102、FT232）燒錄程式：</p>
+<pre><code>    USB to TTL              ESP-01
+    ┌─────────┐          ┌─────────┐
+    │         │          │         │
+    │     3V3 │─────────→│ VCC     │
+    │         │          │         │
+    │     GND │─────────→│ GND     │
+    │         │          │         │
+    │      TX │─────────→│ RX      │
+    │         │          │         │
+    │      RX │←─────────│ TX      │
+    │         │          │         │
+    └─────────┘          │ CH_PD   │──→ 3.3V
+                         │         │
+                         │ GPIO0   │──→ GND (燒錄模式)
+                         │         │
+                         │ RST     │──→ 按鈕到 GND
+                         └─────────┘
+
+燒錄步驟：
+1. GPIO0 接 GND
+2. 按一下 RST 按鈕
+3. 在 Arduino IDE 點擊上傳
+4. 等待燒錄完成
+5. GPIO0 改接 3.3V 或懸空
+6. 再按一下 RST 執行程式
+</code></pre>
+<h3 id="esp-01-wifi_1">程式範例四：ESP-01 獨立 WiFi 連接</h3>
+<pre><code class="language-cpp">/*
+ * ESP-01 獨立運作 - WiFi 連接範例
+ * 此程式直接燒錄到 ESP-01
+ */
+
+#include &lt;ESP8266WiFi.h&gt;
+
+const char* ssid = &quot;你的WiFi名稱&quot;;
+const char* password = &quot;你的WiFi密碼&quot;;
+
+void setup() {
+    Serial.begin(115200);
+    delay(100);
+
+    Serial.println();
+    Serial.println(&quot;ESP-01 WiFi 連接測試&quot;);
+    Serial.print(&quot;連接到: &quot;);
+    Serial.println(ssid);
+
+    WiFi.begin(ssid, password);
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(&quot;.&quot;);
+    }
+
+    Serial.println();
+    Serial.println(&quot;WiFi 連接成功！&quot;);
+    Serial.print(&quot;IP 位址: &quot;);
+    Serial.println(WiFi.localIP());
+}
+
+void loop() {
+    // 檢查連線狀態
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.println(&quot;WiFi 斷線，重新連接...&quot;);
+        WiFi.begin(ssid, password);
+
+        while (WiFi.status() != WL_CONNECTED) {
+            delay(500);
+            Serial.print(&quot;.&quot;);
+        }
+        Serial.println(&quot;\n重新連接成功！&quot;);
+    }
+
+    delay(10000);
+}
+</code></pre>
+<h3 id="esp-01-http">程式範例五：ESP-01 HTTP 伺服器</h3>
+<pre><code class="language-cpp">/*
+ * ESP-01 HTTP 伺服器範例
+ * 建立簡單的網頁伺服器控制 LED
+ */
+
+#include &lt;ESP8266WiFi.h&gt;
+#include &lt;ESP8266WebServer.h&gt;
+
+const char* ssid = &quot;你的WiFi名稱&quot;;
+const char* password = &quot;你的WiFi密碼&quot;;
+
+ESP8266WebServer server(80);
+
+const int LED_PIN = 2;  // ESP-01 板載 LED 或 GPIO2
+bool ledState = false;
+
+void setup() {
+    Serial.begin(115200);
+
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, HIGH);  // LED 預設關閉（低電平點亮）
+
+    // 連接 WiFi
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(&quot;.&quot;);
+    }
+
+    Serial.println();
+    Serial.print(&quot;IP: &quot;);
+    Serial.println(WiFi.localIP());
+
+    // 設定路由
+    server.on(&quot;/&quot;, handleRoot);
+    server.on(&quot;/led/on&quot;, handleLedOn);
+    server.on(&quot;/led/off&quot;, handleLedOff);
+
+    server.begin();
+    Serial.println(&quot;HTTP 伺服器已啟動&quot;);
+}
+
+void loop() {
+    server.handleClient();
+}
+
+void handleRoot() {
+    String html = &quot;&lt;html&gt;&lt;head&gt;&quot;;
+    html += &quot;&lt;meta name='viewport' content='width=device-width,initial-scale=1'&gt;&quot;;
+    html += &quot;&lt;style&gt;&quot;;
+    html += &quot;body{font-family:Arial;text-align:center;padding:20px;}&quot;;
+    html += &quot;.btn{padding:20px 40px;font-size:20px;margin:10px;cursor:pointer;}&quot;;
+    html += &quot;.on{background:#4CAF50;color:white;}&quot;;
+    html += &quot;.off{background:#f44336;color:white;}&quot;;
+    html += &quot;&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&quot;;
+    html += &quot;&lt;h1&gt;ESP-01 LED 控制&lt;/h1&gt;&quot;;
+    html += &quot;&lt;p&gt;LED 狀態: &quot; + String(ledState ? &quot;開啟&quot; : &quot;關閉&quot;) + &quot;&lt;/p&gt;&quot;;
+    html += &quot;&lt;a href='/led/on'&gt;&lt;button class='btn on'&gt;開啟&lt;/button&gt;&lt;/a&gt;&quot;;
+    html += &quot;&lt;a href='/led/off'&gt;&lt;button class='btn off'&gt;關閉&lt;/button&gt;&lt;/a&gt;&quot;;
+    html += &quot;&lt;/body&gt;&lt;/html&gt;&quot;;
+
+    server.send(200, &quot;text/html&quot;, html);
+}
+
+void handleLedOn() {
+    ledState = true;
+    digitalWrite(LED_PIN, LOW);  // 低電平點亮
+    server.sendHeader(&quot;Location&quot;, &quot;/&quot;);
+    server.send(303);
+}
+
+void handleLedOff() {
+    ledState = false;
+    digitalWrite(LED_PIN, HIGH);
+    server.sendHeader(&quot;Location&quot;, &quot;/&quot;);
+    server.send(303);
+}
+</code></pre>
+<h3 id="esp-01-arduino-wifi">程式範例六：ESP-01 作為 Arduino 的 WiFi 橋接器</h3>
+<p>這個範例展示 ESP-01 接收 Arduino 的資料並上傳到伺服器：</p>
+<p><strong>ESP-01 端程式（燒錄到 ESP-01）：</strong></p>
+<pre><code class="language-cpp">/*
+ * ESP-01 WiFi 橋接器
+ * 接收 Arduino 透過序列埠發送的資料，上傳到 HTTP 伺服器
+ */
+
+#include &lt;ESP8266WiFi.h&gt;
+#include &lt;ESP8266HTTPClient.h&gt;
+#include &lt;WiFiClient.h&gt;
+
+const char* ssid = &quot;你的WiFi名稱&quot;;
+const char* password = &quot;你的WiFi密碼&quot;;
+const char* serverUrl = &quot;http://你的伺服器/api/data&quot;;
+
+String inputBuffer = &quot;&quot;;
+
+void setup() {
+    Serial.begin(9600);  // 與 Arduino 通訊
+
+    WiFi.begin(ssid, password);
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+    }
+
+    // 發送連接成功訊息給 Arduino
+    Serial.println(&quot;WIFI_OK&quot;);
+}
+
+void loop() {
+    // 讀取 Arduino 發送的資料
+    while (Serial.available()) {
+        char c = Serial.read();
+
+        if (c == '\n') {
+            // 收到完整的一行資料
+            processData(inputBuffer);
+            inputBuffer = &quot;&quot;;
+        } else if (c != '\r') {
+            inputBuffer += c;
+        }
+    }
+}
+
+void processData(String data) {
+    if (data.startsWith(&quot;SEND:&quot;)) {
+        // 格式: SEND:temperature=25.5&amp;humidity=60
+        String params = data.substring(5);
+
+        if (WiFi.status() == WL_CONNECTED) {
+            WiFiClient client;
+            HTTPClient http;
+
+            String url = String(serverUrl) + &quot;?&quot; + params;
+            http.begin(client, url);
+
+            int httpCode = http.GET();
+
+            if (httpCode &gt; 0) {
+                Serial.println(&quot;OK:&quot; + String(httpCode));
+            } else {
+                Serial.println(&quot;ERR:&quot; + String(httpCode));
+            }
+
+            http.end();
+        } else {
+            Serial.println(&quot;ERR:NO_WIFI&quot;);
+        }
+    }
+}
+</code></pre>
+<p><strong>Arduino 端程式（燒錄到 Arduino Uno）：</strong></p>
+<pre><code class="language-cpp">/*
+ * Arduino + ESP-01 感測器上傳範例
+ * Arduino 讀取感測器，透過 ESP-01 上傳資料
+ */
+
+#include &lt;SoftwareSerial.h&gt;
+#include &lt;DHT.h&gt;
+
+const int ESP_RX = 2;
+const int ESP_TX = 3;
+const int DHT_PIN = 4;
+
+SoftwareSerial espSerial(ESP_RX, ESP_TX);
+DHT dht(DHT_PIN, DHT11);
+
+bool wifiConnected = false;
+
+void setup() {
+    Serial.begin(9600);
+    espSerial.begin(9600);
+    dht.begin();
+
+    Serial.println(&quot;等待 ESP-01 連接 WiFi...&quot;);
+
+    // 等待 ESP-01 連接 WiFi
+    long startTime = millis();
+    while (millis() - startTime &lt; 30000) {
+        if (espSerial.available()) {
+            String response = espSerial.readStringUntil('\n');
+            response.trim();
+
+            if (response == &quot;WIFI_OK&quot;) {
+                wifiConnected = true;
+                Serial.println(&quot;WiFi 連接成功！&quot;);
+                break;
+            }
+        }
+    }
+
+    if (!wifiConnected) {
+        Serial.println(&quot;WiFi 連接失敗！&quot;);
+    }
+}
+
+void loop() {
+    if (!wifiConnected) {
+        delay(5000);
+        return;
+    }
+
+    // 讀取感測器
+    float temperature = dht.readTemperature();
+    float humidity = dht.readHumidity();
+
+    if (!isnan(temperature) &amp;&amp; !isnan(humidity)) {
+        // 發送資料給 ESP-01
+        String data = &quot;SEND:temperature=&quot; + String(temperature, 1);
+        data += &quot;&amp;humidity=&quot; + String(humidity, 1);
+
+        espSerial.println(data);
+        Serial.println(&quot;發送: &quot; + data);
+
+        // 等待回應
+        delay(100);
+        while (espSerial.available()) {
+            String response = espSerial.readStringUntil('\n');
+            Serial.println(&quot;回應: &quot; + response);
+        }
+    }
+
+    delay(60000);  // 每分鐘上傳一次
+}
+</code></pre>
+<h3 id="esp-01-mqtt">程式範例七：ESP-01 MQTT 發布</h3>
+<pre><code class="language-cpp">/*
+ * ESP-01 MQTT 發布範例
+ * 將感測器資料發布到 MQTT Broker
+ */
+
+#include &lt;ESP8266WiFi.h&gt;
+#include &lt;PubSubClient.h&gt;
+
+const char* ssid = &quot;你的WiFi名稱&quot;;
+const char* password = &quot;你的WiFi密碼&quot;;
+const char* mqtt_server = &quot;broker.hivemq.com&quot;;  // 公開測試 Broker
+const int mqtt_port = 1883;
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+String inputBuffer = &quot;&quot;;
+
+void setup() {
+    Serial.begin(9600);
+
+    // 連接 WiFi
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+    }
+
+    // 設定 MQTT
+    client.setServer(mqtt_server, mqtt_port);
+
+    // 連接 MQTT
+    reconnect();
+
+    Serial.println(&quot;READY&quot;);
+}
+
+void loop() {
+    if (!client.connected()) {
+        reconnect();
+    }
+    client.loop();
+
+    // 讀取 Arduino 發送的資料
+    while (Serial.available()) {
+        char c = Serial.read();
+
+        if (c == '\n') {
+            processCommand(inputBuffer);
+            inputBuffer = &quot;&quot;;
+        } else if (c != '\r') {
+            inputBuffer += c;
+        }
+    }
+}
+
+void processCommand(String cmd) {
+    // 格式: PUB:topic:message
+    if (cmd.startsWith(&quot;PUB:&quot;)) {
+        int firstColon = cmd.indexOf(':', 4);
+        if (firstColon &gt; 0) {
+            String topic = cmd.substring(4, firstColon);
+            String message = cmd.substring(firstColon + 1);
+
+            if (client.publish(topic.c_str(), message.c_str())) {
+                Serial.println(&quot;OK&quot;);
+            } else {
+                Serial.println(&quot;ERR:PUBLISH&quot;);
+            }
+        }
+    }
+}
+
+void reconnect() {
+    while (!client.connected()) {
+        String clientId = &quot;ESP01-&quot; + String(random(0xffff), HEX);
+
+        if (client.connect(clientId.c_str())) {
+            Serial.println(&quot;MQTT_OK&quot;);
+        } else {
+            delay(5000);
+        }
+    }
+}
+</code></pre>
+<h3 id="_11">程式範例八：溫室監控完整範例</h3>
+<p><strong>ESP-01 端（燒錄到 ESP-01）：</strong></p>
+<pre><code class="language-cpp">/*
+ * 智慧溫室 - ESP-01 WiFi 模組
+ * 功能：
+ * - 接收 Arduino 的感測器資料
+ * - 發布到 MQTT Broker
+ * - 接收控制指令轉發給 Arduino
+ */
+
+#include &lt;ESP8266WiFi.h&gt;
+#include &lt;PubSubClient.h&gt;
+
+// WiFi 設定
+const char* ssid = &quot;你的WiFi名稱&quot;;
+const char* password = &quot;你的WiFi密碼&quot;;
+
+// MQTT 設定
+const char* mqtt_server = &quot;broker.hivemq.com&quot;;
+const int mqtt_port = 1883;
+const char* mqtt_topic_data = &quot;greenhouse/sensors&quot;;
+const char* mqtt_topic_control = &quot;greenhouse/control&quot;;
+
+WiFiClient espClient;
+PubSubClient mqtt(espClient);
+
+String serialBuffer = &quot;&quot;;
+
+void setup() {
+    Serial.begin(9600);
+
+    // 連接 WiFi
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(ssid, password);
+
+    int attempts = 0;
+    while (WiFi.status() != WL_CONNECTED &amp;&amp; attempts &lt; 40) {
+        delay(500);
+        attempts++;
+    }
+
+    if (WiFi.status() == WL_CONNECTED) {
+        Serial.println(&quot;WIFI:OK&quot;);
+    } else {
+        Serial.println(&quot;WIFI:FAIL&quot;);
+        return;
+    }
+
+    // 設定 MQTT
+    mqtt.setServer(mqtt_server, mqtt_port);
+    mqtt.setCallback(mqttCallback);
+
+    connectMQTT();
+}
+
+void loop() {
+    // 維持 MQTT 連接
+    if (!mqtt.connected()) {
+        connectMQTT();
+    }
+    mqtt.loop();
+
+    // 處理序列埠資料
+    while (Serial.available()) {
+        char c = Serial.read();
+        if (c == '\n') {
+            handleSerialData(serialBuffer);
+            serialBuffer = &quot;&quot;;
+        } else if (c != '\r') {
+            serialBuffer += c;
+        }
+    }
+}
+
+void connectMQTT() {
+    int attempts = 0;
+    while (!mqtt.connected() &amp;&amp; attempts &lt; 5) {
+        String clientId = &quot;Greenhouse-&quot; + String(ESP.getChipId(), HEX);
+
+        if (mqtt.connect(clientId.c_str())) {
+            Serial.println(&quot;MQTT:OK&quot;);
+            mqtt.subscribe(mqtt_topic_control);
+        } else {
+            delay(3000);
+        }
+        attempts++;
+    }
+}
+
+void handleSerialData(String data) {
+    // 格式: DATA:{&quot;temp&quot;:25.5,&quot;humi&quot;:60,&quot;soil&quot;:45}
+    if (data.startsWith(&quot;DATA:&quot;)) {
+        String jsonData = data.substring(5);
+
+        if (mqtt.publish(mqtt_topic_data, jsonData.c_str())) {
+            Serial.println(&quot;SEND:OK&quot;);
+        } else {
+            Serial.println(&quot;SEND:FAIL&quot;);
+        }
+    }
+}
+
+void mqttCallback(char* topic, byte* payload, unsigned int length) {
+    String message = &quot;&quot;;
+    for (unsigned int i = 0; i &lt; length; i++) {
+        message += (char)payload[i];
+    }
+
+    // 將控制指令轉發給 Arduino
+    Serial.println(&quot;CMD:&quot; + message);
+}
+</code></pre>
+<p><strong>Arduino 端（燒錄到 Arduino Uno）：</strong></p>
+<pre><code class="language-cpp">/*
+ * 智慧溫室 - Arduino 主控制器
+ * 功能：
+ * - 讀取 DHT 溫溼度感測器
+ * - 讀取土壤濕度感測器
+ * - 透過 ESP-01 發送資料
+ * - 接收控制指令控制繼電器
+ */
+
+#include &lt;SoftwareSerial.h&gt;
+#include &lt;DHT.h&gt;
+#include &lt;ArduinoJson.h&gt;
+
+// 腳位定義
+const int ESP_RX = 2;
+const int ESP_TX = 3;
+const int DHT_PIN = 4;
+const int SOIL_PIN = A0;
+const int RELAY_FAN = 5;
+const int RELAY_PUMP = 6;
+
+SoftwareSerial esp(ESP_RX, ESP_TX);
+DHT dht(DHT_PIN, DHT11);
+
+bool wifiReady = false;
+bool mqttReady = false;
+unsigned long lastSendTime = 0;
+const unsigned long sendInterval = 30000;  // 30 秒發送一次
+
+void setup() {
+    Serial.begin(9600);
+    esp.begin(9600);
+    dht.begin();
+
+    pinMode(RELAY_FAN, OUTPUT);
+    pinMode(RELAY_PUMP, OUTPUT);
+    digitalWrite(RELAY_FAN, HIGH);   // 繼電器預設關閉
+    digitalWrite(RELAY_PUMP, HIGH);
+
+    Serial.println(&quot;智慧溫室系統啟動中...&quot;);
+
+    // 等待 ESP-01 就緒
+    waitForESP();
+}
+
+void loop() {
+    // 處理 ESP-01 回應
+    handleESPResponse();
+
+    // 定時發送資料
+    if (wifiReady &amp;&amp; mqttReady) {
+        if (millis() - lastSendTime &gt;= sendInterval) {
+            sendSensorData();
+            lastSendTime = millis();
+        }
+    }
+}
+
+void waitForESP() {
+    Serial.println(&quot;等待 WiFi 連接...&quot;);
+
+    unsigned long startTime = millis();
+    while (millis() - startTime &lt; 60000) {  // 最多等 60 秒
+        if (esp.available()) {
+            String response = esp.readStringUntil('\n');
+            response.trim();
+
+            Serial.println(&quot;ESP: &quot; + response);
+
+            if (response == &quot;WIFI:OK&quot;) {
+                wifiReady = true;
+                Serial.println(&quot;WiFi 已連接&quot;);
+            } else if (response == &quot;MQTT:OK&quot;) {
+                mqttReady = true;
+                Serial.println(&quot;MQTT 已連接&quot;);
+                return;
+            }
+        }
+    }
+}
+
+void handleESPResponse() {
+    while (esp.available()) {
+        String response = esp.readStringUntil('\n');
+        response.trim();
+
+        Serial.println(&quot;ESP: &quot; + response);
+
+        // 處理控制指令
+        if (response.startsWith(&quot;CMD:&quot;)) {
+            String cmd = response.substring(4);
+            executeCommand(cmd);
+        }
+    }
+}
+
+void sendSensorData() {
+    float temperature = dht.readTemperature();
+    float humidity = dht.readHumidity();
+    int soilRaw = analogRead(SOIL_PIN);
+    int soilPercent = map(soilRaw, 850, 350, 0, 100);
+    soilPercent = constrain(soilPercent, 0, 100);
+
+    if (isnan(temperature) || isnan(humidity)) {
+        Serial.println(&quot;感測器讀取錯誤&quot;);
+        return;
+    }
+
+    // 建立 JSON
+    StaticJsonDocument&lt;200&gt; doc;
+    doc[&quot;temp&quot;] = round(temperature * 10) / 10.0;
+    doc[&quot;humi&quot;] = round(humidity * 10) / 10.0;
+    doc[&quot;soil&quot;] = soilPercent;
+    doc[&quot;fan&quot;] = digitalRead(RELAY_FAN) == LOW;
+    doc[&quot;pump&quot;] = digitalRead(RELAY_PUMP) == LOW;
+
+    String jsonString;
+    serializeJson(doc, jsonString);
+
+    esp.println(&quot;DATA:&quot; + jsonString);
+    Serial.println(&quot;發送: &quot; + jsonString);
+}
+
+void executeCommand(String cmd) {
+    // 解析 JSON 指令
+    StaticJsonDocument&lt;100&gt; doc;
+    DeserializationError error = deserializeJson(doc, cmd);
+
+    if (error) {
+        Serial.println(&quot;指令解析錯誤&quot;);
+        return;
+    }
+
+    // 控制風扇
+    if (doc.containsKey(&quot;fan&quot;)) {
+        bool fanOn = doc[&quot;fan&quot;];
+        digitalWrite(RELAY_FAN, fanOn ? LOW : HIGH);
+        Serial.println(fanOn ? &quot;風扇開啟&quot; : &quot;風扇關閉&quot;);
+    }
+
+    // 控制水泵
+    if (doc.containsKey(&quot;pump&quot;)) {
+        bool pumpOn = doc[&quot;pump&quot;];
+        digitalWrite(RELAY_PUMP, pumpOn ? LOW : HIGH);
+        Serial.println(pumpOn ? &quot;水泵開啟&quot; : &quot;水泵關閉&quot;);
+    }
+}
+</code></pre>
+<hr />
+<h2 id="_12">常見問題與排除</h2>
+<h3 id="esp-01_4">問題一：ESP-01 沒有回應</h3>
+<pre><code>症狀：發送 AT 指令沒有任何回應
+
+檢查項目：
+□ 電源是否為 3.3V（不是 5V）
+□ CH_PD (EN) 是否接到 3.3V
+□ TX/RX 是否接對（Arduino TX → ESP RX）
+□ 鮑率是否正確（預設 115200 或 9600）
+□ 電源電流是否足夠（需要 300mA 以上的能力）
+
+解決方案：
+1. 使用獨立的 3.3V 電源（如 AMS1117 模組）
+2. 確認共地（GND 必須連接）
+3. 嘗試不同鮑率：9600、57600、115200
+</code></pre>
+<h3 id="wifi_1">問題二：WiFi 連接失敗</h3>
+<pre><code>症狀：AT+CWJAP 回傳 ERROR 或 FAIL
+
+可能原因：
+1. SSID 或密碼錯誤
+2. WiFi 使用 5GHz（ESP-01 只支援 2.4GHz）
+3. WiFi 名稱含有特殊字元
+4. 路由器 MAC 過濾
+
+解決方案：
+1. 確認 SSID 和密碼完全正確
+2. 確保使用 2.4GHz WiFi
+3. 手機開熱點測試（排除路由器問題）
+4. 重置 ESP-01：AT+RESTORE
+</code></pre>
+<h3 id="_13">問題三：燒錄失敗</h3>
+<pre><code>症狀：Arduino IDE 上傳時出現錯誤
+
+檢查項目：
+□ GPIO0 是否接到 GND
+□ 是否在燒錄前按了 RST
+□ USB to TTL 是否正常（驅動程式）
+□ COM Port 是否選對
+□ 開發板設定是否正確
+
+燒錄模式進入步驟：
+1. GPIO0 接 GND
+2. 按住 RST 按鈕
+3. 點擊 Arduino IDE 的上傳
+4. 放開 RST 按鈕
+5. 等待燒錄完成
+</code></pre>
+<h3 id="_14">問題四：執行不穩定、重啟</h3>
+<pre><code>症狀：ESP-01 執行中突然重啟
+
+可能原因：
+1. 電源電流不足（峰值需要 300mA）
+2. 3.3V 電壓不穩
+3. 程式記憶體溢出
+
+解決方案：
+1. 使用獨立穩壓電源模組
+2. 在 VCC 和 GND 之間加 100μF 電容
+3. 減少 String 使用，改用 char 陣列
+4. 加入 watchdog 防止程式卡死
+</code></pre>
+<h3 id="at_3">問題五：AT 指令亂碼</h3>
+<pre><code>症狀：Serial Monitor 顯示亂碼
+
+原因：鮑率不匹配
+
+解決方案：
+1. ESP-01 原廠韌體通常是 115200
+2. 有些版本是 9600
+3. 可用 AT+UART_DEF=9600,8,1,0,0 修改預設鮑率
+4. 注意：鮑率設錯可能需要重刷韌體
+</code></pre>
+<hr />
+<h2 id="_15">快速參考</h2>
+<h3 id="at_4">AT 指令速查</h3>
+<pre><code>連接測試：AT
+重置模組：AT+RST
+設定 Station 模式：AT+CWMODE=1
+列出 WiFi：AT+CWLAP
+連接 WiFi：AT+CWJAP=&quot;SSID&quot;,&quot;PASSWORD&quot;
+查詢 IP：AT+CIFSR
+建立連接：AT+CIPSTART=&quot;TCP&quot;,&quot;host&quot;,port
+發送資料：AT+CIPSEND=長度
+關閉連接：AT+CIPCLOSE
+</code></pre>
+<h3 id="_16">腳位功能速查</h3>
+<pre><code>VCC      → 3.3V 電源
+GND      → 接地
+TX       → 發送（接 Arduino RX）
+RX       → 接收（需分壓，接 Arduino TX）
+CH_PD    → 必須接 3.3V
+RST      → 接按鈕到 GND 做重置
+GPIO0    → 接 GND 進燒錄模式
+GPIO2    → 可用 IO（開機需高電平）
+</code></pre>
+<h3 id="_17">電壓電流速查</h3>
+<pre><code>工作電壓：3.3V（絕對不能接 5V）
+平均電流：~80mA
+峰值電流：~300mA
+建議電源：AMS1117-3.3V 穩壓模組
+濾波電容：VCC-GND 間加 100μF
+</code></pre>
+<hr />
+<h2 id="_18">延伸學習</h2>
+<ul>
+<li><a href="關於序列埠通訊.md">關於序列埠通訊</a> - UART 通訊基礎</li>
+<li><a href="關於MQTT訊息.md">關於MQTT訊息</a> - 物聯網訊息協定</li>
+<li><a href="關於電源供應.md">關於電源供應</a> - 穩壓電路設計</li>
+<li><a href="關於資料通訊方式.md">關於資料通訊方式</a> - 各種通訊協定比較</li>
+</ul>
+<hr />
+<h2 id="_19">本文件適用於</h2>
+<ul>
+<li><strong>G6 組</strong>：物聯網監控系統</li>
+<li>需要遠端監控的任何專案</li>
+<li>WiFi 連網功能開發</li>
+</ul>
+<hr />
+<blockquote>
+<p>提示：ESP-01 功能強大但電源要求嚴格，務必使用 3.3V 穩壓電源並確保電流充足！</p>
+</blockquote>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於RustDesk遠端連線樹莓派教學</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="rustdesk">RustDesk 遠端連線樹莓派教學</h1>
+<h2 id="_1">目錄</h2>
+<ol>
+<li><a href="#什麼是-rustdesk">什麼是 RustDesk</a></li>
+<li><a href="#在樹莓派安裝-rustdesk">在樹莓派安裝 RustDesk</a></li>
+<li><a href="#在電腦端安裝-rustdesk">在電腦端安裝 RustDesk</a></li>
+<li><a href="#建立連線">建立連線</a></li>
+<li><a href="#重要解決無螢幕無法連線問題">重要：解決無螢幕無法連線問題</a></li>
+<li><a href="#常見問題排除">常見問題排除</a></li>
+</ol>
+<hr />
+<h2 id="rustdesk_1">什麼是 RustDesk</h2>
+<p>RustDesk 是一個<strong>開源免費</strong>的遠端桌面軟體，類似 TeamViewer，但：<br />
+- 完全免費，無使用限制<br />
+- 可以自架伺服器（更安全）<br />
+- 支援樹莓派（ARM 架構）<br />
+- 跨平台：Windows、Mac、Linux、Android、iOS</p>
+<pre><code>使用情境
+========
+
+    你的電腦                          樹莓派
+   ┌─────────┐        網路          ┌─────────┐
+   │ RustDesk│ ◄──────────────────► │ RustDesk│
+   │  客戶端 │      遠端連線         │  服務端 │
+   └─────────┘                      └─────────┘
+
+   可以看到樹莓派的桌面畫面
+   可以用滑鼠鍵盤操作樹莓派
+</code></pre>
+<hr />
+<h2 id="rustdesk_2">在樹莓派安裝 RustDesk</h2>
+<h3 id="1-rustdesk">步驟 1：下載 RustDesk</h3>
+<pre><code class="language-bash"># 進入下載目錄
+cd ~/Downloads
+
+# 下載 RustDesk（ARM64 版本，適用於 Pi 4/5 的 64 位元系統）
+wget https://github.com/rustdesk/rustdesk/releases/download/1.2.3/rustdesk-1.2.3-aarch64.deb
+
+# 如果是 32 位元系統，使用這個：
+# wget https://github.com/rustdesk/rustdesk/releases/download/1.2.3/rustdesk-1.2.3-armhf.deb
+</code></pre>
+<blockquote>
+<p><strong>注意</strong>：版本號可能會更新，請到 <a href="https://github.com/rustdesk/rustdesk/releases">RustDesk GitHub Releases</a> 查看最新版本</p>
+</blockquote>
+<h3 id="2-rustdesk">步驟 2：安裝 RustDesk</h3>
+<pre><code class="language-bash"># 安裝下載的 .deb 檔案
+sudo apt install ./rustdesk-1.2.3-aarch64.deb
+
+# 如果出現相依性問題，執行：
+sudo apt --fix-broken install
+</code></pre>
+<h3 id="3-rustdesk">步驟 3：啟動 RustDesk</h3>
+<pre><code class="language-bash"># 從終端機啟動
+rustdesk
+
+# 或從桌面選單：Menu → Internet → RustDesk
+</code></pre>
+<h3 id="4-id">步驟 4：記下你的 ID 和密碼</h3>
+<pre><code>RustDesk 啟動後會顯示：
+
+┌─────────────────────────────────┐
+│         RustDesk                │
+│                                 │
+│    你的 ID: 123 456 789        │  ← 記下這個
+│                                 │
+│    密碼: xxxxxxxx              │  ← 記下這個
+│                                 │
+└─────────────────────────────────┘
+
+這組 ID 和密碼是別人連到你的樹莓派需要的
+</code></pre>
+<h3 id="5">步驟 5：設定開機自動啟動</h3>
+<pre><code class="language-bash"># 設定 RustDesk 服務開機啟動
+sudo systemctl enable rustdesk
+sudo systemctl start rustdesk
+</code></pre>
+<hr />
+<h2 id="rustdesk_3">在電腦端安裝 RustDesk</h2>
+<h3 id="windows">Windows</h3>
+<ol>
+<li>到 <a href="https://rustdesk.com/">RustDesk 官網</a> 下載 Windows 版本</li>
+<li>執行安裝程式</li>
+<li>安裝完成後開啟 RustDesk</li>
+</ol>
+<h3 id="mac">Mac</h3>
+<ol>
+<li>到 <a href="https://rustdesk.com/">RustDesk 官網</a> 下載 Mac 版本</li>
+<li>打開 .dmg 檔案，拖曳到 Applications</li>
+<li>開啟 RustDesk</li>
+</ol>
+<hr />
+<h2 id="_2">建立連線</h2>
+<h3 id="_3">從電腦連到樹莓派</h3>
+<pre><code>1. 在電腦上開啟 RustDesk
+
+2. 在「控制遠端桌面」欄位輸入樹莓派的 ID
+   ┌─────────────────────────────────┐
+   │  控制遠端桌面                    │
+   │  ┌─────────────────────────┐    │
+   │  │ 123 456 789            │    │  ← 輸入樹莓派的 ID
+   │  └─────────────────────────┘    │
+   │            [連接]               │
+   └─────────────────────────────────┘
+
+3. 點擊「連接」
+
+4. 輸入樹莓派的密碼
+
+5. 連線成功！可以看到樹莓派桌面
+</code></pre>
+<hr />
+<h2 id="_4">重要：解決無螢幕無法連線問題</h2>
+<h3 id="_5">問題描述</h3>
+<pre><code>當樹莓派沒有接實體螢幕時：
+├── RustDesk 連得上，但畫面全黑或解析度很小
+├── 顯示「螢幕未連接」或類似訊息
+└── 必須接上 HDMI 螢幕才能正常顯示
+
+原因：
+樹莓派預設在沒有偵測到螢幕時，不會啟動完整的圖形輸出
+</code></pre>
+<h3 id="_6">解決方案（三個都要做！）</h3>
+<h4 id="1-cmdlinetxt">方案 1：修改 cmdline.txt</h4>
+<pre><code class="language-bash"># 編輯 cmdline.txt
+sudo nano /boot/firmware/cmdline.txt
+</code></pre>
+<p><strong>重要：這個檔案只有一行，不要換行！</strong></p>
+<p>在該行的<strong>最末尾</strong>加上（前面加一個空格）：</p>
+<pre><code> vc4.force_hotplug=1
+</code></pre>
+<p>修改前：</p>
+<pre><code>console=serial0,115200 console=tty1 root=PARTUUID=xxxxx rootfstype=ext4 ...
+</code></pre>
+<p>修改後：</p>
+<pre><code>console=serial0,115200 console=tty1 root=PARTUUID=xxxxx rootfstype=ext4 ... vc4.force_hotplug=1
+</code></pre>
+<p>按 <code>Ctrl+X</code>，然後 <code>Y</code>，然後 <code>Enter</code> 儲存</p>
+<h4 id="2-configtxt">方案 2：修改 config.txt</h4>
+<pre><code class="language-bash"># 編輯 config.txt
+sudo nano /boot/firmware/config.txt
+
+# 注意：舊版系統可能是 /boot/config.txt
+# 如果 /boot/firmware/config.txt 不存在，試試：
+# sudo nano /boot/config.txt
+</code></pre>
+<p>在檔案<strong>最後面</strong>加入以下內容：</p>
+<pre><code class="language-ini"># ========================================
+# 無螢幕遠端連線設定（Headless Mode）
+# ========================================
+
+# 強制啟用 HDMI，即使沒有偵測到螢幕
+hdmi_force_hotplug=1
+
+# 設定 HDMI 輸出模式
+# hdmi_group=2 表示使用 DMT（電腦螢幕）模式
+hdmi_group=2
+
+# hdmi_mode=82 表示 1920x1080 60Hz
+# 其他常用選項：
+#   hdmi_mode=85 → 1280x720 60Hz
+#   hdmi_mode=82 → 1920x1080 60Hz
+#   hdmi_mode=16 → 1024x768 60Hz（hdmi_group=1 時）
+hdmi_mode=82
+
+# 如果上面還不行，可以再加這些：
+# 強制使用 HDMI 音訊（可選）
+# hdmi_drive=2
+
+# 增加 HDMI 訊號強度（如果畫面有雜訊）
+# config_hdmi_boost=4
+</code></pre>
+<p>按 <code>Ctrl+X</code>，然後 <code>Y</code>，然後 <code>Enter</code> 儲存</p>
+<h4 id="3">方案 3：重新啟動樹莓派</h4>
+<pre><code class="language-bash">sudo reboot
+</code></pre>
+<h3 id="_7">驗證設定是否生效</h3>
+<pre><code class="language-bash"># 重開機後，檢查虛擬螢幕是否啟用
+# 應該會顯示 1920x1080 或你設定的解析度
+tvservice -s
+
+# 或者檢查 Xorg 顯示
+DISPLAY=:0 xrandr
+</code></pre>
+<hr />
+<h2 id="_8">常見問題排除</h2>
+<h3 id="1">問題 1：連線成功但畫面全黑</h3>
+<p><strong>可能原因與解決方法：</strong></p>
+<pre><code class="language-bash"># 1. 確認 config.txt 設定是否生效
+cat /boot/firmware/config.txt | grep hdmi
+
+# 應該看到：
+# hdmi_force_hotplug=1
+# hdmi_group=2
+# hdmi_mode=82
+
+# 2. 確認 cmdline.txt 設定是否生效
+cat /boot/firmware/cmdline.txt | grep vc4
+
+# 應該看到 vc4.force_hotplug=1
+
+# 3. 如果還是黑畫面，試著重新啟動顯示管理器
+sudo systemctl restart lightdm
+</code></pre>
+<h3 id="2">問題 2：解析度太小或太大</h3>
+<pre><code class="language-bash"># 編輯 config.txt 調整 hdmi_mode
+sudo nano /boot/firmware/config.txt
+
+# 常用解析度（hdmi_group=2 DMT 模式）：
+# hdmi_mode=4  → 640x480 60Hz
+# hdmi_mode=9  → 800x600 60Hz
+# hdmi_mode=16 → 1024x768 60Hz
+# hdmi_mode=35 → 1280x1024 60Hz
+# hdmi_mode=51 → 1600x1200 60Hz
+# hdmi_mode=82 → 1920x1080 60Hz（推薦）
+# hdmi_mode=85 → 1280x720 60Hz
+
+# 修改後重開機
+sudo reboot
+</code></pre>
+<h3 id="3rustdesk">問題 3：RustDesk 服務沒有自動啟動</h3>
+<pre><code class="language-bash"># 檢查服務狀態
+sudo systemctl status rustdesk
+
+# 如果沒有啟動，手動啟動並設定開機啟動
+sudo systemctl enable rustdesk
+sudo systemctl start rustdesk
+
+# 或者用另一種方式設定開機啟動
+mkdir -p ~/.config/autostart
+nano ~/.config/autostart/rustdesk.desktop
+</code></pre>
+<p>在檔案中加入：</p>
+<pre><code class="language-ini">[Desktop Entry]
+Type=Application
+Name=RustDesk
+Exec=rustdesk
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+</code></pre>
+<h3 id="4">問題 4：連線後畫面很卡/延遲高</h3>
+<pre><code class="language-bash"># 1. 調整 RustDesk 的畫質設定（在連線時選擇「原始」或「平衡」）
+
+# 2. 降低樹莓派的桌面特效
+# 使用 Raspberry Pi Configuration 或：
+sudo raspi-config
+# → Advanced Options → GL Driver → Legacy
+
+# 3. 降低解析度
+# 編輯 /boot/firmware/config.txt
+# 改用較低的 hdmi_mode，例如 85（1280x720）
+</code></pre>
+<h3 id="5pi-5">問題 5：Pi 5 特別注意事項</h3>
+<pre><code class="language-bash"># Pi 5 的設定檔位置和舊版不同
+# 確認你編輯的是正確的檔案：
+
+# Pi 5 / Bookworm：
+/boot/firmware/config.txt
+/boot/firmware/cmdline.txt
+
+# Pi 4 / Bullseye 或更舊：
+/boot/config.txt
+/boot/cmdline.txt
+</code></pre>
+<h3 id="6-bootfirmware">問題 6：找不到 /boot/firmware 目錄</h3>
+<pre><code class="language-bash"># 如果 /boot/firmware 不存在，可能是舊版系統
+# 直接使用 /boot：
+sudo nano /boot/config.txt
+sudo nano /boot/cmdline.txt
+</code></pre>
+<hr />
+<h2 id="_9">其他替代方案</h2>
+<p>如果 RustDesk 還是無法使用，可以考慮：</p>
+<h3 id="a-vnc">方案 A：使用 VNC</h3>
+<pre><code class="language-bash"># 樹莓派內建 VNC 支援
+sudo raspi-config
+# → Interface Options → VNC → Enable
+
+# 然後在電腦安裝 VNC Viewer
+# https://www.realvnc.com/en/connect/download/viewer/
+</code></pre>
+<h3 id="b-hdmi-hdmi-dummy-plug">方案 B：使用假 HDMI 接頭（HDMI Dummy Plug）</h3>
+<pre><code>如果軟體設定都不行，可以買一個「HDMI 假負載」
+插在樹莓派的 HDMI 孔上，騙過系統以為有螢幕
+
+搜尋：「HDMI Dummy Plug」或「HDMI 假負載」
+價格：約 $30-50
+</code></pre>
+<h3 id="c-xrdpwindows">方案 C：使用 xrdp（Windows 遠端桌面）</h3>
+<pre><code class="language-bash"># 安裝 xrdp
+sudo apt install xrdp
+
+# 啟動服務
+sudo systemctl enable xrdp
+sudo systemctl start xrdp
+
+# 然後從 Windows 使用「遠端桌面連線」連到樹莓派的 IP
+</code></pre>
+<hr />
+<h2 id="_10">完整設定檢查清單</h2>
+<pre><code>□ 已安裝 RustDesk 在樹莓派
+□ 已記下 ID 和密碼
+□ 已設定開機自動啟動
+□ 已修改 /boot/firmware/cmdline.txt（加入 vc4.force_hotplug=1）
+□ 已修改 /boot/firmware/config.txt（加入 hdmi_force_hotplug 等設定）
+□ 已重新啟動樹莓派
+□ 在電腦端安裝 RustDesk
+□ 測試連線成功
+□ 拔掉實體螢幕後仍可連線
+</code></pre>
+<hr />
+<h2 id="_11">參考資料</h2>
+<ul>
+<li><a href="https://rustdesk.com/">RustDesk 官網</a></li>
+<li><a href="https://github.com/rustdesk/rustdesk">RustDesk GitHub</a></li>
+<li><a href="https://www.raspberrypi.com/documentation/computers/config_txt.html">Raspberry Pi 官方文件 - config.txt</a></li>
+<li><a href="https://www.raspberrypi.com/documentation/computers/configuration.html#hdmi-configuration">Raspberry Pi 無螢幕設定</a></li>
+</ul>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

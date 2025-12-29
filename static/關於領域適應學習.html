@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於領域適應學習</title>
+<style>
+    body { font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; line-height: 1.8; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e8e8e8; min-height: 100vh; }
+    h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+    h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+    h3 { color: #81e6d9; margin-top: 20px; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+    th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+    th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+    tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+    code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+    pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid #2d3a4f; }
+    pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+    blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+    ul, ol { padding-left: 25px; }
+    li { margin: 5px 0; }
+    hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+    strong { color: #f6e05e; }
+    .floating-home { position: fixed; bottom: 25px; right: 25px; z-index: 9999; width: 55px; height: 55px; background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%); color: #1a1a2e; text-decoration: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .theme-toggle { position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%; border: none; cursor: pointer; z-index: 10000; font-size: 24px; background: linear-gradient(135deg, #4fd1c5, #63b3ed); color: #1a1a2e; display: flex; align-items: center; justify-content: center; }
+    [data-theme="light"] body { background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important; color: #2d3748 !important; }
+    [data-theme="light"] h1 { color: #2b6cb0 !important; }
+    [data-theme="light"] h2 { color: #2c5282 !important; }
+    [data-theme="light"] h3 { color: #2b6cb0 !important; }
+    [data-theme="light"] p, [data-theme="light"] li, [data-theme="light"] td { color: #4a5568 !important; }
+    [data-theme="light"] th { background-color: rgba(79, 209, 197, 0.25) !important; color: #2d3748 !important; }
+    [data-theme="light"] table { background-color: rgba(255, 255, 255, 0.9) !important; }
+    [data-theme="light"] code { background-color: rgba(79, 209, 197, 0.2) !important; color: #2b6cb0 !important; }
+    [data-theme="light"] pre { background-color: #f7fafc !important; }
+    [data-theme="light"] pre code { color: #2d3748 !important; }
+    [data-theme="light"] strong { color: #d69e2e !important; }
+    [data-theme="light"] .theme-toggle { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+</style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換主題"><span id="theme-icon">☀️</span></button>
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+    <h1>關於領域適應學習</h1>
+    <p>領域適應（Domain Adaptation）是遷移學習的重要分支，解決訓練資料與實際應用資料分布不同的問題。在農業 AI 中，這對於跨農場、跨季節的模型部署非常重要。</p>
+    <hr />
+
+    <h2>一、基本概念</h2>
+    <h3>為什麼需要領域適應</h3>
+    <p>機器學習模型的假設：<strong>訓練資料與測試資料來自相同分布</strong>。但實際上常常不同：</p>
+    <ul>
+        <li>在 A 農場訓練的病蟲害偵測，應用於 B 農場效果下降</li>
+        <li>夏季拍攝訓練的模型，冬季使用準確率降低</li>
+        <li>在理想光照下訓練，陰天效果變差</li>
+    </ul>
+
+    <h3>術語定義</h3>
+    <table>
+        <thead><tr><th>術語</th><th>說明</th></tr></thead>
+        <tbody>
+            <tr><td>源領域（Source Domain）</td><td>有標註資料的訓練領域</td></tr>
+            <tr><td>目標領域（Target Domain）</td><td>實際應用的領域，通常少或無標註</td></tr>
+            <tr><td>領域偏移（Domain Shift）</td><td>源領域與目標領域的分布差異</td></tr>
+            <tr><td>協變量偏移（Covariate Shift）</td><td>輸入分布不同，但 P(Y|X) 相同</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>二、領域適應類型</h2>
+    <table>
+        <thead><tr><th>類型</th><th>目標領域標註</th><th>說明</th></tr></thead>
+        <tbody>
+            <tr><td>監督式</td><td>完全有</td><td>有少量目標領域標註資料</td></tr>
+            <tr><td>半監督式</td><td>部分有</td><td>目標領域有部分標註</td></tr>
+            <tr><td>無監督式</td><td>完全無</td><td>目標領域完全無標註（最常見挑戰）</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>三、常見方法</h2>
+
+    <h3>1. 特徵對齊（Feature Alignment）</h3>
+    <p>讓源領域與目標領域的特徵分布對齊：</p>
+    <ul>
+        <li><strong>MMD（Maximum Mean Discrepancy）</strong>：最小化兩個分布的差異</li>
+        <li><strong>CORAL</strong>：對齊二階統計量（協方差矩陣）</li>
+        <li><strong>Domain Adversarial</strong>：對抗式訓練使特徵無法區分領域</li>
+    </ul>
+
+    <h3>2. 對抗式領域適應（DANN）</h3>
+    <pre><code class="language-python">import torch
+import torch.nn as nn
+
+class DomainAdversarialNetwork(nn.Module):
+    """
+    Domain Adversarial Neural Network (DANN)
+    """
+    def __init__(self, num_classes):
+        super().__init__()
+        # 特徵提取器
+        self.feature_extractor = nn.Sequential(
+            nn.Conv2d(3, 64, 3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            nn.Conv2d(64, 128, 3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            nn.Flatten(),
+            nn.Linear(128 * 56 * 56, 256)
+        )
+
+        # 類別分類器
+        self.class_classifier = nn.Sequential(
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Linear(128, num_classes)
+        )
+
+        # 領域判別器
+        self.domain_classifier = nn.Sequential(
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Linear(128, 2)  # 源領域 or 目標領域
+        )
+
+    def forward(self, x, alpha=1.0):
+        features = self.feature_extractor(x)
+
+        # 類別預測
+        class_output = self.class_classifier(features)
+
+        # 領域預測（梯度反轉）
+        reversed_features = GradientReversalLayer.apply(features, alpha)
+        domain_output = self.domain_classifier(reversed_features)
+
+        return class_output, domain_output
+
+class GradientReversalLayer(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, x, alpha):
+        ctx.alpha = alpha
+        return x.view_as(x)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        return grad_output.neg() * ctx.alpha, None</code></pre>
+
+    <h3>3. 自訓練（Self-Training）</h3>
+    <pre><code class="language-python">def self_training(model, source_data, target_data, threshold=0.9, iterations=5):
+    """
+    自訓練領域適應
+    """
+    # 先用源領域訓練
+    train_on_source(model, source_data)
+
+    for i in range(iterations):
+        # 在目標領域預測
+        predictions = model.predict(target_data)
+        confidences = predictions.max(dim=1).values
+
+        # 選擇高信心樣本
+        high_conf_mask = confidences > threshold
+        pseudo_labels = predictions.argmax(dim=1)[high_conf_mask]
+        pseudo_data = target_data[high_conf_mask]
+
+        # 用偽標籤繼續訓練
+        train_with_pseudo_labels(model, pseudo_data, pseudo_labels)
+
+        print(f"Iteration {i+1}: {high_conf_mask.sum()} pseudo-labeled samples")
+
+    return model</code></pre>
+
+    <h3>4. 風格轉換（Style Transfer）</h3>
+    <p>將目標領域影像轉換為源領域風格，或反之：</p>
+    <ul>
+        <li>CycleGAN：無配對的影像轉換</li>
+        <li>AdaIN：自適應實例正規化</li>
+    </ul>
+    <hr />
+
+    <h2>四、農業應用場景</h2>
+    <table>
+        <thead><tr><th>場景</th><th>源領域</th><th>目標領域</th><th>適應方法</th></tr></thead>
+        <tbody>
+            <tr><td>跨農場部署</td><td>A 農場影像</td><td>B 農場影像</td><td>特徵對齊</td></tr>
+            <tr><td>跨季節適應</td><td>夏季作物</td><td>冬季作物</td><td>風格轉換</td></tr>
+            <tr><td>跨相機適應</td><td>高階相機</td><td>手機相機</td><td>影像增強+對齊</td></tr>
+            <tr><td>模擬到真實</td><td>合成影像</td><td>真實拍攝</td><td>對抗式訓練</td></tr>
+            <tr><td>跨品種遷移</td><td>蘋果病害</td><td>梨子病害</td><td>微調+自訓練</td></tr>
+        </tbody>
+    </table>
+
+    <h3>實例：作物病害跨農場適應</h3>
+    <pre><code class="language-python">import torch
+import torch.nn as nn
+from torchvision import models
+
+class CropDiseaseAdapter:
+    def __init__(self, num_diseases=5):
+        # 使用預訓練模型
+        self.model = models.resnet50(pretrained=True)
+
+        # 修改最後一層
+        self.model.fc = nn.Sequential(
+            nn.Linear(2048, 512),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(512, num_diseases)
+        )
+
+    def adapt_to_new_farm(self, target_images, method='coral'):
+        """
+        適應到新農場
+        """
+        if method == 'coral':
+            # CORAL: 對齊特徵協方差
+            source_features = self.extract_features(self.source_images)
+            target_features = self.extract_features(target_images)
+
+            # 計算協方差矩陣
+            Cs = self.covariance(source_features)
+            Ct = self.covariance(target_features)
+
+            # 對齊
+            aligned_features = self.coral_transform(target_features, Cs, Ct)
+
+        elif method == 'fine_tune':
+            # 微調：凍結前面層，只訓練後面
+            for param in self.model.parameters():
+                param.requires_grad = False
+            for param in self.model.fc.parameters():
+                param.requires_grad = True
+
+            # 用少量目標領域資料微調
+            self.fine_tune(target_images)
+
+        return self.model
+
+    def coral_transform(self, features, Cs, Ct):
+        """CORAL 變換"""
+        # A_s = Cs^(-1/2)
+        # A_t = Ct^(1/2)
+        # transformed = features @ A_s @ A_t
+        pass</code></pre>
+    <hr />
+
+    <h2>五、評估指標</h2>
+    <table>
+        <thead><tr><th>指標</th><th>說明</th></tr></thead>
+        <tbody>
+            <tr><td>目標領域準確率</td><td>最終評估指標</td></tr>
+            <tr><td>A-distance</td><td>領域差異度量</td></tr>
+            <tr><td>MMD</td><td>分布差異度量</td></tr>
+            <tr><td>t-SNE 視覺化</td><td>觀察特徵對齊效果</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>六、實務建議</h2>
+    <ol>
+        <li><strong>先嘗試簡單方法</strong>：資料增強 → 微調 → 複雜適應</li>
+        <li><strong>收集少量目標資料</strong>：即使 10-50 張也有幫助</li>
+        <li><strong>分析領域差異</strong>：了解差異來源（光照？角度？品種？）</li>
+        <li><strong>漸進式適應</strong>：如果差異太大，考慮中間領域</li>
+        <li><strong>持續監控</strong>：部署後追蹤效能變化</li>
+    </ol>
+    <hr />
+
+    <h2>七、相關技術</h2>
+    <ul>
+        <li><strong>遷移學習</strong>：更廣泛的概念，包含領域適應</li>
+        <li><strong>少樣本學習</strong>：用極少樣本學習新類別</li>
+        <li><strong>持續學習</strong>：不斷適應新資料而不遺忘舊知識</li>
+        <li><strong>聯邦學習</strong>：多方資料協作訓練而不共享資料</li>
+    </ul>
+    <hr />
+
+    <p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">智慧農業課程教材</p>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            html.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+            icon.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+            localStorage.setItem('theme', currentTheme === 'dark' ? 'light' : 'dark');
+        }
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+        })();
+    </script>
+</body>
+</html>

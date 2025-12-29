@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於LED排燈挑選</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="led">關於 LED 排燈挑選</h1>
+<h2 id="led_1">什麼是 LED 排燈？</h2>
+<p><strong>LED 排燈（LED Strip Light）</strong> 是將多顆 LED 焊接在柔軟的電路板（FPC）上，形成可彎曲、可裁剪的燈條。常見於裝飾照明、背光、植物補光等應用。</p>
+<pre><code>LED 排燈結構示意：
+┌─────────────────────────────────────────────────────┐
+│  ●──●──●──●──●──●──●──●──●──●──●──●──●──●──●──●     │
+│  ↑     ↑     ↑     ↑     ↑     ↑     ↑     ↑       │
+│ LED   LED   LED   LED   LED   LED   LED   LED      │
+│                                                     │
+│  ═══════════════════════════════════════════════   │
+│              柔性電路板（FPC）                       │
+└─────────────────────────────────────────────────────┘
+        ↑
+      可裁剪線（通常每 3 顆為一單位）
+</code></pre>
+<hr />
+<h2 id="led_2">LED 排燈的分類</h2>
+<h3 id="_1">依照控制方式分類</h3>
+<h4 id="1-led">1. 單色 LED 排燈（最簡單）</h4>
+<pre><code>特點：
+┌────────────────────────────────────┐
+│ • 整條只有一種顏色                 │
+│ • 只需控制電源開關或亮度           │
+│ • 接線最簡單（正負極兩條線）       │
+│ • 價格最便宜                       │
+└────────────────────────────────────┘
+
+常見顏色：
+🔴 紅色    - 波長 620-630nm
+🟢 綠色    - 波長 520-530nm
+🔵 藍色    - 波長 460-470nm
+⚪ 白色    - 色溫 3000K-6500K
+🟡 暖白色  - 色溫 2700-3200K
+
+控制方式：
+Arduino ──[PWM]──→ MOSFET ──→ LED 排燈
+                              （調整亮度）
+</code></pre>
+<h4 id="2-rgb-led">2. RGB LED 排燈（可混色）</h4>
+<pre><code>特點：
+┌────────────────────────────────────┐
+│ • 每顆 LED 包含紅、綠、藍三色      │
+│ • 可混合出各種顏色                 │
+│ • 需要 4 條線（R、G、B、共用極）   │
+│ • 整條燈同時變色                   │
+└────────────────────────────────────┘
+
+接線方式：
+┌─────────────────┐
+│   RGB 排燈      │
+│                 │
+│  R ─── 紅色控制 │
+│  G ─── 綠色控制 │
+│  B ─── 藍色控制 │
+│  + ─── 12V 電源 │ （共陽極）
+│  或              │
+│  - ─── GND      │ （共陰極）
+└─────────────────┘
+
+顏色混合原理：
+🔴 紅 + 🟢 綠 = 🟡 黃
+🔴 紅 + 🔵 藍 = 🟣 紫
+🟢 綠 + 🔵 藍 = 🔵 青
+🔴 + 🟢 + 🔵  = ⚪ 白
+</code></pre>
+<h4 id="3-led">3. 可定址 LED 排燈（獨立控制）⭐</h4>
+<pre><code>特點：
+┌────────────────────────────────────┐
+│ • 每顆 LED 可獨立控制顏色與亮度    │
+│ • 可做跑馬燈、彩虹、動態效果       │
+│ • 只需 3 條線（VCC、GND、DATA）    │
+│ • 價格較高但效果最炫               │
+└────────────────────────────────────┘
+
+資料傳輸方式：
+Arduino ──[DATA]──→ LED1 ──→ LED2 ──→ LED3 ──→ ...
+                     ↓        ↓        ↓
+                   顏色1    顏色2    顏色3
+
+每顆 LED 內建控制晶片，接收並轉發資料
+</code></pre>
+<hr />
+<h2 id="led_3">常見可定址 LED 型號比較</h2>
+<h3 id="ws2812b">WS2812B（最常見）⭐</h3>
+<pre><code>┌─────────────────────────────────────┐
+│            WS2812B                  │
+├─────────────────────────────────────┤
+│ • 又稱 NeoPixel（Adafruit 品牌名）  │
+│ • 內建控制晶片的 RGB LED           │
+│ • 單線資料傳輸                      │
+│ • 5V 供電                           │
+│ • 每顆約 60mA（全白最亮時）         │
+│ • 資料速率：800Kbps                 │
+└─────────────────────────────────────┘
+
+優點：✓ 便宜、✓ 資源豐富、✓ 函式庫多
+缺點：✗ 時序要求嚴格、✗ 不能熱插拔
+</code></pre>
+<h3 id="ws2811">WS2811（外置晶片版）</h3>
+<pre><code>┌─────────────────────────────────────┐
+│            WS2811                   │
+├─────────────────────────────────────┤
+│ • 控制晶片與 LED 分離               │
+│ • 可驅動 12V LED                    │
+│ • 通常 3 顆 LED 共用一個晶片        │
+│ • 適合戶外大型裝置                  │
+└─────────────────────────────────────┘
+
+優點：✓ 支援 12V、✓ 線路較長時穩定
+缺點：✗ 解析度較低（每3顆一組）
+</code></pre>
+<h3 id="sk6812ws2812b">SK6812（WS2812B 相容）</h3>
+<pre><code>┌─────────────────────────────────────┐
+│            SK6812                   │
+├─────────────────────────────────────┤
+│ • WS2812B 的替代品                  │
+│ • 有 RGBW 版本（多一顆白光）        │
+│ • 時序相容 WS2812B                  │
+│ • 品質穩定                          │
+└─────────────────────────────────────┘
+
+優點：✓ RGBW 白光更純淨、✓ 相容性好
+缺點：✗ RGBW 版本需要不同函式庫設定
+</code></pre>
+<h3 id="apa102-sk9822">APA102 / SK9822（高階款）</h3>
+<pre><code>┌─────────────────────────────────────┐
+│         APA102 / SK9822             │
+├─────────────────────────────────────┤
+│ • 雙線傳輸（DATA + CLOCK）          │
+│ • 更新速度更快                      │
+│ • 時序要求寬鬆                      │
+│ • 支援更高亮度（31級全域調光）      │
+└─────────────────────────────────────┘
+
+優點：✓ 高刷新率、✓ 穩定、✓ 可熱插拔
+缺點：✗ 價格較高、✗ 多一條線
+</code></pre>
+<h3 id="_2">比較表</h3>
+<table>
+<thead>
+<tr>
+<th>型號</th>
+<th>電壓</th>
+<th>線數</th>
+<th>每顆電流</th>
+<th>刷新率</th>
+<th>價格</th>
+<th>推薦度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WS2812B</td>
+<td>5V</td>
+<td>3</td>
+<td>60mA</td>
+<td>400Hz</td>
+<td>低</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>WS2811</td>
+<td>12V</td>
+<td>3</td>
+<td>60mA</td>
+<td>400Hz</td>
+<td>低</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>SK6812</td>
+<td>5V</td>
+<td>3</td>
+<td>60mA</td>
+<td>400Hz</td>
+<td>中</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>SK6812 RGBW</td>
+<td>5V</td>
+<td>3</td>
+<td>80mA</td>
+<td>400Hz</td>
+<td>中</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>APA102</td>
+<td>5V</td>
+<td>4</td>
+<td>60mA</td>
+<td>&gt;1KHz</td>
+<td>高</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+</tbody>
+</table>
+<p><strong>新手推薦：WS2812B</strong>（便宜、資源多、容易上手）</p>
+<hr />
+<h2 id="led_4">LED 密度與規格</h2>
+<h3 id="led_5">常見 LED 密度</h3>
+<pre><code>LED 密度指「每公尺有幾顆 LED」：
+
+30 LED/m（稀疏）
+●    ●    ●    ●    ●    ●
+├────┼────┼────┼────┼────┤
+     約 3.3cm 間距
+
+60 LED/m（標準）⭐ 推薦
+● ● ● ● ● ● ● ● ● ● ● ●
+├─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┤
+   約 1.67cm 間距
+
+144 LED/m（密集）
+●●●●●●●●●●●●●●●●●●●●●●●●
+├┼┼┼┼┼┼┼┼┼┼┼┼┼┼┼┼┼┼┼┼┼┼┤
+   約 0.7cm 間距
+</code></pre>
+<h3 id="_3">密度選擇建議</h3>
+<table>
+<thead>
+<tr>
+<th>密度</th>
+<th>適用場景</th>
+<th>耗電量</th>
+<th>價格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30/m</td>
+<td>輪廓裝飾、大面積背光</td>
+<td>低</td>
+<td>便宜</td>
+</tr>
+<tr>
+<td>60/m</td>
+<td>一般裝飾、展示、教學</td>
+<td>中</td>
+<td>適中</td>
+</tr>
+<tr>
+<td>144/m</td>
+<td>近距離觀看、高品質顯示</td>
+<td>高</td>
+<td>較貴</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_4">電源計算</h2>
+<h3 id="led_6">單顆 LED 功耗</h3>
+<pre><code>WS2812B 單顆 LED：
+┌──────────────────────────────────┐
+│ 紅色全亮：約 20mA                │
+│ 綠色全亮：約 20mA                │
+│ 藍色全亮：約 20mA                │
+│ 白色全亮：約 60mA（RGB 同時亮）  │
+└──────────────────────────────────┘
+</code></pre>
+<h3 id="_5">電源需求計算公式</h3>
+<pre><code>總電流 = LED 數量 × 每顆電流 × 使用比例
+
+範例：60 LED/m 的燈條，長度 2 公尺
+
+LED 數量 = 60 × 2 = 120 顆
+最大電流 = 120 × 60mA = 7200mA = 7.2A
+
+建議電源 = 7.2A × 1.2（留餘量）≈ 9A
+
+所以需要 5V 9A 的電源供應器
+</code></pre>
+<h3 id="_6">常見配置建議</h3>
+<table>
+<thead>
+<tr>
+<th>燈條長度</th>
+<th>LED 數量(60/m)</th>
+<th>最大電流</th>
+<th>建議電源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.5m</td>
+<td>30 顆</td>
+<td>1.8A</td>
+<td>5V 2A</td>
+</tr>
+<tr>
+<td>1m</td>
+<td>60 顆</td>
+<td>3.6A</td>
+<td>5V 5A</td>
+</tr>
+<tr>
+<td>2m</td>
+<td>120 顆</td>
+<td>7.2A</td>
+<td>5V 10A</td>
+</tr>
+<tr>
+<td>5m</td>
+<td>300 顆</td>
+<td>18A</td>
+<td>5V 20A</td>
+</tr>
+</tbody>
+</table>
+<p>⚠️ <strong>注意：</strong> 超過 1 公尺建議從兩端供電，避免壓降！</p>
+<hr />
+<h2 id="_7">接線方式</h2>
+<h3 id="ws2812b_1">WS2812B 基本接線</h3>
+<pre><code>Arduino UNO          WS2812B 燈條
+┌─────────────┐      ┌─────────────┐
+│             │      │             │
+│         D6 ├──────┤ DIN         │
+│             │      │             │
+│         5V ├──┬───┤ VCC         │
+│             │  │   │             │
+│        GND ├──┼───┤ GND         │
+│             │  │   │             │
+└─────────────┘  │   └─────────────┘
+                 │
+            ┌────┴────┐
+            │ 外接電源 │ （LED 多時必須）
+            │  5V DC  │
+            └─────────┘
+</code></pre>
+<h3 id="_8">長燈條供電方式</h3>
+<pre><code>錯誤方式（單端供電，會有壓降）：
+5V ──→ ●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●
+GND ─→                           ↓
+                              亮度變暗！
+
+正確方式（雙端供電）：
+5V ──→ ●●●●●●●●●●●●●●●●●●●●●●●●●●●●●● ←── 5V
+GND ─→                                  ←── GND
+                    ↑
+                 亮度均勻
+
+更好的方式（中間也補電）：
+5V ──→ ●●●●●●●●●●●●●●●●●●●●●●●●●●●●●● ←── 5V
+GND ─→       ↑                ↑        ←── GND
+            5V               5V
+           GND              GND
+</code></pre>
+<h3 id="_9">資料線注意事項</h3>
+<pre><code>建議在資料線上串聯一個 300-500Ω 電阻：
+
+Arduino D6 ──[330Ω]──→ WS2812B DIN
+
+原因：
+• 保護 Arduino 腳位
+• 減少訊號反射
+• 提高穩定性
+</code></pre>
+<hr />
+<h2 id="arduino">Arduino 程式範例</h2>
+<h3 id="_10">安裝函式庫</h3>
+<p>推薦使用 <strong>FastLED</strong> 或 <strong>Adafruit NeoPixel</strong>：</p>
+<ol>
+<li><code>工具</code> → <code>管理程式庫...</code></li>
+<li>搜尋 <code>FastLED</code> 或 <code>NeoPixel</code></li>
+<li>安裝</li>
+</ol>
+<h3 id="1fastled">範例 1：基本點亮（FastLED）</h3>
+<pre><code class="language-cpp">#include &lt;FastLED.h&gt;
+
+#define LED_PIN     6
+#define NUM_LEDS    30
+#define BRIGHTNESS  128
+
+CRGB leds[NUM_LEDS];
+
+void setup() {
+  FastLED.addLeds&lt;WS2812B, LED_PIN, GRB&gt;(leds, NUM_LEDS);
+  FastLED.setBrightness(BRIGHTNESS);
+}
+
+void loop() {
+  // 全部設為紅色
+  fill_solid(leds, NUM_LEDS, CRGB::Red);
+  FastLED.show();
+  delay(1000);
+
+  // 全部設為綠色
+  fill_solid(leds, NUM_LEDS, CRGB::Green);
+  FastLED.show();
+  delay(1000);
+
+  // 全部設為藍色
+  fill_solid(leds, NUM_LEDS, CRGB::Blue);
+  FastLED.show();
+  delay(1000);
+}
+</code></pre>
+<h3 id="2">範例 2：彩虹效果</h3>
+<pre><code class="language-cpp">#include &lt;FastLED.h&gt;
+
+#define LED_PIN     6
+#define NUM_LEDS    30
+#define BRIGHTNESS  100
+
+CRGB leds[NUM_LEDS];
+uint8_t hue = 0;
+
+void setup() {
+  FastLED.addLeds&lt;WS2812B, LED_PIN, GRB&gt;(leds, NUM_LEDS);
+  FastLED.setBrightness(BRIGHTNESS);
+}
+
+void loop() {
+  // 彩虹效果
+  fill_rainbow(leds, NUM_LEDS, hue, 7);
+  FastLED.show();
+
+  hue++;  // 顏色偏移
+  delay(20);
+}
+</code></pre>
+<h3 id="3">範例 3：跑馬燈效果</h3>
+<pre><code class="language-cpp">#include &lt;FastLED.h&gt;
+
+#define LED_PIN     6
+#define NUM_LEDS    30
+
+CRGB leds[NUM_LEDS];
+
+void setup() {
+  FastLED.addLeds&lt;WS2812B, LED_PIN, GRB&gt;(leds, NUM_LEDS);
+  FastLED.setBrightness(100);
+}
+
+void loop() {
+  // 跑馬燈
+  for (int i = 0; i &lt; NUM_LEDS; i++) {
+    leds[i] = CRGB::Red;
+    FastLED.show();
+    delay(50);
+    leds[i] = CRGB::Black;
+  }
+}
+</code></pre>
+<hr />
+<h2 id="_11">購買建議</h2>
+<h3 id="_12">購買前確認清單</h3>
+<pre><code>□ LED 型號（WS2812B / SK6812 / APA102）
+□ LED 密度（30/60/144 LED/m）
+□ 總長度與數量
+□ 防水等級（IP20/IP65/IP67）
+□ 電壓（5V/12V）
+□ 顏色順序（RGB/GRB/BRG）
+□ 是否附帶接頭
+</code></pre>
+<h3 id="_13">防水等級說明</h3>
+<pre><code>IP20 - 無防水（室內用）
+├── 最便宜
+├── 散熱最好
+└── 適合：室內裝飾、展示
+
+IP65 - 防潑水（軟膠覆蓋）
+├── 表面有矽膠塗層
+├── 可防雨淋
+└── 適合：戶外遮蔽處
+
+IP67 - 防浸水（矽膠套管）
+├── 整條包在矽膠管內
+├── 可短時間浸水
+└── 適合：戶外、浴室
+
+IP68 - 完全防水
+├── 可長時間浸泡
+├── 價格最高
+└── 適合：水族箱、泳池
+</code></pre>
+<h3 id="_14">常見購買平台</h3>
+<table>
+<thead>
+<tr>
+<th>平台</th>
+<th>優點</th>
+<th>缺點</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>蝦皮/露天</td>
+<td>便宜、快速</td>
+<td>品質參差不齊</td>
+</tr>
+<tr>
+<td>淘寶/1688</td>
+<td>最便宜、選擇多</td>
+<td>運送時間長</td>
+</tr>
+<tr>
+<td>台灣電子材料行</td>
+<td>可現場看貨</td>
+<td>價格較高</td>
+</tr>
+<tr>
+<td>Amazon/原廠</td>
+<td>品質保證</td>
+<td>價格最高</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2024">價格參考（2024）</h3>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>價格範圍（台幣）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WS2812B 60LED/m 1米</td>
+<td>$80-150</td>
+</tr>
+<tr>
+<td>WS2812B 60LED/m 5米</td>
+<td>$350-600</td>
+</tr>
+<tr>
+<td>SK6812 RGBW 60LED/m 1米</td>
+<td>$150-250</td>
+</tr>
+<tr>
+<td>APA102 60LED/m 1米</td>
+<td>$200-350</td>
+</tr>
+<tr>
+<td>5V 10A 電源供應器</td>
+<td>$150-300</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_15">常見問題</h2>
+<h3 id="q1">Q1：燈條閃爍或顏色錯誤？</h3>
+<pre><code>可能原因：
+1. 電源不足 → 加大電源供應器
+2. 接地不良 → 確認 GND 連接
+3. 資料線太長 → 加訊號放大器
+4. 顏色順序錯 → 修改程式 GRB/RGB
+</code></pre>
+<h3 id="q2">Q2：燈條只有前幾顆會亮？</h3>
+<pre><code>可能原因：
+1. 某顆 LED 損壞 → 剪掉壞的那段
+2. 電源不足 → 從多點供電
+3. 焊點脫落 → 重新焊接
+</code></pre>
+<h3 id="q3arduino-led">Q3：Arduino 供電給 LED 安全嗎？</h3>
+<pre><code>LED 數量與供電方式：
+
+1-5 顆：可以用 Arduino 5V 腳位
+6-10 顆：建議外接 USB 供電
+10 顆以上：必須外接電源！
+
+⚠️ Arduino 5V 腳位最大只能提供約 500mA
+   10 顆 LED 全白 = 600mA，已經超過了！
+</code></pre>
+<h3 id="q4">Q4：顏色順序怎麼確認？</h3>
+<pre><code class="language-cpp">// 常見顏色順序：
+// WS2812B 大多是 GRB
+// 有些是 RGB 或 BRG
+
+// FastLED 設定方式：
+FastLED.addLeds&lt;WS2812B, PIN, GRB&gt;(leds, NUM);  // 最常見
+FastLED.addLeds&lt;WS2812B, PIN, RGB&gt;(leds, NUM);  // 若 GRB 顏色錯
+FastLED.addLeds&lt;WS2812B, PIN, BRG&gt;(leds, NUM);  // 其他可能
+
+// 測試方法：設定紅色，看實際亮什麼色
+leds[0] = CRGB::Red;  // 應該亮紅色
+</code></pre>
+<hr />
+<h2 id="_16">智慧溫室應用</h2>
+<h3 id="_17">植物補光燈</h3>
+<pre><code>植物生長所需光譜：
+┌─────────────────────────────────────┐
+│                                     │
+│  🔵 藍光 (450-470nm)                │
+│     → 促進葉片生長、抑制徒長        │
+│                                     │
+│  🔴 紅光 (630-660nm)                │
+│     → 促進開花結果、光合作用        │
+│                                     │
+│  推薦比例：紅:藍 = 3:1 或 5:1       │
+│                                     │
+└─────────────────────────────────────┘
+
+可使用 SK6812 RGBW 調配適合的光譜！
+</code></pre>
+<h3 id="_18">狀態指示燈</h3>
+<pre><code>用 LED 排燈顯示溫室狀態：
+
+● 綠色呼吸燈 → 系統正常運作
+● 藍色閃爍   → 正在澆水
+● 紅色常亮   → 溫度過高警告
+● 彩虹跑馬燈 → 展示模式
+</code></pre>
+<hr />
+<h2 id="_19">總結</h2>
+<table>
+<thead>
+<tr>
+<th>選購要點</th>
+<th>建議</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>型號</strong></td>
+<td>新手選 WS2812B，進階選 APA102</td>
+</tr>
+<tr>
+<td><strong>密度</strong></td>
+<td>一般用 60 LED/m</td>
+</tr>
+<tr>
+<td><strong>電壓</strong></td>
+<td>室內用 5V，戶外長距離用 12V</td>
+</tr>
+<tr>
+<td><strong>防水</strong></td>
+<td>室內 IP20，戶外 IP65+</td>
+</tr>
+<tr>
+<td><strong>電源</strong></td>
+<td>每米預算 5A，超過 1m 多點供電</td>
+</tr>
+<tr>
+<td><strong>函式庫</strong></td>
+<td>FastLED（功能強）或 NeoPixel（簡單）</td>
+</tr>
+</tbody>
+</table>
+<p>LED 排燈是 Arduino 專案中最能展現視覺效果的元件，選對規格、算好電源，就能做出炫麗的燈光效果！</p>
+<hr />
+<p><em>本文件適用於 Arduino 初學者選購參考</em><br />
+<em>建議從小量（30-60顆）開始練習</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

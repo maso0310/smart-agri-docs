@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python基礎語法速查表</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        strong { color: #f6e05e; }
+        .tip { background-color: rgba(72, 187, 120, 0.15); border-left: 4px solid #48bb78; padding: 10px 15px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+        .warning { background-color: rgba(237, 137, 54, 0.15); border-left: 4px solid #ed8936; padding: 10px 15px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+        .floating-home { position: fixed; bottom: 25px; right: 25px; z-index: 9999; width: 55px; height: 55px; background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%); color: #1a1a2e; text-decoration: none; border-radius: 50%; box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4); display: flex; align-items: center; justify-content: center; font-size: 24px; transition: all 0.3s ease; }
+        .floating-home:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(79, 209, 197, 0.6); }
+    </style>
+</head>
+<body>
+    <a href="文件索引.html" class="floating-home" title="返回首頁">🏠</a>
+
+    <h1>Python 基礎語法速查表</h1>
+
+    <blockquote>
+        本文件整理 Python 最常用的基礎語法，適合初學者快速查閱。
+    </blockquote>
+
+    <h2>1. 變數與資料型別</h2>
+
+    <h3>1.1 基本資料型別</h3>
+    <table>
+        <tr>
+            <th>型別</th>
+            <th>說明</th>
+            <th>範例</th>
+        </tr>
+        <tr>
+            <td><code>int</code></td>
+            <td>整數</td>
+            <td><code>x = 10</code></td>
+        </tr>
+        <tr>
+            <td><code>float</code></td>
+            <td>浮點數</td>
+            <td><code>y = 3.14</code></td>
+        </tr>
+        <tr>
+            <td><code>str</code></td>
+            <td>字串</td>
+            <td><code>name = "Python"</code></td>
+        </tr>
+        <tr>
+            <td><code>bool</code></td>
+            <td>布林值</td>
+            <td><code>is_active = True</code></td>
+        </tr>
+        <tr>
+            <td><code>list</code></td>
+            <td>列表（可變）</td>
+            <td><code>nums = [1, 2, 3]</code></td>
+        </tr>
+        <tr>
+            <td><code>tuple</code></td>
+            <td>元組（不可變）</td>
+            <td><code>point = (3, 4)</code></td>
+        </tr>
+        <tr>
+            <td><code>dict</code></td>
+            <td>字典</td>
+            <td><code>person = {"name": "Alice"}</code></td>
+        </tr>
+        <tr>
+            <td><code>set</code></td>
+            <td>集合（不重複）</td>
+            <td><code>unique = {1, 2, 3}</code></td>
+        </tr>
+    </table>
+
+    <h3>1.2 型別轉換</h3>
+    <pre><code># 型別轉換函式
+int("123")      # 字串轉整數 → 123
+float("3.14")   # 字串轉浮點數 → 3.14
+str(100)        # 數字轉字串 → "100"
+list("abc")     # 字串轉列表 → ['a', 'b', 'c']
+tuple([1,2,3])  # 列表轉元組 → (1, 2, 3)
+
+# 檢查型別
+type(x)         # 取得變數型別
+isinstance(x, int)  # 檢查是否為特定型別</code></pre>
+
+    <h2>2. 運算子</h2>
+
+    <h3>2.1 算術運算子</h3>
+    <table>
+        <tr>
+            <th>運算子</th>
+            <th>說明</th>
+            <th>範例</th>
+            <th>結果</th>
+        </tr>
+        <tr><td><code>+</code></td><td>加法</td><td><code>5 + 3</code></td><td>8</td></tr>
+        <tr><td><code>-</code></td><td>減法</td><td><code>5 - 3</code></td><td>2</td></tr>
+        <tr><td><code>*</code></td><td>乘法</td><td><code>5 * 3</code></td><td>15</td></tr>
+        <tr><td><code>/</code></td><td>除法</td><td><code>5 / 3</code></td><td>1.666...</td></tr>
+        <tr><td><code>//</code></td><td>整數除法</td><td><code>5 // 3</code></td><td>1</td></tr>
+        <tr><td><code>%</code></td><td>取餘數</td><td><code>5 % 3</code></td><td>2</td></tr>
+        <tr><td><code>**</code></td><td>次方</td><td><code>5 ** 3</code></td><td>125</td></tr>
+    </table>
+
+    <h3>2.2 比較與邏輯運算子</h3>
+    <pre><code># 比較運算子
+x == y   # 等於
+x != y   # 不等於
+x > y    # 大於
+x < y    # 小於
+x >= y   # 大於等於
+x <= y   # 小於等於
+
+# 邏輯運算子
+a and b  # 且（兩者皆真）
+a or b   # 或（任一為真）
+not a    # 非（取反）</code></pre>
+
+    <h2>3. 字串操作</h2>
+
+    <h3>3.1 字串格式化</h3>
+    <pre><code>name = "Alice"
+age = 25
+
+# f-string（推薦，Python 3.6+）
+print(f"我是 {name}，今年 {age} 歲")
+
+# format() 方法
+print("我是 {}，今年 {} 歲".format(name, age))
+
+# % 格式化（舊式）
+print("我是 %s，今年 %d 歲" % (name, age))
+
+# 格式化數字
+pi = 3.14159
+print(f"圓周率：{pi:.2f}")      # 3.14（小數兩位）
+print(f"數字：{42:05d}")        # 00042（補零）</code></pre>
+
+    <h3>3.2 常用字串方法</h3>
+    <table>
+        <tr>
+            <th>方法</th>
+            <th>說明</th>
+            <th>範例</th>
+        </tr>
+        <tr><td><code>upper()</code></td><td>轉大寫</td><td><code>"hello".upper()</code> → "HELLO"</td></tr>
+        <tr><td><code>lower()</code></td><td>轉小寫</td><td><code>"HELLO".lower()</code> → "hello"</td></tr>
+        <tr><td><code>strip()</code></td><td>移除前後空白</td><td><code>" hi ".strip()</code> → "hi"</td></tr>
+        <tr><td><code>split()</code></td><td>分割字串</td><td><code>"a,b,c".split(",")</code> → ['a','b','c']</td></tr>
+        <tr><td><code>join()</code></td><td>合併字串</td><td><code>",".join(['a','b'])</code> → "a,b"</td></tr>
+        <tr><td><code>replace()</code></td><td>取代字串</td><td><code>"hello".replace("l","L")</code> → "heLLo"</td></tr>
+        <tr><td><code>find()</code></td><td>尋找位置</td><td><code>"hello".find("l")</code> → 2</td></tr>
+        <tr><td><code>startswith()</code></td><td>開頭檢查</td><td><code>"hello".startswith("he")</code> → True</td></tr>
+        <tr><td><code>endswith()</code></td><td>結尾檢查</td><td><code>"hello".endswith("lo")</code> → True</td></tr>
+    </table>
+
+    <h2>4. 列表操作</h2>
+
+    <h3>4.1 基本操作</h3>
+    <pre><code>fruits = ["apple", "banana", "cherry"]
+
+# 存取元素
+fruits[0]       # "apple"（第一個）
+fruits[-1]      # "cherry"（最後一個）
+fruits[1:3]     # ["banana", "cherry"]（切片）
+
+# 修改元素
+fruits[0] = "avocado"
+
+# 新增元素
+fruits.append("date")       # 加到最後
+fruits.insert(1, "berry")   # 插入到指定位置
+
+# 刪除元素
+fruits.remove("banana")     # 依值刪除
+del fruits[0]               # 依索引刪除
+popped = fruits.pop()       # 移除並回傳最後一個
+
+# 其他操作
+len(fruits)                 # 長度
+"apple" in fruits           # 檢查是否存在
+fruits.index("cherry")      # 取得索引
+fruits.count("apple")       # 計算出現次數
+fruits.sort()               # 排序
+fruits.reverse()            # 反轉</code></pre>
+
+    <h3>4.2 列表推導式</h3>
+    <pre><code># 基本語法
+squares = [x**2 for x in range(10)]
+# → [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+# 加入條件
+evens = [x for x in range(20) if x % 2 == 0]
+# → [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
+
+# 巢狀迴圈
+matrix = [[i*j for j in range(3)] for i in range(3)]
+# → [[0,0,0], [0,1,2], [0,2,4]]</code></pre>
+
+    <h2>5. 字典操作</h2>
+    <pre><code>student = {
+    "name": "Alice",
+    "age": 20,
+    "grades": [85, 90, 78]
+}
+
+# 存取值
+student["name"]             # "Alice"
+student.get("name")         # "Alice"（較安全）
+student.get("phone", "N/A") # 不存在時回傳預設值
+
+# 修改/新增
+student["age"] = 21
+student["email"] = "alice@example.com"
+
+# 刪除
+del student["age"]
+student.pop("email")
+
+# 遍歷
+for key in student:
+    print(key, student[key])
+
+for key, value in student.items():
+    print(f"{key}: {value}")
+
+# 常用方法
+student.keys()      # 所有鍵
+student.values()    # 所有值
+student.items()     # 所有鍵值對</code></pre>
+
+    <h2>6. 條件判斷</h2>
+    <pre><code>score = 85
+
+# 基本 if-elif-else
+if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+elif score >= 70:
+    grade = "C"
+else:
+    grade = "F"
+
+# 三元運算子
+result = "及格" if score >= 60 else "不及格"
+
+# 多重條件
+if score >= 60 and score < 70:
+    print("低空飛過")
+
+if score < 0 or score > 100:
+    print("成績無效")</code></pre>
+
+    <h2>7. 迴圈</h2>
+
+    <h3>7.1 for 迴圈</h3>
+    <pre><code># 遍歷列表
+fruits = ["apple", "banana", "cherry"]
+for fruit in fruits:
+    print(fruit)
+
+# 使用 range
+for i in range(5):          # 0, 1, 2, 3, 4
+    print(i)
+
+for i in range(2, 8):       # 2, 3, 4, 5, 6, 7
+    print(i)
+
+for i in range(0, 10, 2):   # 0, 2, 4, 6, 8
+    print(i)
+
+# 取得索引
+for i, fruit in enumerate(fruits):
+    print(f"{i}: {fruit}")</code></pre>
+
+    <h3>7.2 while 迴圈</h3>
+    <pre><code>count = 0
+while count < 5:
+    print(count)
+    count += 1
+
+# break 和 continue
+for i in range(10):
+    if i == 3:
+        continue    # 跳過這次迭代
+    if i == 7:
+        break       # 跳出迴圈
+    print(i)</code></pre>
+
+    <h2>8. 函式</h2>
+    <pre><code># 基本函式
+def greet(name):
+    return f"Hello, {name}!"
+
+# 預設參數
+def greet(name, greeting="Hello"):
+    return f"{greeting}, {name}!"
+
+# 多個回傳值
+def get_stats(numbers):
+    return min(numbers), max(numbers), sum(numbers)/len(numbers)
+
+minimum, maximum, average = get_stats([1, 2, 3, 4, 5])
+
+# *args（任意數量參數）
+def add_all(*numbers):
+    return sum(numbers)
+
+add_all(1, 2, 3, 4)  # → 10
+
+# **kwargs（任意關鍵字參數）
+def print_info(**kwargs):
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
+print_info(name="Alice", age=25)
+
+# Lambda 匿名函式
+square = lambda x: x ** 2
+square(5)  # → 25</code></pre>
+
+    <h2>9. 檔案操作</h2>
+    <pre><code># 讀取檔案
+with open("data.txt", "r", encoding="utf-8") as f:
+    content = f.read()          # 讀取全部
+    # 或
+    lines = f.readlines()       # 讀取所有行（列表）
+    # 或
+    for line in f:              # 逐行讀取
+        print(line.strip())
+
+# 寫入檔案
+with open("output.txt", "w", encoding="utf-8") as f:
+    f.write("Hello, World!\n")
+    f.writelines(["Line 1\n", "Line 2\n"])
+
+# 附加寫入
+with open("log.txt", "a", encoding="utf-8") as f:
+    f.write("New log entry\n")</code></pre>
+
+    <h2>10. 例外處理</h2>
+    <pre><code>try:
+    result = 10 / 0
+except ZeroDivisionError:
+    print("不能除以零！")
+except Exception as e:
+    print(f"發生錯誤：{e}")
+else:
+    print("執行成功")
+finally:
+    print("無論如何都會執行")
+
+# 主動拋出例外
+def validate_age(age):
+    if age < 0:
+        raise ValueError("年齡不能是負數")
+    return age</code></pre>
+
+    <h2>11. 常用內建函式</h2>
+    <table>
+        <tr>
+            <th>函式</th>
+            <th>說明</th>
+            <th>範例</th>
+        </tr>
+        <tr><td><code>len()</code></td><td>長度</td><td><code>len([1,2,3])</code> → 3</td></tr>
+        <tr><td><code>range()</code></td><td>產生數列</td><td><code>list(range(5))</code> → [0,1,2,3,4]</td></tr>
+        <tr><td><code>sum()</code></td><td>總和</td><td><code>sum([1,2,3])</code> → 6</td></tr>
+        <tr><td><code>min()</code></td><td>最小值</td><td><code>min([1,2,3])</code> → 1</td></tr>
+        <tr><td><code>max()</code></td><td>最大值</td><td><code>max([1,2,3])</code> → 3</td></tr>
+        <tr><td><code>abs()</code></td><td>絕對值</td><td><code>abs(-5)</code> → 5</td></tr>
+        <tr><td><code>round()</code></td><td>四捨五入</td><td><code>round(3.7)</code> → 4</td></tr>
+        <tr><td><code>sorted()</code></td><td>排序</td><td><code>sorted([3,1,2])</code> → [1,2,3]</td></tr>
+        <tr><td><code>reversed()</code></td><td>反轉</td><td><code>list(reversed([1,2,3]))</code> → [3,2,1]</td></tr>
+        <tr><td><code>enumerate()</code></td><td>帶索引遍歷</td><td><code>list(enumerate(['a','b']))</code> → [(0,'a'),(1,'b')]</td></tr>
+        <tr><td><code>zip()</code></td><td>配對</td><td><code>list(zip([1,2],['a','b']))</code> → [(1,'a'),(2,'b')]</td></tr>
+        <tr><td><code>map()</code></td><td>映射</td><td><code>list(map(str, [1,2,3]))</code> → ['1','2','3']</td></tr>
+        <tr><td><code>filter()</code></td><td>篩選</td><td><code>list(filter(lambda x: x>2, [1,2,3,4]))</code> → [3,4]</td></tr>
+    </table>
+
+    <div class="tip">
+        <strong>學習建議：</strong>
+        <ul>
+            <li>多動手練習，不要只看不做</li>
+            <li>善用 <code>print()</code> 除錯</li>
+            <li>遇到問題先 Google 或查官方文件</li>
+            <li>嘗試用 Python 解決日常小問題</li>
+        </ul>
+    </div>
+
+    <hr>
+    <p style="text-align: center; color: #666;">
+        智慧農業 AI 辨識課程 - Python 基礎語法速查表
+    </p>
+</body>
+</html>

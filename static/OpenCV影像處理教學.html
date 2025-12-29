@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenCV 影像處理教學</title>
+    <style>
+        body { font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; line-height: 1.8; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e8e8e8; min-height: 100vh; }
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        strong { color: #f6e05e; }
+        .tip { background-color: rgba(72, 187, 120, 0.15); border-left: 4px solid #48bb78; padding: 10px 15px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+        .warning { background-color: rgba(237, 137, 54, 0.15); border-left: 4px solid #ed8936; padding: 10px 15px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+        .floating-home { position: fixed; bottom: 25px; right: 25px; z-index: 9999; width: 55px; height: 55px; background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%); color: #1a1a2e; text-decoration: none; border-radius: 50%; box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4); display: flex; align-items: center; justify-content: center; font-size: 24px; transition: all 0.3s ease; }
+        .floating-home:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(79, 209, 197, 0.6); }
+    </style>
+</head>
+<body>
+    <a href="文件索引.html" class="floating-home" title="返回首頁">🏠</a>
+
+    <h1>OpenCV 影像處理教學</h1>
+
+    <blockquote>
+        OpenCV（Open Source Computer Vision Library）是最廣泛使用的電腦視覺庫，支援影像處理、物件偵測、機器學習等功能。
+    </blockquote>
+
+    <h2>1. 安裝與基礎設定</h2>
+
+    <h3>1.1 安裝 OpenCV</h3>
+    <pre><code># 使用 pip 安裝
+pip install opencv-python
+
+# 如果需要額外功能（如 SIFT）
+pip install opencv-contrib-python</code></pre>
+
+    <h3>1.2 引入套件</h3>
+    <pre><code>import cv2
+import numpy as np
+
+# 檢查版本
+print(cv2.__version__)</code></pre>
+
+    <h2>2. 讀取與顯示影像</h2>
+
+    <h3>2.1 讀取影像</h3>
+    <pre><code># 讀取彩色影像（預設）
+img = cv2.imread("image.jpg")
+
+# 讀取灰階影像
+img_gray = cv2.imread("image.jpg", cv2.IMREAD_GRAYSCALE)
+
+# 讀取包含透明通道的影像
+img_alpha = cv2.imread("image.png", cv2.IMREAD_UNCHANGED)
+
+# 檢查是否成功讀取
+if img is None:
+    print("無法讀取影像")</code></pre>
+
+    <div class="warning">
+        <strong>注意：</strong>OpenCV 使用 BGR 色彩順序，而非一般的 RGB！
+    </div>
+
+    <h3>2.2 顯示影像</h3>
+    <pre><code># 顯示影像視窗
+cv2.imshow("Window Title", img)
+cv2.waitKey(0)  # 等待按鍵（0 表示無限等待）
+cv2.destroyAllWindows()  # 關閉所有視窗
+
+# 在 Jupyter Notebook 中使用 matplotlib 顯示
+import matplotlib.pyplot as plt
+plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+plt.axis('off')
+plt.show()</code></pre>
+
+    <h3>2.3 儲存影像</h3>
+    <pre><code># 儲存影像
+cv2.imwrite("output.jpg", img)
+
+# 指定壓縮品質（JPEG）
+cv2.imwrite("output.jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 90])
+
+# 指定壓縮等級（PNG）
+cv2.imwrite("output.png", img, [cv2.IMWRITE_PNG_COMPRESSION, 9])</code></pre>
+
+    <h2>3. 影像基本資訊</h2>
+    <pre><code># 影像尺寸
+height, width = img.shape[:2]
+print(f"尺寸：{width} x {height}")
+
+# 通道數
+if len(img.shape) == 3:
+    channels = img.shape[2]
+else:
+    channels = 1
+print(f"通道數：{channels}")
+
+# 資料型別
+print(f"資料型別：{img.dtype}")
+
+# 像素總數
+print(f"像素總數：{img.size}")</code></pre>
+
+    <h2>4. 色彩空間轉換</h2>
+
+    <h3>4.1 常用轉換</h3>
+    <pre><code># BGR 轉灰階
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# BGR 轉 RGB
+rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+# BGR 轉 HSV
+hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+# BGR 轉 LAB
+lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)</code></pre>
+
+    <h3>4.2 HSV 色彩空間</h3>
+    <table>
+        <tr>
+            <th>通道</th>
+            <th>名稱</th>
+            <th>範圍</th>
+            <th>說明</th>
+        </tr>
+        <tr><td>H</td><td>色相（Hue）</td><td>0-179</td><td>顏色種類</td></tr>
+        <tr><td>S</td><td>飽和度（Saturation）</td><td>0-255</td><td>顏色鮮豔程度</td></tr>
+        <tr><td>V</td><td>明度（Value）</td><td>0-255</td><td>明暗程度</td></tr>
+    </table>
+
+    <pre><code># HSV 顏色過濾（以綠色為例）
+hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+# 定義綠色範圍
+lower_green = np.array([35, 50, 50])
+upper_green = np.array([85, 255, 255])
+
+# 建立遮罩
+mask = cv2.inRange(hsv, lower_green, upper_green)
+
+# 套用遮罩
+result = cv2.bitwise_and(img, img, mask=mask)</code></pre>
+
+    <h2>5. 影像處理操作</h2>
+
+    <h3>5.1 調整尺寸</h3>
+    <pre><code># 指定尺寸
+resized = cv2.resize(img, (640, 480))
+
+# 依比例縮放
+scale = 0.5
+resized = cv2.resize(img, None, fx=scale, fy=scale)
+
+# 指定插值方法
+resized = cv2.resize(img, (640, 480), interpolation=cv2.INTER_LINEAR)
+# INTER_NEAREST：最近鄰插值（最快）
+# INTER_LINEAR：雙線性插值（預設）
+# INTER_CUBIC：雙三次插值（較慢但品質好）
+# INTER_AREA：區域插值（縮小時推薦）</code></pre>
+
+    <h3>5.2 裁切與填充</h3>
+    <pre><code># 裁切（使用 NumPy 切片）
+cropped = img[100:300, 200:500]  # [y1:y2, x1:x2]
+
+# 加入邊框
+bordered = cv2.copyMakeBorder(
+    img,
+    top=10, bottom=10, left=10, right=10,
+    borderType=cv2.BORDER_CONSTANT,
+    value=[255, 255, 255]  # 白色邊框
+)</code></pre>
+
+    <h3>5.3 旋轉與翻轉</h3>
+    <pre><code># 翻轉
+flipped_h = cv2.flip(img, 1)   # 水平翻轉
+flipped_v = cv2.flip(img, 0)   # 垂直翻轉
+flipped_b = cv2.flip(img, -1)  # 同時翻轉
+
+# 旋轉
+height, width = img.shape[:2]
+center = (width // 2, height // 2)
+
+# 取得旋轉矩陣
+rotation_matrix = cv2.getRotationMatrix2D(center, angle=45, scale=1.0)
+
+# 執行旋轉
+rotated = cv2.warpAffine(img, rotation_matrix, (width, height))</code></pre>
+
+    <h2>6. 濾波與模糊</h2>
+
+    <h3>6.1 模糊效果</h3>
+    <pre><code># 均值模糊
+blurred = cv2.blur(img, (5, 5))
+
+# 高斯模糊（推薦）
+gaussian = cv2.GaussianBlur(img, (5, 5), 0)
+
+# 中值模糊（去除椒鹽雜訊）
+median = cv2.medianBlur(img, 5)
+
+# 雙邊濾波（保留邊緣）
+bilateral = cv2.bilateralFilter(img, 9, 75, 75)</code></pre>
+
+    <h3>6.2 銳化</h3>
+    <pre><code># 使用核進行銳化
+kernel = np.array([
+    [0, -1, 0],
+    [-1, 5, -1],
+    [0, -1, 0]
+])
+sharpened = cv2.filter2D(img, -1, kernel)</code></pre>
+
+    <h2>7. 二值化與閾值處理</h2>
+
+    <h3>7.1 全域閾值</h3>
+    <pre><code># 簡單閾值
+ret, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+
+# 反向閾值
+ret, thresh_inv = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV)
+
+# 截斷閾值
+ret, thresh_trunc = cv2.threshold(gray, 127, 255, cv2.THRESH_TRUNC)</code></pre>
+
+    <h3>7.2 Otsu 自動閾值</h3>
+    <pre><code># Otsu 演算法自動決定閾值
+ret, otsu = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+print(f"Otsu 閾值：{ret}")</code></pre>
+
+    <h3>7.3 自適應閾值</h3>
+    <pre><code># 適應性閾值（適合光照不均）
+adaptive = cv2.adaptiveThreshold(
+    gray, 255,
+    cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+    cv2.THRESH_BINARY,
+    11,  # 區域大小
+    2    # 常數 C
+)</code></pre>
+
+    <h2>8. 邊緣檢測</h2>
+
+    <h3>8.1 Canny 邊緣檢測</h3>
+    <pre><code># Canny 邊緣檢測
+edges = cv2.Canny(gray, 100, 200)
+# 參數：影像, 低閾值, 高閾值</code></pre>
+
+    <h3>8.2 Sobel 運算子</h3>
+    <pre><code># Sobel 梯度
+sobel_x = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)  # x 方向
+sobel_y = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)  # y 方向
+
+# 合併梯度
+sobel = cv2.magnitude(sobel_x, sobel_y)</code></pre>
+
+    <h3>8.3 Laplacian 運算子</h3>
+    <pre><code># Laplacian 邊緣檢測
+laplacian = cv2.Laplacian(gray, cv2.CV_64F)</code></pre>
+
+    <h2>9. 形態學操作</h2>
+    <pre><code># 建立結構元素
+kernel = np.ones((5, 5), np.uint8)
+
+# 侵蝕（使白色區域縮小）
+eroded = cv2.erode(binary, kernel, iterations=1)
+
+# 膨脹（使白色區域擴大）
+dilated = cv2.dilate(binary, kernel, iterations=1)
+
+# 開運算（先侵蝕後膨脹，去除雜訊）
+opened = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
+
+# 閉運算（先膨脹後侵蝕，填補空洞）
+closed = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
+
+# 梯度（膨脹 - 侵蝕，取得邊緣）
+gradient = cv2.morphologyEx(binary, cv2.MORPH_GRADIENT, kernel)</code></pre>
+
+    <h2>10. 輪廓檢測</h2>
+    <pre><code># 尋找輪廓
+contours, hierarchy = cv2.findContours(
+    binary,
+    cv2.RETR_EXTERNAL,      # 只取外輪廓
+    cv2.CHAIN_APPROX_SIMPLE # 壓縮輪廓點
+)
+
+# 繪製輪廓
+result = img.copy()
+cv2.drawContours(result, contours, -1, (0, 255, 0), 2)
+
+# 輪廓屬性
+for cnt in contours:
+    # 面積
+    area = cv2.contourArea(cnt)
+
+    # 周長
+    perimeter = cv2.arcLength(cnt, True)
+
+    # 外接矩形
+    x, y, w, h = cv2.boundingRect(cnt)
+    cv2.rectangle(result, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
+    # 外接圓
+    (cx, cy), radius = cv2.minEnclosingCircle(cnt)
+    cv2.circle(result, (int(cx), int(cy)), int(radius), (0, 0, 255), 2)</code></pre>
+
+    <h2>11. 繪圖功能</h2>
+    <pre><code># 畫線
+cv2.line(img, (0, 0), (100, 100), (255, 0, 0), 2)
+
+# 畫矩形
+cv2.rectangle(img, (50, 50), (150, 150), (0, 255, 0), 2)
+
+# 畫圓
+cv2.circle(img, (100, 100), 50, (0, 0, 255), -1)  # -1 填滿
+
+# 畫橢圓
+cv2.ellipse(img, (100, 100), (50, 30), 45, 0, 360, (255, 255, 0), 2)
+
+# 寫文字
+cv2.putText(
+    img, "Hello OpenCV", (10, 50),
+    cv2.FONT_HERSHEY_SIMPLEX,  # 字型
+    1,                          # 大小
+    (255, 255, 255),           # 顏色
+    2                           # 粗細
+)</code></pre>
+
+    <h2>12. 通道操作</h2>
+    <pre><code># 分離通道
+b, g, r = cv2.split(img)
+
+# 合併通道
+merged = cv2.merge([b, g, r])
+
+# 只保留某個通道
+blue_only = img.copy()
+blue_only[:, :, 1] = 0  # 移除綠色
+blue_only[:, :, 2] = 0  # 移除紅色</code></pre>
+
+    <h2>13. 直方圖</h2>
+    <pre><code># 計算灰階直方圖
+hist = cv2.calcHist([gray], [0], None, [256], [0, 256])
+
+# 直方圖均衡化
+equalized = cv2.equalizeHist(gray)
+
+# 彩色影像的 CLAHE（對比度限制自適應直方圖均衡化）
+clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+enhanced = clahe.apply(gray)</code></pre>
+
+    <div class="tip">
+        <strong>農業影像處理常用技巧：</strong>
+        <ul>
+            <li>使用 HSV 色彩空間提取綠色植物</li>
+            <li>使用形態學操作去除雜訊</li>
+            <li>使用輪廓檢測計算葉片面積</li>
+            <li>使用直方圖均衡化增強影像對比度</li>
+        </ul>
+    </div>
+
+    <hr>
+    <p style="text-align: center; color: #666;">
+        智慧農業 AI 辨識課程 - OpenCV 影像處理教學
+    </p>
+</body>
+</html>

@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>G6_網路控制組 操作手冊</title>
+    
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1>第六組：網路控制組 操作手冊</h1>
+<h2>任務說明</h2>
+<p>本組負責智慧溫室的<strong>物聯網連線</strong>功能，包含：
+- 使用 ESP-01 WiFi 模組連接網路
+- 透過 MQTT 協定發送感測器資料
+- 將模擬資料發送到公開 MQTT Broker
+- 在手機上使用 IoT MQTT Panel 即時查看資料</p>
+<p>這是將溫室連上雲端的關鍵技術！</p>
+<hr />
+<h2>材料清單</h2>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>數量</th>
+<th>規格說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ESP-01 WiFi 模組</td>
+<td>1</td>
+<td>ESP8266 為基礎</td>
+</tr>
+<tr>
+<td>ESP-01 轉接板</td>
+<td>1</td>
+<td>USB 燒錄板或麵包板轉接板</td>
+</tr>
+<tr>
+<td>麵包板</td>
+<td>1</td>
+<td>400 或 830 孔</td>
+</tr>
+<tr>
+<td>LED</td>
+<td>2</td>
+<td>狀態指示用</td>
+</tr>
+<tr>
+<td>220Ω 電阻</td>
+<td>2</td>
+<td>LED 限流用</td>
+</tr>
+<tr>
+<td>杜邦線</td>
+<td>若干</td>
+<td>公對公、母對母</td>
+</tr>
+<tr>
+<td>USB 傳輸線</td>
+<td>1</td>
+<td>連接電腦</td>
+</tr>
+</tbody>
+</table>
+<p><strong>重要提醒：</strong>
+- ESP-01 使用 <strong>3.3V</strong> 供電，不可接 5V！
+- 建議使用 USB 轉接板燒錄程式
+- 手機需安裝 <strong>IoT MQTT Panel</strong> App</p>
+<hr />
+<h2>ESP-01 模組介紹</h2>
+<h3>ESP-01 腳位圖</h3>
+<pre><code>ESP-01 正面（天線朝上）：
+┌──────────────────────┐
+│   ▄▄▄▄▄▄▄▄▄▄▄        │
+│   █ ESP8266 █ 天線   │
+│   ▀▀▀▀▀▀▀▀▀▀▀        │
+│                      │
+│  ● GND    ● GPIO2    │  ← 下排
+│  ● GPIO0  ● GPIO1/TX │
+│                      │
+│  ● RX     ● CH_PD    │  ← 上排
+│  ● RST    ● VCC      │
+│                      │
+└──────────────────────┘
+
+腳位說明：
+- VCC：電源 3.3V（絕對不可接 5V！）
+- GND：接地
+- TX：傳送（GPIO1）
+- RX：接收（GPIO3）
+- CH_PD：啟用腳（需接高電平）
+- RST：重置腳（低電平重置）
+- GPIO0：模式選擇（燒錄時接 GND）
+- GPIO2：通用 IO
+</code></pre>
+<h3>工作模式</h3>
+<pre><code>ESP-01 開機模式：
+
+1. 正常運行模式：
+   - GPIO0 = HIGH（浮空或接 VCC）
+   - 開機後執行 Flash 中的程式
+
+2. 燒錄模式：
+   - GPIO0 = LOW（接 GND）
+   - 開機進入燒錄狀態
+   - 上傳程式後需重新接電
+</code></pre>
+<hr />
+<h2>開發環境設定</h2>
+<h3>1. 安裝 ESP8266 支援</h3>
+<ol>
+<li>開啟 Arduino IDE</li>
+<li><code>檔案</code> → <code>偏好設定</code></li>
+<li>在「額外的開發板管理員網址」填入：
+   <code>http://arduino.esp8266.com/stable/package_esp8266com_index.json</code></li>
+<li><code>工具</code> → <code>開發板</code> → <code>開發板管理員</code></li>
+<li>搜尋 <code>esp8266</code></li>
+<li>安裝 <strong>ESP8266 by ESP8266 Community</strong></li>
+</ol>
+<h3>2. 選擇開發板</h3>
+<ol>
+<li><code>工具</code> → <code>開發板</code> → <code>ESP8266 Boards</code></li>
+<li>選擇 <strong>Generic ESP8266 Module</strong></li>
+</ol>
+<h3>3. 開發板設定</h3>
+<table>
+<thead>
+<tr>
+<th>設定項目</th>
+<th>建議值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flash Mode</td>
+<td>DOUT</td>
+</tr>
+<tr>
+<td>Flash Size</td>
+<td>1MB (FS:64KB OTA:~470KB)</td>
+</tr>
+<tr>
+<td>Flash Frequency</td>
+<td>40MHz</td>
+</tr>
+<tr>
+<td>Upload Speed</td>
+<td>115200</td>
+</tr>
+<tr>
+<td>Reset Method</td>
+<td>no dtr (aka ck)</td>
+</tr>
+</tbody>
+</table>
+<h3>4. 安裝 MQTT 函式庫</h3>
+<ol>
+<li><code>工具</code> → <code>管理程式庫...</code></li>
+<li>搜尋 <code>PubSubClient</code></li>
+<li>安裝 <strong>PubSubClient</strong> by Nick O'Leary</li>
+</ol>
+<hr />
+<h2>接線圖</h2>
+<h3>USB 燒錄板接線（推薦）</h3>
+<pre><code>使用 ESP-01 USB 轉接板：
+
+1. 將 ESP-01 插入 USB 轉接板
+   注意方向！天線朝外
+
+2. 切換開關設定：
+   - UART 模式：燒錄程式
+   - FLASH 模式：正常運行
+
+3. 插入電腦 USB 埠
+
+4. 選擇正確的 COM Port
+</code></pre>
+<h3>麵包板接線（進階）</h3>
+<pre><code>ESP-01 麵包板接線：
+
+電源（3.3V 穩壓）：
+┌─────────────────────────┐
+│  5V ──[3.3V穩壓器]── VCC │
+│  GND ─────────────── GND │
+│                          │
+│  VCC ─────────────── CH_PD（啟用）
+│  VCC ───[10K電阻]─── RST（防止誤重置）
+└─────────────────────────┘
+
+USB 轉 TTL 連接：
+┌─────────────────────────┐
+│  TTL TX ────────── ESP RX │
+│  TTL RX ────────── ESP TX │
+│  TTL GND ───────── ESP GND │
+└─────────────────────────┘
+
+燒錄模式：
+GPIO0 接 GND，然後重新上電
+
+正常模式：
+GPIO0 浮空或接 VCC
+</code></pre>
+<hr />
+<h2>ESP-01 燒錄器與轉接頭介紹</h2>
+
+<p>ESP-01 模組本身沒有 USB 介面，需要透過<strong>燒錄器</strong>或<strong>轉接頭</strong>來上傳程式。以下介紹常見的幾種方式：</p>
+
+<h3>方式一：USB 燒錄器（最推薦）</h3>
+
+<pre><code>ESP-01 USB 燒錄器外觀：
+┌─────────────────────────────────────┐
+│                                     │
+│   ┌───────────────┐                 │
+│   │   ESP-01      │  ← ESP-01 插槽  │
+│   │   插入這裡    │                 │
+│   └───────────────┘                 │
+│                                     │
+│   [UART/FLASH] ← 模式切換開關       │
+│                                     │
+│   ═══════════                       │
+│   USB 接頭                          │
+└─────────────────────────────────────┘
+
+常見型號：
+1. CH340 晶片版（最常見、便宜）
+2. CP2102 晶片版（穩定性較好）
+</code></pre>
+
+<h4>USB 燒錄器使用方法</h4>
+
+<table>
+<thead>
+<tr>
+<th>步驟</th>
+<th>操作說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. 插入 ESP-01</td>
+<td>注意方向！天線朝外，晶片朝內</td>
+</tr>
+<tr>
+<td>2. 切換到燒錄模式</td>
+<td>將開關撥到「UART」或「PROG」位置</td>
+</tr>
+<tr>
+<td>3. 插入電腦 USB</td>
+<td>等待驅動程式安裝完成</td>
+</tr>
+<tr>
+<td>4. 選擇 COM Port</td>
+<td>在 Arduino IDE 的「工具」→「序列埠」選擇</td>
+</tr>
+<tr>
+<td>5. 上傳程式</td>
+<td>點擊「上傳」按鈕</td>
+</tr>
+<tr>
+<td>6. 切換到運行模式</td>
+<td>上傳完成後，將開關撥到「FLASH」或「RUN」位置</td>
+</tr>
+<tr>
+<td>7. 重新插拔</td>
+<td>拔掉再插回 USB，程式開始執行</td>
+</tr>
+</tbody>
+</table>
+
+<h4>驅動程式安裝</h4>
+
+<pre><code>如果電腦沒有自動辨識燒錄器，需要手動安裝驅動：
+
+CH340 晶片：
+- 下載網址：搜尋「CH340 driver download」
+- Windows 10/11 通常會自動安裝
+
+CP2102 晶片：
+- 下載網址：搜尋「CP2102 driver download」
+- 來自 Silicon Labs 官網
+
+安裝後在「裝置管理員」→「連接埠 (COM 和 LPT)」
+可以看到新增的 COM Port（例如 COM3、COM4）
+</code></pre>
+
+<h3>方式二：麵包板轉接板</h3>
+
+<pre><code>ESP-01 麵包板轉接板外觀：
+┌─────────────────────────────────┐
+│                                 │
+│   ┌───────────────┐             │
+│   │   ESP-01      │             │
+│   │   插入這裡    │             │
+│   └───────────────┘             │
+│                                 │
+│   ● ● ● ●  ← 排針（插入麵包板） │
+│   VCC GND TX RX                 │
+│                                 │
+└─────────────────────────────────┘
+
+特點：
+- 只提供腳位轉接，不含 USB 晶片
+- 需要額外的 USB 轉 TTL 模組來燒錄
+- 適合長期部署使用
+</code></pre>
+
+<h4>搭配 USB 轉 TTL 模組使用</h4>
+
+<pre><code>USB 轉 TTL 模組（例如 FT232、PL2303、CH340）：
+┌─────────────────┐
+│  USB 轉 TTL     │
+│  ┌───────────┐  │
+│  │ VCC  3.3V │──┼──→ ESP-01 VCC（注意！必須是 3.3V）
+│  │ GND       │──┼──→ ESP-01 GND
+│  │ TXD       │──┼──→ ESP-01 RX（交叉連接！）
+│  │ RXD       │──┼──→ ESP-01 TX（交叉連接！）
+│  └───────────┘  │
+│  ════════════   │
+│  USB 接頭       │
+└─────────────────┘
+
+重要：TX 接 RX，RX 接 TX（交叉連接）
+</code></pre>
+
+<h3>方式三：Arduino 當作燒錄器（進階）</h3>
+
+<pre><code>使用 Arduino UNO 作為 USB 轉 TTL：
+
+Arduino UNO          ESP-01
+┌──────────┐        ┌──────────┐
+│ 3.3V     │───────→│ VCC      │
+│ GND      │───────→│ GND      │
+│ TX (D1)  │───────→│ RX       │
+│ RX (D0)  │───────→│ TX       │
+│ GND      │───────→│ GPIO0    │ ← 燒錄時接 GND
+│ 3.3V     │───────→│ CH_PD    │
+│ RESET    │───────→│ GND      │ ← 將 Arduino 重置腳接地
+└──────────┘        └──────────┘
+
+注意：Arduino RESET 接 GND 是為了讓 Arduino
+本身不執行程式，只當作 USB 轉 TTL 使用
+</code></pre>
+
+<h3>ESP-01 插入方向說明</h3>
+
+<pre><code>正確插入方向（USB 燒錄器）：
+
+從上方看：
+              USB 接頭方向
+                  ↓
+┌─────────────────────────────────┐
+│                                 │
+│   天線 ←┌───────────────┐       │
+│         │ ▄▄▄▄▄▄▄▄▄▄▄  │       │
+│         │ █ ESP8266 █  │       │
+│         │ ▀▀▀▀▀▀▀▀▀▀▀  │       │
+│         │              │       │
+│         │ ● ● ● ●      │       │
+│         │ ● ● ● ●      │       │
+│         └───────────────┘       │
+│                                 │
+└─────────────────────────────────┘
+
+✓ 天線朝外（遠離 USB 接頭）
+✓ 晶片面朝上
+✗ 插反會燒毀模組！
+</code></pre>
+
+<h3>常見燒錄問題與解決</h3>
+
+<table>
+<thead>
+<tr>
+<th>問題</th>
+<th>可能原因</th>
+<th>解決方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>找不到 COM Port</td>
+<td>驅動未安裝</td>
+<td>安裝 CH340 或 CP2102 驅動</td>
+</tr>
+<tr>
+<td>上傳時顯示錯誤</td>
+<td>未進入燒錄模式</td>
+<td>確認開關在 UART/PROG 位置</td>
+</tr>
+<tr>
+<td>上傳後無反應</td>
+<td>未切換到運行模式</td>
+<td>切換到 FLASH/RUN，重新插拔</td>
+</tr>
+<tr>
+<td>ESP-01 發燙</td>
+<td>插反或接錯電壓</td>
+<td>立即拔掉！確認方向和電壓</td>
+</tr>
+<tr>
+<td>序列埠亂碼</td>
+<td>鮑率不對</td>
+<td>設定序列埠監視器為 115200</td>
+</tr>
+</tbody>
+</table>
+
+<h3>購買建議</h3>
+
+<pre><code>初學者推薦：
+┌────────────────────────────────────────────────┐
+│ ESP-01 USB 燒錄器（帶開關版）                   │
+│                                                │
+│ 優點：                                         │
+│ ✓ 插上即用，不需額外接線                       │
+│ ✓ 開關可切換燒錄/運行模式                      │
+│ ✓ 價格便宜（約 $30-50）                        │
+│                                                │
+│ 購買關鍵字：                                   │
+│ 「ESP-01 USB 燒錄器」                          │
+│ 「ESP-01 programmer」                          │
+│ 「ESP-01 adapter with switch」                 │
+└────────────────────────────────────────────────┘
+
+進階使用者：
+- USB 轉 TTL 模組 + 麵包板轉接板
+- 可以更靈活地接線和測試
+- 適合整合其他感測器的專案
+</code></pre>
+
+<hr />
+<h2>MQTT 基礎知識</h2>
+<h3>什麼是 MQTT？</h3>
+<pre><code>MQTT (Message Queuing Telemetry Transport)
+- 輕量級的訊息傳遞協定
+- 專為物聯網設計
+- 低頻寬、低耗電
+- 發布/訂閱模式
+
+架構：
+┌─────────────────────────────────────┐
+│           MQTT Broker               │
+│      (訊息中轉伺服器)                │
+└─────────────────────────────────────┘
+         ↑                 ↓
+    發布訊息            訂閱訊息
+         ↑                 ↓
+┌─────────────┐    ┌─────────────┐
+│   ESP-01    │    │   手機 APP   │
+│  (發布者)   │    │  (訂閱者)    │
+└─────────────┘    └─────────────┘
+</code></pre>
+<h3>主題（Topic）設計</h3>
+<pre><code>主題命名範例：
+greenhouse/group6/temperature    ← 溫度
+greenhouse/group6/humidity       ← 濕度
+greenhouse/group6/soil          ← 土壤濕度
+greenhouse/group6/light         ← 光線
+greenhouse/group6/status        ← 系統狀態
+
+建議：使用唯一的名稱避免與他人衝突
+例如：greenhouse/學號或名字/...
+</code></pre>
+<h3>公開 MQTT Broker</h3>
+<pre><code>免費公開 Broker（教學用）：
+
+1. broker.hivemq.com
+   - 連接埠：1883（無加密）
+   - 無需帳號密碼
+   - 適合教學測試
+
+2. test.mosquitto.org
+   - 連接埠：1883
+   - 無需帳號密碼
+
+注意：公開 Broker 不保證穩定性
+正式應用請使用自架或付費服務
+</code></pre>
+<hr />
+<h2>程式碼範例</h2>
+<h3>範例 1：WiFi 連線測試 (01_wifi_connect.ino)</h3>
+<p>學習重點：
+- ESP-01 開發環境確認
+- WiFi 連線設定
+- 連線狀態監控</p>
+<h3>範例 2：MQTT 連線測試 (02_mqtt_connect.ino)</h3>
+<p>學習重點：
+- MQTT 基本連線
+- 發布簡單訊息
+- 連線保持（Keep Alive）</p>
+<h3>範例 3：發送模擬感測器資料 (03_fake_sensor_data.ino)</h3>
+<p>學習重點：
+- 定時發送資料
+- JSON 格式組織
+- 多主題發布</p>
+<h3>範例 4：隨機模擬溫室資料 (04_greenhouse_simulation.ino)</h3>
+<p>學習重點：
+- 模擬真實感測器波動
+- 多種感測器資料
+- 狀態訊息發送</p>
+<h3>範例 5：完整物聯網溫室 (05_iot_greenhouse.ino)</h3>
+<p>學習重點：
+- 完整系統整合
+- LED 狀態指示
+- 斷線重連機制</p>
+<hr />
+<h2>手機 APP 設定</h2>
+<h3>安裝 IoT MQTT Panel</h3>
+<ol>
+<li>在 App Store 或 Google Play 搜尋 <strong>IoT MQTT Panel</strong></li>
+<li>安裝應用程式</li>
+<li>開啟後建立連線</li>
+</ol>
+<h3>設定 Broker 連線</h3>
+<ol>
+<li>點擊 <code>+</code> 新增連線</li>
+<li>填入設定：</li>
+<li>Connection name: <code>Greenhouse</code></li>
+<li>Broker address: <code>broker.hivemq.com</code></li>
+<li>Port: <code>1883</code></li>
+<li>Client ID: 留空或自訂</li>
+<li>Username: 留空</li>
+<li>Password: 留空</li>
+<li>點擊「儲存」</li>
+</ol>
+<h3>新增顯示面板</h3>
+<ol>
+<li>選擇已建立的連線</li>
+<li>點擊 <code>+</code> 新增 Panel</li>
+<li>選擇 Widget 類型：</li>
+<li><strong>Gauge</strong>：儀表板顯示數值</li>
+<li><strong>Text</strong>：文字顯示</li>
+<li><strong>Graph</strong>：折線圖</li>
+<li>
+<p><strong>LED</strong>：狀態燈</p>
+</li>
+<li>
+<p>設定 Widget：</p>
+</li>
+<li>Topic: <code>greenhouse/group6/temperature</code></li>
+<li>其他設定依需求調整</li>
+</ol>
+<hr />
+<h2>操作步驟</h2>
+<h3>步驟 1：環境測試</h3>
+<ol>
+<li>安裝 ESP8266 開發板支援</li>
+<li>連接 ESP-01 燒錄板</li>
+<li>上傳 <code>01_wifi_connect.ino</code></li>
+<li>修改 WiFi SSID 和密碼</li>
+<li>開啟序列埠監視器（115200）</li>
+<li>確認 WiFi 連線成功</li>
+</ol>
+<h3>步驟 2：MQTT 連線測試</h3>
+<ol>
+<li>上傳 <code>02_mqtt_connect.ino</code></li>
+<li>確認連線到 Broker</li>
+<li>使用手機 APP 訂閱主題</li>
+<li>確認收到訊息</li>
+</ol>
+<h3>步驟 3：模擬資料發送</h3>
+<ol>
+<li>上傳 <code>03_fake_sensor_data.ino</code></li>
+<li>觀察序列埠輸出</li>
+<li>手機 APP 確認收到資料</li>
+<li>設定不同 Widget 顯示</li>
+</ol>
+<h3>步驟 4：完整模擬</h3>
+<ol>
+<li>上傳 <code>05_iot_greenhouse.ino</code></li>
+<li>手機建立完整監控面板</li>
+<li>觀察模擬資料變化</li>
+<li>測試斷線重連</li>
+</ol>
+<hr />
+<h2>常見問題</h2>
+<h3>Q1：無法上傳程式</h3>
+<ul>
+<li>確認 ESP-01 進入燒錄模式（GPIO0 接 GND）</li>
+<li>檢查 COM Port 選擇正確</li>
+<li>嘗試降低上傳速度至 115200</li>
+<li>確認驅動程式安裝（CH340 或 CP2102）</li>
+</ul>
+<h3>Q2：WiFi 連不上</h3>
+<ul>
+<li>確認 SSID 和密碼正確（區分大小寫）</li>
+<li>確認 WiFi 是 2.4GHz（ESP-01 不支援 5GHz）</li>
+<li>確認路由器允許新裝置連線</li>
+<li>嘗試靠近路由器</li>
+</ul>
+<h3>Q3：MQTT 連線失敗</h3>
+<ul>
+<li>確認 Broker 位址正確</li>
+<li>確認網路可以對外連線</li>
+<li>嘗試其他 Broker</li>
+<li>檢查防火牆設定</li>
+</ul>
+<h3>Q4：手機收不到資料</h3>
+<ul>
+<li>確認訂閱的主題與發布的主題相同</li>
+<li>確認 ESP-01 有成功發布（看序列埠）</li>
+<li>確認手機網路正常</li>
+<li>嘗試重啟 APP</li>
+</ul>
+<hr />
+<h2>知識補充</h2>
+<h3>MQTT QoS 等級</h3>
+<pre><code>QoS (Quality of Service) 服務品質：
+
+QoS 0 - 最多一次
+- 不保證送達
+- 最快、最省資源
+- 適合：可以遺失的資料
+
+QoS 1 - 至少一次
+- 保證送達
+- 可能重複
+- 適合：重要但可重複的資料
+
+QoS 2 - 恰好一次
+- 保證送達且不重複
+- 最慢、最耗資源
+- 適合：不可重複的命令
+</code></pre>
+<h3>JSON 資料格式</h3>
+<pre><code class="language-json">{
+  &quot;device&quot;: &quot;greenhouse_01&quot;,
+  &quot;temperature&quot;: 25.5,
+  &quot;humidity&quot;: 68.2,
+  &quot;soil_moisture&quot;: 45,
+  &quot;light&quot;: 720,
+  &quot;timestamp&quot;: 1703001234
+}
+</code></pre>
+<h3>ESP-01 省電技巧</h3>
+<pre><code>1. Deep Sleep 模式：
+   - 最低功耗 ~20μA
+   - 需要連接 RST 和 GPIO16
+   - ESP-01 不方便使用
+
+2. Light Sleep 模式：
+   - WiFi 保持連線
+   - 功耗約 0.9mA
+   - 可被定時器或中斷喚醒
+
+3. Modem Sleep 模式：
+   - CPU 正常運作
+   - WiFi 模組休眠
+   - 約 15mA
+</code></pre>
+<hr />
+<h2>進階挑戰</h2>
+<ol>
+<li><strong>加入按鈕控制</strong>：按下按鈕發送特定訊息</li>
+<li><strong>接收控制指令</strong>：訂閱主題，根據收到的訊息控制 LED</li>
+<li><strong>整合真實感測器</strong>：連接 DHT11 發送真實資料</li>
+<li><strong>多設備協作</strong>：多個 ESP-01 組成感測網路</li>
+<li><strong>自架 MQTT Broker</strong>：在 VPS 上架設 Mosquitto</li>
+</ol>
+<hr />
+<h2>與其他組別的整合</h2>
+<p>本組是連接各組與雲端的橋樑：</p>
+<ul>
+<li><strong>第一組（光線）</strong>→ 發送光線強度</li>
+<li><strong>第二組（溫溼度）</strong>→ 發送溫度與濕度</li>
+<li><strong>第三組（土壤）</strong>→ 發送土壤濕度</li>
+<li><strong>第四組（顯示）</strong>→ 接收資料顯示</li>
+<li><strong>第五組（遙控）</strong>→ 接收遠端控制指令</li>
+</ul>
+<p>最終目標：手機可以遠端監控整個溫室！</p>
+
+<a href="文件索引.html" class="home-btn" title="回到首頁">🏠</a>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

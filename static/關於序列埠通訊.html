@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於序列埠通訊</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="serial-communication">關於序列埠通訊 (Serial Communication)</h1>
+<h2 id="_1">什麼是序列埠通訊？</h2>
+<p><strong>序列埠通訊（Serial Communication）</strong> 是一種資料傳輸方式，資料以「一個位元接著一個位元」的順序傳送，就像排隊過獨木橋一樣，一次只能過一個人。</p>
+<pre><code>序列傳輸 vs 並列傳輸：
+
+序列傳輸（Serial）：
+┌─────┐    ─→─→─→─→─→─→─→─→    ┌─────┐
+│ 發送 │    1 0 1 1 0 1 0 0    │ 接收 │
+│  端  │    ← 一條線傳輸 →      │  端  │
+└─────┘                        └─────┘
+        資料一個一個排隊傳送
+
+並列傳輸（Parallel）：
+┌─────┐    ══════════════════    ┌─────┐
+│ 發送 │    1 ─────────→         │ 接收 │
+│  端  │    0 ─────────→         │  端  │
+│     │    1 ─────────→         │     │
+│     │    1 ─────────→ 8條線    │     │
+│     │    0 ─────────→         │     │
+│     │    1 ─────────→         │     │
+│     │    0 ─────────→         │     │
+│     │    0 ─────────→         │     │
+└─────┘                          └─────┘
+        資料同時傳送（較快但線多）
+</code></pre>
+<h3 id="_2">為什麼選擇序列通訊？</h3>
+<table>
+<thead>
+<tr>
+<th>特點</th>
+<th>序列通訊</th>
+<th>並列通訊</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>線材數量</td>
+<td>少（1-2條）</td>
+<td>多（8條以上）</td>
+</tr>
+<tr>
+<td>傳輸距離</td>
+<td>遠</td>
+<td>近</td>
+</tr>
+<tr>
+<td>成本</td>
+<td>低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>複雜度</td>
+<td>簡單</td>
+<td>複雜</td>
+</tr>
+<tr>
+<td>速度</td>
+<td>較慢</td>
+<td>較快</td>
+</tr>
+</tbody>
+</table>
+<p>現代裝置大多使用序列通訊（USB、I2C、SPI、UART 都是序列通訊）！</p>
+<hr />
+<h2 id="uart">UART 序列通訊</h2>
+<p>Arduino 最常用的序列通訊方式是 <strong>UART（Universal Asynchronous Receiver/Transmitter）</strong>，也就是我們常說的「序列埠」。</p>
+<h3 id="uart_1">UART 的特點</h3>
+<pre><code>UART 通訊特性：
+┌────────────────────────────────────┐
+│ • 非同步通訊（不需要時鐘線）        │
+│ • 全雙工（可同時收發）              │
+│ • 點對點通訊（一對一）              │
+│ • 需要約定相同的鮑率（Baud Rate）   │
+└────────────────────────────────────┘
+</code></pre>
+<h3 id="uart_2">UART 接線</h3>
+<pre><code>兩個裝置的 UART 連接：
+
+裝置 A              裝置 B
+┌──────┐            ┌──────┐
+│      │            │      │
+│   TX ├──────────→─┤ RX   │  （A 發送 → B 接收）
+│      │            │      │
+│   RX ├─←──────────┤ TX   │  （A 接收 ← B 發送）
+│      │            │      │
+│  GND ├────────────┤ GND  │  （共同接地）
+│      │            │      │
+└──────┘            └──────┘
+
+重點：TX 接 RX，RX 接 TX（交叉連接）！
+</code></pre>
+<h3 id="baud-rate">鮑率（Baud Rate）</h3>
+<pre><code>鮑率 = 每秒傳送的符號數（近似於每秒位元數）
+
+常見鮑率：
+┌──────────────────────────────────┐
+│   9600  ← 最常用，穩定           │
+│  19200                           │
+│  38400                           │
+│  57600                           │
+│ 115200  ← 較快，常用於除錯       │
+│ 250000                           │
+│ 500000                           │
+│ 1000000 ← 高速，需要好的線材     │
+└──────────────────────────────────┘
+
+⚠️ 重要：發送端和接收端必須使用相同的鮑率！
+</code></pre>
+<h3 id="uart_3">UART 資料格式</h3>
+<pre><code>一個位元組的傳輸格式：
+
+空閒 ─┐ ┌─起始位元─┬─資料位元（8位）─┬─停止位元─┐ ┌─ 空閒
+      │ │         │                │         │ │
+  ────┘ └─────────┴────────────────┴─────────┘ └────
+
+     HIGH  LOW    D0 D1 D2 D3 D4 D5 D6 D7    HIGH
+
+常見設定：8N1
+• 8：8 個資料位元
+• N：無同位檢查（No Parity）
+• 1：1 個停止位元
+</code></pre>
+<hr />
+<h2 id="arduino-serial">Arduino 的 Serial 函式庫</h2>
+<p>Arduino 內建 Serial 函式庫，讓序列通訊變得非常簡單。</p>
+<h3 id="_3">基本函式一覽</h3>
+<pre><code class="language-cpp">// 初始化
+Serial.begin(9600);        // 設定鮑率
+
+// 發送資料
+Serial.print(&quot;Hello&quot;);     // 發送文字（不換行）
+Serial.println(&quot;World&quot;);   // 發送文字（換行）
+Serial.write(65);          // 發送原始位元組（'A'）
+
+// 接收資料
+Serial.available();        // 檢查緩衝區有多少資料
+Serial.read();             // 讀取一個位元組
+Serial.readString();       // 讀取字串
+Serial.parseInt();         // 讀取整數
+
+// 其他
+Serial.end();              // 結束序列通訊
+Serial.flush();            // 等待發送完成
+</code></pre>
+<hr />
+<h2 id="_4">程式範例</h2>
+<h3 id="1hello-world">範例 1：基本輸出（Hello World）</h3>
+<pre><code class="language-cpp">/*
+ * 序列埠基本輸出
+ * 開啟序列埠監視器觀看結果
+ */
+
+void setup() {
+  // 初始化序列埠，鮑率 9600
+  Serial.begin(9600);
+
+  // 等待序列埠連接（某些板子需要）
+  while (!Serial) {
+    ; // 等待
+  }
+
+  Serial.println(&quot;=== Arduino 序列埠測試 ===&quot;);
+  Serial.println();
+}
+
+void loop() {
+  Serial.println(&quot;Hello, World!&quot;);
+  delay(1000);
+}
+</code></pre>
+<h3 id="2print-vs-println-vs-write">範例 2：print vs println vs write</h3>
+<pre><code class="language-cpp">/*
+ * 三種輸出方式的差異
+ */
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println(&quot;=== 輸出方式比較 ===&quot;);
+  Serial.println();
+
+  // print：輸出文字，不換行
+  Serial.print(&quot;AAA&quot;);
+  Serial.print(&quot;BBB&quot;);
+  Serial.print(&quot;CCC&quot;);
+  Serial.println();  // 手動換行
+
+  // println：輸出文字，自動換行
+  Serial.println(&quot;AAA&quot;);
+  Serial.println(&quot;BBB&quot;);
+  Serial.println(&quot;CCC&quot;);
+
+  // 數字輸出
+  int num = 65;
+  Serial.print(&quot;print(65) = &quot;);
+  Serial.println(num);        // 輸出 &quot;65&quot;
+
+  Serial.print(&quot;write(65) = &quot;);
+  Serial.write(num);          // 輸出 &quot;A&quot;（ASCII 碼 65）
+  Serial.println();
+
+  // 不同進位顯示
+  Serial.print(&quot;255 的不同表示：&quot;);
+  Serial.println();
+  Serial.print(&quot;  十進位: &quot;);
+  Serial.println(255);        // 255
+  Serial.print(&quot;  二進位: &quot;);
+  Serial.println(255, BIN);   // 11111111
+  Serial.print(&quot;  十六進位: &quot;);
+  Serial.println(255, HEX);   // FF
+  Serial.print(&quot;  八進位: &quot;);
+  Serial.println(255, OCT);   // 377
+}
+
+void loop() {
+  // 空的
+}
+</code></pre>
+<h3 id="3">範例 3：讀取使用者輸入</h3>
+<pre><code class="language-cpp">/*
+ * 序列埠讀取使用者輸入
+ * 在序列埠監視器輸入文字，Arduino 會回應
+ */
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println(&quot;=== 序列埠輸入測試 ===&quot;);
+  Serial.println(&quot;請在上方輸入文字，然後按 Enter&quot;);
+  Serial.println();
+}
+
+void loop() {
+  // 檢查是否有資料可讀
+  if (Serial.available() &gt; 0) {
+    // 讀取整行文字
+    String input = Serial.readStringUntil('\n');
+    input.trim();  // 移除前後空白
+
+    // 回應
+    Serial.print(&quot;你輸入了: &quot;);
+    Serial.println(input);
+
+    // 顯示字數
+    Serial.print(&quot;字元數: &quot;);
+    Serial.println(input.length());
+    Serial.println();
+  }
+}
+</code></pre>
+<h3 id="4-led">範例 4：指令控制 LED</h3>
+<pre><code class="language-cpp">/*
+ * 用序列埠指令控制 LED
+ * 輸入 &quot;on&quot; 開燈，輸入 &quot;off&quot; 關燈
+ */
+
+#define LED_PIN 13
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(LED_PIN, OUTPUT);
+
+  Serial.println(&quot;=== LED 控制系統 ===&quot;);
+  Serial.println(&quot;指令：&quot;);
+  Serial.println(&quot;  on  - 開燈&quot;);
+  Serial.println(&quot;  off - 關燈&quot;);
+  Serial.println();
+}
+
+void loop() {
+  if (Serial.available() &gt; 0) {
+    String cmd = Serial.readStringUntil('\n');
+    cmd.trim();
+    cmd.toLowerCase();  // 轉小寫
+
+    if (cmd == &quot;on&quot;) {
+      digitalWrite(LED_PIN, HIGH);
+      Serial.println(&quot;LED 已開啟&quot;);
+    }
+    else if (cmd == &quot;off&quot;) {
+      digitalWrite(LED_PIN, LOW);
+      Serial.println(&quot;LED 已關閉&quot;);
+    }
+    else {
+      Serial.print(&quot;未知指令: &quot;);
+      Serial.println(cmd);
+    }
+  }
+}
+</code></pre>
+<h3 id="5">範例 5：讀取數字與計算</h3>
+<pre><code class="language-cpp">/*
+ * 讀取數字並進行計算
+ */
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println(&quot;=== 簡易計算機 ===&quot;);
+  Serial.println(&quot;輸入一個數字：&quot;);
+}
+
+void loop() {
+  if (Serial.available() &gt; 0) {
+    // 讀取整數
+    int num = Serial.parseInt();
+
+    // parseInt 會讀到非數字為止
+    // 清除剩餘的換行符
+    while (Serial.available()) {
+      Serial.read();
+    }
+
+    if (num != 0) {
+      Serial.print(&quot;你輸入: &quot;);
+      Serial.println(num);
+
+      Serial.print(&quot;平方: &quot;);
+      Serial.println((long)num * num);
+
+      Serial.print(&quot;兩倍: &quot;);
+      Serial.println(num * 2);
+
+      Serial.print(&quot;一半: &quot;);
+      Serial.println(num / 2.0);
+
+      Serial.println();
+      Serial.println(&quot;輸入下一個數字：&quot;);
+    }
+  }
+}
+</code></pre>
+<h3 id="6json">範例 6：JSON 格式資料傳輸</h3>
+<pre><code class="language-cpp">/*
+ * 發送 JSON 格式的感測器資料
+ * 常用於與電腦程式或網頁溝通
+ */
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println(&quot;=== JSON 資料發送 ===&quot;);
+}
+
+void loop() {
+  // 模擬感測器資料
+  float temperature = 25.0 + random(-50, 50) / 10.0;
+  float humidity = 65.0 + random(-100, 100) / 10.0;
+  int lightLevel = random(300, 800);
+
+  // 組合 JSON 字串
+  Serial.print(&quot;{&quot;);
+  Serial.print(&quot;\&quot;temperature\&quot;:&quot;);
+  Serial.print(temperature, 1);
+  Serial.print(&quot;,\&quot;humidity\&quot;:&quot;);
+  Serial.print(humidity, 1);
+  Serial.print(&quot;,\&quot;light\&quot;:&quot;);
+  Serial.print(lightLevel);
+  Serial.println(&quot;}&quot;);
+
+  delay(2000);
+}
+
+/*
+ * 輸出範例：
+ * {&quot;temperature&quot;:25.3,&quot;humidity&quot;:64.2,&quot;light&quot;:523}
+ * {&quot;temperature&quot;:24.8,&quot;humidity&quot;:66.1,&quot;light&quot;:487}
+ */
+</code></pre>
+<hr />
+<h2 id="arduino">Arduino 與電腦溝通</h2>
+<h3 id="python-arduino">使用 Python 讀取 Arduino 資料</h3>
+<pre><code class="language-python"># Python 程式：serial_reader.py
+# 需要安裝：pip install pyserial
+
+import serial
+import time
+
+# 開啟序列埠（請修改 COM 埠號）
+ser = serial.Serial('COM3', 9600, timeout=1)
+time.sleep(2)  # 等待 Arduino 重置
+
+print(&quot;開始接收 Arduino 資料...&quot;)
+
+try:
+    while True:
+        if ser.in_waiting &gt; 0:
+            line = ser.readline().decode('utf-8').strip()
+            print(f&quot;收到: {line}&quot;)
+except KeyboardInterrupt:
+    print(&quot;結束程式&quot;)
+finally:
+    ser.close()
+</code></pre>
+<h3 id="python-arduino_1">使用 Python 發送指令給 Arduino</h3>
+<pre><code class="language-python"># Python 程式：serial_sender.py
+
+import serial
+import time
+
+ser = serial.Serial('COM3', 9600, timeout=1)
+time.sleep(2)
+
+print(&quot;輸入指令（on/off），輸入 quit 離開&quot;)
+
+while True:
+    cmd = input(&quot;指令: &quot;)
+    if cmd.lower() == 'quit':
+        break
+
+    # 發送指令（加上換行符）
+    ser.write((cmd + '\n').encode())
+
+    # 等待並讀取回應
+    time.sleep(0.1)
+    while ser.in_waiting &gt; 0:
+        response = ser.readline().decode('utf-8').strip()
+        print(f&quot;Arduino 回應: {response}&quot;)
+
+ser.close()
+</code></pre>
+<h3 id="python-json">使用 Python 解析 JSON</h3>
+<pre><code class="language-python"># Python 程式：json_reader.py
+
+import serial
+import json
+import time
+
+ser = serial.Serial('COM3', 9600, timeout=1)
+time.sleep(2)
+
+print(&quot;接收 Arduino JSON 資料...&quot;)
+
+try:
+    while True:
+        if ser.in_waiting &gt; 0:
+            line = ser.readline().decode('utf-8').strip()
+            try:
+                data = json.loads(line)
+                print(f&quot;溫度: {data['temperature']}°C&quot;)
+                print(f&quot;濕度: {data['humidity']}%&quot;)
+                print(f&quot;光線: {data['light']}&quot;)
+                print(&quot;---&quot;)
+            except json.JSONDecodeError:
+                print(f&quot;非 JSON 資料: {line}&quot;)
+except KeyboardInterrupt:
+    ser.close()
+</code></pre>
+<hr />
+<h2 id="arduino_1">兩個 Arduino 之間的通訊</h2>
+<h3 id="_5">硬體連接</h3>
+<pre><code>Arduino A (發送端)        Arduino B (接收端)
+┌──────────────┐          ┌──────────────┐
+│              │          │              │
+│          TX1 ├────────→─┤ RX0          │
+│              │          │              │
+│          RX1 ├─←────────┤ TX0          │
+│              │          │              │
+│          GND ├──────────┤ GND          │
+│              │          │              │
+└──────────────┘          └──────────────┘
+
+⚠️ 注意：
+1. TX 接 RX，RX 接 TX（交叉）
+2. GND 必須連接（共地）
+3. 如果兩個 Arduino 電壓不同，需要電平轉換
+</code></pre>
+<h3 id="arduino-a">發送端程式（Arduino A）</h3>
+<pre><code class="language-cpp">/*
+ * Arduino A - 發送端
+ * 每秒發送感測器資料
+ */
+
+void setup() {
+  Serial.begin(9600);  // 用於與電腦溝通（除錯）
+  Serial1.begin(9600); // 用於與另一個 Arduino 溝通
+                       // Arduino UNO 只有一個硬體序列埠
+                       // 需使用 SoftwareSerial
+
+  Serial.println(&quot;發送端啟動&quot;);
+}
+
+void loop() {
+  int sensorValue = analogRead(A0);
+
+  // 發送給另一個 Arduino
+  Serial1.print(&quot;SENSOR:&quot;);
+  Serial1.println(sensorValue);
+
+  // 同時顯示在電腦（除錯用）
+  Serial.print(&quot;發送: &quot;);
+  Serial.println(sensorValue);
+
+  delay(1000);
+}
+</code></pre>
+<h3 id="arduino-b">接收端程式（Arduino B）</h3>
+<pre><code class="language-cpp">/*
+ * Arduino B - 接收端
+ * 接收並解析資料
+ */
+
+void setup() {
+  Serial.begin(9600);  // 與電腦溝通
+  Serial1.begin(9600); // 與另一個 Arduino 溝通
+
+  Serial.println(&quot;接收端啟動&quot;);
+}
+
+void loop() {
+  if (Serial1.available() &gt; 0) {
+    String data = Serial1.readStringUntil('\n');
+    data.trim();
+
+    Serial.print(&quot;收到: &quot;);
+    Serial.println(data);
+
+    // 解析資料
+    if (data.startsWith(&quot;SENSOR:&quot;)) {
+      int value = data.substring(7).toInt();
+      Serial.print(&quot;感測器數值: &quot;);
+      Serial.println(value);
+    }
+  }
+}
+</code></pre>
+<h3 id="arduino-uno-softwareserial">Arduino UNO 使用 SoftwareSerial</h3>
+<p>Arduino UNO 只有一個硬體序列埠（被 USB 佔用），需要用 SoftwareSerial：</p>
+<pre><code class="language-cpp">/*
+ * 使用 SoftwareSerial 建立第二個序列埠
+ */
+
+#include &lt;SoftwareSerial.h&gt;
+
+// 定義軟體序列埠腳位（RX, TX）
+SoftwareSerial mySerial(10, 11);  // RX=D10, TX=D11
+
+void setup() {
+  Serial.begin(9600);     // 硬體序列埠（USB）
+  mySerial.begin(9600);   // 軟體序列埠
+
+  Serial.println(&quot;SoftwareSerial 測試&quot;);
+}
+
+void loop() {
+  // 從軟體序列埠讀取，發送到硬體序列埠
+  if (mySerial.available()) {
+    char c = mySerial.read();
+    Serial.write(c);
+  }
+
+  // 從硬體序列埠讀取，發送到軟體序列埠
+  if (Serial.available()) {
+    char c = Serial.read();
+    mySerial.write(c);
+  }
+}
+</code></pre>
+<hr />
+<h2 id="_6">序列埠監視器使用技巧</h2>
+<h3 id="_7">開啟方式</h3>
+<pre><code>Arduino IDE：
+• 工具 → 序列埠監視器
+• 快捷鍵：Ctrl + Shift + M
+
+設定：
+• 鮑率：要與程式中 Serial.begin() 一致
+• 行尾：選擇「換行」或「NL &amp; CR」
+</code></pre>
+<h3 id="_8">行尾設定差異</h3>
+<pre><code>行尾設定影響發送的內容：
+
+「無行尾」：
+  輸入 &quot;hello&quot; → 發送 &quot;hello&quot;
+
+「換行」(Newline, NL)：
+  輸入 &quot;hello&quot; → 發送 &quot;hello\n&quot;
+
+「回車」(Carriage Return, CR)：
+  輸入 &quot;hello&quot; → 發送 &quot;hello\r&quot;
+
+「NL &amp; CR」：
+  輸入 &quot;hello&quot; → 發送 &quot;hello\r\n&quot;
+
+建議：使用「換行」或「NL &amp; CR」
+</code></pre>
+<h3 id="_9">序列繪圖家</h3>
+<pre><code>Arduino IDE 內建的圖形化工具：
+• 工具 → 序列繪圖家
+• 快捷鍵：Ctrl + Shift + L
+
+使用方式：
+Serial.println(sensorValue);  // 單一數值
+
+多條線：
+Serial.print(value1);
+Serial.print(&quot;,&quot;);
+Serial.println(value2);  // 用逗號分隔
+</code></pre>
+<hr />
+<h2 id="_10">常見問題與解決</h2>
+<h3 id="q1">Q1：序列埠監視器顯示亂碼</h3>
+<pre><code>原因：鮑率不匹配
+
+解決：
+1. 檢查程式中的 Serial.begin(鮑率)
+2. 序列埠監視器選擇相同的鮑率
+
+常見錯誤：
+程式寫 Serial.begin(115200)
+監視器選 9600
+→ 顯示亂碼
+</code></pre>
+<h3 id="q2-com">Q2：找不到 COM 埠</h3>
+<pre><code>Windows：
+1. 開啟裝置管理員
+2. 展開「連接埠 (COM 和 LPT)」
+3. 找到 Arduino 對應的 COM 埠
+
+如果看不到：
+• 檢查 USB 線是否為數據線（非充電線）
+• 安裝 Arduino 驅動程式
+• 嘗試不同 USB 埠
+</code></pre>
+<h3 id="q3">Q3：上傳程式時顯示埠被佔用</h3>
+<pre><code>原因：序列埠監視器佔用了埠
+
+解決：
+1. 關閉序列埠監視器
+2. 上傳程式
+3. 重新開啟監視器
+
+或：Arduino IDE 2.0 會自動處理
+</code></pre>
+<h3 id="q4serialread-1">Q4：Serial.read() 讀到 -1</h3>
+<pre><code class="language-cpp">// 錯誤寫法：
+char c = Serial.read();  // 沒資料時回傳 -1
+
+// 正確寫法：
+if (Serial.available() &gt; 0) {
+  char c = Serial.read();  // 確定有資料才讀取
+}
+</code></pre>
+<h3 id="q5readstring">Q5：readString() 很慢</h3>
+<pre><code class="language-cpp">// readString() 會等待 timeout（預設 1 秒）
+
+// 解決方法 1：設定較短的 timeout
+Serial.setTimeout(100);  // 100 毫秒
+
+// 解決方法 2：使用 readStringUntil()
+String s = Serial.readStringUntil('\n');  // 讀到換行就停
+</code></pre>
+<hr />
+<h2 id="_11">序列通訊協定設計</h2>
+<h3 id="_12">簡單協定範例</h3>
+<pre><code>設計一個控制 LED 的協定：
+
+指令格式：&lt;命令&gt;&lt;參數&gt;\n
+
+範例：
+  &quot;L1\n&quot;    → LED 開
+  &quot;L0\n&quot;    → LED 關
+  &quot;B128\n&quot;  → 亮度設為 128
+  &quot;S\n&quot;     → 查詢狀態
+</code></pre>
+<h3 id="_13">實作程式</h3>
+<pre><code class="language-cpp">#define LED_PIN 9
+
+int brightness = 0;
+bool ledOn = false;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(LED_PIN, OUTPUT);
+  Serial.println(&quot;LED 控制系統就緒&quot;);
+  Serial.println(&quot;指令: L1(開) L0(關) B0-255(亮度) S(狀態)&quot;);
+}
+
+void loop() {
+  if (Serial.available() &gt; 0) {
+    char cmd = Serial.read();
+
+    switch (cmd) {
+      case 'L':
+      case 'l':
+        handleLED();
+        break;
+
+      case 'B':
+      case 'b':
+        handleBrightness();
+        break;
+
+      case 'S':
+      case 's':
+        handleStatus();
+        break;
+
+      case '\n':
+      case '\r':
+        // 忽略換行符
+        break;
+
+      default:
+        Serial.print(&quot;未知指令: &quot;);
+        Serial.println(cmd);
+    }
+  }
+}
+
+void handleLED() {
+  while (!Serial.available());  // 等待參數
+  char param = Serial.read();
+
+  if (param == '1') {
+    ledOn = true;
+    analogWrite(LED_PIN, brightness &gt; 0 ? brightness : 255);
+    Serial.println(&quot;OK: LED ON&quot;);
+  } else if (param == '0') {
+    ledOn = false;
+    analogWrite(LED_PIN, 0);
+    Serial.println(&quot;OK: LED OFF&quot;);
+  }
+}
+
+void handleBrightness() {
+  brightness = Serial.parseInt();
+  brightness = constrain(brightness, 0, 255);
+
+  if (ledOn) {
+    analogWrite(LED_PIN, brightness);
+  }
+
+  Serial.print(&quot;OK: Brightness = &quot;);
+  Serial.println(brightness);
+}
+
+void handleStatus() {
+  Serial.print(&quot;LED: &quot;);
+  Serial.print(ledOn ? &quot;ON&quot; : &quot;OFF&quot;);
+  Serial.print(&quot;, Brightness: &quot;);
+  Serial.println(brightness);
+}
+</code></pre>
+<hr />
+<h2 id="_14">實際應用情境</h2>
+<h3 id="1">1. 感測器資料記錄</h3>
+<pre><code>Arduino 定時發送資料，電腦端記錄到檔案：
+
+Arduino:
+  Serial.print(millis());
+  Serial.print(&quot;,&quot;);
+  Serial.print(temperature);
+  Serial.print(&quot;,&quot;);
+  Serial.println(humidity);
+
+Python 端：
+  寫入 CSV 檔案 → Excel 分析
+</code></pre>
+<h3 id="2-arduino">2. 電腦控制 Arduino</h3>
+<pre><code>遊戲搖桿、自動化測試、機器人控制：
+
+Python/C#/Node.js
+      ↓ 發送指令
+   Serial Port
+      ↓
+   Arduino
+      ↓ 控制
+  馬達/LED/感測器
+</code></pre>
+<h3 id="3-arduino">3. Arduino 之間通訊</h3>
+<pre><code>主控制器 ←──序列埠──→ 感測器節點
+
+適用於：
+• 分散式感測網路
+• 多 Arduino 協作
+• 模組化設計
+</code></pre>
+<h3 id="4-esp">4. 與 ESP 模組溝通</h3>
+<pre><code>Arduino UNO ←──序列埠──→ ESP-01
+
+Arduino 負責感測控制
+ESP-01 負責 WiFi 連網
+兩者透過序列埠交換資料
+</code></pre>
+<hr />
+<h2 id="_15">總結</h2>
+<table>
+<thead>
+<tr>
+<th>重點</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>基本概念</strong></td>
+<td>資料一個位元一個位元傳送</td>
+</tr>
+<tr>
+<td><strong>接線</strong></td>
+<td>TX 接 RX，RX 接 TX（交叉）</td>
+</tr>
+<tr>
+<td><strong>鮑率</strong></td>
+<td>收發兩端必須相同</td>
+</tr>
+<tr>
+<td><strong>常用函式</strong></td>
+<td><code>begin()</code>, <code>print()</code>, <code>read()</code>, <code>available()</code></td>
+</tr>
+<tr>
+<td><strong>除錯工具</strong></td>
+<td>序列埠監視器、序列繪圖家</td>
+</tr>
+<tr>
+<td><strong>進階應用</strong></td>
+<td>Arduino 對電腦、Arduino 對 Arduino</td>
+</tr>
+</tbody>
+</table>
+<p>序列通訊是 Arduino 最基礎也最重要的通訊方式，熟練掌握後可以輕鬆與各種裝置溝通！</p>
+<hr />
+<p><em>本文件適用於 Arduino 初學者</em><br />
+<em>建議搭配序列埠監視器實際操作練習</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>G3_土壤水份控制組 操作手冊</title>
+    
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1>第三組：土壤水份控制組 操作手冊</h1>
+
+<h2>任務說明</h2>
+<p>本組負責智慧溫室的<strong>土壤水份感測與灌溉控制</strong>功能，包含：</p>
+<ul>
+<li>使用土壤濕度感測器測量土壤水份</li>
+<li>使用繼電器控制抽水馬達</li>
+<li>當土壤太乾時自動澆水</li>
+<li>避免過度澆水的保護機制</li>
+</ul>
+<p>這是智慧農業自動灌溉系統的基礎！</p>
+
+<blockquote>
+<strong>💧 你知道嗎？</strong><br>
+全球農業用水佔總淡水使用量的 70%！傳統灌溉方式浪費大量水資源，而智慧灌溉系統可以根據土壤實際需求精準澆水，節省 30-50% 的用水量。透過感測器即時監控土壤濕度，不僅能節水，還能讓植物在最適合的環境中生長，避免過度澆水導致的根部腐爛問題。
+</blockquote>
+
+<hr />
+
+<h2>學習目標</h2>
+<ol>
+<li>認識土壤濕度感測器的工作原理（電阻式 vs 電容式）</li>
+<li>學習類比訊號的讀取與數值校正</li>
+<li>了解繼電器控制抽水馬達的方式</li>
+<li>實現基於土壤濕度的自動灌溉邏輯</li>
+<li>設計防止過度澆水的保護機制</li>
+<li>學習使用 <code>millis()</code> 進行非阻塞式計時</li>
+</ol>
+
+<hr />
+<h2>材料清單</h2>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>數量</th>
+<th>規格說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arduino UNO</td>
+<td>1</td>
+<td>主控板</td>
+</tr>
+<tr>
+<td>麵包板</td>
+<td>1</td>
+<td>830 孔</td>
+</tr>
+<tr>
+<td>土壤濕度感測器</td>
+<td>1</td>
+<td>電阻式或電容式</td>
+</tr>
+<tr>
+<td>繼電器模組</td>
+<td>1</td>
+<td>5V 單路繼電器</td>
+</tr>
+<tr>
+<td>LED（藍色）</td>
+<td>1</td>
+<td>模擬抽水馬達狀態</td>
+</tr>
+<tr>
+<td>LED（綠色）</td>
+<td>1</td>
+<td>土壤濕潤指示</td>
+</tr>
+<tr>
+<td>LED（紅色）</td>
+<td>1</td>
+<td>土壤乾燥警告</td>
+</tr>
+<tr>
+<td>220Ω 電阻</td>
+<td>3</td>
+<td>LED 限流用</td>
+</tr>
+<tr>
+<td>電位器</td>
+<td>1</td>
+<td>10KΩ（調整門檻用）</td>
+</tr>
+<tr>
+<td>杜邦線</td>
+<td>若干</td>
+<td>公對公、公對母</td>
+</tr>
+<tr>
+<td>USB 傳輸線</td>
+<td>1</td>
+<td>Type-A 對 Type-B</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>腳位對照表</h2>
+<table>
+<thead>
+<tr>
+<th>元件</th>
+<th>Arduino 腳位</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>土壤感測器 AO</td>
+<td>A0</td>
+<td>類比輸出</td>
+</tr>
+<tr>
+<td>土壤感測器 VCC</td>
+<td>5V</td>
+<td>電源正極</td>
+</tr>
+<tr>
+<td>土壤感測器 GND</td>
+<td>GND</td>
+<td>電源負極</td>
+</tr>
+<tr>
+<td>電位器</td>
+<td>A1</td>
+<td>調整門檻值</td>
+</tr>
+<tr>
+<td>繼電器（馬達）</td>
+<td>D7</td>
+<td>控制抽水馬達</td>
+</tr>
+<tr>
+<td>藍色 LED</td>
+<td>D9</td>
+<td>馬達運轉指示（PWM）</td>
+</tr>
+<tr>
+<td>綠色 LED</td>
+<td>D10</td>
+<td>土壤濕潤指示</td>
+</tr>
+<tr>
+<td>紅色 LED</td>
+<td>D11</td>
+<td>土壤乾燥警告</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>接線圖</h2>
+<h3>土壤濕度感測器接線</h3>
+<pre><code>土壤濕度感測器模組:
+┌─────────────┐
+│  SOIL SENS  │
+│ ┌─────────┐ │
+│ │ VCC     │─┼──→ 5V 或 D4（可控電源）
+│ │ GND     │─┼──→ GND
+│ │ AO      │─┼──→ A0（類比輸出）
+│ │ DO      │─┼──→ （數位輸出，本範例不使用）
+│ └─────────┘ │
+└─────────────┘
+     │  │
+     └──┴──→ 探針插入土壤
+
+注意：長時間通電會加速探針腐蝕
+建議只在讀取時才供電（進階做法）
+</code></pre>
+<h3>電位器接線（門檻調整）</h3>
+<pre><code>電位器（調整濕度門檻）:
+     VCC (5V)
+        │
+      ┌─┴─┐
+      │ 1 │  (腳位1: VCC)
+      │   │
+      │ 2 ├──→ A1 (腳位2: 訊號輸出)
+      │   │
+      │ 3 │  (腳位3: GND)
+      └─┬─┘
+        │
+       GND
+</code></pre>
+<h3>繼電器與 LED 接線</h3>
+<pre><code>Arduino D7 ────────→ 繼電器 IN
+Arduino 5V ────────→ 繼電器 VCC
+Arduino GND ───────→ 繼電器 GND
+
+Arduino D9 ──[220Ω]──→ 藍色LED ──→ GND（馬達狀態）
+Arduino D10 ─[220Ω]──→ 綠色LED ──→ GND（濕潤指示）
+Arduino D11 ─[220Ω]──→ 紅色LED ──→ GND（乾燥警告）
+</code></pre>
+<h3>完整接線示意圖</h3>
+<pre><code>                    ┌─────────────────────────┐
+                    │      Arduino UNO        │
+                    │                         │
+   土壤感測器 AO ───┤ A0                   5V ├───┬─── 土壤感測器 VCC
+                    │                         │   │
+      電位器訊號 ───┤ A1                  GND ├───┴─── 共地
+                    │                         │
+    繼電器(馬達) ───┤ D7                      │
+                    │                         │
+   藍LED(馬達) [R]──┤ D9                      │
+                    │                         │
+   綠LED(濕潤) [R]──┤ D10                     │
+                    │                         │
+   紅LED(乾燥) [R]──┤ D11                     │
+                    └─────────────────────────┘
+</code></pre>
+<hr />
+<h2>土壤濕度感測器類型</h2>
+<h3>1. 電阻式感測器（便宜但易腐蝕）</h3>
+<pre><code>工作原理：
+- 兩根探針測量土壤電阻
+- 水分越多，電阻越小，電壓越高
+- 價格便宜，但探針容易腐蝕
+
+特性：
+- 輸出範圍：0-1023（Arduino ADC）
+- 乾燥土壤：數值較低（200-400）
+- 濕潤土壤：數值較高（600-800）
+- 注意：不同土壤差異很大，需要校正
+</code></pre>
+<h3>2. 電容式感測器（推薦）</h3>
+<pre><code>工作原理：
+- 測量土壤介電常數變化
+- 不直接接觸水分，不易腐蝕
+- 價格略高，壽命較長
+
+特性：
+- 輸出更穩定
+- 受溫度影響較小
+- 探針壽命更長
+</code></pre>
+<hr />
+<h2>程式碼範例</h2>
+
+<h3>範例 1：土壤濕度讀取</h3>
+<p><strong>學習重點</strong>：讀取土壤濕度感測器、數值校正與百分比轉換、了解感測器特性</p>
+
+<pre><code class="language-cpp">/*
+ * 01_Soil_Sensor.ino
+ * 土壤濕度感測器基礎讀取
+ * 功能：讀取並顯示土壤濕度數值
+ */
+
+#define SOIL_PIN A0  // 土壤感測器類比腳位
+
+// 校正值（請根據實際測量調整）
+// 空氣中（完全乾燥）的讀數
+#define DRY_VALUE 1023
+// 純水中（完全濕潤）的讀數
+#define WET_VALUE 300
+
+void setup() {
+  Serial.begin(9600);
+
+  Serial.println("=====================================");
+  Serial.println("   土壤濕度感測器校正程式");
+  Serial.println("=====================================");
+  Serial.println();
+  Serial.println("請依序進行以下測試：");
+  Serial.println("1. 探針放空氣中 → 記錄「乾燥」數值");
+  Serial.println("2. 探針插入濕土 → 記錄「濕潤」數值");
+  Serial.println();
+}
+
+void loop() {
+  // 讀取原始類比值
+  int rawValue = analogRead(SOIL_PIN);
+
+  // 轉換為百分比（0% = 乾燥，100% = 濕潤）
+  // 使用 map() 函數進行線性映射
+  int moisturePercent = map(rawValue, DRY_VALUE, WET_VALUE, 0, 100);
+
+  // 限制範圍在 0-100%
+  moisturePercent = constrain(moisturePercent, 0, 100);
+
+  // 顯示結果
+  Serial.print("原始值: ");
+  Serial.print(rawValue);
+  Serial.print("  |  濕度: ");
+  Serial.print(moisturePercent);
+  Serial.print("%  |  狀態: ");
+
+  // 狀態判斷
+  if (moisturePercent < 20) {
+    Serial.println("🔴 非常乾燥！");
+  } else if (moisturePercent < 40) {
+    Serial.println("🟠 偏乾");
+  } else if (moisturePercent < 60) {
+    Serial.println("🟢 適中");
+  } else if (moisturePercent < 80) {
+    Serial.println("🔵 濕潤");
+  } else {
+    Serial.println("💧 非常濕潤");
+  }
+
+  delay(1000);
+}
+</code></pre>
+
+<blockquote>
+<strong>🔍 程式解說</strong><br>
+• <code>analogRead(pin)</code>：讀取類比腳位，回傳 0-1023 的數值<br>
+• <code>map(value, fromLow, fromHigh, toLow, toHigh)</code>：將數值從一個範圍映射到另一個範圍<br>
+• <code>constrain(value, min, max)</code>：限制數值在指定範圍內<br>
+• 校正值需要根據實際感測器和土壤類型調整！
+</blockquote>
+
+<hr />
+
+<h3>範例 2：乾濕度狀態指示</h3>
+<p><strong>學習重點</strong>：多 LED 狀態顯示、門檻判斷邏輯、電位器調整門檻</p>
+
+<pre><code class="language-cpp">/*
+ * 02_Moisture_Indicator.ino
+ * 土壤濕度狀態指示燈
+ * 功能：使用三色 LED 顯示土壤狀態，可用電位器調整門檻
+ */
+
+#define SOIL_PIN A0      // 土壤感測器
+#define POT_PIN A1       // 電位器（調整門檻）
+#define LED_RED 11       // 紅色 LED（乾燥警告）
+#define LED_GREEN 10     // 綠色 LED（濕度適中）
+#define LED_BLUE 9       // 藍色 LED（水泵運轉）
+
+// 校正值
+#define DRY_VALUE 1023
+#define WET_VALUE 300
+
+void setup() {
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+  pinMode(LED_BLUE, OUTPUT);
+
+  Serial.begin(9600);
+  Serial.println("土壤濕度狀態指示系統");
+  Serial.println("轉動電位器可調整乾燥門檻值");
+}
+
+void loop() {
+  // 讀取土壤濕度
+  int rawSoil = analogRead(SOIL_PIN);
+  int moisture = map(rawSoil, DRY_VALUE, WET_VALUE, 0, 100);
+  moisture = constrain(moisture, 0, 100);
+
+  // 讀取電位器設定的門檻值（20-60%）
+  int potValue = analogRead(POT_PIN);
+  int threshold = map(potValue, 0, 1023, 20, 60);
+
+  // 關閉所有 LED
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_GREEN, LOW);
+  digitalWrite(LED_BLUE, LOW);
+
+  // 根據濕度點亮對應 LED
+  if (moisture < threshold) {
+    // 土壤太乾 - 紅燈警告
+    digitalWrite(LED_RED, HIGH);
+    Serial.print("🔴 乾燥警告！");
+  } else if (moisture < threshold + 20) {
+    // 濕度適中 - 綠燈
+    digitalWrite(LED_GREEN, HIGH);
+    Serial.print("🟢 濕度適中 ");
+  } else {
+    // 土壤濕潤 - 藍燈
+    digitalWrite(LED_BLUE, HIGH);
+    Serial.print("🔵 土壤濕潤 ");
+  }
+
+  Serial.print(" | 濕度: ");
+  Serial.print(moisture);
+  Serial.print("% | 門檻: ");
+  Serial.print(threshold);
+  Serial.println("%");
+
+  delay(500);
+}
+</code></pre>
+
+<blockquote>
+<strong>💡 電位器應用</strong><br>
+使用電位器讓使用者可以即時調整門檻值，不需要重新上傳程式。這在實際應用中非常實用，因為不同植物對土壤濕度的需求不同。
+</blockquote>
+
+<hr />
+
+<h3>範例 3：繼電器控制抽水馬達</h3>
+<p><strong>學習重點</strong>：繼電器控制、模擬抽水馬達開關、高/低電平觸發</p>
+
+<pre><code class="language-cpp">/*
+ * 03_Pump_Control.ino
+ * 繼電器控制抽水馬達
+ * 功能：根據土壤濕度自動控制水泵
+ */
+
+#define SOIL_PIN A0
+#define RELAY_PUMP 7
+#define LED_PUMP 9
+
+// 校正值
+#define DRY_VALUE 1023
+#define WET_VALUE 300
+
+// 濕度門檻
+#define MOISTURE_LOW 30   // 低於此值開始澆水
+#define MOISTURE_HIGH 60  // 高於此值停止澆水
+
+// 繼電器觸發電平
+#define RELAY_ACTIVE_HIGH true
+
+bool pumpRunning = false;
+
+void setup() {
+  pinMode(RELAY_PUMP, OUTPUT);
+  pinMode(LED_PUMP, OUTPUT);
+
+  // 初始狀態：關閉
+  setPump(false);
+
+  Serial.begin(9600);
+  Serial.println("=====================================");
+  Serial.println("     抽水馬達控制系統");
+  Serial.println("=====================================");
+  Serial.print("開始澆水: 濕度 < ");
+  Serial.print(MOISTURE_LOW);
+  Serial.println("%");
+  Serial.print("停止澆水: 濕度 > ");
+  Serial.print(MOISTURE_HIGH);
+  Serial.println("%");
+  Serial.println("=====================================");
+}
+
+void loop() {
+  // 讀取土壤濕度
+  int rawValue = analogRead(SOIL_PIN);
+  int moisture = map(rawValue, DRY_VALUE, WET_VALUE, 0, 100);
+  moisture = constrain(moisture, 0, 100);
+
+  // 遲滯控制邏輯
+  if (moisture < MOISTURE_LOW && !pumpRunning) {
+    // 土壤太乾，開始澆水
+    pumpRunning = true;
+    setPump(true);
+    Serial.print("💧 濕度 ");
+    Serial.print(moisture);
+    Serial.println("% → 開始澆水！");
+  }
+  else if (moisture > MOISTURE_HIGH && pumpRunning) {
+    // 土壤夠濕，停止澆水
+    pumpRunning = false;
+    setPump(false);
+    Serial.print("✅ 濕度 ");
+    Serial.print(moisture);
+    Serial.println("% → 停止澆水");
+  }
+  else {
+    // 維持原狀態
+    Serial.print("📊 濕度: ");
+    Serial.print(moisture);
+    Serial.print("% | 水泵: ");
+    Serial.println(pumpRunning ? "運轉中 💧" : "停止 ⚫");
+  }
+
+  delay(1000);
+}
+
+// 控制水泵
+void setPump(bool on) {
+  if (RELAY_ACTIVE_HIGH) {
+    digitalWrite(RELAY_PUMP, on ? HIGH : LOW);
+  } else {
+    digitalWrite(RELAY_PUMP, on ? LOW : HIGH);
+  }
+  digitalWrite(LED_PUMP, on ? HIGH : LOW);
+}
+</code></pre>
+
+<hr />
+
+<h3>範例 4：防過度澆水保護</h3>
+<p><strong>學習重點</strong>：澆水時間限制、澆水間隔保護、millis() 時間管理</p>
+
+<pre><code class="language-cpp">/*
+ * 04_Safe_Watering.ino
+ * 安全澆水系統（含保護機制）
+ * 功能：
+ *   - 最大澆水時間限制
+ *   - 澆水冷卻間隔
+ *   - 防止水泵過度運轉
+ */
+
+#define SOIL_PIN A0
+#define RELAY_PUMP 7
+#define LED_PUMP 9
+#define LED_WARNING 11
+
+// 校正值
+#define DRY_VALUE 1023
+#define WET_VALUE 300
+
+// 濕度門檻
+#define MOISTURE_LOW 30
+#define MOISTURE_HIGH 60
+
+// 安全限制（毫秒）
+#define MAX_PUMP_TIME 30000      // 最大澆水時間：30 秒
+#define COOLDOWN_TIME 60000      // 冷卻時間：60 秒
+#define RELAY_ACTIVE_HIGH true
+
+// 狀態變數
+bool pumpRunning = false;
+unsigned long pumpStartTime = 0;
+unsigned long lastPumpTime = 0;
+bool inCooldown = false;
+
+void setup() {
+  pinMode(RELAY_PUMP, OUTPUT);
+  pinMode(LED_PUMP, OUTPUT);
+  pinMode(LED_WARNING, OUTPUT);
+
+  setPump(false);
+  digitalWrite(LED_WARNING, LOW);
+
+  Serial.begin(9600);
+  Serial.println("=====================================");
+  Serial.println("   安全澆水系統 v1.0");
+  Serial.println("=====================================");
+  Serial.print("最大澆水時間: ");
+  Serial.print(MAX_PUMP_TIME / 1000);
+  Serial.println(" 秒");
+  Serial.print("冷卻間隔: ");
+  Serial.print(COOLDOWN_TIME / 1000);
+  Serial.println(" 秒");
+  Serial.println("=====================================");
+}
+
+void loop() {
+  unsigned long currentTime = millis();
+
+  // 讀取土壤濕度
+  int rawValue = analogRead(SOIL_PIN);
+  int moisture = map(rawValue, DRY_VALUE, WET_VALUE, 0, 100);
+  moisture = constrain(moisture, 0, 100);
+
+  // 檢查冷卻時間
+  if (inCooldown) {
+    unsigned long elapsed = currentTime - lastPumpTime;
+    if (elapsed >= COOLDOWN_TIME) {
+      inCooldown = false;
+      digitalWrite(LED_WARNING, LOW);
+      Serial.println("⏰ 冷卻完成，可以再次澆水");
+    } else {
+      // 顯示剩餘冷卻時間
+      unsigned long remaining = (COOLDOWN_TIME - elapsed) / 1000;
+      Serial.print("⏳ 冷卻中... 剩餘 ");
+      Serial.print(remaining);
+      Serial.println(" 秒");
+      delay(1000);
+      return;
+    }
+  }
+
+  // 檢查是否超過最大澆水時間
+  if (pumpRunning) {
+    unsigned long pumpDuration = currentTime - pumpStartTime;
+    if (pumpDuration >= MAX_PUMP_TIME) {
+      // 強制停止
+      pumpRunning = false;
+      setPump(false);
+      inCooldown = true;
+      lastPumpTime = currentTime;
+      digitalWrite(LED_WARNING, HIGH);
+      Serial.println("⚠️ 達到最大澆水時間，強制停止！");
+      Serial.println("   進入冷卻階段...");
+      return;
+    }
+  }
+
+  // 澆水控制邏輯
+  if (moisture < MOISTURE_LOW && !pumpRunning && !inCooldown) {
+    pumpRunning = true;
+    pumpStartTime = currentTime;
+    setPump(true);
+    Serial.println("💧 開始澆水");
+  }
+  else if (moisture > MOISTURE_HIGH && pumpRunning) {
+    pumpRunning = false;
+    setPump(false);
+    inCooldown = true;
+    lastPumpTime = currentTime;
+    Serial.println("✅ 土壤濕潤，停止澆水");
+    Serial.println("   進入冷卻階段...");
+  }
+
+  // 顯示狀態
+  Serial.print("濕度: ");
+  Serial.print(moisture);
+  Serial.print("% | 水泵: ");
+  if (pumpRunning) {
+    unsigned long runTime = (currentTime - pumpStartTime) / 1000;
+    Serial.print("運轉 ");
+    Serial.print(runTime);
+    Serial.println(" 秒");
+  } else {
+    Serial.println("停止");
+  }
+
+  delay(1000);
+}
+
+void setPump(bool on) {
+  if (RELAY_ACTIVE_HIGH) {
+    digitalWrite(RELAY_PUMP, on ? HIGH : LOW);
+  } else {
+    digitalWrite(RELAY_PUMP, on ? LOW : HIGH);
+  }
+  digitalWrite(LED_PUMP, on ? HIGH : LOW);
+}
+</code></pre>
+
+<blockquote>
+<strong>⚠️ 為什麼需要保護機制？</strong><br>
+• <strong>最大澆水時間</strong>：防止感測器故障導致水泵持續運轉<br>
+• <strong>冷卻間隔</strong>：讓水分有時間滲透到土壤深處，避免表面積水<br>
+• <code>millis()</code> 函式回傳程式啟動後的毫秒數，用於非阻塞式計時
+</blockquote>
+
+<hr />
+
+<h3>範例 5：完整自動灌溉系統</h3>
+<p><strong>學習重點</strong>：整合所有功能、可調門檻值、完整狀態顯示</p>
+
+<pre><code class="language-cpp">/*
+ * 05_Auto_Irrigation.ino
+ * 完整自動灌溉系統
+ * 功能：
+ *   - 自動偵測土壤濕度
+ *   - 電位器調整門檻
+ *   - 三色 LED 狀態指示
+ *   - 安全保護機制
+ *   - 即時狀態顯示
+ */
+
+#define SOIL_PIN A0
+#define POT_PIN A1
+#define RELAY_PUMP 7
+#define LED_PUMP 9      // 藍色 - 水泵運轉
+#define LED_OK 10       // 綠色 - 濕度正常
+#define LED_DRY 11      // 紅色 - 土壤乾燥
+
+// 校正值（請根據實際情況調整）
+#define DRY_VALUE 1023
+#define WET_VALUE 300
+
+// 安全限制
+#define MAX_PUMP_TIME 30000   // 30 秒
+#define COOLDOWN_TIME 60000   // 60 秒
+#define RELAY_ACTIVE_HIGH true
+
+// 多次讀取平均
+#define NUM_SAMPLES 10
+
+// 狀態變數
+bool pumpRunning = false;
+unsigned long pumpStartTime = 0;
+unsigned long lastPumpTime = 0;
+bool inCooldown = false;
+
+void setup() {
+  pinMode(RELAY_PUMP, OUTPUT);
+  pinMode(LED_PUMP, OUTPUT);
+  pinMode(LED_OK, OUTPUT);
+  pinMode(LED_DRY, OUTPUT);
+
+  setPump(false);
+
+  Serial.begin(9600);
+  printHeader();
+}
+
+void loop() {
+  unsigned long currentTime = millis();
+
+  // 讀取並平均多次取樣
+  int moisture = readMoistureAverage();
+
+  // 讀取電位器設定的門檻（30-50%）
+  int potValue = analogRead(POT_PIN);
+  int thresholdLow = map(potValue, 0, 1023, 20, 40);
+  int thresholdHigh = thresholdLow + 25;
+
+  // 更新 LED 狀態
+  updateLEDs(moisture, thresholdLow);
+
+  // 處理冷卻狀態
+  if (inCooldown) {
+    if (currentTime - lastPumpTime >= COOLDOWN_TIME) {
+      inCooldown = false;
+      Serial.println("⏰ 冷卻完成");
+    } else {
+      printStatus(moisture, thresholdLow, "冷卻中");
+      delay(1000);
+      return;
+    }
+  }
+
+  // 檢查澆水時間限制
+  if (pumpRunning && (currentTime - pumpStartTime >= MAX_PUMP_TIME)) {
+    stopPump("達到時間限制");
+    inCooldown = true;
+    lastPumpTime = currentTime;
+    return;
+  }
+
+  // 自動澆水邏輯
+  if (moisture < thresholdLow && !pumpRunning && !inCooldown) {
+    startPump();
+    pumpStartTime = currentTime;
+  }
+  else if (moisture >= thresholdHigh && pumpRunning) {
+    stopPump("土壤已濕潤");
+    inCooldown = true;
+    lastPumpTime = currentTime;
+  }
+
+  // 顯示狀態
+  String status = pumpRunning ? "澆水中" : "監控中";
+  printStatus(moisture, thresholdLow, status);
+
+  delay(1000);
+}
+
+// 多次取樣平均
+int readMoistureAverage() {
+  long total = 0;
+  for (int i = 0; i < NUM_SAMPLES; i++) {
+    total += analogRead(SOIL_PIN);
+    delay(10);
+  }
+  int rawValue = total / NUM_SAMPLES;
+  int moisture = map(rawValue, DRY_VALUE, WET_VALUE, 0, 100);
+  return constrain(moisture, 0, 100);
+}
+
+// 更新 LED 狀態
+void updateLEDs(int moisture, int threshold) {
+  digitalWrite(LED_DRY, LOW);
+  digitalWrite(LED_OK, LOW);
+
+  if (moisture < threshold) {
+    digitalWrite(LED_DRY, HIGH);  // 紅燈
+  } else {
+    digitalWrite(LED_OK, HIGH);   // 綠燈
+  }
+
+  digitalWrite(LED_PUMP, pumpRunning ? HIGH : LOW);
+}
+
+// 開始澆水
+void startPump() {
+  pumpRunning = true;
+  setPump(true);
+  Serial.println("💧 開始澆水");
+}
+
+// 停止澆水
+void stopPump(const char* reason) {
+  pumpRunning = false;
+  setPump(false);
+  Serial.print("⚫ 停止澆水 - ");
+  Serial.println(reason);
+}
+
+// 控制水泵
+void setPump(bool on) {
+  if (RELAY_ACTIVE_HIGH) {
+    digitalWrite(RELAY_PUMP, on ? HIGH : LOW);
+  } else {
+    digitalWrite(RELAY_PUMP, on ? LOW : HIGH);
+  }
+}
+
+// 顯示標題
+void printHeader() {
+  Serial.println();
+  Serial.println("╔═══════════════════════════════════════════════╗");
+  Serial.println("║     智慧溫室 - 自動灌溉系統 v1.0              ║");
+  Serial.println("╠═══════════════════════════════════════════════╣");
+  Serial.println("║  轉動電位器可調整澆水門檻                     ║");
+  Serial.println("║  紅燈=乾燥 綠燈=正常 藍燈=澆水中              ║");
+  Serial.println("╚═══════════════════════════════════════════════╝");
+  Serial.println();
+}
+
+// 顯示狀態
+void printStatus(int moisture, int threshold, String status) {
+  Serial.print("濕度: ");
+  if (moisture < 10) Serial.print(" ");
+  Serial.print(moisture);
+  Serial.print("% | 門檻: ");
+  Serial.print(threshold);
+  Serial.print("% | 水泵: ");
+  Serial.print(pumpRunning ? "ON " : "OFF");
+  Serial.print(" | ");
+  Serial.println(status);
+}
+</code></pre>
+
+<blockquote>
+<strong>🔧 校正步驟</strong><br>
+1. 將探針放在空氣中，記錄序列埠顯示的「原始值」→ 設為 <code>DRY_VALUE</code><br>
+2. 將探針插入濕潤的土壤中，記錄「原始值」→ 設為 <code>WET_VALUE</code><br>
+3. 根據種植的植物調整電位器設定適當的門檻值
+</blockquote>
+
+<hr />
+
+<h3>範例 6：感測器電源節能控制（進階）</h3>
+<p><strong>學習重點</strong>：減少探針腐蝕、節省電力、延長感測器壽命</p>
+
+<pre><code class="language-cpp">/*
+ * 06_Power_Saving.ino
+ * 節能型土壤濕度感測
+ * 功能：只在讀取時供電給感測器，延長探針壽命
+ */
+
+#define SOIL_PIN A0
+#define SENSOR_POWER 4   // 用數位腳位控制感測器電源
+#define LED_STATUS 13
+
+// 校正值
+#define DRY_VALUE 1023
+#define WET_VALUE 300
+
+// 讀取間隔（毫秒）
+#define READ_INTERVAL 5000  // 每 5 秒讀取一次
+
+unsigned long lastReadTime = 0;
+
+void setup() {
+  pinMode(SENSOR_POWER, OUTPUT);
+  pinMode(LED_STATUS, OUTPUT);
+
+  digitalWrite(SENSOR_POWER, LOW);  // 初始關閉
+
+  Serial.begin(9600);
+  Serial.println("節能型土壤濕度感測器");
+  Serial.println("只在讀取時供電，延長探針壽命");
+}
+
+void loop() {
+  if (millis() - lastReadTime >= READ_INTERVAL) {
+    lastReadTime = millis();
+
+    // 開啟感測器電源
+    digitalWrite(SENSOR_POWER, HIGH);
+    digitalWrite(LED_STATUS, HIGH);
+
+    // 等待電壓穩定
+    delay(100);
+
+    // 讀取數值（多次取樣）
+    long total = 0;
+    for (int i = 0; i < 10; i++) {
+      total += analogRead(SOIL_PIN);
+      delay(10);
+    }
+    int rawValue = total / 10;
+
+    // 關閉感測器電源
+    digitalWrite(SENSOR_POWER, LOW);
+    digitalWrite(LED_STATUS, LOW);
+
+    // 計算濕度百分比
+    int moisture = map(rawValue, DRY_VALUE, WET_VALUE, 0, 100);
+    moisture = constrain(moisture, 0, 100);
+
+    // 顯示結果
+    Serial.print("土壤濕度: ");
+    Serial.print(moisture);
+    Serial.println("%");
+  }
+}
+</code></pre>
+
+<blockquote>
+<strong>💡 為什麼要控制電源？</strong><br>
+電阻式土壤濕度感測器的探針在長時間通電情況下會發生電解腐蝕，導致壽命縮短。透過只在需要讀取時才供電，可以大幅延長探針壽命！<br><br>
+將感測器的 VCC 接到數位腳位（如 D4），透過 <code>digitalWrite()</code> 控制電源開關。
+</blockquote>
+
+<hr />
+<h2>操作步驟</h2>
+<h3>步驟 1：感測器校正</h3>
+<ol>
+<li>連接土壤濕度感測器</li>
+<li>上傳 <code>01_soil_sensor.ino</code></li>
+<li>開啟序列埠監視器</li>
+<li>記錄「完全乾燥」時的數值（空氣中）</li>
+<li>將探針插入濕土，記錄「濕潤」時的數值</li>
+<li>這些數值用於後續程式校正</li>
+</ol>
+<h3>步驟 2：狀態指示測試</h3>
+<ol>
+<li>連接三顆 LED 和電位器</li>
+<li>上傳 <code>02_moisture_indicator.ino</code></li>
+<li>轉動電位器調整門檻</li>
+<li>觀察不同濕度下的 LED 狀態</li>
+</ol>
+<h3>步驟 3：馬達控制測試</h3>
+<ol>
+<li>連接繼電器模組</li>
+<li>上傳 <code>03_pump_control.ino</code></li>
+<li>用藍色 LED 模擬馬達狀態</li>
+<li>確認繼電器正確動作</li>
+</ol>
+<h3>步驟 4：安全機制測試</h3>
+<ol>
+<li>上傳 <code>04_safe_watering.ino</code></li>
+<li>測試最大澆水時間限制</li>
+<li>測試澆水冷卻間隔</li>
+<li>觀察保護機制運作</li>
+</ol>
+<h3>步驟 5：完整系統整合</h3>
+<ol>
+<li>上傳 <code>05_auto_irrigation.ino</code></li>
+<li>調整適當的門檻值</li>
+<li>模擬不同濕度情況</li>
+<li>驗證自動澆水邏輯</li>
+</ol>
+<hr />
+<h2>常見問題</h2>
+<h3>Q1：感測器數值跳動很大</h3>
+<ul>
+<li>土壤濕度不均勻</li>
+<li>探針接觸不良</li>
+<li>可以多次讀取取平均值</li>
+<li>電源不穩定</li>
+</ul>
+<h3>Q2：數值與預期相反</h3>
+<ul>
+<li>不同感測器輸出邏輯可能不同</li>
+<li>電阻式：乾燥=低值，濕潤=高值</li>
+<li>某些電容式：乾燥=高值，濕潤=低值</li>
+<li>確認你的感測器特性</li>
+</ul>
+<h3>Q3：探針腐蝕問題</h3>
+<ul>
+<li>電阻式探針長時間通電會加速腐蝕</li>
+<li>進階做法：只在讀取時供電</li>
+<li>建議改用電容式感測器</li>
+</ul>
+<h3>Q4：馬達/繼電器沒反應</h3>
+<ul>
+<li>檢查繼電器電源</li>
+<li>確認觸發電平（高/低）</li>
+<li>確認接線正確</li>
+</ul>
+<hr />
+<h2>知識補充</h2>
+
+<h3>🌱 各類植物的土壤濕度需求</h3>
+<p>不同類型的植物對土壤水分的需求差異很大：</p>
+
+<table>
+<thead>
+<tr>
+<th>植物類型</th>
+<th>代表作物</th>
+<th>最適土壤濕度</th>
+<th>澆水頻率</th>
+<th>特殊需求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>多肉植物</strong></td>
+<td>仙人掌、蘆薈、多肉</td>
+<td>20-40%</td>
+<td>每 1-2 週</td>
+<td>怕過濕，需排水良好</td>
+</tr>
+<tr>
+<td><strong>香草類</strong></td>
+<td>薄荷、羅勒、迷迭香</td>
+<td>40-60%</td>
+<td>每 2-3 天</td>
+<td>喜歡略乾再澆水</td>
+</tr>
+<tr>
+<td><strong>葉菜類</strong></td>
+<td>萵苣、菠菜、白菜</td>
+<td>60-75%</td>
+<td>每天或隔天</td>
+<td>需保持濕潤</td>
+</tr>
+<tr>
+<td><strong>果菜類</strong></td>
+<td>番茄、辣椒、茄子</td>
+<td>50-70%</td>
+<td>每 1-2 天</td>
+<td>結果期需水量增加</td>
+</tr>
+<tr>
+<td><strong>瓜果類</strong></td>
+<td>小黃瓜、南瓜、西瓜</td>
+<td>65-80%</td>
+<td>每天</td>
+<td>生長期需大量水</td>
+</tr>
+<tr>
+<td><strong>根莖類</strong></td>
+<td>蘿蔔、紅蘿蔔、馬鈴薯</td>
+<td>50-65%</td>
+<td>每 2-3 天</td>
+<td>避免水分劇烈變化</td>
+</tr>
+<tr>
+<td><strong>草莓</strong></td>
+<td>草莓</td>
+<td>60-75%</td>
+<td>每天</td>
+<td>開花結果期需穩定供水</td>
+</tr>
+<tr>
+<td><strong>蘭花</strong></td>
+<td>蝴蝶蘭、文心蘭</td>
+<td>40-60%</td>
+<td>每週 1-2 次</td>
+<td>根部需透氣，怕積水</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<strong>💡 澆水小技巧</strong><br>
+• 早晨澆水最佳，讓植物有一整天吸收水分<br>
+• 避免傍晚澆水，夜間高濕容易滋生病菌<br>
+• 澆水要澆透，讓水分達到根部<br>
+• 寧可乾一點再澆，也不要天天少量澆
+</blockquote>
+
+<hr />
+
+<h3>💧 土壤濕度與植物需求示意圖</h3>
+<pre><code>濕度範圍與植物狀態：
+
+0%                    50%                   100%
+├──────────────────────┼──────────────────────┤
+│                      │                      │
+│  🏜️ 極度乾燥        │    適中區域          │  💦 過度濕潤
+│  植物枯萎            │    植物健康生長      │  根部缺氧腐爛
+│                      │                      │
+└──────────────────────┴──────────────────────┘
+      ↑                      ↑                    ↑
+   需要澆水              理想狀態              停止澆水
+
+不同植物的理想範圍：
+┌─────────────────────────────────────────────────────────┐
+│ 多肉    [████░░░░░░░░░░░░░░░░░░░░░] 20-40%              │
+│ 香草    [░░░░░░████████░░░░░░░░░░░] 40-60%              │
+│ 蔬菜    [░░░░░░░░░░████████████░░░] 55-75%              │
+│ 瓜果    [░░░░░░░░░░░░░░████████████] 65-85%             │
+└─────────────────────────────────────────────────────────┘
+</code></pre>
+<h3>🔬 電阻式 vs 電容式感測器詳細比較</h3>
+
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>電阻式感測器</th>
+<th>電容式感測器</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工作原理</td>
+<td>測量土壤電阻變化</td>
+<td>測量土壤介電常數</td>
+</tr>
+<tr>
+<td>探針材質</td>
+<td>裸露金屬（易腐蝕）</td>
+<td>覆蓋防護層（耐用）</td>
+</tr>
+<tr>
+<td>使用壽命</td>
+<td>數週至數月</td>
+<td>數月至數年</td>
+</tr>
+<tr>
+<td>精度穩定性</td>
+<td>較低（隨腐蝕下降）</td>
+<td>較高（穩定）</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>約 20-50 元</td>
+<td>約 80-150 元</td>
+</tr>
+<tr>
+<td>電源需求</td>
+<td>建議間歇供電</td>
+<td>可持續供電</td>
+</tr>
+<tr>
+<td>受溫度影響</td>
+<td>較大</td>
+<td>較小</td>
+</tr>
+<tr>
+<td>推薦場景</td>
+<td>短期實驗、教學</td>
+<td>長期監控、專案</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<strong>🔧 選購建議</strong><br>
+• 教學和短期實驗：電阻式即可，價格便宜<br>
+• 長期專案或戶外使用：建議電容式，壽命長<br>
+• 注意：購買時確認輸出是「類比」還是「數位」
+</blockquote>
+
+<hr />
+
+<h3>🚿 灌溉方式比較</h3>
+
+<table>
+<thead>
+<tr>
+<th>灌溉方式</th>
+<th>原理</th>
+<th>優點</th>
+<th>缺點</th>
+<th>適用場景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>滴灌</strong></td>
+<td>水滴直接送到根部</td>
+<td>最省水（效率90%+）</td>
+<td>管路易堵塞</td>
+<td>溫室、精密農業</td>
+</tr>
+<tr>
+<td><strong>噴灌</strong></td>
+<td>模擬下雨</td>
+<td>覆蓋面積大</td>
+<td>葉片易生病</td>
+<td>草坪、大田</td>
+</tr>
+<tr>
+<td><strong>漫灌</strong></td>
+<td>大量水覆蓋區域</td>
+<td>簡單便宜</td>
+<td>最浪費水</td>
+<td>傳統農田</td>
+</tr>
+<tr>
+<td><strong>地下灌溉</strong></td>
+<td>水從土下滲透</td>
+<td>減少蒸發</td>
+<td>安裝複雜</td>
+<td>高價值作物</td>
+</tr>
+</tbody>
+</table>
+
+<pre><code>滴灌系統示意圖：
+
+  水源（水箱/水管）
+        │
+        ▼
+    ┌───────┐
+    │ 過濾器 │ ← 過濾雜質防堵塞
+    └───┬───┘
+        │
+    ┌───▼───┐
+    │ 水泵  │ ← 由繼電器控制
+    └───┬───┘
+        │
+  ══════╪══════════════════  主管
+        ├────┬────┬────┬───  支管
+        │    │    │    │
+        💧   💧   💧   💧     滴頭（每株植物）
+        🌱   🌱   🌱   🌱
+</code></pre>
+
+<hr />
+
+<h3>⚠️ 防止過度澆水的重要性</h3>
+
+<pre><code>過度澆水的問題：
+
+  ┌─────────────────────────────────────────────────┐
+  │                   過度澆水                       │
+  │                      ↓                          │
+  │  ┌──────────────────────────────────────────┐   │
+  │  │ 1. 根部缺氧                               │   │
+  │  │    土壤孔隙被水填滿，根無法呼吸           │   │
+  │  │                    ↓                      │   │
+  │  │ 2. 根部腐爛                               │   │
+  │  │    厭氧細菌繁殖，根部組織死亡             │   │
+  │  │                    ↓                      │   │
+  │  │ 3. 養分流失                               │   │
+  │  │    水溶性養分被沖走                       │   │
+  │  │                    ↓                      │   │
+  │  │ 4. 真菌病害                               │   │
+  │  │    高濕環境利於病原菌生長                 │   │
+  │  │                    ↓                      │   │
+  │  │ 5. 植物死亡                               │   │
+  │  └──────────────────────────────────────────┘   │
+  └─────────────────────────────────────────────────┘
+
+保護機制設計：
+
+  ✅ 最大澆水時間限制（防止水泵持續運轉）
+  ✅ 澆水冷卻間隔（讓水分滲透到深層）
+  ✅ 濕度上限判斷（避免土壤過濕）
+  ✅ 多點感測確認（防止單一感測器故障）
+</code></pre>
+
+<hr />
+
+<h2>📋 實作檢查清單</h2>
+<p>完成專案前，請依照以下清單確認所有項目：</p>
+
+<h3>硬體檢查</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>確認內容</th>
+<th>狀態</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>土壤感測器接線</td>
+<td>VCC、GND、AO 三線正確連接</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>感測器探針</td>
+<td>探針完全插入土壤中</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>電位器接線</td>
+<td>VCC、GND、訊號線正確連接到 A1</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>繼電器接線</td>
+<td>VCC、GND、IN 正確連接到 D7</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>LED 狀態燈</td>
+<td>三顆 LED 都有串接 220Ω 電阻</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>共地確認</td>
+<td>所有模組的 GND 都連接到 Arduino GND</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>繼電器類型</td>
+<td>確認是高電平或低電平觸發</td>
+<td>☐</td>
+</tr>
+</tbody>
+</table>
+
+<h3>軟體檢查</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>確認內容</th>
+<th>狀態</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>校正值設定</td>
+<td>DRY_VALUE 和 WET_VALUE 已校正</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>腳位定義</td>
+<td>程式中的腳位與實際接線相符</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>序列埠設定</td>
+<td>監視器鮑率設為 9600</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>門檻值設定</td>
+<td>濕度門檻值符合植物需求</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>安全機制</td>
+<td>最大澆水時間和冷卻間隔已設定</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>繼電器設定</td>
+<td>RELAY_ACTIVE_HIGH 設定正確</td>
+<td>☐</td>
+</tr>
+</tbody>
+</table>
+
+<h3>功能測試</h3>
+<table>
+<thead>
+<tr>
+<th>測試項目</th>
+<th>測試方法</th>
+<th>預期結果</th>
+<th>狀態</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>濕度讀取</td>
+<td>觀察序列埠輸出</td>
+<td>顯示合理的濕度百分比</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>校正確認</td>
+<td>探針放空氣中/濕土中</td>
+<td>顯示 0%（乾）和接近 100%（濕）</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>LED 指示</td>
+<td>改變土壤濕度</td>
+<td>紅燈（乾）→綠燈（適中）→藍燈（濕）</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>電位器功能</td>
+<td>轉動電位器</td>
+<td>門檻值隨之改變</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>繼電器動作</td>
+<td>讓土壤變乾</td>
+<td>繼電器吸合、有喀嗒聲</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>安全停止</td>
+<td>等待超過最大澆水時間</td>
+<td>水泵自動停止</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>冷卻機制</td>
+<td>澆水停止後立即嘗試再澆</td>
+<td>顯示「冷卻中」不啟動</td>
+<td>☐</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<h2>🚀 進階挑戰</h2>
+
+<h3>挑戰 1：多區域灌溉</h3>
+<p>使用多個感測器獨立控制不同區域的澆水。</p>
+<pre><code class="language-cpp">// 定義多個區域
+#define ZONE1_SENSOR A0
+#define ZONE1_PUMP 7
+#define ZONE2_SENSOR A1
+#define ZONE2_PUMP 8
+#define ZONE3_SENSOR A2
+#define ZONE3_PUMP 9
+
+// 每個區域獨立判斷
+void loop() {
+  checkZone(ZONE1_SENSOR, ZONE1_PUMP, "區域1");
+  checkZone(ZONE2_SENSOR, ZONE2_PUMP, "區域2");
+  checkZone(ZONE3_SENSOR, ZONE3_PUMP, "區域3");
+  delay(1000);
+}
+
+void checkZone(int sensorPin, int pumpPin, const char* name) {
+  int moisture = readMoisture(sensorPin);
+  if (moisture < THRESHOLD) {
+    digitalWrite(pumpPin, HIGH);
+    Serial.print(name);
+    Serial.println(" 澆水中");
+  }
+}
+</code></pre>
+
+<h3>挑戰 2：定時灌溉（搭配 RTC 模組）</h3>
+<p>使用 DS3231 RTC 模組實現定時澆水功能。</p>
+<pre><code class="language-cpp">// 使用 RTClib 函式庫
+#include &lt;RTClib.h&gt;
+RTC_DS3231 rtc;
+
+// 設定澆水時間
+int waterHour = 6;    // 早上 6 點
+int waterMinute = 0;
+
+void loop() {
+  DateTime now = rtc.now();
+
+  // 每天固定時間檢查並澆水
+  if (now.hour() == waterHour && now.minute() == waterMinute) {
+    if (readMoisture() < THRESHOLD) {
+      startWatering();
+    }
+    delay(60000);  // 等一分鐘避免重複觸發
+  }
+}
+</code></pre>
+
+<h3>挑戰 3：蓄水池水位監測</h3>
+<p>加入超音波感測器監測水箱水位，避免乾抽。</p>
+<pre><code class="language-cpp">#include &lt;NewPing.h&gt;
+
+#define TRIGGER_PIN 12
+#define ECHO_PIN 11
+#define MAX_DISTANCE 200
+
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
+
+// 水箱高度（公分）
+#define TANK_HEIGHT 30
+#define MIN_WATER_LEVEL 5  // 低於 5cm 停止抽水
+
+int getWaterLevel() {
+  int distance = sonar.ping_cm();
+  int level = TANK_HEIGHT - distance;
+  return level;
+}
+
+void checkBeforePump() {
+  if (getWaterLevel() < MIN_WATER_LEVEL) {
+    Serial.println("⚠️ 水位過低，無法澆水！");
+    return;
+  }
+  // 正常澆水
+}
+</code></pre>
+
+<h3>挑戰 4：MQTT 遠端監控</h3>
+<p>透過網路即時傳送土壤濕度資料。</p>
+<pre><code class="language-cpp">// 與第六組合作的資料格式
+// 發送 JSON：
+// {
+//   "zone": 1,
+//   "moisture": 45,
+//   "pump_status": false,
+//   "last_watered": "2024-01-15T08:30:00"
+// }
+
+// 簡易序列格式（透過 ESP8266 傳送）
+Serial.print("SOIL:");
+Serial.print(moisture);
+Serial.print(",PUMP:");
+Serial.println(pumpRunning ? "1" : "0");
+</code></pre>
+
+<h3>挑戰 5：智慧排程（考慮天氣因素）</h3>
+<p>結合天氣資訊調整澆水策略。</p>
+<pre><code class="language-cpp">// 概念：接收天氣預報資訊，調整澆水量
+
+// 下雨天：完全不澆水
+// 陰天：正常澆水
+// 晴天：增加 20% 澆水量
+// 高溫日（>35°C）：增加 50% 澆水量
+
+float weatherMultiplier = 1.0;  // 從網路接收
+
+void adjustWatering() {
+  unsigned long adjustedTime = MAX_PUMP_TIME * weatherMultiplier;
+  // 使用調整後的時間進行澆水
+}
+</code></pre>
+
+<hr />
+
+<h2>🔗 與其他組別的整合</h2>
+
+<table>
+<thead>
+<tr>
+<th>整合對象</th>
+<th>整合內容</th>
+<th>資料交換方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>第一組（光線控制）</strong></td>
+<td>根據光照強度調整澆水策略</td>
+<td>共用變數</td>
+</tr>
+<tr>
+<td><strong>第二組（溫溼度控制）</strong></td>
+<td>空氣濕度低時增加澆水頻率</td>
+<td>透過函式呼叫</td>
+</tr>
+<tr>
+<td><strong>第四組（螢幕顯示）</strong></td>
+<td>顯示土壤濕度和澆水狀態</td>
+<td>傳遞數值給 LCD</td>
+</tr>
+<tr>
+<td><strong>第五組（遠端遙控）</strong></td>
+<td>手動控制澆水開關</td>
+<td>紅外線指令</td>
+</tr>
+<tr>
+<td><strong>第六組（網路控制）</strong></td>
+<td>遠端監控和控制灌溉</td>
+<td>MQTT/JSON</td>
+</tr>
+</tbody>
+</table>
+
+<h4>資料整合範例</h4>
+<pre><code class="language-cpp">// 與第二組整合：根據空氣濕度調整土壤澆水門檻
+extern float airHumidity;  // 來自第二組
+
+void adjustThreshold() {
+  if (airHumidity < 40) {
+    // 空氣乾燥，土壤也容易變乾
+    thresholdLow = 40;  // 提高門檻，更早澆水
+  } else if (airHumidity > 70) {
+    // 空氣潮濕，土壤蒸發慢
+    thresholdLow = 25;  // 降低門檻，延遲澆水
+  } else {
+    thresholdLow = 30;  // 正常門檻
+  }
+}
+</code></pre>
+
+<blockquote>
+<strong>🤔 思考題</strong><br>
+1. 如果天氣預報明天會下雨，今天還需要澆水嗎？<br>
+2. 不同植物混種時，如何設計分區灌溉系統？<br>
+3. 當水箱水位不足時，應該如何通知使用者？<br>
+4. 如何在手機上即時查看土壤濕度並遠端控制澆水？
+</blockquote>
+
+<hr />
+
+<h2>📚 相關文件連結</h2>
+<p>以下文件可幫助你更深入學習相關知識：</p>
+
+<h3>基礎知識</h3>
+<ul>
+<li><a href="關於Arduino程式常用語法.html">Arduino 程式常用語法</a> - 基礎語法複習</li>
+<li><a href="關於analogRead與analogWrite.html">analogRead 與 analogWrite</a> - 類比訊號讀寫</li>
+<li><a href="關於Arduino電子元件介紹.html">Arduino 電子元件介紹</a> - 認識各種元件</li>
+</ul>
+
+<h3>進階技術</h3>
+<ul>
+<li><a href="關於繼電器控制方式.html">繼電器控制方式詳解</a> - 深入了解繼電器</li>
+<li><a href="關於millis函數.html">millis() 函數詳解</a> - 非阻塞式計時</li>
+<li><a href="關於MQTT介紹.html">MQTT 通訊協定介紹</a> - 物聯網通訊基礎</li>
+</ul>
+
+<h3>其他分組手冊</h3>
+<ul>
+<li><a href="G1_光線控制組_操作手冊.html">G1 光線控制組</a> - 光照感測與 LED 控制</li>
+<li><a href="G2_溫溼度控制組_操作手冊.html">G2 溫溼度控制組</a> - 溫溼度感測與調節</li>
+<li><a href="G4_螢幕顯示組_操作手冊.html">G4 螢幕顯示組</a> - LCD 顯示整合</li>
+<li><a href="G5_遠端遙控組_操作手冊.html">G5 遠端遙控組</a> - 紅外線遙控</li>
+<li><a href="G6_網路控制組_操作手冊.html">G6 網路控制組</a> - WiFi 與 MQTT</li>
+</ul>
+
+<hr />
+
+<p style="text-align: center; color: #81e6d9; margin-top: 40px;">
+🌱 智慧農業專題課程 - 第三組：土壤水份控制 🌱<br>
+<small>精準灌溉，節水愛地球！</small>
+</p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

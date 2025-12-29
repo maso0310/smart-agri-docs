@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於衛星與無人機影像如何處理散射干擾</title>
+
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        .info-box { background-color: rgba(79, 209, 197, 0.1); border: 1px solid #4fd1c5; border-radius: 8px; padding: 15px; margin: 15px 0; }
+        .warning-box { background-color: rgba(237, 137, 54, 0.1); border: 1px solid #ed8936; border-radius: 8px; padding: 15px; margin: 15px 0; }
+
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* ===== 淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 { color: #2b6cb0 !important; border-bottom-color: #4fd1c5 !important; }
+        [data-theme="light"] h2 { color: #2c5282 !important; border-bottom-color: #90cdf4 !important; }
+        [data-theme="light"] h3 { color: #2b6cb0 !important; }
+        [data-theme="light"] h4 { color: #3182ce !important; }
+        [data-theme="light"] p, [data-theme="light"] li, [data-theme="light"] td { color: #4a5568 !important; }
+        [data-theme="light"] th { background-color: rgba(79, 209, 197, 0.25) !important; color: #2d3748 !important; }
+        [data-theme="light"] table { background-color: rgba(255, 255, 255, 0.9) !important; }
+        [data-theme="light"] tr:nth-child(even) { background-color: rgba(79, 209, 197, 0.08) !important; }
+        [data-theme="light"] tr:hover { background-color: rgba(79, 209, 197, 0.15) !important; }
+        [data-theme="light"] code { background-color: rgba(79, 209, 197, 0.2) !important; color: #2b6cb0 !important; }
+        [data-theme="light"] pre { background-color: #f7fafc !important; border: 1px solid rgba(79, 209, 197, 0.3) !important; }
+        [data-theme="light"] pre code { background-color: transparent !important; color: #2d3748 !important; }
+        [data-theme="light"] blockquote { background-color: rgba(79, 209, 197, 0.15) !important; color: #2d3748 !important; }
+        [data-theme="light"] a { color: #3182ce !important; }
+        [data-theme="light"] strong { color: #d69e2e !important; }
+        [data-theme="light"] hr { border-top-color: rgba(79, 209, 197, 0.3) !important; }
+
+        .formula-box {
+            background-color: rgba(99, 179, 237, 0.1);
+            border: 1px solid #63b3ed;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        [data-theme="light"] .formula-box {
+            background-color: rgba(99, 179, 237, 0.15) !important;
+        }
+    </style>
+
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+    <h1>關於衛星與無人機影像如何處理散射干擾</h1>
+    <p>在遙測影像擷取過程中，電磁波在穿越大氣層時會受到<strong>散射</strong>（Scattering）的影響，導致影像品質下降、色彩失真、對比度降低。了解散射的原理與校正方法，是遙測影像分析的重要基礎。</p>
+    <hr />
+
+    <h2>一、什麼是大氣散射</h2>
+    <h3>基本概念</h3>
+    <p>當電磁波（光）通過大氣層時，會與大氣中的<strong>氣體分子</strong>和<strong>懸浮微粒</strong>（氣膠、水滴、灰塵等）發生交互作用，使光的傳播方向改變，這就是<strong>大氣散射</strong>。</p>
+
+    <div class="info-box">
+        <strong>散射對遙測影像的影響：</strong>
+        <ul>
+            <li>降低影像對比度和清晰度</li>
+            <li>產生色偏（尤其是藍色調增加）</li>
+            <li>干擾地表真實反射率的測量</li>
+            <li>影響植被指數（如 NDVI）的準確性</li>
+        </ul>
+    </div>
+
+    <h3>散射的物理過程</h3>
+    <p>感測器接收到的輻射能量包含三個部分：</p>
+    <ol>
+        <li><strong>路徑輻射（Path Radiance）</strong>：大氣散射直接進入感測器的光</li>
+        <li><strong>地表反射輻射</strong>：經大氣衰減後的地表反射光</li>
+        <li><strong>鄰近效應（Adjacency Effect）</strong>：周圍地物反射後再散射進入視場的光</li>
+    </ol>
+
+    <div class="formula-box">
+        <strong>感測器接收輻射 = 路徑輻射 + 衰減後的地表輻射 + 鄰近效應</strong><br>
+        L<sub>sensor</sub> = L<sub>path</sub> + T × L<sub>surface</sub> + L<sub>adjacent</sub>
+    </div>
+    <hr />
+
+    <h2>二、散射的類型</h2>
+    <p>根據散射粒子大小與電磁波波長的關係，散射主要分為三種類型：</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>散射類型</th>
+                <th>粒子大小</th>
+                <th>波長依賴性</th>
+                <th>主要影響波段</th>
+                <th>常見情境</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>瑞利散射</strong><br>（Rayleigh）</td>
+                <td>遠小於波長<br>（< 0.1λ）</td>
+                <td>與 λ<sup>-4</sup> 成正比<br>（短波強烈散射）</td>
+                <td>藍光、紫外線</td>
+                <td>晴朗天空、高空大氣</td>
+            </tr>
+            <tr>
+                <td><strong>米氏散射</strong><br>（Mie）</td>
+                <td>與波長相近<br>（0.1λ ~ 10λ）</td>
+                <td>與 λ<sup>-1</sup> ~ λ<sup>-2</sup> 成正比</td>
+                <td>可見光全波段</td>
+                <td>霧霾、煙塵、水滴</td>
+            </tr>
+            <tr>
+                <td><strong>非選擇性散射</strong><br>（Non-selective）</td>
+                <td>遠大於波長<br>（> 10λ）</td>
+                <td>與波長無關<br>（各波段均勻散射）</td>
+                <td>所有可見光</td>
+                <td>雲、霧、大水滴</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>瑞利散射 - 天空為什麼是藍色的？</h3>
+    <p>瑞利散射強度與波長的四次方成反比：</p>
+    <div class="formula-box">
+        I ∝ 1/λ<sup>4</sup>
+    </div>
+    <p>這意味著：</p>
+    <ul>
+        <li><strong>藍光（~450nm）</strong>的散射強度是<strong>紅光（~650nm）</strong>的約 <code>(650/450)^4 ≈ 4.4</code> 倍</li>
+        <li>因此晴天時天空呈現藍色</li>
+        <li>遙測影像中會出現「藍色霧霾」效應</li>
+    </ul>
+
+    <h3>米氏散射 - 霧霾天的元兇</h3>
+    <p>當大氣中存在氣膠（aerosol）、煙塵、細懸浮微粒（PM2.5）時：</p>
+    <ul>
+        <li>散射發生在整個可見光波段</li>
+        <li>影像整體對比度下降</li>
+        <li>遠處物體變得模糊</li>
+        <li>在農業遙測中會嚴重影響植被指數計算</li>
+    </ul>
+
+    <div class="warning-box">
+        <strong>注意：</strong>台灣常見的霧霾天氣（尤其是秋冬季節），主要是米氏散射造成，會嚴重影響無人機和衛星影像品質。建議選擇能見度良好的日子進行航拍。
+    </div>
+    <hr />
+
+    <h2>三、散射對農業遙測的影響</h2>
+
+    <h3>對植被指數的影響</h3>
+    <p>以 NDVI 為例，散射會造成：</p>
+    <table>
+        <thead>
+            <tr>
+                <th>影響</th>
+                <th>原因</th>
+                <th>結果</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>紅光波段值偏高</td>
+                <td>路徑輻射增加紅光反射值</td>
+                <td>NDVI 被低估</td>
+            </tr>
+            <tr>
+                <td>近紅外波段值偏低</td>
+                <td>大氣吸收與衰減</td>
+                <td>NDVI 被低估</td>
+            </tr>
+            <tr>
+                <td>時序不一致</td>
+                <td>不同日期大氣條件不同</td>
+                <td>難以進行變化偵測</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <blockquote>
+        <strong>實例：</strong>未經大氣校正的 NDVI 可能比實際值低 0.1~0.2，這在作物健康監測中可能導致誤判。
+    </blockquote>
+
+    <h3>不同平台的散射影響程度</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>平台</th>
+                <th>飛行高度</th>
+                <th>大氣路徑長度</th>
+                <th>散射影響</th>
+                <th>校正必要性</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>高軌衛星</td>
+                <td>36,000 km</td>
+                <td>非常長</td>
+                <td>嚴重</td>
+                <td>必須校正</td>
+            </tr>
+            <tr>
+                <td>低軌衛星</td>
+                <td>400-800 km</td>
+                <td>長</td>
+                <td>顯著</td>
+                <td>建議校正</td>
+            </tr>
+            <tr>
+                <td>載人飛機</td>
+                <td>1-10 km</td>
+                <td>中等</td>
+                <td>中等</td>
+                <td>視情況</td>
+            </tr>
+            <tr>
+                <td>無人機</td>
+                <td>50-500 m</td>
+                <td>短</td>
+                <td>較輕微</td>
+                <td>通常可忽略</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>四、散射校正方法</h2>
+
+    <h3>方法一：暗物體減法（Dark Object Subtraction, DOS）</h3>
+    <p>最簡單的大氣校正方法，適合快速處理：</p>
+
+    <h4>原理</h4>
+    <ul>
+        <li>假設影像中存在「絕對黑」的物體（如深水、陰影）</li>
+        <li>這些物體的反射率理論上為 0</li>
+        <li>實際測得的值即為大氣散射造成的路徑輻射</li>
+        <li>將整張影像減去這個最小值</li>
+    </ul>
+
+    <pre><code class="language-python">import numpy as np
+import rasterio
+
+def dark_object_subtraction(image_path, output_path):
+    """
+    暗物體減法大氣校正
+    """
+    with rasterio.open(image_path) as src:
+        # 讀取所有波段
+        bands = src.read()
+        profile = src.profile
+
+        corrected_bands = []
+        for i, band in enumerate(bands):
+            # 找出每個波段的最小值（暗物體值）
+            # 使用第1百分位數避免異常值影響
+            dark_value = np.percentile(band[band > 0], 1)
+
+            # 減去暗物體值
+            corrected = band.astype(float) - dark_value
+            corrected = np.clip(corrected, 0, None)  # 確保非負
+
+            corrected_bands.append(corrected)
+            print(f"Band {i+1}: 暗物體值 = {dark_value:.2f}")
+
+        # 寫入校正後影像
+        corrected_array = np.array(corrected_bands)
+        with rasterio.open(output_path, 'w', **profile) as dst:
+            dst.write(corrected_array.astype(profile['dtype']))
+
+    return output_path
+
+# 使用範例
+# dark_object_subtraction('raw_image.tif', 'corrected_image.tif')
+</code></pre>
+
+    <div class="info-box">
+        <strong>DOS 的改進版本：</strong>
+        <ul>
+            <li><strong>DOS1</strong>：直接使用最小值</li>
+            <li><strong>DOS2</strong>：考慮 1% 大氣透過率</li>
+            <li><strong>DOS3</strong>：加入瑞利散射估算</li>
+            <li><strong>DOS4 (COST)</strong>：考慮太陽天頂角的餘弦校正</li>
+        </ul>
+    </div>
+
+    <h3>方法二：直方圖匹配法</h3>
+    <p>利用已知參考影像校正目標影像：</p>
+
+    <pre><code class="language-python">import numpy as np
+from skimage import exposure
+
+def histogram_matching(source, reference):
+    """
+    直方圖匹配校正
+    source: 待校正影像
+    reference: 參考影像（已校正或地面真值）
+    """
+    matched = exposure.match_histograms(source, reference, channel_axis=0)
+    return matched
+
+# 對於多時序影像，可以選擇一張大氣條件最好的作為參考
+</code></pre>
+
+    <h3>方法三：6S 輻射傳輸模型</h3>
+    <p><strong>6S（Second Simulation of the Satellite Signal in the Solar Spectrum）</strong>是專業的大氣校正模型：</p>
+
+    <h4>輸入參數</h4>
+    <ul>
+        <li>幾何參數：太陽天頂角、方位角、感測器角度</li>
+        <li>大氣模型：熱帶、中緯度夏季/冬季等</li>
+        <li>氣膠模型：大陸型、海洋型、城市型等</li>
+        <li>光譜參數：波段響應函數</li>
+        <li>地表參數：地表反射率估計</li>
+    </ul>
+
+    <pre><code class="language-python"># 使用 Py6S 進行大氣校正
+from Py6S import *
+
+def atmospheric_correction_6s(band_radiance, wavelength, geometry, atmos_profile):
+    """
+    使用 6S 模型進行大氣校正
+    """
+    # 建立 6S 物件
+    s = SixS()
+
+    # 設定幾何參數
+    s.geometry = Geometry.User()
+    s.geometry.solar_z = geometry['solar_zenith']
+    s.geometry.solar_a = geometry['solar_azimuth']
+    s.geometry.view_z = geometry['view_zenith']
+    s.geometry.view_a = geometry['view_azimuth']
+
+    # 設定大氣模型
+    s.atmos_profile = AtmosProfile.PredefinedType(atmos_profile)
+
+    # 設定氣膠模型
+    s.aero_profile = AeroProfile.PredefinedType(AeroProfile.Continental)
+
+    # 設定波長
+    s.wavelength = Wavelength(wavelength)
+
+    # 執行模擬
+    s.run()
+
+    # 取得校正係數
+    xa = s.outputs.coef_xa
+    xb = s.outputs.coef_xb
+    xc = s.outputs.coef_xc
+
+    # 計算地表反射率
+    y = xa * band_radiance - xb
+    surface_reflectance = y / (1 + xc * y)
+
+    return surface_reflectance
+</code></pre>
+
+    <h3>方法四：FLAASH 模型</h3>
+    <p><strong>FLAASH（Fast Line-of-sight Atmospheric Analysis of Spectral Hypercubes）</strong>是常用於商業軟體（如 ENVI）的大氣校正演算法：</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>特點</th>
+                <th>說明</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>基於 MODTRAN</td>
+                <td>使用精確的輻射傳輸計算</td>
+            </tr>
+            <tr>
+                <td>水氣反演</td>
+                <td>可從影像本身估算水氣含量</td>
+            </tr>
+            <tr>
+                <td>氣膠反演</td>
+                <td>可從暗目標估算氣膠光學厚度</td>
+            </tr>
+            <tr>
+                <td>鄰近效應校正</td>
+                <td>考慮周圍地物的散射影響</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>五、衛星影像的大氣校正</h2>
+
+    <h3>使用已校正產品</h3>
+    <p>許多衛星資料提供者已提供大氣校正後的產品：</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>衛星</th>
+                <th>原始產品</th>
+                <th>校正後產品</th>
+                <th>說明</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Sentinel-2</td>
+                <td>Level-1C (TOA)</td>
+                <td>Level-2A (BOA)</td>
+                <td>使用 Sen2Cor 處理</td>
+            </tr>
+            <tr>
+                <td>Landsat 8/9</td>
+                <td>Level-1 (DN)</td>
+                <td>Level-2 (SR)</td>
+                <td>使用 LaSRC 處理</td>
+            </tr>
+            <tr>
+                <td>MODIS</td>
+                <td>MOD02 (輻射值)</td>
+                <td>MOD09 (地表反射率)</td>
+                <td>官方處理</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Sentinel-2 大氣校正範例</h3>
+    <pre><code class="language-python">import ee
+
+# 使用 Google Earth Engine 取得已校正的 Sentinel-2 影像
+ee.Initialize()
+
+# Level-2A 產品已經過大氣校正
+s2_sr = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED') \
+    .filterDate('2024-01-01', '2024-06-01') \
+    .filterBounds(ee.Geometry.Point([120.5, 23.5])) \
+    .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 10))
+
+# 取得地表反射率（已除以 10000 的縮放因子）
+def scale_bands(image):
+    optical = image.select('B.*').divide(10000)
+    return image.addBands(optical, overwrite=True)
+
+s2_scaled = s2_sr.map(scale_bands)
+
+# 現在可以直接計算 NDVI
+def add_ndvi(image):
+    ndvi = image.normalizedDifference(['B8', 'B4']).rename('NDVI')
+    return image.addBands(ndvi)
+
+s2_ndvi = s2_scaled.map(add_ndvi)
+print("影像數量:", s2_ndvi.size().getInfo())
+</code></pre>
+
+    <h3>自行校正 Landsat 影像</h3>
+    <pre><code class="language-python">import numpy as np
+import rasterio
+from datetime import datetime
+import math
+
+def landsat_toa_to_sr(dn_image, metadata):
+    """
+    Landsat DN 值轉換為地表反射率（簡化版）
+
+    步驟：
+    1. DN -> 輻射值 (Radiance)
+    2. 輻射值 -> 大氣頂反射率 (TOA Reflectance)
+    3. TOA -> 地表反射率 (Surface Reflectance) - 使用 DOS
+    """
+
+    # 從 metadata 取得校正參數
+    mult = metadata['REFLECTANCE_MULT']  # 乘數
+    add = metadata['REFLECTANCE_ADD']    # 加數
+    sun_elevation = metadata['SUN_ELEVATION']
+
+    # DN -> TOA 反射率
+    toa = mult * dn_image + add
+
+    # 太陽天頂角校正
+    sun_zenith = 90 - sun_elevation
+    toa_corrected = toa / math.cos(math.radians(sun_zenith))
+
+    # DOS 大氣校正
+    dark_value = np.percentile(toa_corrected[toa_corrected > 0], 1)
+    surface_reflectance = toa_corrected - dark_value
+    surface_reflectance = np.clip(surface_reflectance, 0, 1)
+
+    return surface_reflectance
+</code></pre>
+    <hr />
+
+    <h2>六、無人機影像的散射處理</h2>
+
+    <h3>無人機的優勢</h3>
+    <p>相較於衛星，無人機受大氣散射影響較小：</p>
+    <ul>
+        <li><strong>低飛行高度</strong>：大氣路徑短，散射影響小</li>
+        <li><strong>彈性時間</strong>：可選擇天氣最佳時拍攝</li>
+        <li><strong>輻射校正板</strong>：可放置地面參考板進行校正</li>
+    </ul>
+
+    <h3>仍需注意的情況</h3>
+    <div class="warning-box">
+        <strong>以下情況無人機影像仍需考慮大氣影響：</strong>
+        <ul>
+            <li>霧霾嚴重的日子（能見度 < 5km）</li>
+            <li>飛行高度較高（> 300m）</li>
+            <li>需要與衛星資料比對時</li>
+            <li>多時序分析需要一致性時</li>
+        </ul>
+    </div>
+
+    <h3>輻射校正板方法</h3>
+    <p>使用已知反射率的標準板進行經驗線校正：</p>
+
+    <pre><code class="language-python">import numpy as np
+from scipy import stats
+
+def empirical_line_correction(image, reference_panels):
+    """
+    經驗線校正法
+
+    reference_panels: list of dicts
+        [{'dn_value': 數位值, 'reflectance': 已知反射率}, ...]
+    """
+
+    # 收集參考點資料
+    dn_values = [p['dn_value'] for p in reference_panels]
+    reflectances = [p['reflectance'] for p in reference_panels]
+
+    # 線性迴歸求校正係數
+    slope, intercept, r_value, p_value, std_err = stats.linregress(
+        dn_values, reflectances
+    )
+
+    print(f"校正方程式: 反射率 = {slope:.6f} × DN + {intercept:.6f}")
+    print(f"R² = {r_value**2:.4f}")
+
+    # 套用校正
+    corrected = slope * image + intercept
+    corrected = np.clip(corrected, 0, 1)
+
+    return corrected
+
+# 使用範例
+panels = [
+    {'dn_value': 50, 'reflectance': 0.04},   # 黑色板
+    {'dn_value': 120, 'reflectance': 0.23},  # 灰色板
+    {'dn_value': 200, 'reflectance': 0.48},  # 白色板
+]
+# corrected_image = empirical_line_correction(raw_image, panels)
+</code></pre>
+
+    <h3>DLS（Downwelling Light Sensor）校正</h3>
+    <p>部分多光譜相機（如 MicaSense）配備入射光感測器，可補償光照變化：</p>
+
+    <pre><code class="language-python">def dls_correction(raw_image, dls_irradiance, panel_irradiance, panel_reflectance):
+    """
+    使用 DLS 資料進行輻射校正
+
+    raw_image: 原始影像數位值
+    dls_irradiance: 拍攝時的入射光強度
+    panel_irradiance: 校正板拍攝時的入射光強度
+    panel_reflectance: 校正板已知反射率
+    """
+
+    # 計算校正係數
+    calibration_factor = panel_reflectance / (panel_raw_dn / panel_irradiance)
+
+    # 校正影像
+    reflectance = calibration_factor * (raw_image / dls_irradiance)
+
+    return reflectance
+</code></pre>
+    <hr />
+
+    <h2>七、實務建議</h2>
+
+    <h3>衛星影像處理流程</h3>
+    <ol>
+        <li><strong>優先使用官方 L2 產品</strong>：Sentinel-2 Level-2A、Landsat Level-2</li>
+        <li><strong>檢查品質遮罩</strong>：排除雲、雲影、異常像元</li>
+        <li><strong>若需自行校正</strong>：DOS 方法簡單快速，適合教學；專業研究建議使用 6S 或 FLAASH</li>
+        <li><strong>驗證校正結果</strong>：與地面實測或其他來源比對</li>
+    </ol>
+
+    <h3>無人機影像處理流程</h3>
+    <ol>
+        <li><strong>選擇好天氣</strong>：晴朗、能見度佳、光照穩定</li>
+        <li><strong>放置校正板</strong>：至少黑、灰、白三階</li>
+        <li><strong>一致的拍攝條件</strong>：相同時段、相同參數</li>
+        <li><strong>經驗線校正</strong>：使用校正板進行反射率轉換</li>
+    </ol>
+
+    <h3>軟體工具推薦</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>軟體</th>
+                <th>類型</th>
+                <th>大氣校正功能</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>QGIS + SCP</td>
+                <td>免費</td>
+                <td>DOS、FLAASH（需 ENVI）</td>
+            </tr>
+            <tr>
+                <td>SNAP (ESA)</td>
+                <td>免費</td>
+                <td>Sen2Cor（Sentinel-2 專用）</td>
+            </tr>
+            <tr>
+                <td>Google Earth Engine</td>
+                <td>免費</td>
+                <td>直接使用 L2 產品</td>
+            </tr>
+            <tr>
+                <td>ENVI</td>
+                <td>商業</td>
+                <td>FLAASH、QUAC</td>
+            </tr>
+            <tr>
+                <td>Pix4Dmapper</td>
+                <td>商業</td>
+                <td>輻射校正、反射率轉換</td>
+            </tr>
+            <tr>
+                <td>Agisoft Metashape</td>
+                <td>商業</td>
+                <td>基本輻射校正</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>八、完整校正範例</h2>
+
+    <pre><code class="language-python">"""
+完整的遙測影像大氣校正流程範例
+"""
+
+import numpy as np
+import rasterio
+from rasterio.plot import show
+import matplotlib.pyplot as plt
+
+class AtmosphericCorrection:
+    """大氣校正處理類別"""
+
+    def __init__(self, image_path):
+        self.image_path = image_path
+        self.load_image()
+
+    def load_image(self):
+        """載入影像"""
+        with rasterio.open(self.image_path) as src:
+            self.bands = src.read()
+            self.profile = src.profile
+            self.band_count = src.count
+            print(f"載入影像: {self.band_count} 個波段")
+
+    def dos_correction(self, percentile=1):
+        """
+        暗物體減法校正
+        """
+        corrected = []
+        for i, band in enumerate(self.bands):
+            valid_pixels = band[band > 0]
+            dark_value = np.percentile(valid_pixels, percentile)
+
+            band_corrected = band.astype(float) - dark_value
+            band_corrected = np.clip(band_corrected, 0, None)
+            corrected.append(band_corrected)
+
+            print(f"Band {i+1}: 暗物體值 = {dark_value:.2f}")
+
+        self.corrected_bands = np.array(corrected)
+        return self.corrected_bands
+
+    def calculate_ndvi(self, red_band_idx=2, nir_band_idx=3):
+        """
+        計算 NDVI
+        使用校正後的波段（若已校正）
+        """
+        bands = self.corrected_bands if hasattr(self, 'corrected_bands') else self.bands
+
+        red = bands[red_band_idx].astype(float)
+        nir = bands[nir_band_idx].astype(float)
+
+        # 避免除以零
+        np.seterr(divide='ignore', invalid='ignore')
+        ndvi = (nir - red) / (nir + red)
+        ndvi = np.where(np.isfinite(ndvi), ndvi, 0)
+
+        return ndvi
+
+    def compare_correction(self, red_idx=2, nir_idx=3):
+        """
+        比較校正前後的 NDVI
+        """
+        # 校正前 NDVI
+        red_raw = self.bands[red_idx].astype(float)
+        nir_raw = self.bands[nir_idx].astype(float)
+        ndvi_raw = (nir_raw - red_raw) / (nir_raw + red_raw + 1e-10)
+
+        # 執行校正
+        self.dos_correction()
+
+        # 校正後 NDVI
+        ndvi_corrected = self.calculate_ndvi(red_idx, nir_idx)
+
+        # 視覺化比較
+        fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+        im1 = axes[0].imshow(ndvi_raw, cmap='RdYlGn', vmin=-0.2, vmax=0.8)
+        axes[0].set_title('NDVI (未校正)')
+        plt.colorbar(im1, ax=axes[0])
+
+        im2 = axes[1].imshow(ndvi_corrected, cmap='RdYlGn', vmin=-0.2, vmax=0.8)
+        axes[1].set_title('NDVI (DOS 校正後)')
+        plt.colorbar(im2, ax=axes[1])
+
+        diff = ndvi_corrected - ndvi_raw
+        im3 = axes[2].imshow(diff, cmap='coolwarm', vmin=-0.2, vmax=0.2)
+        axes[2].set_title('差異 (校正後 - 校正前)')
+        plt.colorbar(im3, ax=axes[2])
+
+        plt.tight_layout()
+        plt.savefig('ndvi_comparison.png', dpi=150)
+        plt.show()
+
+        # 統計比較
+        print(f"\n統計比較:")
+        print(f"未校正 NDVI: 平均={np.nanmean(ndvi_raw):.3f}, 標準差={np.nanstd(ndvi_raw):.3f}")
+        print(f"校正後 NDVI: 平均={np.nanmean(ndvi_corrected):.3f}, 標準差={np.nanstd(ndvi_corrected):.3f}")
+        print(f"平均差異: {np.nanmean(diff):.3f}")
+
+    def save_corrected(self, output_path):
+        """儲存校正後影像"""
+        if not hasattr(self, 'corrected_bands'):
+            raise ValueError("請先執行校正")
+
+        with rasterio.open(output_path, 'w', **self.profile) as dst:
+            dst.write(self.corrected_bands.astype(self.profile['dtype']))
+
+        print(f"已儲存校正後影像: {output_path}")
+
+
+# 使用範例
+if __name__ == "__main__":
+    # 建立處理物件
+    # processor = AtmosphericCorrection('multispectral_image.tif')
+
+    # 比較校正效果
+    # processor.compare_correction()
+
+    # 儲存校正後影像
+    # processor.save_corrected('corrected_image.tif')
+
+    print("大氣校正範例程式碼準備完成")
+</code></pre>
+    <hr />
+
+    <h2>九、總結</h2>
+    <div class="info-box">
+        <h4>重點回顧</h4>
+        <ul>
+            <li><strong>散射原理</strong>：瑞利散射（藍光強）、米氏散射（霧霾）、非選擇性散射（雲）</li>
+            <li><strong>影響</strong>：降低對比度、色偏、干擾植被指數計算</li>
+            <li><strong>校正方法</strong>：DOS（簡單）、6S/FLAASH（精確）、經驗線法（無人機）</li>
+            <li><strong>實務建議</strong>：優先使用官方 L2 產品，無人機使用校正板</li>
+        </ul>
+    </div>
+
+    <blockquote>
+        正確的大氣校正是遙測定量分析的基礎。選擇適合的校正方法，取決於影像來源、應用需求和可用資源。對於教學和一般應用，DOS 方法已足夠；專業研究則建議使用輻射傳輸模型。
+    </blockquote>
+    <hr />
+
+    <p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

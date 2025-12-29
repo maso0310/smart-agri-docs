@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於電源供應</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="_1">關於電源供應</h1>
+<h2 id="_2">前言：為什麼電源很重要？</h2>
+<p>電源就像是電子專案的「血液」，供應不當會導致：<br />
+- 🔥 元件燒毀（電壓過高）<br />
+- 😵 系統不穩定（電流不足）<br />
+- 🔄 重複重啟（電壓不穩）<br />
+- 💀 永久損壞（極性接反）</p>
+<p>學會正確的電源供應，是做好專案的第一步！</p>
+<hr />
+<h2 id="_3">一、電源基礎知識</h2>
+<h3 id="voltage-">電壓（Voltage）- 推力</h3>
+<pre><code>電壓就像「水壓」：
+
+高水塔                        低水塔
+  ║                            ║
+  ║                            ║
+  ╠════╗                       ╠══╗
+  ║    ║                       ║  ║
+  ║    ║                       ║  ║
+  ║    ▼                       ║  ▼
+  ║  強水流                    ║ 弱水流
+
+水塔越高 → 水壓越大 → 水流越強
+電壓越高 → 推力越大 → 電流越強（在相同電阻下）
+
+單位：伏特（V, Volt）
+常見電壓：1.5V、3.3V、5V、9V、12V、24V
+</code></pre>
+<h3 id="current-">電流（Current）- 流量</h3>
+<pre><code>電流就像「水流量」：
+
+粗水管                        細水管
+═══════════                   ───────
+    ████████                     ██
+    ████████ → 大流量            ██ → 小流量
+    ████████                     ██
+
+電流 = 單位時間內通過的電荷量
+用電設備越多/越耗電 → 需要的電流越大
+
+單位：安培（A, Ampere）
+常用：毫安培（mA）= 0.001A
+
+常見電流需求：
+• LED：20mA
+• Arduino UNO：50mA
+• 伺服馬達：100-500mA
+• WiFi 模組：200-300mA
+</code></pre>
+<h3 id="power-">功率（Power）- 總能量</h3>
+<pre><code>功率 = 電壓 × 電流
+P = V × I
+
+範例：
+5V × 2A = 10W（10 瓦特）
+
+這表示：
+• 電源能提供的最大能力
+• 設備消耗的能量
+
+功率不足的症狀：
+• 電壓下降
+• 系統重啟
+• 發熱異常
+</code></pre>
+<h3 id="_4">三者關係圖</h3>
+<pre><code>               ┌─────────────────────────────────────┐
+               │         歐姆定律 &amp; 功率公式         │
+               ├─────────────────────────────────────┤
+               │                                     │
+               │         V = I × R                   │
+               │        (電壓=電流×電阻)             │
+               │                                     │
+               │         P = V × I                   │
+               │        (功率=電壓×電流)             │
+               │                                     │
+               │         P = I² × R                  │
+               │         P = V² / R                  │
+               │                                     │
+               └─────────────────────────────────────┘
+
+實際應用：
+想點亮一顆 LED（2V, 20mA）用 5V 電源
+需要多大的電阻？
+
+R = (5V - 2V) / 0.02A = 150Ω
+</code></pre>
+<hr />
+<h2 id="_5">二、常見電源類型</h2>
+<h3 id="1-usb-5v">1. USB 電源（5V）</h3>
+<pre><code>USB 電源規格：
+┌────────────────────────────────────────┐
+│  類型          │  電壓  │  最大電流    │
+├────────────────┼────────┼──────────────┤
+│  USB 2.0      │  5V    │  500mA       │
+│  USB 3.0      │  5V    │  900mA       │
+│  USB 充電器   │  5V    │  1A-3A       │
+│  USB PD       │  5-20V │  最高 5A     │
+└────────────────────────────────────────┘
+
+適用場景：
+✓ Arduino UNO/Nano 開發測試
+✓ 少量 LED、簡單感測器
+✓ 低功耗專案
+
+不適用：
+✗ 多顆伺服馬達
+✗ 大量 LED 燈條
+✗ 大電流設備
+</code></pre>
+<h3 id="2">2. 電池</h3>
+<pre><code>常見電池類型：
+
+┌─────────────────────────────────────────────────────┐
+│                    乾電池                           │
+├─────────────────────────────────────────────────────┤
+│  AA (3號)    │  1.5V  │  2000-3000mAh  │  不可充電 │
+│  AAA (4號)   │  1.5V  │  1000-1200mAh  │  不可充電 │
+│  9V 方形     │  9V    │  500-600mAh    │  不可充電 │
+└─────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────┐
+│                   充電電池                          │
+├─────────────────────────────────────────────────────┤
+│  鎳氫 AA     │  1.2V  │  2000-2800mAh  │  可充電   │
+│  鋰電池 18650│  3.7V  │  2000-3500mAh  │  可充電   │
+│  鋰聚合物    │  3.7V  │  各種容量      │  可充電   │
+└─────────────────────────────────────────────────────┘
+
+電池串並聯：
+┌─────────────────────────────────────┐
+│  串聯：電壓相加，容量不變           │
+│  ┌─┐   ┌─┐                         │
+│  │+│───│+│  1.5V + 1.5V = 3V       │
+│  │ │   │ │  容量還是 2000mAh       │
+│  │-│───│-│                         │
+│  └─┘   └─┘                         │
+├─────────────────────────────────────┤
+│  並聯：電壓不變，容量相加           │
+│  ┌─┐                               │
+│  │+├─┬─  電壓還是 1.5V             │
+│  │ │ │   2000 + 2000 = 4000mAh     │
+│  │-├─┴─                            │
+│  └─┘                               │
+│  ┌─┐                               │
+│  │+├─┬─                            │
+│  │ │ │                             │
+│  │-├─┴─                            │
+│  └─┘                               │
+└─────────────────────────────────────┘
+</code></pre>
+<h3 id="3">3. 變壓器/電源供應器</h3>
+<pre><code>常見規格：
+
+┌──────────────────────────────────────────┐
+│  輸出電壓  │  常見電流  │  適用場景      │
+├──────────────────────────────────────────┤
+│    5V     │  1A-10A   │  Arduino、LED   │
+│    9V     │  1A-2A    │  Arduino Vin    │
+│   12V     │  1A-30A   │  LED燈條、馬達  │
+│   24V     │  1A-20A   │  工業設備       │
+└──────────────────────────────────────────┘
+
+選購重點：
+1. 電壓要符合需求
+2. 電流要大於總消耗（留 20% 餘量）
+3. 注意接頭規格
+4. 選擇有認證的產品（安規）
+</code></pre>
+<h3 id="4">4. 行動電源</h3>
+<pre><code>行動電源特性：
+┌─────────────────────────────────────────┐
+│ • 輸出：通常 5V（有些支援 9V/12V）      │
+│ • 容量：5000mAh - 30000mAh              │
+│ • 優點：攜帶方便、容量大                │
+│ • 缺點：可能有低電流截斷問題            │
+└─────────────────────────────────────────┘
+
+⚠️ 低電流截斷問題：
+很多行動電源在電流低於 50-100mA 時
+會自動關閉輸出（以為沒在充電）
+
+解決方法：
+• 選擇「小電流模式」的行動電源
+• 並聯一個小負載（如 LED）
+• 使用專為 Arduino 設計的行動電源
+</code></pre>
+<hr />
+<h2 id="arduino">三、Arduino 的電源輸入</h2>
+<h3 id="arduino-uno">Arduino UNO 電源選項</h3>
+<pre><code>Arduino UNO 有三種供電方式：
+
+┌────────────────────────────────────────────────────┐
+│                  Arduino UNO                        │
+│                                                     │
+│   ┌─────┐                                          │
+│   │ USB │ ← 方式1：USB 供電（5V）                  │
+│   └─────┘                                          │
+│                                                     │
+│   ┌─────┐                                          │
+│   │DC座 │ ← 方式2：DC 變壓器（7-12V 推薦）        │
+│   └─────┘                                          │
+│                                                     │
+│   Vin ──── ← 方式3：Vin 腳位（7-12V）              │
+│   5V ───── ← 方式4：直接供 5V（繞過穩壓）         │
+│   3.3V ─── ← 輸出用，勿輸入！                      │
+│   GND ──── ← 接地                                  │
+│                                                     │
+└────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="_6">各供電方式比較</h3>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>輸入電壓</th>
+<th>優點</th>
+<th>缺點</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>USB</td>
+<td>5V</td>
+<td>方便、安全</td>
+<td>電流有限（500mA）</td>
+</tr>
+<tr>
+<td>DC 座</td>
+<td>7-12V</td>
+<td>穩定、電流大</td>
+<td>需要變壓器</td>
+</tr>
+<tr>
+<td>Vin</td>
+<td>7-12V</td>
+<td>彈性高</td>
+<td>需注意電壓範圍</td>
+</tr>
+<tr>
+<td>5V 腳位</td>
+<td>5V（精確）</td>
+<td>效率高</td>
+<td>無保護，風險高</td>
+</tr>
+</tbody>
+</table>
+<h3 id="vin-7-12v">為什麼 Vin 要 7-12V？</h3>
+<pre><code>Arduino 內部有穩壓器（Voltage Regulator）：
+
+輸入電壓              穩壓後輸出
+  │                      │
+  ▼                      ▼
+7-12V ──→ [穩壓器] ──→ 5V ──→ 給晶片使用
+
+穩壓器需要「壓差」才能工作：
+• 輸入至少比輸出高 2V
+• 所以最低要 5V + 2V = 7V
+
+輸入太高會怎樣？
+• 多餘的電壓變成熱
+• 12V 輸入：(12-5)×0.05A = 0.35W 變成熱
+• 超過 12V 可能過熱損壞
+</code></pre>
+<h3 id="esp8266-esp32">ESP8266 / ESP32 的電源</h3>
+<pre><code>ESP 系列供電注意：
+
+┌─────────────────────────────────────────┐
+│           ESP8266 / ESP32               │
+├─────────────────────────────────────────┤
+│  工作電壓：3.3V（絕對不可用 5V！）      │
+│  工作電流：平均 80mA，峰值 300-500mA    │
+│                                         │
+│  ⚠️ 重要警告：                          │
+│  • GPIO 腳位只能承受 3.3V               │
+│  • 5V 直接輸入會燒毀                    │
+│  • WiFi 傳輸時電流會突然增大            │
+└─────────────────────────────────────────┘
+
+供電建議：
+• 使用 3.3V 穩壓模組
+• 或使用開發板（內建穩壓）
+• 電源至少能提供 500mA
+</code></pre>
+<hr />
+<h2 id="_7">四、穩壓器與穩壓模組</h2>
+<h3 id="_8">什麼是穩壓器？</h3>
+<pre><code>穩壓器的功能：
+
+不穩定的輸入          穩定的輸出
+   電壓                 電壓
+    │                    │
+ 9V~12V                  5V
+    │                    │
+    ▼                    ▼
+   ┌──────────────────────┐
+   │       穩壓器         │
+   │                      │
+   │  輸入  [|||]  輸出   │
+   │                      │
+   │         GND          │
+   └──────────────────────┘
+              │
+              ▼
+             接地
+
+無論輸入是 9V、10V、還是 12V
+輸出都維持穩定的 5V
+</code></pre>
+<h3 id="_9">常見線性穩壓器</h3>
+<pre><code>78XX 系列（正電壓穩壓）：
+
+┌─────────────────────────────────────────┐
+│  型號    │  輸出電壓  │  最大電流       │
+├─────────────────────────────────────────┤
+│  7805   │    5V     │    1A           │
+│  7809   │    9V     │    1A           │
+│  7812   │   12V     │    1A           │
+└─────────────────────────────────────────┘
+
+7805 接線圖：
+              ┌───────┐
+   輸入 ──────┤ 7805  ├────── 輸出 5V
+  (7-35V)    │       │
+              │  GND  │
+              └───┬───┘
+                  │
+                 GND
+
+建議加上電容：
+              ┌───────┐
+   輸入 ──┬───┤ 7805  ├───┬── 輸出
+          │   │       │   │
+        [0.33μF]     [0.1μF]
+          │   └───────┘   │
+          └───────┬───────┘
+                  │
+                 GND
+</code></pre>
+<h3 id="vs">線性穩壓 vs 開關穩壓</h3>
+<pre><code>線性穩壓器（如 7805）：
+┌─────────────────────────────────────────┐
+│ 優點：                                   │
+│ • 便宜                                   │
+│ • 電路簡單                               │
+│ • 輸出乾淨（雜訊低）                     │
+│                                         │
+│ 缺點：                                   │
+│ • 效率低（多餘能量變成熱）               │
+│ • 壓差大時會很燙                         │
+│ • 不能升壓                               │
+└─────────────────────────────────────────┘
+
+開關穩壓器（DC-DC）：
+┌─────────────────────────────────────────┐
+│ 優點：                                   │
+│ • 效率高（80-95%）                       │
+│ • 發熱少                                 │
+│ • 可升壓也可降壓                         │
+│                                         │
+│ 缺點：                                   │
+│ • 較貴                                   │
+│ • 有開關雜訊                             │
+│ • 電路較複雜                             │
+└─────────────────────────────────────────┘
+
+選擇建議：
+• 壓差小、電流小 → 線性穩壓（便宜簡單）
+• 壓差大、電流大 → 開關穩壓（省電不燙）
+• 對雜訊敏感 → 線性穩壓
+</code></pre>
+<h3 id="_10">常用穩壓模組</h3>
+<pre><code>AMS1117-3.3V（線性穩壓）：
+┌─────────────────────────────────────┐
+│ • 輸入：4.5V - 12V                  │
+│ • 輸出：3.3V                        │
+│ • 電流：最大 1A                     │
+│ • 用途：5V 轉 3.3V 給 ESP8266       │
+└─────────────────────────────────────┘
+
+LM2596 模組（降壓開關穩壓）：
+┌─────────────────────────────────────┐
+│ • 輸入：4.5V - 40V                  │
+│ • 輸出：1.25V - 35V（可調）         │
+│ • 電流：最大 3A                     │
+│ • 效率：約 90%                      │
+│ • 用途：12V 轉 5V 給大電流設備      │
+└─────────────────────────────────────┘
+
+MT3608 模組（升壓開關穩壓）：
+┌─────────────────────────────────────┐
+│ • 輸入：2V - 24V                    │
+│ • 輸出：最高 28V（可調）            │
+│ • 電流：最大 2A                     │
+│ • 用途：3.7V 鋰電池升到 5V          │
+└─────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_11">五、電源設計實例</h2>
+<h3 id="1led">實例 1：LED 燈條供電</h3>
+<pre><code>需求：WS2812B 燈條 60 顆 LED
+
+計算：
+• 每顆最大 60mA（全白）
+• 60 顆 × 60mA = 3600mA = 3.6A
+• 加上 20% 餘量：3.6A × 1.2 = 4.32A
+
+選擇：
+• 5V 5A 電源供應器 ✓
+
+接線：
+┌────────────┐      ┌──────────────────────┐
+│  5V 5A     │      │    WS2812B 燈條      │
+│  電源      │      │                      │
+│        + ──┼──────┼── VCC                │
+│        - ──┼──────┼── GND                │
+└────────────┘      └──────────────────────┘
+                           │
+                    Arduino D6 ── DIN
+
+⚠️ 注意：Arduino 的 GND 也要連接！
+</code></pre>
+<h3 id="2arduino">實例 2：Arduino + 伺服馬達</h3>
+<pre><code>需求：Arduino UNO + 2 顆 SG90 伺服馬達
+
+問題：
+• SG90 每顆工作電流約 100-250mA
+• 峰值可達 500mA
+• Arduino USB 只能提供 500mA
+• 不夠用！
+
+解決方案：外接電源
+┌─────────────┐
+│   5V 2A     │
+│   電源      ├──┬──────→ 伺服馬達 1 VCC
+│             │  │
+│             │  ├──────→ 伺服馬達 2 VCC
+│             │  │
+│         GND ├──┴──┬───→ 伺服馬達 GND
+└─────────────┘     │
+                    │
+              ┌─────┴─────┐
+              │  Arduino  │
+              │       GND ├────（共地）
+              │        D9 ├────→ 伺服馬達 1 訊號
+              │       D10 ├────→ 伺服馬達 2 訊號
+              └───────────┘
+
+關鍵：電源 GND 和 Arduino GND 要連接！
+</code></pre>
+<h3 id="3_1">實例 3：電池供電的行動裝置</h3>
+<pre><code>需求：Arduino Nano + GPS + OLED 螢幕（行動使用）
+
+功耗估算：
+• Arduino Nano：30mA
+• GPS 模組：50mA
+• OLED 螢幕：20mA
+• 總計：100mA
+
+電池選擇方案：
+
+方案 A：4 顆 AA 電池串聯
+┌─┐ ┌─┐ ┌─┐ ┌─┐
+│+│─│+│─│+│─│+│──→ 6V (1.5V × 4)
+│ │ │ │ │ │ │ │
+│-│─│-│─│-│─│-│──→ GND
+└─┘ └─┘ └─┘ └─┘
+• 總電壓：6V（接 Vin，但略低）
+• 容量：約 2000mAh
+• 使用時間：2000mAh / 100mA = 20 小時
+
+方案 B：2 顆 18650 鋰電池串聯
+┌─────┐ ┌─────┐
+│18650│─│18650│──→ 7.4V
+└─────┘ └─────┘
+• 總電壓：7.4V（接 Vin）
+• 容量：約 2500mAh
+• 使用時間：25 小時
+• 需要充電板和保護板
+
+方案 C：單顆 18650 + 升壓模組
+┌─────┐   ┌────────┐
+│18650│───│MT3608  │──→ 5V
+│3.7V │   │升壓模組│
+└─────┘   └────────┘
+• 直接輸出 5V 給 5V 腳位
+• 效率較高
+</code></pre>
+<h3 id="4_1">實例 4：智慧溫室完整電源規劃</h3>
+<pre><code>設備清單與功耗：
+┌────────────────────────────────────────┐
+│  設備              │  電壓  │  電流    │
+├────────────────────────────────────────┤
+│  Arduino UNO      │  5V   │   50mA   │
+│  ESP-01 WiFi      │ 3.3V  │  250mA   │
+│  DHT11 感測器     │  5V   │   2mA    │
+│  土壤感測器       │  5V   │   20mA   │
+│  LCD 螢幕 (I2C)   │  5V   │   30mA   │
+│  繼電器模組 ×2    │  5V   │  150mA   │
+│  抽水馬達（透過繼電器）│ 12V │  500mA   │
+│  風扇（透過繼電器）   │ 12V │  300mA   │
+├────────────────────────────────────────┤
+│  5V 設備總計      │       │  502mA   │
+│  3.3V 設備總計    │       │  250mA   │
+│  12V 設備總計     │       │  800mA   │
+└────────────────────────────────────────┘
+
+電源設計：
+                    ┌─────────────────────┐
+                    │                     │
+    ┌───────────┐   │   ┌─────────────┐   │
+    │  12V 3A   │───┼──→│ 12V 設備    │   │
+    │  電源     │   │   │ (馬達、風扇) │   │
+    │           │   │   └─────────────┘   │
+    └─────┬─────┘   │                     │
+          │         │   ┌─────────────┐   │
+          │         │   │  LM2596     │   │
+          └─────────┼──→│  12V→5V     │───┼─→ 5V 設備
+                    │   │  降壓模組    │   │
+                    │   └──────┬──────┘   │
+                    │          │          │
+                    │   ┌──────▼──────┐   │
+                    │   │  AMS1117    │   │
+                    │   │  5V→3.3V    │───┼─→ ESP-01
+                    │   │  穩壓模組    │   │
+                    │   └─────────────┘   │
+                    │                     │
+                    │        GND ─────────┼─→ 所有設備共地
+                    │                     │
+                    └─────────────────────┘
+</code></pre>
+<hr />
+<h2 id="_12">六、電源安全注意事項</h2>
+<h3 id="_13">常見錯誤與後果</h3>
+<pre><code>❌ 錯誤 1：電壓接反
+┌─────────────────────────────────────────┐
+│  後果：立即燒毀！                        │
+│  預防：                                  │
+│  • 接線前再三確認                        │
+│  • 使用有防反接保護的模組                │
+│  • 正極紅色，負極黑色                    │
+└─────────────────────────────────────────┘
+
+❌ 錯誤 2：電壓過高
+┌─────────────────────────────────────────┐
+│  例如：把 9V 電池直接接到 ESP8266        │
+│  後果：瞬間燒毀！                        │
+│  預防：                                  │
+│  • 確認設備額定電壓                      │
+│  • 使用穩壓器                            │
+└─────────────────────────────────────────┘
+
+❌ 錯誤 3：電流不足
+┌─────────────────────────────────────────┐
+│  例如：用 Arduino 5V 腳位驅動馬達        │
+│  後果：                                  │
+│  • 馬達無力或不轉                        │
+│  • Arduino 重啟                          │
+│  • 可能損壞                              │
+│  預防：                                  │
+│  • 計算總電流需求                        │
+│  • 大電流設備用外接電源                  │
+└─────────────────────────────────────────┘
+
+❌ 錯誤 4：沒有共地
+┌─────────────────────────────────────────┐
+│  例如：Arduino 和外接電源的 GND 沒連     │
+│  後果：                                  │
+│  • 通訊失敗                              │
+│  • 訊號不穩定                            │
+│  • 可能損壞                              │
+│  預防：                                  │
+│  • 所有電源的 GND 都要連在一起           │
+└─────────────────────────────────────────┘
+
+❌ 錯誤 5：混用不同電壓
+┌─────────────────────────────────────────┐
+│  例如：5V Arduino 直接連 3.3V ESP8266    │
+│  後果：3.3V 元件燒毀                     │
+│  預防：                                  │
+│  • 使用電平轉換器                        │
+│  • 或電阻分壓                            │
+└─────────────────────────────────────────┘
+</code></pre>
+<h3 id="_14">保護電路</h3>
+<pre><code>1. 防反接二極體：
+   電源 ──→|──→ 電路
+        二極體
+
+   反接時二極體不導通，保護電路
+
+2. 保險絲：
+   電源 ──[保險絲]──→ 電路
+
+   電流過大時保險絲燒斷，保護電路
+
+3. 穩壓器保護：
+   即使輸入電壓波動，輸出維持穩定
+
+4. 電容濾波：
+   吸收電壓波動和雜訊
+
+   電源 ──┬──→ 電路
+          │
+        [電容]
+          │
+         GND
+</code></pre>
+<hr />
+<h2 id="_15">七、實用技巧</h2>
+<h3 id="_16">測量電流消耗</h3>
+<pre><code>用三用電表測量電流：
+
+     ┌─── A ───┐
+     │   表    │
+電源 ┴─────────┴──→ 設備
+        串聯
+
+步驟：
+1. 電表選擇「電流」檔位（A 或 mA）
+2. 斷開電路
+3. 把電表串聯進去
+4. 讀取數值
+
+⚠️ 注意：
+• 先用大檔位（如 10A）再換小檔位
+• 測電流要串聯，不是並聯！
+• 並聯測電流會短路爆炸！
+</code></pre>
+<h3 id="_17">估算電池使用時間</h3>
+<pre><code>公式：
+使用時間（小時）= 電池容量（mAh）/ 消耗電流（mA）
+
+範例：
+電池：2000mAh
+設備消耗：100mA
+使用時間 = 2000 / 100 = 20 小時
+
+實際會比計算值短，因為：
+• 電池不能完全放電
+• 電壓下降後設備可能無法工作
+• 溫度影響電池容量
+
+建議打 7 折：20 × 0.7 = 14 小時
+</code></pre>
+<h3 id="_18">電源雜訊處理</h3>
+<pre><code>問題：感測器讀值跳動、螢幕閃爍
+
+原因：
+• 馬達啟動產生干擾
+• 開關電源的雜訊
+• 長線材當天線
+
+解決方法：
+
+1. 加濾波電容
+   VCC ──┬──→
+         │
+       [100μF]  電解電容（大波動）
+         │
+       [0.1μF] 陶瓷電容（高頻雜訊）
+         │
+        GND
+
+2. 分開供電
+   數位電路和馬達用不同電源
+   最後共地
+
+3. 加磁環
+   電源線穿過磁環
+   過濾高頻雜訊
+</code></pre>
+<hr />
+<h2 id="_19">八、常見問題</h2>
+<h3 id="q1arduino">Q1：Arduino 一直重啟？</h3>
+<pre><code>可能原因：
+1. 電流不足
+   → 檢查電源容量，加大電源
+
+2. 馬達/繼電器干擾
+   → 馬達外接電源，加濾波電容
+
+3. 電壓不穩
+   → 使用穩壓模組
+
+4. 程式問題
+   → 檢查是否有無窮迴圈或記憶體問題
+</code></pre>
+<h3 id="q2esp8266-wifi">Q2：ESP8266 WiFi 連不上？</h3>
+<pre><code>常見原因：電流不足！
+
+ESP8266 發射 WiFi 時電流可達 300-500mA
+很多電源供應不上這瞬間大電流
+
+解決：
+1. 使用能提供 1A 以上的電源
+2. 在 ESP8266 旁加大電容（100-470μF）
+3. 不要用 Arduino 的 3.3V 腳位供電
+</code></pre>
+<h3 id="q3">Q3：伺服馬達抖動？</h3>
+<pre><code>原因：
+1. 電源不穩
+2. 訊號線干擾
+3. 電流不足
+
+解決：
+1. 伺服馬達獨立供電
+2. 電源加 100μF 電容
+3. 訊號線盡量短
+4. 確保共地
+</code></pre>
+<h3 id="q4">Q4：如何選擇電源供應器？</h3>
+<pre><code>選擇步驟：
+
+1. 確定電壓
+   所有設備需要什麼電壓？
+
+2. 計算電流
+   加總所有設備的消耗
+
+3. 加上餘量
+   總電流 × 1.2（留 20% 餘量）
+
+4. 選擇產品
+   電壓符合、電流大於計算值
+   有安規認證
+
+範例：
+設備需要 5V，總電流 2A
+選擇：5V 3A 電源（2A × 1.5 = 3A）
+</code></pre>
+<hr />
+<h2 id="_20">九、總結</h2>
+<pre><code>電源供應檢查清單：
+
+□ 電壓正確嗎？
+  • Arduino UNO：5V 或 7-12V（Vin）
+  • ESP8266/ESP32：3.3V
+  • 感測器：查規格書
+
+□ 電流足夠嗎？
+  • 加總所有設備
+  • 留 20% 餘量
+
+□ 極性正確嗎？
+  • 紅正黑負
+  • 接線前再三確認
+
+□ 有共地嗎？
+  • 所有電源 GND 連在一起
+
+□ 需要穩壓嗎？
+  • 電池供電通常需要
+  • 不同電壓設備需要
+
+□ 需要保護嗎？
+  • 重要專案加保護電路
+  • 使用保險絲
+</code></pre>
+<h3 id="_21">快速參考表</h3>
+<table>
+<thead>
+<tr>
+<th>設備</th>
+<th>電壓</th>
+<th>典型電流</th>
+<th>注意事項</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arduino UNO</td>
+<td>5V/7-12V</td>
+<td>50mA</td>
+<td>USB 限 500mA</td>
+</tr>
+<tr>
+<td>Arduino Nano</td>
+<td>5V/7-12V</td>
+<td>30mA</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ESP8266</td>
+<td>3.3V</td>
+<td>80-300mA</td>
+<td>WiFi 時電流大</td>
+</tr>
+<tr>
+<td>ESP32</td>
+<td>3.3V</td>
+<td>100-500mA</td>
+<td>雙核更耗電</td>
+</tr>
+<tr>
+<td>SG90 伺服馬達</td>
+<td>5V</td>
+<td>100-500mA</td>
+<td>建議外接電源</td>
+</tr>
+<tr>
+<td>WS2812B LED</td>
+<td>5V</td>
+<td>60mA/顆</td>
+<td>數量多要算電流</td>
+</tr>
+<tr>
+<td>繼電器模組</td>
+<td>5V</td>
+<td>70mA/路</td>
+<td>線圈耗電</td>
+</tr>
+<tr>
+<td>DHT11</td>
+<td>3.3-5V</td>
+<td>2mA</td>
+<td>低功耗</td>
+</tr>
+</tbody>
+</table>
+<p>記住：<strong>電源是專案成功的基礎！</strong></p>
+<hr />
+<p><em>本文件適用於 Arduino 初學者</em><br />
+<em>建議實際測量設備功耗以獲得準確數據</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

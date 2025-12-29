@@ -1,0 +1,2472 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於網頁前端三巨頭</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="htmlcssjavascript">關於網頁前端三巨頭：HTML、CSS、JavaScript</h1>
+<h2 id="_1">為什麼要學網頁前端？</h2>
+<p>在智慧農業專案中，我們經常需要：<br />
+- 建立儀表板顯示溫度、濕度等感測器數據<br />
+- 製作控制面板遠端操作風扇、水泵<br />
+- 呈現歷史數據圖表分析趨勢<br />
+- 透過手機或電腦監控溫室狀態</p>
+<p>這些都需要「網頁」來實現，而網頁由三個核心技術組成：</p>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    網頁前端三巨頭                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────────┐   ┌─────────────┐   ┌─────────────┐          │
+│   │    HTML     │   │    CSS      │   │ JavaScript  │          │
+│   │   ─────     │   │   ─────     │   │   ─────     │          │
+│   │   結構      │   │   外觀      │   │   行為      │          │
+│   │   骨架      │   │   皮膚      │   │   大腦      │          │
+│   └─────────────┘   └─────────────┘   └─────────────┘          │
+│         │                 │                 │                   │
+│         ▼                 ▼                 ▼                   │
+│   定義「有什麼」    定義「長怎樣」    定義「做什麼」             │
+│                                                                 │
+│   例如：              例如：              例如：                 │
+│   - 標題              - 顏色              - 點擊按鈕             │
+│   - 段落              - 大小              - 更新數據             │
+│   - 按鈕              - 排版              - 發送請求             │
+│   - 圖片              - 動畫              - 顯示訊息             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="_2">三者的關係：蓋房子比喻</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                       蓋房子比喻                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│    HTML = 房屋結構                                              │
+│    ┌─────────────────┐                                         │
+│    │    ┌─────┐      │    牆壁、門、窗戶、樓梯的位置            │
+│    │    │     │      │    決定「有哪些東西、放在哪裡」          │
+│    │    └──┬──┘      │                                         │
+│    │       │   ┌──┐  │                                         │
+│    │    ┌──┴───┤  │  │                                         │
+│    └────┴──────┴──┴──┘                                         │
+│                                                                 │
+│    CSS = 室內裝潢                                               │
+│    ┌─────────────────┐                                         │
+│    │ ♦♦  ┌─────┐  ♦♦ │    油漆顏色、地板材質、家具風格          │
+│    │     │ ☀☀☀ │     │    決定「看起來怎麼樣」                  │
+│    │     └──┬──┘     │                                         │
+│    │   🛋️   │   🪴   │                                         │
+│    │    ┌──┴───┬──┐  │                                         │
+│    └────┴──────┴──┴──┘                                         │
+│                                                                 │
+│    JavaScript = 智能家居系統                                    │
+│    ┌─────────────────┐                                         │
+│    │     ┌─────┐     │    按開關燈會亮、門鈴響會通知            │
+│    │     │ 💡  │     │    決定「互動時會發生什麼」              │
+│    │     └──┬──┘     │                                         │
+│    │   📺   │   🔊   │                                         │
+│    │    ┌──┴───┬──┐  │                                         │
+│    └────┴──────┴──┴──┘                                         │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h1 id="html-">第一部分：HTML - 網頁的骨架</h1>
+<h2 id="html">HTML 是什麼？</h2>
+<p>HTML（HyperText Markup Language，超文本標記語言）用來定義網頁的<strong>結構和內容</strong>。</p>
+<p>它不是程式語言，而是「標記語言」，用各種<strong>標籤（Tag）</strong>來標記內容的意義。</p>
+<h3 id="html_1">HTML 基本結構</h3>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-TW&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;title&gt;我的第一個網頁&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;歡迎來到智慧溫室&lt;/h1&gt;
+    &lt;p&gt;這是一個監控系統。&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h3 id="_3">結構解析</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                     HTML 文件結構                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  &lt;!DOCTYPE html&gt;          ← 宣告這是 HTML5 文件                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ &lt;html&gt;                 ← 整個網頁的根元素                │   │
+│  │   ┌─────────────────────────────────────────────────┐   │   │
+│  │   │ &lt;head&gt;             ← 網頁的「後設資料」          │   │   │
+│  │   │   &lt;meta charset&gt;   ← 編碼設定（支援中文）        │   │   │
+│  │   │   &lt;title&gt;          ← 瀏覽器分頁標題              │   │   │
+│  │   │   &lt;link&gt;           ← 引入 CSS 檔案               │   │   │
+│  │   └─────────────────────────────────────────────────┘   │   │
+│  │   ┌─────────────────────────────────────────────────┐   │   │
+│  │   │ &lt;body&gt;             ← 網頁的「可見內容」          │   │   │
+│  │   │   &lt;h1&gt;             ← 主標題                      │   │   │
+│  │   │   &lt;p&gt;              ← 段落文字                    │   │   │
+│  │   │   &lt;img&gt;            ← 圖片                        │   │   │
+│  │   │   &lt;button&gt;         ← 按鈕                        │   │   │
+│  │   └─────────────────────────────────────────────────┘   │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="html_2">HTML 標籤語法規則</h2>
+<h3 id="_4">標籤的組成</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                       標籤語法                                   │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   成對標籤（有開始和結束）：                                     │
+│                                                                 │
+│   &lt;標籤名稱 屬性=&quot;值&quot;&gt;內容&lt;/標籤名稱&gt;                            │
+│       ↑         ↑       ↑      ↑                                │
+│    開始標籤   屬性    內容  結束標籤                             │
+│                                                                 │
+│   範例：                                                        │
+│   &lt;h1 class=&quot;title&quot;&gt;歡迎光臨&lt;/h1&gt;                               │
+│   &lt;a href=&quot;https://example.com&quot;&gt;點我連結&lt;/a&gt;                    │
+│   &lt;p id=&quot;description&quot;&gt;這是說明文字&lt;/p&gt;                          │
+│                                                                 │
+│   ─────────────────────────────────────────────────────────    │
+│                                                                 │
+│   自閉合標籤（沒有結束標籤）：                                   │
+│                                                                 │
+│   &lt;標籤名稱 屬性=&quot;值&quot;&gt;                                          │
+│                                                                 │
+│   範例：                                                        │
+│   &lt;img src=&quot;photo.jpg&quot; alt=&quot;照片&quot;&gt;                              │
+│   &lt;input type=&quot;text&quot; placeholder=&quot;請輸入&quot;&gt;                      │
+│   &lt;br&gt;                                                          │
+│   &lt;hr&gt;                                                          │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="html_3">常用 HTML 標籤速查</h2>
+<h3 id="_5">文字相關標籤</h3>
+<pre><code class="language-html">&lt;!-- 標題：h1 最大，h6 最小 --&gt;
+&lt;h1&gt;一級標題（最重要）&lt;/h1&gt;
+&lt;h2&gt;二級標題&lt;/h2&gt;
+&lt;h3&gt;三級標題&lt;/h3&gt;
+&lt;h4&gt;四級標題&lt;/h4&gt;
+&lt;h5&gt;五級標題&lt;/h5&gt;
+&lt;h6&gt;六級標題（最小）&lt;/h6&gt;
+
+&lt;!-- 段落 --&gt;
+&lt;p&gt;這是一個段落，段落會自動換行並有上下間距。&lt;/p&gt;
+
+&lt;!-- 換行（不建立新段落） --&gt;
+第一行&lt;br&gt;第二行
+
+&lt;!-- 水平分隔線 --&gt;
+&lt;hr&gt;
+
+&lt;!-- 文字強調 --&gt;
+&lt;strong&gt;粗體強調&lt;/strong&gt;
+&lt;em&gt;斜體強調&lt;/em&gt;
+&lt;mark&gt;螢光筆標記&lt;/mark&gt;
+&lt;del&gt;刪除線&lt;/del&gt;
+
+&lt;!-- 行內區塊（不換行） --&gt;
+溫度：&lt;span style=&quot;color: red;&quot;&gt;28°C&lt;/span&gt;
+</code></pre>
+<p><strong>顯示效果：</strong></p>
+<pre><code>┌─────────────────────────────────────────┐
+│  一級標題（最重要）          ← 很大很粗  │
+│  二級標題                    ← 稍小      │
+│  三級標題                    ← 更小      │
+│                                         │
+│  這是一個段落，段落會自動換行並有       │
+│  上下間距。                             │
+│                                         │
+│  第一行                                 │
+│  第二行                                 │
+│  ─────────────────────────────         │
+│  粗體強調  斜體強調  螢光筆標記         │
+└─────────────────────────────────────────┘
+</code></pre>
+<h3 id="_6">清單標籤</h3>
+<pre><code class="language-html">&lt;!-- 無序清單（項目符號） --&gt;
+&lt;ul&gt;
+    &lt;li&gt;蘋果&lt;/li&gt;
+    &lt;li&gt;香蕉&lt;/li&gt;
+    &lt;li&gt;橘子&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- 有序清單（數字編號） --&gt;
+&lt;ol&gt;
+    &lt;li&gt;第一步：連接電源&lt;/li&gt;
+    &lt;li&gt;第二步：安裝感測器&lt;/li&gt;
+    &lt;li&gt;第三步：上傳程式&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;!-- 巢狀清單 --&gt;
+&lt;ul&gt;
+    &lt;li&gt;感測器
+        &lt;ul&gt;
+            &lt;li&gt;溫度感測器&lt;/li&gt;
+            &lt;li&gt;濕度感測器&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;控制器
+        &lt;ul&gt;
+            &lt;li&gt;Arduino&lt;/li&gt;
+            &lt;li&gt;ESP32&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+<p><strong>顯示效果：</strong></p>
+<pre><code>無序清單：          有序清單：          巢狀清單：
+• 蘋果              1. 第一步           • 感測器
+• 香蕉              2. 第二步             ○ 溫度感測器
+• 橘子              3. 第三步             ○ 濕度感測器
+                                        • 控制器
+                                          ○ Arduino
+                                          ○ ESP32
+</code></pre>
+<h3 id="_7">連結與圖片</h3>
+<pre><code class="language-html">&lt;!-- 超連結 --&gt;
+&lt;a href=&quot;https://www.google.com&quot;&gt;前往 Google&lt;/a&gt;
+
+&lt;!-- 新分頁開啟連結 --&gt;
+&lt;a href=&quot;https://www.google.com&quot; target=&quot;_blank&quot;&gt;新分頁開啟&lt;/a&gt;
+
+&lt;!-- 頁面內錨點連結 --&gt;
+&lt;a href=&quot;#section2&quot;&gt;跳到第二區&lt;/a&gt;
+...
+&lt;h2 id=&quot;section2&quot;&gt;第二區&lt;/h2&gt;
+
+&lt;!-- 圖片 --&gt;
+&lt;img src=&quot;photo.jpg&quot; alt=&quot;照片說明文字&quot;&gt;
+
+&lt;!-- 指定圖片尺寸 --&gt;
+&lt;img src=&quot;logo.png&quot; alt=&quot;Logo&quot; width=&quot;200&quot; height=&quot;100&quot;&gt;
+
+&lt;!-- 點擊圖片開啟連結 --&gt;
+&lt;a href=&quot;https://example.com&quot;&gt;
+    &lt;img src=&quot;banner.jpg&quot; alt=&quot;點擊前往&quot;&gt;
+&lt;/a&gt;
+</code></pre>
+<h3 id="_8">表格</h3>
+<pre><code class="language-html">&lt;table&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;時間&lt;/th&gt;
+            &lt;th&gt;溫度&lt;/th&gt;
+            &lt;th&gt;濕度&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td&gt;08:00&lt;/td&gt;
+            &lt;td&gt;25°C&lt;/td&gt;
+            &lt;td&gt;60%&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;12:00&lt;/td&gt;
+            &lt;td&gt;32°C&lt;/td&gt;
+            &lt;td&gt;45%&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;18:00&lt;/td&gt;
+            &lt;td&gt;28°C&lt;/td&gt;
+            &lt;td&gt;55%&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+</code></pre>
+<p><strong>顯示效果：</strong></p>
+<pre><code>┌────────┬────────┬────────┐
+│  時間  │  溫度  │  濕度  │  ← thead（表頭）
+├────────┼────────┼────────┤
+│  08:00 │  25°C  │  60%   │
+│  12:00 │  32°C  │  45%   │  ← tbody（表身）
+│  18:00 │  28°C  │  55%   │
+└────────┴────────┴────────┘
+</code></pre>
+<h3 id="_9">表單元素</h3>
+<pre><code class="language-html">&lt;form action=&quot;/submit&quot; method=&quot;POST&quot;&gt;
+    &lt;!-- 文字輸入 --&gt;
+    &lt;label for=&quot;name&quot;&gt;姓名：&lt;/label&gt;
+    &lt;input type=&quot;text&quot; id=&quot;name&quot; name=&quot;name&quot; placeholder=&quot;請輸入姓名&quot;&gt;
+
+    &lt;!-- 數字輸入 --&gt;
+    &lt;label for=&quot;temp&quot;&gt;目標溫度：&lt;/label&gt;
+    &lt;input type=&quot;number&quot; id=&quot;temp&quot; name=&quot;temp&quot; min=&quot;0&quot; max=&quot;50&quot; value=&quot;25&quot;&gt;
+
+    &lt;!-- 密碼輸入 --&gt;
+    &lt;label for=&quot;pwd&quot;&gt;密碼：&lt;/label&gt;
+    &lt;input type=&quot;password&quot; id=&quot;pwd&quot; name=&quot;password&quot;&gt;
+
+    &lt;!-- 下拉選單 --&gt;
+    &lt;label for=&quot;mode&quot;&gt;模式：&lt;/label&gt;
+    &lt;select id=&quot;mode&quot; name=&quot;mode&quot;&gt;
+        &lt;option value=&quot;auto&quot;&gt;自動&lt;/option&gt;
+        &lt;option value=&quot;manual&quot;&gt;手動&lt;/option&gt;
+        &lt;option value=&quot;schedule&quot;&gt;排程&lt;/option&gt;
+    &lt;/select&gt;
+
+    &lt;!-- 單選按鈕 --&gt;
+    &lt;p&gt;風扇狀態：&lt;/p&gt;
+    &lt;input type=&quot;radio&quot; id=&quot;fan-on&quot; name=&quot;fan&quot; value=&quot;on&quot;&gt;
+    &lt;label for=&quot;fan-on&quot;&gt;開啟&lt;/label&gt;
+    &lt;input type=&quot;radio&quot; id=&quot;fan-off&quot; name=&quot;fan&quot; value=&quot;off&quot;&gt;
+    &lt;label for=&quot;fan-off&quot;&gt;關閉&lt;/label&gt;
+
+    &lt;!-- 核取方塊 --&gt;
+    &lt;p&gt;通知設定：&lt;/p&gt;
+    &lt;input type=&quot;checkbox&quot; id=&quot;notify-email&quot; name=&quot;notify&quot; value=&quot;email&quot;&gt;
+    &lt;label for=&quot;notify-email&quot;&gt;Email 通知&lt;/label&gt;
+    &lt;input type=&quot;checkbox&quot; id=&quot;notify-line&quot; name=&quot;notify&quot; value=&quot;line&quot;&gt;
+    &lt;label for=&quot;notify-line&quot;&gt;LINE 通知&lt;/label&gt;
+
+    &lt;!-- 多行文字 --&gt;
+    &lt;label for=&quot;note&quot;&gt;備註：&lt;/label&gt;
+    &lt;textarea id=&quot;note&quot; name=&quot;note&quot; rows=&quot;4&quot; cols=&quot;30&quot;&gt;&lt;/textarea&gt;
+
+    &lt;!-- 提交按鈕 --&gt;
+    &lt;button type=&quot;submit&quot;&gt;送出&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+<h3 id="_10">區塊與版面結構</h3>
+<pre><code class="language-html">&lt;!-- div：通用區塊容器 --&gt;
+&lt;div class=&quot;container&quot;&gt;
+    &lt;div class=&quot;header&quot;&gt;頁首&lt;/div&gt;
+    &lt;div class=&quot;content&quot;&gt;內容&lt;/div&gt;
+    &lt;div class=&quot;footer&quot;&gt;頁尾&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- HTML5 語意化標籤（推薦） --&gt;
+&lt;header&gt;
+    &lt;nav&gt;導覽列&lt;/nav&gt;
+&lt;/header&gt;
+
+&lt;main&gt;
+    &lt;article&gt;
+        &lt;h1&gt;文章標題&lt;/h1&gt;
+        &lt;p&gt;文章內容...&lt;/p&gt;
+    &lt;/article&gt;
+
+    &lt;aside&gt;
+        側邊欄
+    &lt;/aside&gt;
+&lt;/main&gt;
+
+&lt;footer&gt;
+    頁尾資訊
+&lt;/footer&gt;
+</code></pre>
+<p><strong>語意化標籤結構：</strong></p>
+<pre><code>┌─────────────────────────────────────────┐
+│ &lt;header&gt;                                │
+│   &lt;nav&gt; 導覽列 &lt;/nav&gt;                   │
+├─────────────────────────────────────────┤
+│ &lt;main&gt;                                  │
+│   ┌─────────────────────┬─────────────┐ │
+│   │ &lt;article&gt;           │ &lt;aside&gt;     │ │
+│   │   文章內容          │  側邊欄     │ │
+│   │                     │             │ │
+│   └─────────────────────┴─────────────┘ │
+├─────────────────────────────────────────┤
+│ &lt;footer&gt;                                │
+│   頁尾資訊                              │
+└─────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="html_4">HTML 範例：智慧溫室監控頁面結構</h2>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-TW&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;title&gt;智慧溫室監控系統&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;!-- 頁首 --&gt;
+    &lt;header&gt;
+        &lt;h1&gt;智慧溫室監控系統&lt;/h1&gt;
+        &lt;nav&gt;
+            &lt;a href=&quot;#dashboard&quot;&gt;儀表板&lt;/a&gt;
+            &lt;a href=&quot;#control&quot;&gt;控制面板&lt;/a&gt;
+            &lt;a href=&quot;#history&quot;&gt;歷史記錄&lt;/a&gt;
+        &lt;/nav&gt;
+    &lt;/header&gt;
+
+    &lt;!-- 主要內容 --&gt;
+    &lt;main&gt;
+        &lt;!-- 儀表板區 --&gt;
+        &lt;section id=&quot;dashboard&quot;&gt;
+            &lt;h2&gt;即時數據&lt;/h2&gt;
+            &lt;div class=&quot;sensor-cards&quot;&gt;
+                &lt;div class=&quot;card&quot;&gt;
+                    &lt;h3&gt;溫度&lt;/h3&gt;
+                    &lt;p id=&quot;temperature&quot;&gt;--°C&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;card&quot;&gt;
+                    &lt;h3&gt;濕度&lt;/h3&gt;
+                    &lt;p id=&quot;humidity&quot;&gt;--%&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;card&quot;&gt;
+                    &lt;h3&gt;土壤濕度&lt;/h3&gt;
+                    &lt;p id=&quot;soil&quot;&gt;--%&lt;/p&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;!-- 控制面板區 --&gt;
+        &lt;section id=&quot;control&quot;&gt;
+            &lt;h2&gt;設備控制&lt;/h2&gt;
+            &lt;div class=&quot;control-panel&quot;&gt;
+                &lt;div class=&quot;control-item&quot;&gt;
+                    &lt;span&gt;風扇&lt;/span&gt;
+                    &lt;button id=&quot;fan-btn&quot;&gt;關閉&lt;/button&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;control-item&quot;&gt;
+                    &lt;span&gt;水泵&lt;/span&gt;
+                    &lt;button id=&quot;pump-btn&quot;&gt;關閉&lt;/button&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;control-item&quot;&gt;
+                    &lt;span&gt;照明&lt;/span&gt;
+                    &lt;button id=&quot;light-btn&quot;&gt;關閉&lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;!-- 歷史記錄區 --&gt;
+        &lt;section id=&quot;history&quot;&gt;
+            &lt;h2&gt;歷史記錄&lt;/h2&gt;
+            &lt;table&gt;
+                &lt;thead&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;時間&lt;/th&gt;
+                        &lt;th&gt;溫度&lt;/th&gt;
+                        &lt;th&gt;濕度&lt;/th&gt;
+                        &lt;th&gt;土壤濕度&lt;/th&gt;
+                    &lt;/tr&gt;
+                &lt;/thead&gt;
+                &lt;tbody id=&quot;history-table&quot;&gt;
+                    &lt;!-- JavaScript 會動態填入資料 --&gt;
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+        &lt;/section&gt;
+    &lt;/main&gt;
+
+    &lt;!-- 頁尾 --&gt;
+    &lt;footer&gt;
+        &lt;p&gt;智慧農業課程 &amp;copy; 2024&lt;/p&gt;
+    &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<hr />
+<h1 id="css-">第二部分：CSS - 網頁的外觀</h1>
+<h2 id="css">CSS 是什麼？</h2>
+<p>CSS（Cascading Style Sheets，層疊樣式表）用來定義網頁的<strong>視覺外觀</strong>。</p>
+<p>透過 CSS，我們可以控制：<br />
+- 顏色、字型、大小<br />
+- 間距、邊框、陰影<br />
+- 排版、對齊、佈局<br />
+- 動畫、轉場效果</p>
+<hr />
+<h2 id="css_1">CSS 的三種寫法</h2>
+<h3 id="inline-style">方式一：行內樣式（Inline Style）</h3>
+<p>直接寫在 HTML 標籤的 <code>style</code> 屬性中：</p>
+<pre><code class="language-html">&lt;p style=&quot;color: red; font-size: 20px;&quot;&gt;這是紅色大字&lt;/p&gt;
+&lt;div style=&quot;background-color: yellow; padding: 10px;&quot;&gt;黃色背景區塊&lt;/div&gt;
+</code></pre>
+<ul>
+<li>優點：快速測試</li>
+<li>缺點：難以維護、無法重複使用</li>
+</ul>
+<h3 id="internal-style">方式二：內部樣式（Internal Style）</h3>
+<p>寫在 <code>&lt;head&gt;</code> 中的 <code>&lt;style&gt;</code> 標籤內：</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;style&gt;
+        h1 {
+            color: blue;
+            text-align: center;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;標題會是藍色置中&lt;/h1&gt;
+    &lt;p&gt;段落會套用指定樣式&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<ul>
+<li>優點：樣式集中管理</li>
+<li>缺點：只能用於單一頁面</li>
+</ul>
+<h3 id="external-style-">方式三：外部樣式（External Style）- 推薦</h3>
+<p>將 CSS 寫在獨立的 <code>.css</code> 檔案中：</p>
+<p><strong>index.html:</strong></p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;style.css&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;標題&lt;/h1&gt;
+    &lt;p&gt;內容&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p><strong>style.css:</strong></p>
+<pre><code class="language-css">h1 {
+    color: blue;
+    text-align: center;
+}
+
+p {
+    font-size: 16px;
+    line-height: 1.6;
+}
+</code></pre>
+<ul>
+<li>優點：可重複使用、易於維護、瀏覽器可快取</li>
+<li>缺點：需要多一個檔案</li>
+</ul>
+<hr />
+<h2 id="css_2">CSS 選擇器</h2>
+<p>選擇器決定「哪些元素」要套用樣式：</p>
+<pre><code class="language-css">/* 標籤選擇器：選取所有該標籤 */
+p {
+    color: gray;
+}
+
+/* Class 選擇器：選取有該 class 的元素（可重複使用） */
+.highlight {
+    background-color: yellow;
+}
+
+/* ID 選擇器：選取該 ID 的元素（唯一） */
+#header {
+    font-size: 24px;
+}
+
+/* 後代選擇器：選取某元素內部的元素 */
+.card p {
+    margin: 10px;
+}
+
+/* 組合選擇器：同時選取多個 */
+h1, h2, h3 {
+    font-family: &quot;Microsoft JhengHei&quot;, sans-serif;
+}
+
+/* 偽類選擇器：特定狀態 */
+a:hover {
+    color: red;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+</code></pre>
+<p><strong>HTML 搭配使用：</strong></p>
+<pre><code class="language-html">&lt;p&gt;這是普通段落&lt;/p&gt;
+&lt;p class=&quot;highlight&quot;&gt;這是標記的段落&lt;/p&gt;
+&lt;div id=&quot;header&quot;&gt;這是標頭&lt;/div&gt;
+
+&lt;div class=&quot;card&quot;&gt;
+    &lt;p&gt;卡片內的段落&lt;/p&gt;
+&lt;/div&gt;
+</code></pre>
+<h3 id="_11">選擇器優先順序</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                     CSS 優先順序（由低到高）                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   1. 瀏覽器預設樣式                          優先順序最低      │
+│         ↓                                                       │
+│   2. 標籤選擇器        p { }                                    │
+│         ↓                                                       │
+│   3. Class 選擇器      .class { }                               │
+│         ↓                                                       │
+│   4. ID 選擇器         #id { }                                  │
+│         ↓                                                       │
+│   5. 行內樣式          style=&quot;...&quot;                              │
+│         ↓                                                       │
+│   6. !important        color: red !important;   優先順序最高   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="css_3">常用 CSS 屬性</h2>
+<h3 id="_12">文字與字型</h3>
+<pre><code class="language-css">.text-example {
+    /* 文字顏色 */
+    color: #333333;              /* 十六進位色碼 */
+    color: rgb(51, 51, 51);      /* RGB */
+    color: rgba(0, 0, 0, 0.8);   /* RGBA（含透明度） */
+
+    /* 字型 */
+    font-family: &quot;Microsoft JhengHei&quot;, &quot;Arial&quot;, sans-serif;
+    font-size: 16px;             /* 字體大小 */
+    font-weight: bold;           /* 粗細：normal, bold, 100-900 */
+    font-style: italic;          /* 斜體 */
+
+    /* 文字對齊 */
+    text-align: center;          /* left, center, right, justify */
+
+    /* 行高 */
+    line-height: 1.6;            /* 1.6 倍行高 */
+
+    /* 文字裝飾 */
+    text-decoration: underline;  /* none, underline, line-through */
+
+    /* 字母間距 */
+    letter-spacing: 2px;
+}
+</code></pre>
+<h3 id="_13">顏色表示法</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                       顏色表示法                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   顏色名稱：      red, blue, green, yellow, white, black        │
+│                                                                 │
+│   十六進位：      #RRGGBB                                       │
+│                   #FF0000 (紅) #00FF00 (綠) #0000FF (藍)        │
+│                   #333333 (深灰) #CCCCCC (淺灰)                 │
+│                                                                 │
+│   RGB：           rgb(紅, 綠, 藍)    每個值 0-255               │
+│                   rgb(255, 0, 0) = 紅色                         │
+│                                                                 │
+│   RGBA：          rgba(紅, 綠, 藍, 透明度)  透明度 0-1          │
+│                   rgba(0, 0, 0, 0.5) = 半透明黑色               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="box-model">盒模型（Box Model）</h3>
+<p>每個 HTML 元素都是一個「盒子」：</p>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                         盒模型示意圖                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │                      margin（外距）                      │   │
+│   │   ┌─────────────────────────────────────────────────┐   │   │
+│   │   │                 border（邊框）                   │   │   │
+│   │   │   ┌─────────────────────────────────────────┐   │   │   │
+│   │   │   │            padding（內距）               │   │   │   │
+│   │   │   │   ┌─────────────────────────────────┐   │   │   │   │
+│   │   │   │   │                                 │   │   │   │   │
+│   │   │   │   │           content               │   │   │   │   │
+│   │   │   │   │          （內容區）              │   │   │   │   │
+│   │   │   │   │                                 │   │   │   │   │
+│   │   │   │   └─────────────────────────────────┘   │   │   │   │
+│   │   │   │                                         │   │   │   │
+│   │   │   └─────────────────────────────────────────┘   │   │   │
+│   │   │                                                 │   │   │
+│   │   └─────────────────────────────────────────────────┘   │   │
+│   │                                                         │   │
+│   └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<pre><code class="language-css">.box-example {
+    /* 寬度與高度 */
+    width: 300px;
+    height: 200px;
+
+    /* 內距（內容到邊框的距離） */
+    padding: 20px;                    /* 四邊都是 20px */
+    padding: 10px 20px;               /* 上下 10px, 左右 20px */
+    padding: 10px 20px 15px 25px;     /* 上 右 下 左（順時針） */
+                    /* 單獨設定 */
+
+    /* 邊框 */
+    border: 2px solid #333;           /* 寬度 樣式 顏色 */
+    border-radius: 10px;              /* 圓角 */
+
+    /* 外距（元素與其他元素的距離） */
+    margin: 20px;
+    margin: 0 auto;                   /* 水平置中 */
+
+    /* 陰影 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* 參數：水平偏移 垂直偏移 模糊半徑 顏色 */
+}
+</code></pre>
+<h3 id="_14">背景</h3>
+<pre><code class="language-css">.background-example {
+    /* 背景顏色 */
+    background-color: #f5f5f5;
+
+    /* 背景圖片 */
+    background-image: url('background.jpg');
+    background-size: cover;           /* 填滿容器 */
+    background-position: center;      /* 置中 */
+    background-repeat: no-repeat;     /* 不重複 */
+
+    /* 漸層背景 */
+    background: linear-gradient(to right, #667eea, #764ba2);
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+</code></pre>
+<hr />
+<h2 id="flexbox">Flexbox 彈性盒子佈局</h2>
+<p>Flexbox 是現代 CSS 最重要的排版工具：</p>
+<pre><code class="language-css">.container {
+    display: flex;              /* 啟用 Flexbox */
+
+    /* 主軸方向 */
+    flex-direction: row;        /* 水平排列（預設） */
+    flex-direction: column;     /* 垂直排列 */
+
+    /* 主軸對齊 */
+    justify-content: flex-start;    /* 靠左 */
+    justify-content: center;        /* 置中 */
+    justify-content: flex-end;      /* 靠右 */
+    justify-content: space-between; /* 兩端對齊 */
+    justify-content: space-around;  /* 均勻分布 */
+
+    /* 交叉軸對齊 */
+    align-items: flex-start;    /* 靠上 */
+    align-items: center;        /* 置中 */
+    align-items: flex-end;      /* 靠下 */
+    align-items: stretch;       /* 拉伸填滿 */
+
+    /* 換行 */
+    flex-wrap: wrap;            /* 自動換行 */
+
+    /* 間距 */
+    gap: 20px;                  /* 項目間距 */
+}
+</code></pre>
+<h3 id="flexbox_1">Flexbox 圖解</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                     Flexbox 對齊方式                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  justify-content（主軸對齊）：                                   │
+│                                                                 │
+│  flex-start        center          flex-end                     │
+│  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐           │
+│  │[A][B][C]    │   │  [A][B][C]  │   │    [A][B][C]│           │
+│  └─────────────┘   └─────────────┘   └─────────────┘           │
+│                                                                 │
+│  space-between     space-around      space-evenly               │
+│  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐           │
+│  │[A]  [B]  [C]│   │ [A] [B] [C] │   │ [A] [B] [C] │           │
+│  └─────────────┘   └─────────────┘   └─────────────┘           │
+│                                                                 │
+│  ─────────────────────────────────────────────────────────      │
+│                                                                 │
+│  align-items（交叉軸對齊）：                                     │
+│                                                                 │
+│  flex-start        center          flex-end                     │
+│  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐           │
+│  │[A][B][C]    │   │             │   │             │           │
+│  │             │   │[A][B][C]    │   │             │           │
+│  │             │   │             │   │[A][B][C]    │           │
+│  └─────────────┘   └─────────────┘   └─────────────┘           │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="flexbox_2">Flexbox 範例：卡片排列</h3>
+<pre><code class="language-html">&lt;div class=&quot;card-container&quot;&gt;
+    &lt;div class=&quot;card&quot;&gt;卡片 1&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;卡片 2&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;卡片 3&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<pre><code class="language-css">.card-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 20px;
+}
+
+.card {
+    width: 200px;
+    height: 150px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+</code></pre>
+<hr />
+<h2 id="rwd">RWD 響應式設計</h2>
+<p>讓網頁適應不同螢幕尺寸：</p>
+<pre><code class="language-css">/* 基本樣式（手機優先） */
+.container {
+    width: 100%;
+    padding: 10px;
+}
+
+.card {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* 平板以上（寬度 &gt;= 768px） */
+@media (min-width: 768px) {
+    .container {
+        max-width: 720px;
+        margin: 0 auto;
+    }
+
+    .card {
+        width: 48%;
+    }
+}
+
+/* 電腦以上（寬度 &gt;= 1024px） */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 960px;
+    }
+
+    .card {
+        width: 31%;
+    }
+}
+</code></pre>
+<h3 id="_15">常用斷點</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                     常用 RWD 斷點                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   手機：        &lt; 576px                                         │
+│   大手機：      &gt;= 576px                                        │
+│   平板：        &gt;= 768px                                        │
+│   小電腦：      &gt;= 992px                                        │
+│   大電腦：      &gt;= 1200px                                       │
+│   超大螢幕：    &gt;= 1400px                                       │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="css_4">CSS 動畫與轉場</h2>
+<h3 id="transition">轉場效果（Transition）</h3>
+<p>滑鼠懸停時平滑變化：</p>
+<pre><code class="language-css">.button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+    /* 轉場設定 */
+    transition: all 0.3s ease;
+}
+
+.button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+</code></pre>
+<h3 id="animation">動畫（Animation）</h3>
+<pre><code class="language-css">/* 定義動畫 */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* 套用動畫 */
+.alert-icon {
+    animation: pulse 2s infinite;
+}
+
+/* 載入中動畫 */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+</code></pre>
+<hr />
+<h2 id="css_5">CSS 範例：智慧溫室監控樣式</h2>
+<pre><code class="language-css">/* 全域設定 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: &quot;Microsoft JhengHei&quot;, &quot;Arial&quot;, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* 頁首 */
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin-bottom: 10px;
+}
+
+header nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+header nav a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 主要內容區 */
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+section {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+section h2 {
+    color: #667eea;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
+}
+
+/* 感測器卡片 */
+.sensor-cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    min-width: 150px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card h3 {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.card p {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* 溫度卡片特殊顏色 */
+.card.temperature {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+}
+
+.card.humidity {
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+}
+
+.card.soil {
+    background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+}
+
+/* 控制面板 */
+.control-panel {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.control-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.control-item button {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.control-item button.off {
+    background-color: #e0e0e0;
+    color: #666;
+}
+
+.control-item button.on {
+    background-color: #4CAF50;
+    color: white;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+}
+
+/* 表格 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background-color: #667eea;
+    color: white;
+}
+
+tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* 頁尾 */
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .sensor-cards {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .control-panel {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+</code></pre>
+<hr />
+<h1 id="javascript-">第三部分：JavaScript - 網頁的行為</h1>
+<h2 id="javascript">JavaScript 是什麼？</h2>
+<p>JavaScript（簡稱 JS）是網頁的<strong>程式語言</strong>，用來實現：<br />
+- 使用者互動（點擊、輸入、滾動）<br />
+- 動態更新內容（不重新載入頁面）<br />
+- 與伺服器通訊（取得/發送資料）<br />
+- 動畫效果與遊戲</p>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                   JavaScript 能做什麼？                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   1. 回應使用者操作                                              │
+│      - 按下按鈕 → 顯示訊息                                      │
+│      - 輸入表單 → 即時驗證                                      │
+│      - 滑鼠懸停 → 顯示提示                                      │
+│                                                                 │
+│   2. 修改網頁內容                                                │
+│      - 更新數字顯示                                             │
+│      - 新增/刪除元素                                            │
+│      - 切換樣式                                                 │
+│                                                                 │
+│   3. 與伺服器通訊                                                │
+│      - 取得 API 資料                                            │
+│      - 發送表單資料                                             │
+│      - 即時更新（WebSocket/MQTT）                               │
+│                                                                 │
+│   4. 進階功能                                                    │
+│      - 本地儲存資料                                             │
+│      - 定時執行任務                                             │
+│      - 繪製圖表                                                 │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="javascript_1">JavaScript 的引入方式</h2>
+<h3 id="_16">方式一：內部腳本</h3>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;範例&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Hello&lt;/h1&gt;
+
+    &lt;!-- 放在 body 結尾（推薦） --&gt;
+    &lt;script&gt;
+        console.log('Hello, JavaScript!');
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h3 id="_17">方式二：外部腳本（推薦）</h3>
+<p><strong>index.html:</strong></p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;範例&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Hello&lt;/h1&gt;
+
+    &lt;!-- 引入外部 JS 檔案 --&gt;
+    &lt;script src=&quot;script.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p><strong>script.js:</strong></p>
+<pre><code class="language-javascript">console.log('Hello from external file!');
+</code></pre>
+<hr />
+<h2 id="javascript_2">JavaScript 基礎語法</h2>
+<h3 id="_18">變數宣告</h3>
+<pre><code class="language-javascript">// let：可重新賦值的變數
+let temperature = 25;
+temperature = 28;  // 可以改變
+
+// const：常數（不可重新賦值）
+const MAX_TEMP = 40;
+// MAX_TEMP = 50;  // 錯誤！常數不能改變
+
+// var：舊式宣告（不建議使用）
+var oldStyle = 'avoid this';
+</code></pre>
+<h3 id="_19">資料型別</h3>
+<pre><code class="language-javascript">// 數字
+let age = 25;
+let price = 99.99;
+let negative = -10;
+
+// 字串
+let name = '小明';
+let message = &quot;歡迎光臨&quot;;
+let template = `溫度是 ${temperature} 度`;  // 模板字串
+
+// 布林值
+let isOnline = true;
+let hasError = false;
+
+// 陣列
+let fruits = ['蘋果', '香蕉', '橘子'];
+let numbers = [1, 2, 3, 4, 5];
+let mixed = [1, 'hello', true];
+
+// 物件
+let person = {
+    name: '小明',
+    age: 25,
+    isStudent: true
+};
+
+let sensor = {
+    type: 'DHT11',
+    temperature: 25.5,
+    humidity: 60
+};
+
+// 檢查型別
+console.log(typeof age);        // &quot;number&quot;
+console.log(typeof name);       // &quot;string&quot;
+console.log(typeof isOnline);   // &quot;boolean&quot;
+console.log(typeof fruits);     // &quot;object&quot;（陣列也是物件）
+</code></pre>
+<h3 id="_20">運算子</h3>
+<pre><code class="language-javascript">// 算術運算
+let a = 10 + 5;   // 15
+let b = 10 - 5;   // 5
+let c = 10 * 5;   // 50
+let d = 10 / 5;   // 2
+let e = 10 % 3;   // 1（餘數）
+
+// 比較運算
+console.log(5 == '5');    // true（值相等）
+console.log(5 === '5');   // false（值和型別都要相等，推薦使用）
+console.log(5 !== '5');   // true（不完全相等）
+console.log(10 &gt; 5);      // true
+console.log(10 &gt;= 10);    // true
+
+// 邏輯運算
+console.log(true &amp;&amp; false);   // false（且）
+console.log(true || false);   // true（或）
+console.log(!true);           // false（非）
+
+// 實際應用
+let temp = 28;
+let humidity = 70;
+
+if (temp &gt; 30 &amp;&amp; humidity &gt; 80) {
+    console.log('高溫高濕警告！');
+}
+
+if (temp &gt; 35 || humidity &gt; 90) {
+    console.log('環境異常！');
+}
+</code></pre>
+<h3 id="_21">條件判斷</h3>
+<pre><code class="language-javascript">// if-else
+let temperature = 28;
+
+if (temperature &gt; 35) {
+    console.log('溫度過高！啟動降溫');
+} else if (temperature &gt; 30) {
+    console.log('溫度偏高，注意觀察');
+} else if (temperature &lt; 15) {
+    console.log('溫度過低！啟動加溫');
+} else {
+    console.log('溫度正常');
+}
+
+// 三元運算子（簡短的 if-else）
+let status = temperature &gt; 30 ? '過熱' : '正常';
+console.log(status);
+
+// switch
+let mode = 'auto';
+
+switch (mode) {
+    case 'auto':
+        console.log('自動模式');
+        break;
+    case 'manual':
+        console.log('手動模式');
+        break;
+    case 'schedule':
+        console.log('排程模式');
+        break;
+    default:
+        console.log('未知模式');
+}
+</code></pre>
+<h3 id="_22">迴圈</h3>
+<pre><code class="language-javascript">// for 迴圈
+for (let i = 0; i &lt; 5; i++) {
+    console.log(`第 ${i + 1} 次`);
+}
+
+// 遍歷陣列
+let sensors = ['溫度', '濕度', '土壤'];
+
+for (let i = 0; i &lt; sensors.length; i++) {
+    console.log(sensors[i]);
+}
+
+// for...of（推薦遍歷陣列）
+for (let sensor of sensors) {
+    console.log(sensor);
+}
+
+// forEach
+sensors.forEach(function(sensor, index) {
+    console.log(`${index + 1}. ${sensor}`);
+});
+
+// 箭頭函數寫法
+sensors.forEach((sensor, index) =&gt; {
+    console.log(`${index + 1}. ${sensor}`);
+});
+
+// while 迴圈
+let count = 0;
+while (count &lt; 3) {
+    console.log(`計數: ${count}`);
+    count++;
+}
+</code></pre>
+<h3 id="_23">函數</h3>
+<pre><code class="language-javascript">// 函數宣告
+function greet(name) {
+    return `你好，${name}！`;
+}
+
+console.log(greet('小明'));  // &quot;你好，小明！&quot;
+
+// 帶預設值的參數
+function setTemperature(temp = 25) {
+    console.log(`設定溫度為 ${temp} 度`);
+}
+
+setTemperature();      // &quot;設定溫度為 25 度&quot;
+setTemperature(28);    // &quot;設定溫度為 28 度&quot;
+
+// 箭頭函數（簡潔寫法）
+const add = (a, b) =&gt; a + b;
+console.log(add(3, 5));  // 8
+
+const square = x =&gt; x * x;
+console.log(square(4));  // 16
+
+// 較長的箭頭函數
+const checkTemperature = (temp) =&gt; {
+    if (temp &gt; 30) {
+        return '過熱';
+    } else if (temp &lt; 15) {
+        return '過冷';
+    } else {
+        return '正常';
+    }
+};
+
+console.log(checkTemperature(28));  // &quot;正常&quot;
+</code></pre>
+<h3 id="_24">陣列方法</h3>
+<pre><code class="language-javascript">let numbers = [1, 2, 3, 4, 5];
+
+// 新增元素
+numbers.push(6);           // 尾端加入
+numbers.unshift(0);        // 開頭加入
+
+// 移除元素
+numbers.pop();             // 移除最後一個
+numbers.shift();           // 移除第一個
+
+// 找元素
+console.log(numbers.includes(3));     // true
+console.log(numbers.indexOf(3));      // 2
+
+// map：轉換每個元素
+let doubled = numbers.map(n =&gt; n * 2);
+console.log(doubled);  // [2, 4, 6, 8, 10]
+
+// filter：過濾元素
+let bigNumbers = numbers.filter(n =&gt; n &gt; 2);
+console.log(bigNumbers);  // [3, 4, 5]
+
+// find：找到第一個符合條件的元素
+let found = numbers.find(n =&gt; n &gt; 3);
+console.log(found);  // 4
+
+// reduce：累積計算
+let sum = numbers.reduce((acc, n) =&gt; acc + n, 0);
+console.log(sum);  // 15
+
+// 實際應用：處理感測器資料
+let sensorData = [
+    { time: '08:00', temp: 22 },
+    { time: '12:00', temp: 28 },
+    { time: '18:00', temp: 25 }
+];
+
+// 取得所有溫度
+let temps = sensorData.map(d =&gt; d.temp);
+console.log(temps);  // [22, 28, 25]
+
+// 找高溫記錄
+let hotRecords = sensorData.filter(d =&gt; d.temp &gt; 25);
+console.log(hotRecords);  // [{ time: '12:00', temp: 28 }]
+
+// 計算平均溫度
+let avgTemp = temps.reduce((a, b) =&gt; a + b, 0) / temps.length;
+console.log(avgTemp);  // 25
+</code></pre>
+<hr />
+<h2 id="dom">DOM 操作</h2>
+<p>DOM（Document Object Model）讓 JavaScript 可以存取和修改 HTML 元素。</p>
+<h3 id="_25">選取元素</h3>
+<pre><code class="language-javascript">// 用 ID 選取（返回單一元素）
+const header = document.getElementById('header');
+
+// 用 class 選取（返回集合）
+const cards = document.getElementsByClassName('card');
+
+// 用標籤選取（返回集合）
+const paragraphs = document.getElementsByTagName('p');
+
+// 用 CSS 選擇器選取（推薦）
+const element = document.querySelector('#header');           // 單一元素
+const elements = document.querySelectorAll('.card');         // 所有符合的元素
+const button = document.querySelector('.control button');    // 複合選擇器
+</code></pre>
+<h3 id="_26">修改內容</h3>
+<pre><code class="language-javascript">// 修改文字內容
+const display = document.getElementById('temperature');
+display.textContent = '28°C';
+
+// 修改 HTML 內容
+const container = document.getElementById('message');
+container.innerHTML = '&lt;strong&gt;警告：&lt;/strong&gt;溫度過高！';
+
+// 修改屬性
+const image = document.querySelector('img');
+image.src = 'new-image.jpg';
+image.alt = '新圖片';
+
+// 修改樣式
+const box = document.querySelector('.box');
+box.style.backgroundColor = 'red';
+box.style.color = 'white';
+box.style.padding = '20px';
+
+// 修改 class
+const button = document.querySelector('button');
+button.classList.add('active');       // 新增 class
+button.classList.remove('disabled');  // 移除 class
+button.classList.toggle('on');        // 切換 class
+button.classList.contains('active');  // 檢查是否有該 class
+</code></pre>
+<h3 id="_27">事件處理</h3>
+<pre><code class="language-javascript">// 點擊事件
+const button = document.getElementById('myButton');
+
+button.addEventListener('click', function() {
+    alert('按鈕被點擊了！');
+});
+
+// 箭頭函數寫法
+button.addEventListener('click', () =&gt; {
+    alert('按鈕被點擊了！');
+});
+
+// 常用事件
+element.addEventListener('click', handler);       // 點擊
+element.addEventListener('dblclick', handler);    // 雙擊
+element.addEventListener('mouseover', handler);   // 滑鼠進入
+element.addEventListener('mouseout', handler);    // 滑鼠離開
+element.addEventListener('keydown', handler);     // 按下鍵盤
+element.addEventListener('keyup', handler);       // 放開鍵盤
+element.addEventListener('change', handler);      // 值改變
+element.addEventListener('submit', handler);      // 表單提交
+element.addEventListener('load', handler);        // 載入完成
+
+// 事件物件
+button.addEventListener('click', (event) =&gt; {
+    console.log(event.target);        // 被點擊的元素
+    console.log(event.type);          // 事件類型
+    event.preventDefault();           // 阻止預設行為
+    event.stopPropagation();          // 停止事件傳播
+});
+
+// 表單提交處理
+const form = document.getElementById('myForm');
+
+form.addEventListener('submit', (event) =&gt; {
+    event.preventDefault();  // 阻止頁面刷新
+
+    const nameInput = document.getElementById('name');
+    const name = nameInput.value;
+
+    console.log(`提交的姓名: ${name}`);
+});
+</code></pre>
+<h3 id="_28">動態建立元素</h3>
+<pre><code class="language-javascript">// 建立新元素
+const newDiv = document.createElement('div');
+newDiv.className = 'card';
+newDiv.textContent = '這是新卡片';
+
+// 加入到頁面
+const container = document.getElementById('container');
+container.appendChild(newDiv);
+
+// 插入到特定位置
+container.insertBefore(newDiv, container.firstChild);  // 插入到開頭
+
+// 移除元素
+newDiv.remove();
+
+// 批次建立元素
+const items = ['項目一', '項目二', '項目三'];
+const list = document.getElementById('list');
+
+items.forEach(item =&gt; {
+    const li = document.createElement('li');
+    li.textContent = item;
+    list.appendChild(li);
+});
+</code></pre>
+<hr />
+<h2 id="_29">非同步操作</h2>
+<h3 id="settimeout-setinterval">setTimeout 和 setInterval</h3>
+<pre><code class="language-javascript">// setTimeout：延遲執行一次
+setTimeout(() =&gt; {
+    console.log('3 秒後執行');
+}, 3000);
+
+// setInterval：每隔一段時間重複執行
+let count = 0;
+const intervalId = setInterval(() =&gt; {
+    count++;
+    console.log(`已執行 ${count} 次`);
+
+    if (count &gt;= 5) {
+        clearInterval(intervalId);  // 停止
+        console.log('已停止');
+    }
+}, 1000);
+
+// 實際應用：自動更新顯示
+function updateDisplay() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    document.getElementById('clock').textContent = timeString;
+}
+
+setInterval(updateDisplay, 1000);  // 每秒更新時鐘
+</code></pre>
+<h3 id="fetch-api">Fetch API（網路請求）</h3>
+<pre><code class="language-javascript">// GET 請求：取得資料
+fetch('https://api.example.com/data')
+    .then(response =&gt; response.json())
+    .then(data =&gt; {
+        console.log(data);
+    })
+    .catch(error =&gt; {
+        console.error('錯誤:', error);
+    });
+
+// async/await 寫法（推薦）
+async function fetchData() {
+    try {
+        const response = await fetch('https://api.example.com/data');
+        const data = await response.json();
+        console.log(data);
+        return data;
+    } catch (error) {
+        console.error('錯誤:', error);
+    }
+}
+
+// POST 請求：發送資料
+async function sendData(sensorData) {
+    try {
+        const response = await fetch('https://api.example.com/data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(sensorData)
+        });
+
+        const result = await response.json();
+        console.log('發送成功:', result);
+    } catch (error) {
+        console.error('發送失敗:', error);
+    }
+}
+
+// 使用範例
+sendData({
+    temperature: 28,
+    humidity: 65,
+    timestamp: Date.now()
+});
+</code></pre>
+<h3 id="localstorage">LocalStorage（本地儲存）</h3>
+<pre><code class="language-javascript">// 儲存資料
+localStorage.setItem('username', '小明');
+localStorage.setItem('settings', JSON.stringify({
+    theme: 'dark',
+    language: 'zh-TW'
+}));
+
+// 讀取資料
+const username = localStorage.getItem('username');
+console.log(username);  // &quot;小明&quot;
+
+const settings = JSON.parse(localStorage.getItem('settings'));
+console.log(settings.theme);  // &quot;dark&quot;
+
+// 刪除資料
+localStorage.removeItem('username');
+
+// 清除所有資料
+localStorage.clear();
+
+// 實際應用：記住使用者設定
+function saveSettings(settings) {
+    localStorage.setItem('userSettings', JSON.stringify(settings));
+}
+
+function loadSettings() {
+    const saved = localStorage.getItem('userSettings');
+    return saved ? JSON.parse(saved) : { theme: 'light', autoRefresh: true };
+}
+
+// 頁面載入時恢復設定
+document.addEventListener('DOMContentLoaded', () =&gt; {
+    const settings = loadSettings();
+    applySettings(settings);
+});
+</code></pre>
+<hr />
+<h2 id="javascript_3">JavaScript 範例：智慧溫室控制</h2>
+<pre><code class="language-javascript">// ============================================
+// 智慧溫室監控系統 - JavaScript 程式碼
+// ============================================
+
+// 全域狀態
+let sensorData = {
+    temperature: 0,
+    humidity: 0,
+    soil: 0
+};
+
+let deviceStatus = {
+    fan: false,
+    pump: false,
+    light: false
+};
+
+// 歷史記錄
+let historyData = [];
+
+// ============================================
+// DOM 元素參考
+// ============================================
+const elements = {
+    temperature: document.getElementById('temperature'),
+    humidity: document.getElementById('humidity'),
+    soil: document.getElementById('soil'),
+    fanBtn: document.getElementById('fan-btn'),
+    pumpBtn: document.getElementById('pump-btn'),
+    lightBtn: document.getElementById('light-btn'),
+    historyTable: document.getElementById('history-table')
+};
+
+// ============================================
+// 更新顯示
+// ============================================
+function updateDisplay() {
+    elements.temperature.textContent = `${sensorData.temperature}°C`;
+    elements.humidity.textContent = `${sensorData.humidity}%`;
+    elements.soil.textContent = `${sensorData.soil}%`;
+
+    // 根據數值改變顏色
+    if (sensorData.temperature &gt; 30) {
+        elements.temperature.style.color = '#ff4444';
+    } else if (sensorData.temperature &lt; 15) {
+        elements.temperature.style.color = '#4444ff';
+    } else {
+        elements.temperature.style.color = '#333';
+    }
+}
+
+function updateButtonStatus() {
+    // 更新風扇按鈕
+    elements.fanBtn.textContent = deviceStatus.fan ? '開啟' : '關閉';
+    elements.fanBtn.className = deviceStatus.fan ? 'on' : 'off';
+
+    // 更新水泵按鈕
+    elements.pumpBtn.textContent = deviceStatus.pump ? '開啟' : '關閉';
+    elements.pumpBtn.className = deviceStatus.pump ? 'on' : 'off';
+
+    // 更新照明按鈕
+    elements.lightBtn.textContent = deviceStatus.light ? '開啟' : '關閉';
+    elements.lightBtn.className = deviceStatus.light ? 'on' : 'off';
+}
+
+// ============================================
+// 控制設備
+// ============================================
+function toggleDevice(device) {
+    deviceStatus[device] = !deviceStatus[device];
+    updateButtonStatus();
+
+    // 這裡可以發送控制指令到伺服器
+    console.log(`${device} 已${deviceStatus[device] ? '開啟' : '關閉'}`);
+
+    // 發送到後端 API（範例）
+    // sendCommand(device, deviceStatus[device]);
+}
+
+// 發送控制指令到伺服器
+async function sendCommand(device, status) {
+    try {
+        const response = await fetch('/api/control', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                device: device,
+                status: status
+            })
+        });
+
+        const result = await response.json();
+        console.log('指令發送成功:', result);
+    } catch (error) {
+        console.error('指令發送失敗:', error);
+    }
+}
+
+// ============================================
+// 歷史記錄
+// ============================================
+function addHistoryRecord() {
+    const now = new Date();
+    const record = {
+        time: now.toLocaleTimeString(),
+        temperature: sensorData.temperature,
+        humidity: sensorData.humidity,
+        soil: sensorData.soil
+    };
+
+    historyData.unshift(record);
+
+    // 只保留最近 10 筆
+    if (historyData.length &gt; 10) {
+        historyData.pop();
+    }
+
+    updateHistoryTable();
+}
+
+function updateHistoryTable() {
+    elements.historyTable.innerHTML = '';
+
+    historyData.forEach(record =&gt; {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            &lt;td&gt;${record.time}&lt;/td&gt;
+            &lt;td&gt;${record.temperature}°C&lt;/td&gt;
+            &lt;td&gt;${record.humidity}%&lt;/td&gt;
+            &lt;td&gt;${record.soil}%&lt;/td&gt;
+        `;
+        elements.historyTable.appendChild(row);
+    });
+}
+
+// ============================================
+// 模擬感測器資料（實際應用中會從 API 取得）
+// ============================================
+function simulateSensorData() {
+    // 模擬數據變化
+    sensorData.temperature = Math.round(20 + Math.random() * 15);
+    sensorData.humidity = Math.round(40 + Math.random() * 40);
+    sensorData.soil = Math.round(30 + Math.random() * 50);
+
+    updateDisplay();
+    addHistoryRecord();
+}
+
+// 從 API 取得真實資料
+async function fetchSensorData() {
+    try {
+        const response = await fetch('/api/sensors');
+        const data = await response.json();
+
+        sensorData.temperature = data.temperature;
+        sensorData.humidity = data.humidity;
+        sensorData.soil = data.soil;
+
+        updateDisplay();
+        addHistoryRecord();
+    } catch (error) {
+        console.error('取得感測器資料失敗:', error);
+    }
+}
+
+// ============================================
+// 自動控制邏輯
+// ============================================
+function autoControl() {
+    // 溫度過高時開啟風扇
+    if (sensorData.temperature &gt; 30 &amp;&amp; !deviceStatus.fan) {
+        toggleDevice('fan');
+        showNotification('溫度過高，已自動開啟風扇');
+    }
+
+    // 溫度正常時關閉風扇
+    if (sensorData.temperature &lt; 25 &amp;&amp; deviceStatus.fan) {
+        toggleDevice('fan');
+        showNotification('溫度正常，已自動關閉風扇');
+    }
+
+    // 土壤太乾時開啟水泵
+    if (sensorData.soil &lt; 30 &amp;&amp; !deviceStatus.pump) {
+        toggleDevice('pump');
+        showNotification('土壤過乾，已自動開啟灌溉');
+    }
+
+    // 土壤濕度足夠時關閉水泵
+    if (sensorData.soil &gt; 60 &amp;&amp; deviceStatus.pump) {
+        toggleDevice('pump');
+        showNotification('土壤濕度足夠，已自動關閉灌溉');
+    }
+}
+
+function showNotification(message) {
+    console.log('通知:', message);
+    // 可以用更好看的通知元件
+    // alert(message);
+}
+
+// ============================================
+// 事件綁定
+// ============================================
+function bindEvents() {
+    elements.fanBtn.addEventListener('click', () =&gt; toggleDevice('fan'));
+    elements.pumpBtn.addEventListener('click', () =&gt; toggleDevice('pump'));
+    elements.lightBtn.addEventListener('click', () =&gt; toggleDevice('light'));
+}
+
+// ============================================
+// 初始化
+// ============================================
+function init() {
+    bindEvents();
+    updateButtonStatus();
+
+    // 初始模擬資料
+    simulateSensorData();
+
+    // 每 5 秒更新一次資料
+    setInterval(() =&gt; {
+        simulateSensorData();  // 模擬用
+        // fetchSensorData(); // 實際應用時改用這個
+        autoControl();
+    }, 5000);
+}
+
+// 頁面載入完成後執行
+document.addEventListener('DOMContentLoaded', init);
+</code></pre>
+<hr />
+<h2 id="mqtt">與 MQTT 整合</h2>
+<p>在物聯網應用中，我們經常使用 MQTT 接收即時數據：</p>
+<pre><code class="language-html">&lt;!-- 引入 MQTT.js 函式庫 --&gt;
+&lt;script src=&quot;https://unpkg.com/mqtt/dist/mqtt.min.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<pre><code class="language-javascript">// MQTT 連接設定
+const mqttBroker = 'wss://broker.hivemq.com:8884/mqtt';
+const topic = 'greenhouse/sensors';
+
+// 建立連接
+const client = mqtt.connect(mqttBroker);
+
+// 連接成功
+client.on('connect', () =&gt; {
+    console.log('MQTT 已連接');
+
+    // 訂閱主題
+    client.subscribe(topic, (err) =&gt; {
+        if (!err) {
+            console.log(`已訂閱: ${topic}`);
+        }
+    });
+});
+
+// 收到訊息
+client.on('message', (topic, message) =&gt; {
+    console.log(`收到訊息 [${topic}]:`, message.toString());
+
+    try {
+        const data = JSON.parse(message.toString());
+
+        // 更新感測器數據
+        sensorData.temperature = data.temp || data.temperature;
+        sensorData.humidity = data.humi || data.humidity;
+        sensorData.soil = data.soil;
+
+        updateDisplay();
+        addHistoryRecord();
+        autoControl();
+    } catch (error) {
+        console.error('解析訊息失敗:', error);
+    }
+});
+
+// 發布控制指令
+function publishCommand(device, status) {
+    const command = JSON.stringify({
+        device: device,
+        status: status
+    });
+
+    client.publish('greenhouse/control', command);
+    console.log('已發送控制指令:', command);
+}
+
+// 連接錯誤處理
+client.on('error', (error) =&gt; {
+    console.error('MQTT 錯誤:', error);
+});
+
+// 斷線處理
+client.on('close', () =&gt; {
+    console.log('MQTT 連接已關閉');
+});
+</code></pre>
+<hr />
+<h2 id="_30">常見問題與除錯</h2>
+<h3 id="javascript_4">問題一：JavaScript 沒有執行</h3>
+<pre><code>可能原因：
+1. 腳本放在元素之前
+2. 語法錯誤
+3. 檔案路徑錯誤
+
+解決方案：
+1. 將 &lt;script&gt; 放在 &lt;/body&gt; 前
+2. 開啟瀏覽器開發者工具（F12）查看 Console 錯誤訊息
+3. 確認 src 路徑正確
+</code></pre>
+<h3 id="null">問題二：元素找不到（null）</h3>
+<pre><code class="language-javascript">// 錯誤：腳本在 DOM 載入前執行
+const element = document.getElementById('myId');  // null
+
+// 解決方案一：將腳本放在 body 結尾
+
+// 解決方案二：使用 DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () =&gt; {
+    const element = document.getElementById('myId');
+    // 現在可以正常使用了
+});
+</code></pre>
+<h3 id="_31">問題三：事件沒有觸發</h3>
+<pre><code class="language-javascript">// 錯誤：直接呼叫函數
+button.addEventListener('click', handleClick());  // 錯誤！
+
+// 正確：傳入函數參考
+button.addEventListener('click', handleClick);    // 正確
+
+// 或使用箭頭函數
+button.addEventListener('click', () =&gt; {
+    handleClick();
+});
+</code></pre>
+<h3 id="_32">問題四：非同步順序問題</h3>
+<pre><code class="language-javascript">// 錯誤：資料還沒載入就使用
+let data;
+fetch('/api/data').then(res =&gt; res.json()).then(d =&gt; data = d);
+console.log(data);  // undefined
+
+// 正確：在取得資料後才使用
+async function loadData() {
+    const response = await fetch('/api/data');
+    const data = await response.json();
+    console.log(data);  // 正確
+}
+</code></pre>
+<hr />
+<h2 id="_33">開發工具使用</h2>
+<h3 id="_34">瀏覽器開發者工具</h3>
+<pre><code>開啟方式：
+- 按 F12
+- 右鍵 → 檢查
+- Ctrl + Shift + I (Windows)
+- Cmd + Option + I (Mac)
+
+常用面板：
+┌─────────────────────────────────────────────────────────────────┐
+│  Elements    │ 查看/編輯 HTML 和 CSS                            │
+│  Console     │ 執行 JavaScript、查看錯誤和 log                  │
+│  Network     │ 監控網路請求                                     │
+│  Sources     │ 除錯 JavaScript、設定中斷點                      │
+│  Application │ 查看 LocalStorage、Cookies 等                    │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="console">Console 常用方法</h3>
+<pre><code class="language-javascript">// 一般輸出
+console.log('一般訊息');
+
+// 警告
+console.warn('警告訊息');
+
+// 錯誤
+console.error('錯誤訊息');
+
+// 表格顯示
+console.table([
+    { name: '溫度', value: 28 },
+    { name: '濕度', value: 65 }
+]);
+
+// 分組
+console.group('感測器資料');
+console.log('溫度: 28°C');
+console.log('濕度: 65%');
+console.groupEnd();
+
+// 計時
+console.time('載入時間');
+// ... 一些操作
+console.timeEnd('載入時間');  // 顯示執行時間
+</code></pre>
+<hr />
+<h2 id="_35">快速參考</h2>
+<h3 id="html_5">HTML 標籤速查</h3>
+<pre><code>結構標籤：html, head, body, header, main, footer, nav, section, article, aside, div
+文字標籤：h1-h6, p, span, strong, em, br, hr
+清單標籤：ul, ol, li
+連結圖片：a, img
+表格標籤：table, thead, tbody, tr, th, td
+表單標籤：form, input, textarea, select, option, button, label
+</code></pre>
+<h3 id="css_6">CSS 屬性速查</h3>
+<pre><code>文字：color, font-size, font-weight, text-align, line-height
+盒模型：width, height, margin, padding, border
+背景：background-color, background-image
+排版：display, flex, justify-content, align-items, gap
+定位：position, top, left, z-index
+效果：box-shadow, border-radius, opacity, transition, animation
+</code></pre>
+<h3 id="javascript_5">JavaScript 速查</h3>
+<pre><code class="language-javascript">// 選取元素
+document.getElementById('id')
+document.querySelector('.class')
+document.querySelectorAll('selector')
+
+// 修改內容
+element.textContent = 'text'
+element.innerHTML = '&lt;html&gt;'
+element.style.property = 'value'
+element.classList.add/remove/toggle('class')
+
+// 事件
+element.addEventListener('event', handler)
+
+// 常用事件：click, submit, change, keydown, load
+
+// 非同步
+setTimeout(fn, ms)
+setInterval(fn, ms)
+fetch(url).then(res =&gt; res.json())
+async/await
+</code></pre>
+<hr />
+<h2 id="_36">延伸學習</h2>
+<ul>
+<li><a href="關於MQTT訊息.md">關於MQTT訊息</a> - 物聯網即時通訊</li>
+<li><a href="關於ESP-01_WiFi模組.md">關於ESP-01_WiFi模組</a> - 硬體端 WiFi 連接</li>
+</ul>
+<h3 id="_37">線上學習資源</h3>
+<ul>
+<li><strong>MDN Web Docs</strong>：https://developer.mozilla.org/zh-TW/</li>
+<li><strong>W3Schools</strong>：https://www.w3schools.com/</li>
+<li><strong>freeCodeCamp</strong>：https://www.freecodecamp.org/</li>
+</ul>
+<hr />
+<h2 id="_38">本文件適用於</h2>
+<ul>
+<li><strong>G6 組</strong>：物聯網監控介面開發</li>
+<li>需要建立網頁儀表板的專案</li>
+<li>想學習網頁前端基礎的學員</li>
+</ul>
+<hr />
+<blockquote>
+<p>提示：HTML、CSS、JavaScript 三者缺一不可，建議按順序學習，先理解結構，再學習樣式，最後加入互動功能！</p>
+</blockquote>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

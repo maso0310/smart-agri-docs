@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>G2_溫溼度控制組 操作手冊</title>
+    
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1>第二組：溫溼度控制組 操作手冊</h1>
+
+<h2>任務說明</h2>
+<p>本組負責智慧溫室的<strong>溫溼度感測與控制</strong>功能，包含：</p>
+<ul>
+<li>使用 DHT11 感測器測量溫度與濕度</li>
+<li>使用繼電器控制風扇（降溫）和霧化器（加濕）</li>
+<li>當溫度過高時自動啟動風扇</li>
+<li>當濕度過低時自動啟動霧化器</li>
+</ul>
+<p>這是溫室環境控制最核心的功能之一！</p>
+
+<blockquote>
+<strong>🌡️ 你知道嗎？</strong><br>
+溫度和濕度是影響植物生長最重要的兩個環境因素。溫度過高會導致植物蒸散作用過強而脫水，溫度過低則會減緩生長甚至凍傷。濕度過低會使葉片乾枯，過高則容易滋生病菌。智慧溫室透過自動監控與調節，可以維持最適合植物生長的環境！
+</blockquote>
+
+<hr />
+
+<h2>學習目標</h2>
+<ol>
+<li>認識 DHT11 溫溼度感測器的工作原理</li>
+<li>學習使用 Arduino 函式庫讀取感測器資料</li>
+<li>了解繼電器的工作原理與控制方式</li>
+<li>實現基於溫溼度的自動控制邏輯</li>
+<li>學習遲滯控制（Hysteresis）避免頻繁開關</li>
+<li>整合多個感測器與執行器</li>
+</ol>
+
+<hr />
+<h2>材料清單</h2>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>數量</th>
+<th>規格說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arduino UNO</td>
+<td>1</td>
+<td>主控板</td>
+</tr>
+<tr>
+<td>麵包板</td>
+<td>1</td>
+<td>830 孔</td>
+</tr>
+<tr>
+<td>DHT11 溫溼度感測器</td>
+<td>1</td>
+<td>三腳位模組版（已含提升電阻）</td>
+</tr>
+<tr>
+<td>繼電器模組</td>
+<td>2</td>
+<td>5V 單路繼電器（高/低電平觸發）</td>
+</tr>
+<tr>
+<td>LED（紅色）</td>
+<td>1</td>
+<td>模擬風扇狀態</td>
+</tr>
+<tr>
+<td>LED（藍色）</td>
+<td>1</td>
+<td>模擬霧化器狀態</td>
+</tr>
+<tr>
+<td>220Ω 電阻</td>
+<td>2</td>
+<td>LED 限流用</td>
+</tr>
+<tr>
+<td>杜邦線</td>
+<td>若干</td>
+<td>公對公、公對母</td>
+</tr>
+<tr>
+<td>USB 傳輸線</td>
+<td>1</td>
+<td>Type-A 對 Type-B</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>腳位對照表</h2>
+<table>
+<thead>
+<tr>
+<th>元件</th>
+<th>Arduino 腳位</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DHT11 訊號</td>
+<td>D2</td>
+<td>數據線</td>
+</tr>
+<tr>
+<td>DHT11 VCC</td>
+<td>5V</td>
+<td>電源正極</td>
+</tr>
+<tr>
+<td>DHT11 GND</td>
+<td>GND</td>
+<td>電源負極</td>
+</tr>
+<tr>
+<td>繼電器1（風扇）</td>
+<td>D7</td>
+<td>控制風扇繼電器</td>
+</tr>
+<tr>
+<td>繼電器2（霧化器）</td>
+<td>D8</td>
+<td>控制霧化器繼電器</td>
+</tr>
+<tr>
+<td>紅色 LED</td>
+<td>D5</td>
+<td>風扇狀態指示（PWM）</td>
+</tr>
+<tr>
+<td>藍色 LED</td>
+<td>D6</td>
+<td>霧化器狀態指示（PWM）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>接線圖</h2>
+<h3>DHT11 接線</h3>
+<pre><code>DHT11 模組（三腳位版）:
+┌─────────┐
+│  DHT11  │
+│ ┌─┬─┬─┐ │
+│ │S│+│-│ │
+└─┴─┴─┴─┴─┘
+  │ │ │
+  │ │ └──→ GND
+  │ └────→ 5V
+  └──────→ D2
+</code></pre>
+<h3>繼電器接線</h3>
+<pre><code>繼電器模組（每個繼電器）:
+┌──────────────┐
+│   RELAY      │
+│  ┌───────┐   │
+│  │ VCC   │───→ 5V
+│  │ GND   │───→ GND
+│  │ IN    │───→ D7（風扇）或 D8（霧化器）
+│  └───────┘   │
+└──────────────┘
+
+注意：繼電器可能是高電平或低電平觸發
+- 高電平觸發：IN = HIGH 時繼電器吸合
+- 低電平觸發：IN = LOW 時繼電器吸合
+請確認你的繼電器類型！
+</code></pre>
+<h3>LED 狀態燈接線</h3>
+<pre><code>Arduino D5 ──[220Ω]──→ 紅色LED正極 ──→ GND（風扇狀態）
+Arduino D6 ──[220Ω]──→ 藍色LED正極 ──→ GND（霧化器狀態）
+</code></pre>
+<h3>完整接線示意圖</h3>
+<pre><code>                    ┌─────────────────────────┐
+                    │      Arduino UNO        │
+                    │                         │
+     DHT11 ─────────┤ D2                   5V ├───┬───┬─── DHT11(+)
+                    │                         │   │   │
+  繼電器1(風扇) ────┤ D7                  GND ├───┴───┴─── 共地
+                    │                         │
+  繼電器2(霧化) ────┤ D8                      │
+                    │                         │
+    紅LED ──[220Ω]──┤ D5                      │
+                    │                         │
+    藍LED ──[220Ω]──┤ D6                      │
+                    └─────────────────────────┘
+</code></pre>
+<hr />
+<h2>安裝 DHT 函式庫</h2>
+<p>使用 DHT11 需要安裝函式庫：</p>
+<ol>
+<li>開啟 Arduino IDE</li>
+<li>選單：<code>工具</code> → <code>管理程式庫...</code></li>
+<li>搜尋 <code>DHT sensor library</code></li>
+<li>找到 <strong>Adafruit</strong> 出品的 <code>DHT sensor library</code></li>
+<li>點擊「安裝」</li>
+<li>如果提示安裝相依套件，選「全部安裝」</li>
+</ol>
+<hr />
+
+<h2>程式碼範例</h2>
+
+<h3>範例 1：DHT11 溫溼度讀取</h3>
+<p><strong>學習重點</strong>：DHT11 感測器初始化、讀取溫度與濕度數值、處理讀取失敗的情況</p>
+
+<pre><code class="language-cpp">/*
+ * 01_DHT11_Basic.ino
+ * DHT11 溫溼度感測器基礎讀取
+ * 功能：每 2 秒讀取並顯示溫溼度
+ */
+
+#include &lt;DHT.h&gt;
+
+#define DHT_PIN 2       // DHT11 資料腳位
+#define DHT_TYPE DHT11  // 感測器類型
+
+DHT dht(DHT_PIN, DHT_TYPE);
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+
+  Serial.println("=====================================");
+  Serial.println("   DHT11 溫溼度感測器測試程式");
+  Serial.println("=====================================");
+  Serial.println();
+}
+
+void loop() {
+  // 等待 2 秒（DHT11 最快取樣速度為 1Hz）
+  delay(2000);
+
+  // 讀取濕度
+  float humidity = dht.readHumidity();
+  // 讀取溫度（攝氏）
+  float temperature = dht.readTemperature();
+
+  // 檢查是否讀取失敗
+  if (isnan(humidity) || isnan(temperature)) {
+    Serial.println("❌ 錯誤：無法讀取 DHT11 感測器！");
+    Serial.println("   請檢查接線是否正確");
+    return;
+  }
+
+  // 計算體感溫度（Heat Index）
+  float heatIndex = dht.computeHeatIndex(temperature, humidity, false);
+
+  // 顯示結果
+  Serial.print("🌡️ 溫度: ");
+  Serial.print(temperature);
+  Serial.print(" °C  |  ");
+
+  Serial.print("💧 濕度: ");
+  Serial.print(humidity);
+  Serial.print(" %  |  ");
+
+  Serial.print("🌡️ 體感溫度: ");
+  Serial.print(heatIndex);
+  Serial.println(" °C");
+}
+</code></pre>
+
+<blockquote>
+<strong>🔍 程式解說</strong><br>
+• <code>DHT dht(pin, type)</code>：建立 DHT 物件<br>
+• <code>dht.begin()</code>：初始化感測器<br>
+• <code>dht.readTemperature()</code>：讀取溫度（攝氏）<br>
+• <code>dht.readHumidity()</code>：讀取濕度（%）<br>
+• <code>isnan()</code>：檢查是否為無效數值（讀取失敗時會回傳 NaN）
+</blockquote>
+
+<hr />
+
+<h3>範例 2：繼電器控制測試</h3>
+<p><strong>學習重點</strong>：繼電器工作原理、digitalWrite() 控制繼電器、高/低電平觸發差異</p>
+
+<pre><code class="language-cpp">/*
+ * 02_Relay_Control.ino
+ * 繼電器控制測試
+ * 功能：每 3 秒切換繼電器狀態
+ */
+
+#define RELAY_FAN 7       // 風扇繼電器
+#define RELAY_HUMIDIFIER 8  // 霧化器繼電器
+#define LED_FAN 5         // 風扇狀態 LED
+#define LED_HUMIDIFIER 6  // 霧化器狀態 LED
+
+// 設定繼電器觸發電平（根據你的繼電器模組調整）
+// true = 高電平觸發（HIGH 開啟）
+// false = 低電平觸發（LOW 開啟）
+#define RELAY_ACTIVE_HIGH true
+
+void setup() {
+  pinMode(RELAY_FAN, OUTPUT);
+  pinMode(RELAY_HUMIDIFIER, OUTPUT);
+  pinMode(LED_FAN, OUTPUT);
+  pinMode(LED_HUMIDIFIER, OUTPUT);
+
+  // 初始狀態：全部關閉
+  relayOff(RELAY_FAN);
+  relayOff(RELAY_HUMIDIFIER);
+  digitalWrite(LED_FAN, LOW);
+  digitalWrite(LED_HUMIDIFIER, LOW);
+
+  Serial.begin(9600);
+  Serial.println("=====================================");
+  Serial.println("      繼電器控制測試程式");
+  Serial.println("=====================================");
+  Serial.println();
+  Serial.println("每 3 秒切換一次狀態，請聽繼電器喀嗒聲");
+  Serial.println();
+}
+
+void loop() {
+  // 測試風扇繼電器
+  Serial.println("🔴 風扇繼電器 ON");
+  relayOn(RELAY_FAN);
+  digitalWrite(LED_FAN, HIGH);
+  delay(3000);
+
+  Serial.println("⚫ 風扇繼電器 OFF");
+  relayOff(RELAY_FAN);
+  digitalWrite(LED_FAN, LOW);
+  delay(1000);
+
+  // 測試霧化器繼電器
+  Serial.println("🔵 霧化器繼電器 ON");
+  relayOn(RELAY_HUMIDIFIER);
+  digitalWrite(LED_HUMIDIFIER, HIGH);
+  delay(3000);
+
+  Serial.println("⚫ 霧化器繼電器 OFF");
+  relayOff(RELAY_HUMIDIFIER);
+  digitalWrite(LED_HUMIDIFIER, LOW);
+  delay(1000);
+
+  Serial.println("------------------------");
+}
+
+// 開啟繼電器
+void relayOn(int pin) {
+  if (RELAY_ACTIVE_HIGH) {
+    digitalWrite(pin, HIGH);
+  } else {
+    digitalWrite(pin, LOW);
+  }
+}
+
+// 關閉繼電器
+void relayOff(int pin) {
+  if (RELAY_ACTIVE_HIGH) {
+    digitalWrite(pin, LOW);
+  } else {
+    digitalWrite(pin, HIGH);
+  }
+}
+</code></pre>
+
+<blockquote>
+<strong>⚠️ 重要提醒</strong><br>
+繼電器模組有兩種觸發方式：<br>
+• <strong>高電平觸發</strong>：送 HIGH 訊號時繼電器吸合（通電）<br>
+• <strong>低電平觸發</strong>：送 LOW 訊號時繼電器吸合（通電）<br>
+請確認你的繼電器模組是哪種類型，並修改 <code>RELAY_ACTIVE_HIGH</code> 設定！
+</blockquote>
+
+<hr />
+
+<h3>範例 3：溫度控制風扇</h3>
+<p><strong>學習重點</strong>：根據溫度判斷啟動風扇、設定溫度門檻值、自動控制邏輯</p>
+
+<pre><code class="language-cpp">/*
+ * 03_Temp_Fan.ino
+ * 溫度控制風扇
+ * 功能：當溫度超過設定值時自動開啟風扇
+ */
+
+#include &lt;DHT.h&gt;
+
+#define DHT_PIN 2
+#define DHT_TYPE DHT11
+#define RELAY_FAN 7
+#define LED_FAN 5
+
+// 溫度門檻設定（使用遲滯控制避免頻繁開關）
+#define TEMP_ON 28.0   // 溫度高於此值開啟風扇
+#define TEMP_OFF 26.0  // 溫度低於此值關閉風扇
+
+#define RELAY_ACTIVE_HIGH true
+
+DHT dht(DHT_PIN, DHT_TYPE);
+bool fanRunning = false;  // 風扇目前狀態
+
+void setup() {
+  pinMode(RELAY_FAN, OUTPUT);
+  pinMode(LED_FAN, OUTPUT);
+  relayOff(RELAY_FAN);
+  digitalWrite(LED_FAN, LOW);
+
+  dht.begin();
+  Serial.begin(9600);
+
+  Serial.println("=====================================");
+  Serial.println("     溫度控制風扇系統");
+  Serial.println("=====================================");
+  Serial.print("開啟溫度: ");
+  Serial.print(TEMP_ON);
+  Serial.println(" °C");
+  Serial.print("關閉溫度: ");
+  Serial.print(TEMP_OFF);
+  Serial.println(" °C");
+  Serial.println("=====================================");
+}
+
+void loop() {
+  delay(2000);
+
+  float temperature = dht.readTemperature();
+
+  if (isnan(temperature)) {
+    Serial.println("❌ 感測器讀取失敗");
+    return;
+  }
+
+  // 遲滯控制邏輯
+  if (temperature >= TEMP_ON && !fanRunning) {
+    // 溫度過高，開啟風扇
+    fanRunning = true;
+    relayOn(RELAY_FAN);
+    digitalWrite(LED_FAN, HIGH);
+    Serial.print("🌡️ 溫度 ");
+    Serial.print(temperature);
+    Serial.println(" °C → 🔴 風扇開啟！");
+  }
+  else if (temperature <= TEMP_OFF && fanRunning) {
+    // 溫度回復正常，關閉風扇
+    fanRunning = false;
+    relayOff(RELAY_FAN);
+    digitalWrite(LED_FAN, LOW);
+    Serial.print("🌡️ 溫度 ");
+    Serial.print(temperature);
+    Serial.println(" °C → ⚫ 風扇關閉");
+  }
+  else {
+    // 維持原狀態
+    Serial.print("🌡️ 溫度 ");
+    Serial.print(temperature);
+    Serial.print(" °C → 風扇: ");
+    Serial.println(fanRunning ? "運轉中 🔴" : "關閉 ⚫");
+  }
+}
+
+void relayOn(int pin) {
+  digitalWrite(pin, RELAY_ACTIVE_HIGH ? HIGH : LOW);
+}
+
+void relayOff(int pin) {
+  digitalWrite(pin, RELAY_ACTIVE_HIGH ? LOW : HIGH);
+}
+</code></pre>
+
+<blockquote>
+<strong>🔍 遲滯控制（Hysteresis）說明</strong><br>
+如果只設定一個門檻值（例如 28°C），當溫度在 27.9°C 和 28.1°C 之間波動時，風扇會頻繁開關，這對設備壽命不利。<br><br>
+遲滯控制使用兩個門檻值：<br>
+• 開啟門檻（28°C）：溫度高於此值才開啟<br>
+• 關閉門檻（26°C）：溫度低於此值才關閉<br>
+• 在兩者之間時維持原狀態<br><br>
+這樣就能避免在臨界溫度時頻繁切換！
+</blockquote>
+
+<hr />
+
+<h3>範例 4：濕度控制霧化器</h3>
+<p><strong>學習重點</strong>：根據濕度判斷啟動霧化器、避免頻繁開關（遲滯控制）</p>
+
+<pre><code class="language-cpp">/*
+ * 04_Humidity_Humidifier.ino
+ * 濕度控制霧化器
+ * 功能：當濕度低於設定值時自動開啟霧化器
+ */
+
+#include &lt;DHT.h&gt;
+
+#define DHT_PIN 2
+#define DHT_TYPE DHT11
+#define RELAY_HUMIDIFIER 8
+#define LED_HUMIDIFIER 6
+
+// 濕度門檻設定
+#define HUMIDITY_ON 50.0   // 濕度低於此值開啟霧化器
+#define HUMIDITY_OFF 65.0  // 濕度高於此值關閉霧化器
+
+#define RELAY_ACTIVE_HIGH true
+
+DHT dht(DHT_PIN, DHT_TYPE);
+bool humidifierRunning = false;
+
+void setup() {
+  pinMode(RELAY_HUMIDIFIER, OUTPUT);
+  pinMode(LED_HUMIDIFIER, OUTPUT);
+  relayOff(RELAY_HUMIDIFIER);
+  digitalWrite(LED_HUMIDIFIER, LOW);
+
+  dht.begin();
+  Serial.begin(9600);
+
+  Serial.println("=====================================");
+  Serial.println("     濕度控制霧化器系統");
+  Serial.println("=====================================");
+  Serial.print("開啟濕度: < ");
+  Serial.print(HUMIDITY_ON);
+  Serial.println(" %");
+  Serial.print("關閉濕度: > ");
+  Serial.print(HUMIDITY_OFF);
+  Serial.println(" %");
+  Serial.println("=====================================");
+}
+
+void loop() {
+  delay(2000);
+
+  float humidity = dht.readHumidity();
+
+  if (isnan(humidity)) {
+    Serial.println("❌ 感測器讀取失敗");
+    return;
+  }
+
+  // 遲滯控制邏輯（注意：濕度是低於門檻時開啟）
+  if (humidity <= HUMIDITY_ON && !humidifierRunning) {
+    // 濕度過低，開啟霧化器
+    humidifierRunning = true;
+    relayOn(RELAY_HUMIDIFIER);
+    digitalWrite(LED_HUMIDIFIER, HIGH);
+    Serial.print("💧 濕度 ");
+    Serial.print(humidity);
+    Serial.println(" % → 🔵 霧化器開啟！");
+  }
+  else if (humidity >= HUMIDITY_OFF && humidifierRunning) {
+    // 濕度回復正常，關閉霧化器
+    humidifierRunning = false;
+    relayOff(RELAY_HUMIDIFIER);
+    digitalWrite(LED_HUMIDIFIER, LOW);
+    Serial.print("💧 濕度 ");
+    Serial.print(humidity);
+    Serial.println(" % → ⚫ 霧化器關閉");
+  }
+  else {
+    Serial.print("💧 濕度 ");
+    Serial.print(humidity);
+    Serial.print(" % → 霧化器: ");
+    Serial.println(humidifierRunning ? "運轉中 🔵" : "關閉 ⚫");
+  }
+}
+
+void relayOn(int pin) {
+  digitalWrite(pin, RELAY_ACTIVE_HIGH ? HIGH : LOW);
+}
+
+void relayOff(int pin) {
+  digitalWrite(pin, RELAY_ACTIVE_HIGH ? LOW : HIGH);
+}
+</code></pre>
+
+<hr />
+
+<h3>範例 5：完整溫溼度控制系統</h3>
+<p><strong>學習重點</strong>：整合溫度與濕度控制、多重條件判斷、狀態顯示與監控</p>
+
+<pre><code class="language-cpp">/*
+ * 05_Climate_Control.ino
+ * 完整溫溼度控制系統
+ * 功能：
+ *   - 自動控制風扇（降溫）
+ *   - 自動控制霧化器（加濕）
+ *   - 即時顯示環境狀態
+ *   - 遲滯控制避免頻繁切換
+ */
+
+#include &lt;DHT.h&gt;
+
+// ===== 腳位定義 =====
+#define DHT_PIN 2
+#define DHT_TYPE DHT11
+#define RELAY_FAN 7
+#define RELAY_HUMIDIFIER 8
+#define LED_FAN 5
+#define LED_HUMIDIFIER 6
+
+// ===== 控制參數 =====
+// 溫度控制（°C）
+#define TEMP_HIGH 28.0    // 高於此溫度開風扇
+#define TEMP_LOW 25.0     // 低於此溫度關風扇
+
+// 濕度控制（%）
+#define HUMIDITY_LOW 50.0   // 低於此濕度開霧化器
+#define HUMIDITY_HIGH 70.0  // 高於此濕度關霧化器
+
+// 繼電器觸發電平
+#define RELAY_ACTIVE_HIGH true
+
+// ===== 全域變數 =====
+DHT dht(DHT_PIN, DHT_TYPE);
+bool fanRunning = false;
+bool humidifierRunning = false;
+unsigned long lastReadTime = 0;
+const unsigned long READ_INTERVAL = 2000;  // 讀取間隔
+
+void setup() {
+  // 初始化腳位
+  pinMode(RELAY_FAN, OUTPUT);
+  pinMode(RELAY_HUMIDIFIER, OUTPUT);
+  pinMode(LED_FAN, OUTPUT);
+  pinMode(LED_HUMIDIFIER, OUTPUT);
+
+  // 初始狀態：全部關閉
+  setRelay(RELAY_FAN, false);
+  setRelay(RELAY_HUMIDIFIER, false);
+  digitalWrite(LED_FAN, LOW);
+  digitalWrite(LED_HUMIDIFIER, LOW);
+
+  dht.begin();
+  Serial.begin(9600);
+
+  printHeader();
+}
+
+void loop() {
+  // 使用 millis() 取代 delay()，讓程式更有彈性
+  if (millis() - lastReadTime < READ_INTERVAL) {
+    return;
+  }
+  lastReadTime = millis();
+
+  // 讀取感測器
+  float temperature = dht.readTemperature();
+  float humidity = dht.readHumidity();
+
+  // 檢查讀取是否成功
+  if (isnan(temperature) || isnan(humidity)) {
+    Serial.println("❌ 感測器讀取失敗！請檢查接線。");
+    return;
+  }
+
+  // ===== 溫度控制邏輯 =====
+  if (temperature >= TEMP_HIGH && !fanRunning) {
+    fanRunning = true;
+    setRelay(RELAY_FAN, true);
+    digitalWrite(LED_FAN, HIGH);
+  }
+  else if (temperature <= TEMP_LOW && fanRunning) {
+    fanRunning = false;
+    setRelay(RELAY_FAN, false);
+    digitalWrite(LED_FAN, LOW);
+  }
+
+  // ===== 濕度控制邏輯 =====
+  if (humidity <= HUMIDITY_LOW && !humidifierRunning) {
+    humidifierRunning = true;
+    setRelay(RELAY_HUMIDIFIER, true);
+    digitalWrite(LED_HUMIDIFIER, HIGH);
+  }
+  else if (humidity >= HUMIDITY_HIGH && humidifierRunning) {
+    humidifierRunning = false;
+    setRelay(RELAY_HUMIDIFIER, false);
+    digitalWrite(LED_HUMIDIFIER, LOW);
+  }
+
+  // 顯示狀態
+  printStatus(temperature, humidity);
+}
+
+// 設定繼電器狀態
+void setRelay(int pin, bool on) {
+  if (RELAY_ACTIVE_HIGH) {
+    digitalWrite(pin, on ? HIGH : LOW);
+  } else {
+    digitalWrite(pin, on ? LOW : HIGH);
+  }
+}
+
+// 顯示啟動標題
+void printHeader() {
+  Serial.println();
+  Serial.println("╔═══════════════════════════════════════════════╗");
+  Serial.println("║     智慧溫室 - 溫溼度控制系統 v1.0            ║");
+  Serial.println("╠═══════════════════════════════════════════════╣");
+  Serial.print("║  溫度控制: ");
+  Serial.print(TEMP_LOW);
+  Serial.print("°C ~ ");
+  Serial.print(TEMP_HIGH);
+  Serial.println("°C                  ║");
+  Serial.print("║  濕度控制: ");
+  Serial.print(HUMIDITY_LOW);
+  Serial.print("% ~ ");
+  Serial.print(HUMIDITY_HIGH);
+  Serial.println("%                    ║");
+  Serial.println("╚═══════════════════════════════════════════════╝");
+  Serial.println();
+  Serial.println("溫度(°C) | 濕度(%) | 風扇 | 霧化器 | 狀態");
+  Serial.println("---------|---------|------|--------|------------------");
+}
+
+// 顯示即時狀態
+void printStatus(float temp, float hum) {
+  // 溫度
+  Serial.print("  ");
+  if (temp < 10) Serial.print(" ");
+  Serial.print(temp, 1);
+  Serial.print("   |  ");
+
+  // 濕度
+  if (hum < 10) Serial.print(" ");
+  Serial.print(hum, 1);
+  Serial.print("   |  ");
+
+  // 風扇狀態
+  Serial.print(fanRunning ? "ON " : "OFF");
+  Serial.print("  |   ");
+
+  // 霧化器狀態
+  Serial.print(humidifierRunning ? "ON " : "OFF");
+  Serial.print("   | ");
+
+  // 環境狀態判斷
+  if (temp > TEMP_HIGH) {
+    Serial.print("🔥 過熱");
+  } else if (temp < 20) {
+    Serial.print("❄️ 偏冷");
+  } else {
+    Serial.print("✅ 溫度正常");
+  }
+
+  Serial.print(" ");
+
+  if (hum < HUMIDITY_LOW) {
+    Serial.print("🏜️ 過乾");
+  } else if (hum > 85) {
+    Serial.print("💦 過濕");
+  } else {
+    Serial.print("✅ 濕度正常");
+  }
+
+  Serial.println();
+}
+</code></pre>
+
+<blockquote>
+<strong>🔧 參數調整建議</strong><br>
+根據你的植物類型調整門檻值：<br>
+• <strong>葉菜類</strong>（萵苣、菠菜）：溫度 18-24°C，濕度 60-80%<br>
+• <strong>果菜類</strong>（番茄、辣椒）：溫度 22-28°C，濕度 50-70%<br>
+• <strong>香草類</strong>（薄荷、羅勒）：溫度 20-25°C，濕度 50-70%
+</blockquote>
+
+<hr />
+
+<h3>範例 6：資料平滑處理（進階）</h3>
+<p><strong>學習重點</strong>：使用移動平均減少感測器雜訊</p>
+
+<pre><code class="language-cpp">/*
+ * 06_Smooth_Reading.ino
+ * 感測器資料平滑處理
+ * 功能：使用移動平均濾波減少讀數跳動
+ */
+
+#include &lt;DHT.h&gt;
+
+#define DHT_PIN 2
+#define DHT_TYPE DHT11
+#define NUM_SAMPLES 5  // 取樣數量
+
+DHT dht(DHT_PIN, DHT_TYPE);
+
+// 儲存歷史讀數
+float tempHistory[NUM_SAMPLES];
+float humHistory[NUM_SAMPLES];
+int historyIndex = 0;
+bool bufferFull = false;
+
+void setup() {
+  dht.begin();
+  Serial.begin(9600);
+
+  // 初始化歷史陣列
+  for (int i = 0; i < NUM_SAMPLES; i++) {
+    tempHistory[i] = 0;
+    humHistory[i] = 0;
+  }
+
+  Serial.println("感測器資料平滑處理");
+  Serial.println("原始值 → 平滑值");
+}
+
+void loop() {
+  delay(2000);
+
+  float rawTemp = dht.readTemperature();
+  float rawHum = dht.readHumidity();
+
+  if (isnan(rawTemp) || isnan(rawHum)) {
+    Serial.println("讀取失敗");
+    return;
+  }
+
+  // 更新歷史記錄
+  tempHistory[historyIndex] = rawTemp;
+  humHistory[historyIndex] = rawHum;
+  historyIndex = (historyIndex + 1) % NUM_SAMPLES;
+
+  if (historyIndex == 0) bufferFull = true;
+
+  // 計算平均值
+  float avgTemp = 0, avgHum = 0;
+  int count = bufferFull ? NUM_SAMPLES : historyIndex;
+
+  for (int i = 0; i < count; i++) {
+    avgTemp += tempHistory[i];
+    avgHum += humHistory[i];
+  }
+  avgTemp /= count;
+  avgHum /= count;
+
+  // 顯示比較
+  Serial.print("溫度: ");
+  Serial.print(rawTemp, 1);
+  Serial.print(" → ");
+  Serial.print(avgTemp, 1);
+  Serial.print("°C | 濕度: ");
+  Serial.print(rawHum, 1);
+  Serial.print(" → ");
+  Serial.print(avgHum, 1);
+  Serial.println("%");
+}
+</code></pre>
+<hr />
+<h2>操作步驟</h2>
+<h3>步驟 1：基本感測器測試</h3>
+<ol>
+<li>依照接線圖連接 DHT11</li>
+<li>上傳 <code>01_dht11_basic.ino</code></li>
+<li>開啟序列埠監視器（9600 baud）</li>
+<li>觀察溫溼度數值變化</li>
+<li>用手靠近感測器，觀察溫度變化</li>
+<li>對感測器呵氣，觀察濕度變化</li>
+</ol>
+<h3>步驟 2：繼電器測試</h3>
+<ol>
+<li>連接繼電器模組</li>
+<li>上傳 <code>02_relay_control.ino</code></li>
+<li>聽繼電器「喀嗒」聲</li>
+<li>確認 LED 狀態燈正確反應</li>
+<li>確認繼電器觸發電平（高/低）</li>
+</ol>
+<h3>步驟 3：溫度控制測試</h3>
+<ol>
+<li>上傳 <code>03_temp_fan.ino</code></li>
+<li>設定適當的溫度門檻（如 28°C）</li>
+<li>用手捂住 DHT11 提高溫度</li>
+<li>觀察風扇（紅LED）是否自動啟動</li>
+<li>放開手讓溫度下降，觀察風扇關閉</li>
+</ol>
+<h3>步驟 4：濕度控制測試</h3>
+<ol>
+<li>上傳 <code>04_humidity_humidifier.ino</code></li>
+<li>設定適當的濕度門檻（如 60%）</li>
+<li>觀察霧化器（藍LED）狀態</li>
+<li>注意遲滯控制避免頻繁開關</li>
+</ol>
+<h3>步驟 5：完整系統整合</h3>
+<ol>
+<li>上傳 <code>05_climate_control.ino</code></li>
+<li>觀察溫溼度數值與控制狀態</li>
+<li>測試各種溫溼度組合的反應</li>
+<li>調整門檻值至適合的數值</li>
+</ol>
+<hr />
+<h2>常見問題</h2>
+<h3>Q1：DHT11 讀取失敗</h3>
+<ul>
+<li>檢查接線是否正確</li>
+<li>確認使用的是「模組版」還是「裸元件版」</li>
+<li>模組版：三腳（S、+、-），已含提升電阻</li>
+<li>裸元件版：四腳，需自行接 10K 提升電阻</li>
+<li>確認腳位定義與實際接線相符</li>
+</ul>
+<h3>Q2：繼電器沒反應</h3>
+<ul>
+<li>確認繼電器電源（VCC、GND）接線正確</li>
+<li>確認 IN 腳位接線</li>
+<li>檢查繼電器是「高電平觸發」還是「低電平觸發」</li>
+<li>聽繼電器是否有「喀嗒」聲</li>
+</ul>
+<h3>Q3：數值不穩定或跳動大</h3>
+<ul>
+<li>DHT11 精度有限（溫度 ±2°C，濕度 ±5%）</li>
+<li>可以多次讀取取平均值</li>
+<li>避免感測器直接被風吹到</li>
+</ul>
+<h3>Q4：繼電器頻繁開關</h3>
+<ul>
+<li>加入遲滯（Hysteresis）控制</li>
+<li>設定開啟門檻和關閉門檻之間的差距</li>
+<li>例如：28°C 開風扇，26°C 關風扇</li>
+</ul>
+<hr />
+<h2>知識補充</h2>
+
+<h3>🌱 各類植物的溫溼度需求</h3>
+<p>不同類型的植物對環境的要求各不相同，以下是常見作物的最適生長條件：</p>
+
+<table>
+<thead>
+<tr>
+<th>植物類型</th>
+<th>代表作物</th>
+<th>最適溫度 (°C)</th>
+<th>最適濕度 (%)</th>
+<th>特殊需求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>葉菜類</strong></td>
+<td>萵苣、菠菜、白菜</td>
+<td>15-22°C</td>
+<td>60-80%</td>
+<td>怕高溫，需遮光</td>
+</tr>
+<tr>
+<td><strong>果菜類</strong></td>
+<td>番茄、辣椒、茄子</td>
+<td>22-28°C</td>
+<td>50-70%</td>
+<td>需充足光照</td>
+</tr>
+<tr>
+<td><strong>瓜果類</strong></td>
+<td>小黃瓜、南瓜</td>
+<td>20-30°C</td>
+<td>70-85%</td>
+<td>需高濕度</td>
+</tr>
+<tr>
+<td><strong>根莖類</strong></td>
+<td>蘿蔔、馬鈴薯</td>
+<td>15-20°C</td>
+<td>60-70%</td>
+<td>土壤通氣性重要</td>
+</tr>
+<tr>
+<td><strong>香草類</strong></td>
+<td>薄荷、羅勒、迷迭香</td>
+<td>18-25°C</td>
+<td>50-70%</td>
+<td>怕過濕</td>
+</tr>
+<tr>
+<td><strong>草莓</strong></td>
+<td>草莓</td>
+<td>15-25°C</td>
+<td>60-75%</td>
+<td>開花期需低溫</td>
+</tr>
+<tr>
+<td><strong>蘭花</strong></td>
+<td>蝴蝶蘭</td>
+<td>20-28°C</td>
+<td>60-80%</td>
+<td>日夜溫差需 8-10°C</td>
+</tr>
+<tr>
+<td><strong>多肉植物</strong></td>
+<td>仙人掌、多肉</td>
+<td>15-30°C</td>
+<td>30-50%</td>
+<td>怕高濕</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<strong>💡 溫溼度控制小技巧</strong><br>
+• 日間溫度可略高，夜間溫度可略低（模擬自然環境）<br>
+• 澆水後濕度會上升，需加強通風<br>
+• 冬季供暖時濕度容易過低，需要加濕<br>
+• 夏季高溫高濕容易滋生病蟲害，需要降溫除濕
+</blockquote>
+
+<hr />
+
+<h3>🌡️ DHT11 vs DHT22 詳細比較</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>DHT11</th>
+<th>DHT22 (AM2302)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>溫度範圍</td>
+<td>0~50°C</td>
+<td>-40~80°C</td>
+</tr>
+<tr>
+<td>溫度精度</td>
+<td>±2°C</td>
+<td>±0.5°C</td>
+</tr>
+<tr>
+<td>濕度範圍</td>
+<td>20~90%</td>
+<td>0~100%</td>
+</tr>
+<tr>
+<td>濕度精度</td>
+<td>±5%</td>
+<td>±2%</td>
+</tr>
+<tr>
+<td>取樣速度</td>
+<td>1Hz（每秒1次）</td>
+<td>0.5Hz（每2秒1次）</td>
+</tr>
+<tr>
+<td>解析度</td>
+<td>1°C / 1%</td>
+<td>0.1°C / 0.1%</td>
+</tr>
+<tr>
+<td>工作電壓</td>
+<td>3.3V-5.5V</td>
+<td>3.3V-6V</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>約 30-50 元</td>
+<td>約 80-120 元</td>
+</tr>
+<tr>
+<td>推薦場景</td>
+<td>室內、教學、原型開發</td>
+<td>專業應用、戶外</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<strong>🔧 如何選擇感測器？</strong><br>
+• <strong>DHT11</strong>：適合學習和一般室內應用，價格便宜，精度雖較低但足夠教學使用<br>
+• <strong>DHT22</strong>：適合精確測量需求，尤其在極端溫度環境或需要高精度的專案
+</blockquote>
+
+<h4>更換為 DHT22 的程式修改</h4>
+<p>若要升級使用 DHT22，只需修改一行程式碼：</p>
+<pre><code class="language-cpp">// 將這行
+#define DHT_TYPE DHT11
+
+// 改成
+#define DHT_TYPE DHT22
+</code></pre>
+<h3>⚡ 繼電器工作原理與安全須知</h3>
+<pre><code>繼電器內部構造：
+            ┌─線圈─┐
+   IN ──→  │ ═══ │──→ 控制電路（5V DC）
+            └─────┘
+               ↓ 電磁力
+            ┌─────┐
+   COM ────│  ⚡  │
+            │  ↓  │
+   NO ─────│接通 │──→ 被控制電路（可達 220V AC）
+   NC ─────│斷開 │
+            └─────┘
+
+NO = Normally Open（常開）：平時斷開，通電接通
+NC = Normally Closed（常閉）：平時接通，通電斷開
+COM = Common（共用端）
+</code></pre>
+
+<h4>繼電器模組接腳說明</h4>
+<table>
+<thead>
+<tr>
+<th>接腳</th>
+<th>名稱</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VCC</td>
+<td>電源正極</td>
+<td>接 Arduino 5V</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>電源負極</td>
+<td>接 Arduino GND</td>
+</tr>
+<tr>
+<td>IN</td>
+<td>控制訊號</td>
+<td>接 Arduino 數位腳位</td>
+</tr>
+<tr>
+<td>COM</td>
+<td>共用端</td>
+<td>接被控制設備的電源</td>
+</tr>
+<tr>
+<td>NO</td>
+<td>常開接點</td>
+<td>繼電器動作時接通</td>
+</tr>
+<tr>
+<td>NC</td>
+<td>常閉接點</td>
+<td>繼電器動作時斷開</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<strong>⚠️ 安全警告</strong><br>
+• 繼電器可控制高壓電器（110V/220V），操作時請務必斷電<br>
+• 教學時建議使用低壓設備（如 12V LED 燈條）進行測試<br>
+• 若要控制家用電器，請由專業人員協助接線<br>
+• 使用時注意繼電器的額定電流，不可超載
+</blockquote>
+
+<h4>高/低電平觸發的判斷方法</h4>
+<pre><code>判斷你的繼電器是高電平還是低電平觸發：
+
+方法 1：看模組標示
+         通常會印 "High Level Trigger" 或 "Low Level Trigger"
+
+方法 2：實際測試
+         1. VCC 接 5V，GND 接地
+         2. IN 腳位接 5V → 聽到喀嗒聲 = 高電平觸發
+         3. IN 腳位接 GND → 聽到喀嗒聲 = 低電平觸發
+
+方法 3：看電路設計
+         模組上有光耦或有 LED 在 IN 端 → 通常是低電平觸發
+         直接使用電晶體驅動 → 通常是高電平觸發
+</code></pre>
+
+<hr />
+
+<h3>🔄 遲滯控制（Hysteresis）深入解說</h3>
+<p>遲滯控制是工業控制中非常重要的技術，可以避免設備頻繁開關造成的損耗。</p>
+
+<pre><code>沒有遲滯控制的問題：
+
+設定門檻: 28°C
+
+溫度  28.2°C → 開  (超過門檻)
+      27.8°C → 關  (低於門檻)
+      28.1°C → 開  (又超過)
+      27.9°C → 關  (又低於)
+      ...（頻繁開關！）
+
+有遲滯控制後：
+
+開啟門檻: 28°C | 關閉門檻: 25°C
+
+溫度  28.2°C → 開  (超過 28°C)
+      27.5°C → 維持開啟 (在 25~28°C 之間)
+      26.0°C → 維持開啟 (還沒低於 25°C)
+      24.8°C → 關  (低於 25°C)
+      26.0°C → 維持關閉 (還沒超過 28°C)
+      ...（穩定控制！）
+</code></pre>
+
+<h4>遲滯帶寬設定建議</h4>
+<table>
+<thead>
+<tr>
+<th>應用場景</th>
+<th>建議遲滯帶寬</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>溫度控制（風扇）</td>
+<td>2-3°C</td>
+<td>28°C 開 / 25°C 關</td>
+</tr>
+<tr>
+<td>溫度控制（暖氣）</td>
+<td>2-3°C</td>
+<td>18°C 開 / 21°C 關</td>
+</tr>
+<tr>
+<td>濕度控制（加濕）</td>
+<td>10-15%</td>
+<td>50% 開 / 65% 關</td>
+</tr>
+<tr>
+<td>濕度控制（除濕）</td>
+<td>10-15%</td>
+<td>80% 開 / 65% 關</td>
+</tr>
+</tbody>
+</table>
+<h3>🏡 溫室環境控制原理</h3>
+<pre><code>理想溫室環境：
+┌────────────────────────────────┐
+│    溫度：22-28°C               │
+│    濕度：60-80%                │
+│                                │
+│    溫度過高 → 啟動風扇/開窗    │
+│    溫度過低 → 啟動暖氣         │
+│    濕度過低 → 啟動霧化器       │
+│    濕度過高 → 加強通風         │
+└────────────────────────────────┘
+</code></pre>
+
+<h4>溫溼度的關聯性</h4>
+<pre><code>溫度和濕度是相互影響的：
+
+1. 溫度上升 → 相對濕度下降
+   （空氣能容納更多水蒸氣，相同水量下濕度百分比降低）
+
+2. 溫度下降 → 相對濕度上升
+   （可能造成結露，植物葉片上出現水珠）
+
+3. 開風扇降溫 → 同時會降低濕度
+   （通風會帶走水蒸氣）
+
+4. 開霧化器加濕 → 可能會略微降溫
+   （蒸發吸熱效應）
+
+因此設計控制邏輯時，需要考慮這些交互作用！
+</code></pre>
+
+<hr />
+
+<h2>📋 實作檢查清單</h2>
+<p>完成專案前，請依照以下清單確認所有項目：</p>
+
+<h3>硬體檢查</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>確認內容</th>
+<th>狀態</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DHT11 接線</td>
+<td>VCC、GND、DATA 三線正確連接</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>DHT11 電源</td>
+<td>使用 5V 供電（3.3V 可能不穩定）</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>繼電器1（風扇）</td>
+<td>VCC、GND、IN 正確連接到 D7</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>繼電器2（霧化器）</td>
+<td>VCC、GND、IN 正確連接到 D8</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>LED 狀態燈</td>
+<td>紅色(D5)、藍色(D6) 有串接 220Ω 電阻</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>共地確認</td>
+<td>所有模組的 GND 都連接到 Arduino GND</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>繼電器類型</td>
+<td>確認是高電平或低電平觸發，程式設定正確</td>
+<td>☐</td>
+</tr>
+</tbody>
+</table>
+
+<h3>軟體檢查</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>確認內容</th>
+<th>狀態</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>函式庫安裝</td>
+<td>已安裝 Adafruit DHT sensor library</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>腳位定義</td>
+<td>程式中的腳位與實際接線相符</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>序列埠設定</td>
+<td>監視器鮑率設為 9600</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>門檻值設定</td>
+<td>溫度、濕度門檻值符合需求</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>遲滯控制</td>
+<td>開啟/關閉門檻有足夠差距（建議 2-3°C）</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>錯誤處理</td>
+<td>程式有處理感測器讀取失敗的情況</td>
+<td>☐</td>
+</tr>
+</tbody>
+</table>
+
+<h3>功能測試</h3>
+<table>
+<thead>
+<tr>
+<th>測試項目</th>
+<th>測試方法</th>
+<th>預期結果</th>
+<th>狀態</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>溫度讀取</td>
+<td>觀察序列埠輸出</td>
+<td>顯示合理的溫度值</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>濕度讀取</td>
+<td>觀察序列埠輸出</td>
+<td>顯示合理的濕度值</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>溫度響應</td>
+<td>用手捂住 DHT11</td>
+<td>溫度上升，超過門檻開風扇</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>濕度響應</td>
+<td>對 DHT11 呵氣</td>
+<td>濕度上升，超過門檻關霧化器</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>繼電器聲響</td>
+<td>切換時聽聲音</td>
+<td>動作時有明確「喀嗒」聲</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>LED 指示</td>
+<td>觀察 LED 狀態</td>
+<td>與繼電器狀態同步亮滅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>遲滯效果</td>
+<td>觀察臨界溫度行為</td>
+<td>不會頻繁開關</td>
+<td>☐</td>
+</tr>
+</tbody>
+</table>
+
+<hr />
+
+<h2>🚀 進階挑戰</h2>
+
+<h3>挑戰 1：PID 控制</h3>
+<p>PID（比例-積分-微分）控制可以實現更平滑的溫度調節，避免溫度大幅波動。</p>
+<pre><code class="language-cpp">// PID 控制基本概念
+float error = targetTemp - currentTemp;      // 誤差
+float integral = integral + error * dt;      // 積分項
+float derivative = (error - lastError) / dt; // 微分項
+
+float output = Kp * error + Ki * integral + Kd * derivative;
+// output 可用於 PWM 控制風扇轉速
+</code></pre>
+
+<h3>挑戰 2：溫溼度資料記錄</h3>
+<p>將資料儲存到 SD 卡或傳送到電腦，可用於分析環境變化趨勢。</p>
+<pre><code class="language-cpp">// 輸出 CSV 格式資料供電腦記錄
+Serial.print(millis() / 1000);  // 時間戳（秒）
+Serial.print(",");
+Serial.print(temperature);
+Serial.print(",");
+Serial.println(humidity);
+
+// 在電腦端使用 Arduino Serial Plotter 或
+// 將輸出儲存為 .csv 檔用 Excel 分析
+</code></pre>
+
+<h3>挑戰 3：多點溫度監控</h3>
+<p>使用多個 DHT11 測量溫室不同位置的溫度差異。</p>
+<pre><code class="language-cpp">// 定義多個感測器
+DHT dht1(2, DHT11);  // 位置 1
+DHT dht2(3, DHT11);  // 位置 2
+DHT dht3(4, DHT11);  // 位置 3
+
+// 計算平均溫度
+float avgTemp = (dht1.readTemperature() +
+                 dht2.readTemperature() +
+                 dht3.readTemperature()) / 3.0;
+</code></pre>
+
+<h3>挑戰 4：蜂鳴器警報系統</h3>
+<p>當溫溼度超過危險範圍時發出警報。</p>
+<pre><code class="language-cpp">#define BUZZER 9
+#define TEMP_DANGER 35.0    // 危險高溫
+#define HUMIDITY_DANGER 30.0 // 危險低濕
+
+void checkAlarm(float temp, float hum) {
+  if (temp > TEMP_DANGER || hum < HUMIDITY_DANGER) {
+    // 發出警報音
+    tone(BUZZER, 1000, 500);  // 1kHz，持續 0.5 秒
+  }
+}
+</code></pre>
+
+<h3>挑戰 5：整合 MQTT 網路通訊</h3>
+<p>與第六組合作，將資料透過網路傳送到伺服器。</p>
+<pre><code class="language-cpp">// 資料格式建議（JSON）
+// {"temp": 25.5, "humidity": 65.0, "fan": true, "humidifier": false}
+
+// 或使用簡單格式
+// T:25.5,H:65.0,F:1,M:0
+</code></pre>
+
+<hr />
+<h2>🔗 與其他組別的整合</h2>
+
+<table>
+<thead>
+<tr>
+<th>整合對象</th>
+<th>整合內容</th>
+<th>資料交換方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>第一組（光線控制）</strong></td>
+<td>溫度過高時可能需要遮光</td>
+<td>透過變數或序列通訊</td>
+</tr>
+<tr>
+<td><strong>第三組（土壤水份）</strong></td>
+<td>濕度數據可輔助灌溉決策</td>
+<td>共用變數</td>
+</tr>
+<tr>
+<td><strong>第四組（螢幕顯示）</strong></td>
+<td>將溫溼度數值顯示在 LCD 上</td>
+<td>透過函式呼叫傳遞數值</td>
+</tr>
+<tr>
+<td><strong>第五組（遠端遙控）</strong></td>
+<td>接收手動控制指令</td>
+<td>紅外線指令解析</td>
+</tr>
+<tr>
+<td><strong>第六組（網路控制）</strong></td>
+<td>透過 MQTT 發送/接收資料</td>
+<td>JSON 或自訂格式</td>
+</tr>
+</tbody>
+</table>
+
+<h4>資料格式設計建議</h4>
+<pre><code>簡單格式（適合 Arduino 之間通訊）：
+  發送：T25.5H65.0F1M0
+  解析：T=溫度, H=濕度, F=風扇狀態, M=霧化器狀態
+
+JSON 格式（適合網路傳輸）：
+  {
+    "sensor": "climate",
+    "temperature": 25.5,
+    "humidity": 65.0,
+    "fan_on": true,
+    "humidifier_on": false,
+    "timestamp": 1234567890
+  }
+</code></pre>
+
+<blockquote>
+<strong>🤔 思考題</strong><br>
+1. 如何設計一個統一的資料格式，讓所有組別都能互相溝通？<br>
+2. 當多個控制需求衝突時（如：需要降溫但也需要加濕），該如何處理優先順序？<br>
+3. 如何確保感測器資料的可靠性？當感測器故障時該如何應對？
+</blockquote>
+
+<hr />
+
+<h2>📚 相關文件連結</h2>
+<p>以下文件可幫助你更深入學習相關知識：</p>
+
+<h3>基礎知識</h3>
+<ul>
+<li><a href="關於Arduino程式常用語法.html">Arduino 程式常用語法</a> - 基礎語法複習</li>
+<li><a href="關於pinMode與Serial.html">pinMode 與 Serial 詳解</a> - 腳位設定與序列通訊</li>
+<li><a href="關於Arduino電子元件介紹.html">Arduino 電子元件介紹</a> - 認識各種元件</li>
+</ul>
+
+<h3>進階技術</h3>
+<ul>
+<li><a href="關於繼電器控制方式.html">繼電器控制方式詳解</a> - 深入了解繼電器</li>
+<li><a href="關於Thonny安裝.html">Thonny 安裝指南</a> - Python 開發環境</li>
+<li><a href="關於MQTT介紹.html">MQTT 通訊協定介紹</a> - 物聯網通訊基礎</li>
+</ul>
+
+<h3>其他分組手冊</h3>
+<ul>
+<li><a href="G1_光線控制組_操作手冊.html">G1 光線控制組</a> - 光照感測與 LED 控制</li>
+<li><a href="G3_土壤水份控制組_操作手冊.html">G3 土壤水份控制組</a> - 土壤濕度與澆灌系統</li>
+<li><a href="G4_螢幕顯示組_操作手冊.html">G4 螢幕顯示組</a> - LCD 顯示整合</li>
+<li><a href="G5_遠端遙控組_操作手冊.html">G5 遠端遙控組</a> - 紅外線遙控</li>
+<li><a href="G6_網路控制組_操作手冊.html">G6 網路控制組</a> - WiFi 與 MQTT</li>
+</ul>
+
+<hr />
+
+<p style="text-align: center; color: #81e6d9; margin-top: 40px;">
+🌱 智慧農業專題課程 - 第二組：溫溼度控制 🌱<br>
+<small>掌握環境控制，讓植物在最適合的條件下生長！</small>
+</p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NumPy 陣列操作指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a0aec0;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h2 {
+            color: #4fd1c5;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(79, 209, 197, 0.3);
+        }
+
+        h3 {
+            color: #63b3ed;
+            font-size: 1.2rem;
+            margin: 25px 0 15px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #cbd5e0;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+            border: 1px solid #30363d;
+        }
+
+        .code-block code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: #e6edf3;
+            white-space: pre;
+        }
+
+        .comment { color: #8b949e; }
+        .keyword { color: #ff7b72; }
+        .string { color: #a5d6ff; }
+        .number { color: #79c0ff; }
+        .function { color: #d2a8ff; }
+        .variable { color: #ffa657; }
+
+        .tip-box {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.1), rgba(99, 179, 237, 0.1));
+            border-left: 4px solid #4fd1c5;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .tip-box strong {
+            color: #4fd1c5;
+        }
+
+        .warning-box {
+            background: rgba(237, 137, 54, 0.1);
+            border-left: 4px solid #ed8936;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box strong {
+            color: #ed8936;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(79, 209, 197, 0.2);
+            color: #4fd1c5;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .card h4 {
+            color: #63b3ed;
+            margin-bottom: 15px;
+        }
+
+        .home-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.4);
+        }
+
+        .visual-demo {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Consolas', monospace;
+            text-align: center;
+        }
+
+        .array-box {
+            display: inline-block;
+            border: 2px solid #4fd1c5;
+            margin: 5px;
+            padding: 5px;
+        }
+
+        .array-cell {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            background: rgba(79, 209, 197, 0.2);
+            margin: 2px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔢 NumPy 陣列操作指南</h1>
+        <p class="subtitle">智慧農業影像處理的數學基礎</p>
+
+        <!-- 基本概念 -->
+        <div class="section">
+            <h2>📚 NumPy 基本概念</h2>
+            <p>NumPy (Numerical Python) 是 Python 科學運算的核心套件，在影像處理中，每張圖片都是一個 NumPy 陣列。</p>
+
+            <h3>為什麼要學 NumPy？</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>🖼️ 影像就是陣列</h4>
+                    <p>一張 100×100 的彩色圖片 = (100, 100, 3) 的陣列</p>
+                </div>
+                <div class="card">
+                    <h4>⚡ 高效運算</h4>
+                    <p>向量化運算比 Python 迴圈快 100 倍以上</p>
+                </div>
+                <div class="card">
+                    <h4>🔧 OpenCV 基礎</h4>
+                    <p>OpenCV 的所有影像操作都基於 NumPy</p>
+                </div>
+                <div class="card">
+                    <h4>🌱 植生指標</h4>
+                    <p>NDVI、ExG 等計算全靠 NumPy 陣列運算</p>
+                </div>
+            </div>
+
+            <div class="code-block">
+<code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> cv2
+
+<span class="comment"># 讀取圖片 → 得到 NumPy 陣列</span>
+img = cv2.imread(<span class="string">'plant.jpg'</span>)
+<span class="function">print</span>(<span class="function">type</span>(img))  <span class="comment"># &lt;class 'numpy.ndarray'&gt;</span>
+<span class="function">print</span>(img.shape)   <span class="comment"># (高度, 寬度, 通道數) 例如 (480, 640, 3)</span></code>
+            </div>
+        </div>
+
+        <!-- 建立陣列 -->
+        <div class="section">
+            <h2>🏗️ 建立陣列</h2>
+
+            <h3>從 Python 列表建立</h3>
+            <div class="code-block">
+<code><span class="comment"># 一維陣列</span>
+arr1d = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>])
+<span class="function">print</span>(arr1d)  <span class="comment"># [1 2 3 4 5]</span>
+
+<span class="comment"># 二維陣列（矩陣）</span>
+arr2d = np.array([
+    [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],
+    [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>],
+    [<span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]
+])
+<span class="function">print</span>(arr2d.shape)  <span class="comment"># (3, 3)</span>
+
+<span class="comment"># 三維陣列（如 RGB 影像）</span>
+arr3d = np.array([
+    [[<span class="number">255</span>, <span class="number">0</span>, <span class="number">0</span>], [<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>]],
+    [[<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>], [<span class="number">255</span>, <span class="number">255</span>, <span class="number">0</span>]]
+])
+<span class="function">print</span>(arr3d.shape)  <span class="comment"># (2, 2, 3) - 2x2 像素, 3通道</span></code>
+            </div>
+
+            <h3>常用建立函式</h3>
+            <table>
+                <tr>
+                    <th>函式</th>
+                    <th>說明</th>
+                    <th>範例</th>
+                </tr>
+                <tr>
+                    <td><code>np.zeros()</code></td>
+                    <td>全 0 陣列（黑色影像）</td>
+                    <td><code>np.zeros((100, 100, 3))</code></td>
+                </tr>
+                <tr>
+                    <td><code>np.ones()</code></td>
+                    <td>全 1 陣列</td>
+                    <td><code>np.ones((3, 3)) * 255</code></td>
+                </tr>
+                <tr>
+                    <td><code>np.full()</code></td>
+                    <td>指定值填滿</td>
+                    <td><code>np.full((100, 100), 128)</code></td>
+                </tr>
+                <tr>
+                    <td><code>np.arange()</code></td>
+                    <td>等差數列</td>
+                    <td><code>np.arange(0, 10, 2)</code> → [0,2,4,6,8]</td>
+                </tr>
+                <tr>
+                    <td><code>np.linspace()</code></td>
+                    <td>等分數列</td>
+                    <td><code>np.linspace(0, 1, 5)</code> → [0, 0.25, 0.5, 0.75, 1]</td>
+                </tr>
+                <tr>
+                    <td><code>np.random.rand()</code></td>
+                    <td>0~1 隨機數</td>
+                    <td><code>np.random.rand(3, 3)</code></td>
+                </tr>
+                <tr>
+                    <td><code>np.random.randint()</code></td>
+                    <td>隨機整數</td>
+                    <td><code>np.random.randint(0, 256, (100, 100))</code></td>
+                </tr>
+            </table>
+
+            <div class="code-block">
+<code><span class="comment"># 建立黑色影像 (100x100, BGR)</span>
+black_img = np.zeros((<span class="number">100</span>, <span class="number">100</span>, <span class="number">3</span>), dtype=np.uint8)
+
+<span class="comment"># 建立白色影像</span>
+white_img = np.ones((<span class="number">100</span>, <span class="number">100</span>, <span class="number">3</span>), dtype=np.uint8) * <span class="number">255</span>
+
+<span class="comment"># 建立灰色影像</span>
+gray_img = np.full((<span class="number">100</span>, <span class="number">100</span>), <span class="number">128</span>, dtype=np.uint8)
+
+<span class="comment"># 建立隨機雜訊影像</span>
+noise_img = np.random.randint(<span class="number">0</span>, <span class="number">256</span>, (<span class="number">100</span>, <span class="number">100</span>, <span class="number">3</span>), dtype=np.uint8)</code>
+            </div>
+        </div>
+
+        <!-- 陣列屬性 -->
+        <div class="section">
+            <h2>📊 陣列屬性</h2>
+
+            <div class="code-block">
+<code>img = cv2.imread(<span class="string">'plant.jpg'</span>)
+
+<span class="comment"># 形狀 (高度, 寬度, 通道)</span>
+<span class="function">print</span>(img.shape)      <span class="comment"># (480, 640, 3)</span>
+
+<span class="comment"># 維度數</span>
+<span class="function">print</span>(img.ndim)       <span class="comment"># 3 (三維陣列)</span>
+
+<span class="comment"># 元素總數</span>
+<span class="function">print</span>(img.size)       <span class="comment"># 480 * 640 * 3 = 921600</span>
+
+<span class="comment"># 資料型態</span>
+<span class="function">print</span>(img.dtype)      <span class="comment"># uint8 (0~255 的整數)</span>
+
+<span class="comment"># 取得各維度大小</span>
+height, width, channels = img.shape
+<span class="function">print</span>(<span class="string">f'高度: {height}, 寬度: {width}, 通道: {channels}'</span>)</code>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 dtype 常用類型：</strong><br>
+                • <code>uint8</code>: 0~255，影像標準格式<br>
+                • <code>float32</code>: 小數，運算中間結果<br>
+                • <code>float64</code>: 高精度小數，科學運算
+            </div>
+        </div>
+
+        <!-- 索引與切片 -->
+        <div class="section">
+            <h2>✂️ 索引與切片</h2>
+            <p>這是 NumPy 最重要的操作！掌握這個，影像處理就成功一半。</p>
+
+            <h3>一維陣列索引</h3>
+            <div class="code-block">
+<code>arr = np.array([<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>])
+<span class="comment">#              索引: 0   1   2   3   4</span>
+<span class="comment">#          負索引: -5  -4  -3  -2  -1</span>
+
+<span class="function">print</span>(arr[<span class="number">0</span>])     <span class="comment"># 10 (第一個元素)</span>
+<span class="function">print</span>(arr[-<span class="number">1</span>])    <span class="comment"># 50 (最後一個元素)</span>
+<span class="function">print</span>(arr[<span class="number">1</span>:<span class="number">4</span>])   <span class="comment"># [20 30 40] (索引1到3)</span>
+<span class="function">print</span>(arr[::<span class="number">2</span>])   <span class="comment"># [10 30 50] (每隔一個)</span>
+<span class="function">print</span>(arr[::-<span class="number">1</span>])  <span class="comment"># [50 40 30 20 10] (反轉)</span></code>
+            </div>
+
+            <h3>二維陣列索引（影像操作核心）</h3>
+            <div class="code-block">
+<code>arr2d = np.array([
+    [<span class="number">1</span>,  <span class="number">2</span>,  <span class="number">3</span>,  <span class="number">4</span>],
+    [<span class="number">5</span>,  <span class="number">6</span>,  <span class="number">7</span>,  <span class="number">8</span>],
+    [<span class="number">9</span>,  <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>],
+    [<span class="number">13</span>, <span class="number">14</span>, <span class="number">15</span>, <span class="number">16</span>]
+])
+
+<span class="comment"># 取得單一元素 [列, 行]</span>
+<span class="function">print</span>(arr2d[<span class="number">0</span>, <span class="number">0</span>])    <span class="comment"># 1 (左上角)</span>
+<span class="function">print</span>(arr2d[<span class="number">1</span>, <span class="number">2</span>])    <span class="comment"># 7 (第2列, 第3行)</span>
+
+<span class="comment"># 取得整列</span>
+<span class="function">print</span>(arr2d[<span class="number">0</span>])       <span class="comment"># [1 2 3 4] (第一列)</span>
+<span class="function">print</span>(arr2d[<span class="number">0</span>, :])    <span class="comment"># [1 2 3 4] (同上)</span>
+
+<span class="comment"># 取得整行</span>
+<span class="function">print</span>(arr2d[:, <span class="number">0</span>])    <span class="comment"># [1 5 9 13] (第一行)</span>
+
+<span class="comment"># 取得子矩陣（ROI - Region of Interest）</span>
+<span class="function">print</span>(arr2d[<span class="number">1</span>:<span class="number">3</span>, <span class="number">1</span>:<span class="number">3</span>])
+<span class="comment"># [[6  7]</span>
+<span class="comment">#  [10 11]]</span></code>
+            </div>
+
+            <h3>影像 ROI 操作實例</h3>
+            <div class="code-block">
+<code><span class="comment"># 讀取影像</span>
+img = cv2.imread(<span class="string">'farm.jpg'</span>)
+
+<span class="comment"># 取得影像中央區域 (ROI)</span>
+h, w = img.shape[:<span class="number">2</span>]
+center_y, center_x = h // <span class="number">2</span>, w // <span class="number">2</span>
+roi = img[center_y-<span class="number">50</span>:center_y+<span class="number">50</span>, center_x-<span class="number">50</span>:center_x+<span class="number">50</span>]
+
+<span class="comment"># 取得右下角 100x100 區域</span>
+bottom_right = img[-<span class="number">100</span>:, -<span class="number">100</span>:]
+
+<span class="comment"># 取得上半部</span>
+top_half = img[:h//<span class="number">2</span>, :]
+
+<span class="comment"># 分離 BGR 通道</span>
+B = img[:, :, <span class="number">0</span>]  <span class="comment"># 藍色通道</span>
+G = img[:, :, <span class="number">1</span>]  <span class="comment"># 綠色通道</span>
+R = img[:, :, <span class="number">2</span>]  <span class="comment"># 紅色通道</span></code>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ 注意！</strong><br>
+                NumPy 切片是「視圖」(view)，修改切片會影響原陣列！<br>
+                若需要獨立副本，使用 <code>.copy()</code>：<code>roi = img[0:100, 0:100].copy()</code>
+            </div>
+        </div>
+
+        <!-- 陣列運算 -->
+        <div class="section">
+            <h2>🧮 陣列運算</h2>
+
+            <h3>基本數學運算（向量化）</h3>
+            <p>NumPy 的運算會自動套用到每個元素，不需要寫迴圈！</p>
+
+            <div class="code-block">
+<code>arr = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>])
+
+<span class="comment"># 純量運算</span>
+<span class="function">print</span>(arr + <span class="number">10</span>)    <span class="comment"># [11 12 13 14 15]</span>
+<span class="function">print</span>(arr * <span class="number">2</span>)     <span class="comment"># [2 4 6 8 10]</span>
+<span class="function">print</span>(arr ** <span class="number">2</span>)    <span class="comment"># [1 4 9 16 25]</span>
+
+<span class="comment"># 陣列對陣列運算</span>
+arr2 = np.array([<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>])
+<span class="function">print</span>(arr + arr2)   <span class="comment"># [11 22 33 44 55]</span>
+<span class="function">print</span>(arr * arr2)   <span class="comment"># [10 40 90 160 250]</span></code>
+            </div>
+
+            <h3>影像亮度調整實例</h3>
+            <div class="code-block">
+<code>img = cv2.imread(<span class="string">'plant.jpg'</span>)
+
+<span class="comment"># 增加亮度（加法）</span>
+bright = np.clip(img.astype(np.int16) + <span class="number">50</span>, <span class="number">0</span>, <span class="number">255</span>).astype(np.uint8)
+
+<span class="comment"># 降低亮度</span>
+dark = np.clip(img.astype(np.int16) - <span class="number">50</span>, <span class="number">0</span>, <span class="number">255</span>).astype(np.uint8)
+
+<span class="comment"># 調整對比度（乘法）</span>
+contrast = np.clip(img.astype(np.float32) * <span class="number">1.5</span>, <span class="number">0</span>, <span class="number">255</span>).astype(np.uint8)
+
+<span class="comment"># 負片效果（反轉）</span>
+negative = <span class="number">255</span> - img</code>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 np.clip() 很重要！</strong><br>
+                影像像素值必須在 0~255 之間，運算後要用 clip 確保不溢位。
+            </div>
+
+            <h3>統計函式</h3>
+            <table>
+                <tr>
+                    <th>函式</th>
+                    <th>說明</th>
+                    <th>應用場景</th>
+                </tr>
+                <tr>
+                    <td><code>np.mean()</code></td>
+                    <td>平均值</td>
+                    <td>計算影像平均亮度</td>
+                </tr>
+                <tr>
+                    <td><code>np.max() / np.min()</code></td>
+                    <td>最大/最小值</td>
+                    <td>找出最亮/最暗像素</td>
+                </tr>
+                <tr>
+                    <td><code>np.sum()</code></td>
+                    <td>總和</td>
+                    <td>計算某顏色像素數量</td>
+                </tr>
+                <tr>
+                    <td><code>np.std()</code></td>
+                    <td>標準差</td>
+                    <td>評估對比度</td>
+                </tr>
+                <tr>
+                    <td><code>np.argmax() / np.argmin()</code></td>
+                    <td>最大/最小值的索引</td>
+                    <td>找出特定位置</td>
+                </tr>
+            </table>
+
+            <div class="code-block">
+<code>img = cv2.imread(<span class="string">'plant.jpg'</span>, cv2.IMREAD_GRAYSCALE)
+
+<span class="function">print</span>(<span class="string">f'平均亮度: {np.mean(img):.2f}'</span>)
+<span class="function">print</span>(<span class="string">f'最亮像素: {np.max(img)}'</span>)
+<span class="function">print</span>(<span class="string">f'最暗像素: {np.min(img)}'</span>)
+<span class="function">print</span>(<span class="string">f'標準差: {np.std(img):.2f}'</span>)
+
+<span class="comment"># 沿著特定軸計算</span>
+<span class="function">print</span>(np.mean(img, axis=<span class="number">0</span>))  <span class="comment"># 每行的平均值</span>
+<span class="function">print</span>(np.mean(img, axis=<span class="number">1</span>))  <span class="comment"># 每列的平均值</span></code>
+            </div>
+        </div>
+
+        <!-- 布林索引 -->
+        <div class="section">
+            <h2>🎯 布林索引與遮罩</h2>
+            <p>這是影像處理的核心技巧！可以選取符合條件的像素進行操作。</p>
+
+            <div class="code-block">
+<code>arr = np.array([<span class="number">10</span>, <span class="number">25</span>, <span class="number">30</span>, <span class="number">45</span>, <span class="number">50</span>, <span class="number">15</span>])
+
+<span class="comment"># 建立布林遮罩</span>
+mask = arr > <span class="number">25</span>
+<span class="function">print</span>(mask)  <span class="comment"># [False False  True  True  True False]</span>
+
+<span class="comment"># 用遮罩取得符合條件的元素</span>
+<span class="function">print</span>(arr[mask])  <span class="comment"># [30 45 50]</span>
+
+<span class="comment"># 一行完成</span>
+<span class="function">print</span>(arr[arr > <span class="number">25</span>])  <span class="comment"># [30 45 50]</span>
+
+<span class="comment"># 修改符合條件的元素</span>
+arr[arr > <span class="number">25</span>] = <span class="number">100</span>
+<span class="function">print</span>(arr)  <span class="comment"># [10 25 100 100 100 15]</span></code>
+            </div>
+
+            <h3>影像處理實例</h3>
+            <div class="code-block">
+<code>img = cv2.imread(<span class="string">'plant.jpg'</span>)
+
+<span class="comment"># 二值化：亮度 > 128 的設為白色，否則黑色</span>
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+binary = np.zeros_like(gray)
+binary[gray > <span class="number">128</span>] = <span class="number">255</span>
+
+<span class="comment"># 找出所有綠色像素（簡易版）</span>
+B, G, R = img[:,:,<span class="number">0</span>], img[:,:,<span class="number">1</span>], img[:,:,<span class="number">2</span>]
+green_mask = (G > R) & (G > B) & (G > <span class="number">50</span>)
+
+<span class="comment"># 把綠色區域標記為紅色</span>
+result = img.copy()
+result[green_mask] = [<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>]  <span class="comment"># BGR 紅色</span>
+
+<span class="comment"># 計算綠色像素佔比</span>
+green_ratio = np.sum(green_mask) / green_mask.size * <span class="number">100</span>
+<span class="function">print</span>(<span class="string">f'綠色覆蓋率: {green_ratio:.2f}%'</span>)</code>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 組合條件：</strong><br>
+                • 且 (AND): <code>&</code>，例如 <code>(a > 10) & (a < 50)</code><br>
+                • 或 (OR): <code>|</code>，例如 <code>(a < 10) | (a > 50)</code><br>
+                • 非 (NOT): <code>~</code>，例如 <code>~(a > 10)</code><br>
+                <span style="color: #ed8936;">注意：必須用括號包住每個條件！</span>
+            </div>
+        </div>
+
+        <!-- 形狀操作 -->
+        <div class="section">
+            <h2>🔄 形狀操作</h2>
+
+            <h3>reshape - 重塑形狀</h3>
+            <div class="code-block">
+<code>arr = np.arange(<span class="number">12</span>)  <span class="comment"># [0 1 2 3 4 5 6 7 8 9 10 11]</span>
+
+<span class="comment"># 重塑為 3x4 矩陣</span>
+reshaped = arr.reshape(<span class="number">3</span>, <span class="number">4</span>)
+<span class="function">print</span>(reshaped)
+<span class="comment"># [[ 0  1  2  3]</span>
+<span class="comment">#  [ 4  5  6  7]</span>
+<span class="comment">#  [ 8  9 10 11]]</span>
+
+<span class="comment"># 用 -1 自動計算維度</span>
+<span class="function">print</span>(arr.reshape(<span class="number">2</span>, -<span class="number">1</span>))  <span class="comment"># 2x6</span>
+<span class="function">print</span>(arr.reshape(-<span class="number">1</span>, <span class="number">3</span>))  <span class="comment"># 4x3</span></code>
+            </div>
+
+            <h3>flatten 與 ravel - 攤平</h3>
+            <div class="code-block">
+<code>arr2d = np.array([[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]])
+
+<span class="comment"># flatten: 回傳副本</span>
+flat = arr2d.flatten()
+<span class="function">print</span>(flat)  <span class="comment"># [1 2 3 4 5 6]</span>
+
+<span class="comment"># ravel: 回傳視圖（更快但要小心修改）</span>
+rav = arr2d.ravel()
+<span class="function">print</span>(rav)  <span class="comment"># [1 2 3 4 5 6]</span>
+
+<span class="comment"># 影像攤平用於機器學習</span>
+img = cv2.imread(<span class="string">'digit.jpg'</span>, cv2.IMREAD_GRAYSCALE)  <span class="comment"># 28x28</span>
+feature_vector = img.flatten()  <span class="comment"># 784 個特徵</span></code>
+            </div>
+
+            <h3>transpose 與軸交換</h3>
+            <div class="code-block">
+<code><span class="comment"># 矩陣轉置</span>
+arr = np.array([[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]])
+<span class="function">print</span>(arr.T)
+<span class="comment"># [[1 4]</span>
+<span class="comment">#  [2 5]</span>
+<span class="comment">#  [3 6]]</span>
+
+<span class="comment"># 影像通道順序轉換：HWC → CHW（PyTorch 格式）</span>
+img = cv2.imread(<span class="string">'plant.jpg'</span>)  <span class="comment"># (H, W, C)</span>
+img_chw = img.transpose(<span class="number">2</span>, <span class="number">0</span>, <span class="number">1</span>)  <span class="comment"># (C, H, W)</span>
+<span class="function">print</span>(<span class="string">f'{img.shape} → {img_chw.shape}'</span>)</code>
+            </div>
+        </div>
+
+        <!-- 堆疊與串接 -->
+        <div class="section">
+            <h2>📚 堆疊與串接</h2>
+
+            <div class="code-block">
+<code>a = np.array([[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">4</span>]])
+b = np.array([[<span class="number">5</span>, <span class="number">6</span>], [<span class="number">7</span>, <span class="number">8</span>]])
+
+<span class="comment"># 垂直堆疊 (上下)</span>
+<span class="function">print</span>(np.vstack([a, b]))
+<span class="comment"># [[1 2]</span>
+<span class="comment">#  [3 4]</span>
+<span class="comment">#  [5 6]</span>
+<span class="comment">#  [7 8]]</span>
+
+<span class="comment"># 水平堆疊 (左右)</span>
+<span class="function">print</span>(np.hstack([a, b]))
+<span class="comment"># [[1 2 5 6]</span>
+<span class="comment">#  [3 4 7 8]]</span>
+
+<span class="comment"># 深度堆疊 (通道方向)</span>
+<span class="function">print</span>(np.dstack([a, b]).shape)  <span class="comment"># (2, 2, 2)</span></code>
+            </div>
+
+            <h3>影像拼接實例</h3>
+            <div class="code-block">
+<code><span class="comment"># 水平拼接兩張影像</span>
+img1 = cv2.imread(<span class="string">'before.jpg'</span>)
+img2 = cv2.imread(<span class="string">'after.jpg'</span>)
+combined = np.hstack([img1, img2])
+
+<span class="comment"># 合併三個通道為彩色影像</span>
+B = cv2.imread(<span class="string">'blue.jpg'</span>, cv2.IMREAD_GRAYSCALE)
+G = cv2.imread(<span class="string">'green.jpg'</span>, cv2.IMREAD_GRAYSCALE)
+R = cv2.imread(<span class="string">'red.jpg'</span>, cv2.IMREAD_GRAYSCALE)
+color_img = np.dstack([B, G, R])  <span class="comment"># 或 cv2.merge([B, G, R])</span></code>
+            </div>
+        </div>
+
+        <!-- 植生指標計算 -->
+        <div class="section">
+            <h2>🌿 植生指標計算實例</h2>
+            <p>結合以上所有技巧，計算農業常用的植生指標。</p>
+
+            <h3>ExG (Excess Green Index)</h3>
+            <div class="code-block">
+<code><span class="keyword">def</span> <span class="function">calculate_ExG</span>(img):
+    <span class="string">"""計算超綠指數 ExG = 2G - R - B"""</span>
+    <span class="comment"># 分離通道並轉為浮點數</span>
+    B = img[:, :, <span class="number">0</span>].astype(np.float32)
+    G = img[:, :, <span class="number">1</span>].astype(np.float32)
+    R = img[:, :, <span class="number">2</span>].astype(np.float32)
+
+    <span class="comment"># 正規化到 0~1</span>
+    total = B + G + R + <span class="number">1e-6</span>  <span class="comment"># 避免除以零</span>
+    b, g, r = B/total, G/total, R/total
+
+    <span class="comment"># 計算 ExG</span>
+    ExG = <span class="number">2</span> * g - r - b
+
+    <span class="comment"># 正規化到 0~255 顯示</span>
+    ExG_normalized = ((ExG + <span class="number">1</span>) * <span class="number">127.5</span>).astype(np.uint8)
+
+    <span class="keyword">return</span> ExG_normalized
+
+<span class="comment"># 使用</span>
+img = cv2.imread(<span class="string">'crop_field.jpg'</span>)
+exg = calculate_ExG(img)
+
+<span class="comment"># 建立植被遮罩（ExG > 閾值）</span>
+vegetation_mask = exg > <span class="number">140</span></code>
+            </div>
+
+            <h3>NDVI (Normalized Difference Vegetation Index)</h3>
+            <div class="code-block">
+<code><span class="keyword">def</span> <span class="function">calculate_NDVI</span>(nir, red):
+    <span class="string">"""計算常態差異植生指標 NDVI = (NIR - Red) / (NIR + Red)"""</span>
+    <span class="comment"># 轉換為浮點數</span>
+    nir = nir.astype(np.float32)
+    red = red.astype(np.float32)
+
+    <span class="comment"># 避免除以零</span>
+    denominator = nir + red
+    denominator[denominator == <span class="number">0</span>] = <span class="number">1e-6</span>
+
+    <span class="comment"># 計算 NDVI (-1 到 1)</span>
+    ndvi = (nir - red) / denominator
+
+    <span class="comment"># 正規化到 0~255 顯示</span>
+    ndvi_display = ((ndvi + <span class="number">1</span>) * <span class="number">127.5</span>).astype(np.uint8)
+
+    <span class="keyword">return</span> ndvi, ndvi_display
+
+<span class="comment"># 載入多光譜影像</span>
+nir_band = cv2.imread(<span class="string">'nir.tif'</span>, cv2.IMREAD_GRAYSCALE)
+red_band = cv2.imread(<span class="string">'red.tif'</span>, cv2.IMREAD_GRAYSCALE)
+
+ndvi, ndvi_vis = calculate_NDVI(nir_band, red_band)
+
+<span class="comment"># 健康植被通常 NDVI > 0.3</span>
+healthy_vegetation = ndvi > <span class="number">0.3</span>
+coverage = np.sum(healthy_vegetation) / healthy_vegetation.size * <span class="number">100</span>
+<span class="function">print</span>(<span class="string">f'健康植被覆蓋率: {coverage:.2f}%'</span>)</code>
+            </div>
+        </div>
+
+        <!-- 效能技巧 -->
+        <div class="section">
+            <h2>⚡ 效能技巧</h2>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h4>✅ 使用向量化運算</h4>
+                    <div class="code-block" style="background: #1a2634;">
+<code><span class="comment"># 快！</span>
+result = arr * <span class="number">2</span> + <span class="number">10</span></code>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4>❌ 避免 Python 迴圈</h4>
+                    <div class="code-block" style="background: #341a1a;">
+<code><span class="comment"># 慢！</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="function">len</span>(arr)):
+    result[i] = arr[i] * <span class="number">2</span> + <span class="number">10</span></code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+<code><span class="comment"># 好習慣：預先分配記憶體</span>
+result = np.empty_like(img)  <span class="comment"># 比 np.zeros 快</span>
+
+<span class="comment"># 使用 out 參數避免產生中間陣列</span>
+np.add(a, b, out=result)
+
+<span class="comment"># 使用 np.where 進行條件賦值</span>
+result = np.where(img > <span class="number">128</span>, <span class="number">255</span>, <span class="number">0</span>)  <span class="comment"># 比布林索引更快</span>
+
+<span class="comment"># 使用適當的資料型態</span>
+img_float = img.astype(np.float32)  <span class="comment"># float32 比 float64 快</span></code>
+            </div>
+        </div>
+
+        <!-- 常見錯誤 -->
+        <div class="section">
+            <h2>🚫 常見錯誤與解決</h2>
+
+            <table>
+                <tr>
+                    <th>錯誤</th>
+                    <th>原因</th>
+                    <th>解決方法</th>
+                </tr>
+                <tr>
+                    <td>值超過 255 或變負數</td>
+                    <td>uint8 溢位</td>
+                    <td>先轉 float32，運算後 clip</td>
+                </tr>
+                <tr>
+                    <td>shape 不符</td>
+                    <td>維度不一致</td>
+                    <td>確認陣列形狀，必要時 reshape</td>
+                </tr>
+                <tr>
+                    <td>修改切片影響原陣列</td>
+                    <td>視圖而非副本</td>
+                    <td>使用 .copy()</td>
+                </tr>
+                <tr>
+                    <td>布林運算錯誤</td>
+                    <td>沒加括號</td>
+                    <td>(a > 10) & (b < 20)</td>
+                </tr>
+            </table>
+        </div>
+
+        <a href="文件索引.html" class="home-btn">🏠 返回首頁</a>
+    </div>
+</body>
+</html>

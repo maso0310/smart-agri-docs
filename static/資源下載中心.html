@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資源下載中心 - 智慧農業課程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e8e8e8;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 頁首區域 */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.1) 0%, rgba(99, 179, 237, 0.1) 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(79, 209, 197, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            color: #a0aec0;
+        }
+
+        /* 分組卡片 */
+        .group-section {
+            margin-bottom: 40px;
+        }
+
+        .group-card {
+            background: rgba(45, 55, 72, 0.6);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(79, 209, 197, 0.2);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .group-card:hover {
+            border-color: #4fd1c5;
+            box-shadow: 0 5px 25px rgba(79, 209, 197, 0.2);
+        }
+
+        .group-header {
+            padding: 20px 25px;
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .group-header:hover {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.25) 0%, rgba(99, 179, 237, 0.25) 100%);
+        }
+
+        .group-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .group-title h2 {
+            color: #4fd1c5;
+            font-size: 1.4em;
+        }
+
+        .group-badge {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .toggle-icon {
+            font-size: 1.5em;
+            color: #4fd1c5;
+            transition: transform 0.3s ease;
+        }
+
+        .group-card.open .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .group-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .group-card.open .group-content {
+            max-height: 2000px;
+        }
+
+        .content-inner {
+            padding: 25px;
+        }
+
+        /* 資源區塊 */
+        .resource-section {
+            margin-bottom: 25px;
+        }
+
+        .resource-section h3 {
+            color: #63b3ed;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(99, 179, 237, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 操作手冊連結 */
+        .manual-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .manual-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(79, 209, 197, 0.4);
+        }
+
+        /* 程式碼列表 */
+        .code-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .code-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: rgba(26, 26, 46, 0.5);
+            border-radius: 10px;
+            border: 1px solid rgba(79, 209, 197, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .code-item:hover {
+            background: rgba(26, 26, 46, 0.8);
+            border-color: rgba(79, 209, 197, 0.4);
+        }
+
+        .code-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .code-icon {
+            font-size: 1.5em;
+        }
+
+        .code-name {
+            color: #e8e8e8;
+            font-weight: 500;
+        }
+
+        .code-desc {
+            color: #a0aec0;
+            font-size: 0.85em;
+            margin-top: 3px;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: rgba(79, 209, 197, 0.2);
+            color: #4fd1c5;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(79, 209, 197, 0.3);
+        }
+
+        .download-btn:hover {
+            background: rgba(79, 209, 197, 0.3);
+            border-color: #4fd1c5;
+        }
+
+        /* 快速下載區 */
+        .quick-download {
+            background: rgba(45, 55, 72, 0.5);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 40px;
+            border: 1px solid rgba(79, 209, 197, 0.2);
+            text-align: center;
+        }
+
+        .quick-download h2 {
+            color: #4fd1c5;
+            margin-bottom: 20px;
+        }
+
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .quick-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 25px;
+            background: rgba(79, 209, 197, 0.15);
+            color: #4fd1c5;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(79, 209, 197, 0.3);
+        }
+
+        .quick-btn:hover {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(79, 209, 197, 0.3);
+        }
+
+        /* 頁尾 */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+            color: #718096;
+            border-top: 1px solid rgba(79, 209, 197, 0.2);
+        }
+
+        /* 主題切換按鈕 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 返回首頁按鈕 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+
+        /* 響應式 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .group-title h2 {
+                font-size: 1.1em;
+            }
+
+            .code-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .download-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* ===== 淺色主題 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+        [data-theme="light"] .header p {
+            color: #4a5568 !important;
+        }
+
+        [data-theme="light"] .group-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+        [data-theme="light"] .group-header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.1) 0%, rgba(99, 179, 237, 0.1) 100%) !important;
+        }
+
+        [data-theme="light"] .group-title h2 {
+            color: #2b6cb0 !important;
+        }
+
+        [data-theme="light"] .resource-section h3 {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(99, 179, 237, 0.4) !important;
+        }
+
+        [data-theme="light"] .code-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.2) !important;
+        }
+
+        [data-theme="light"] .code-name {
+            color: #2d3748 !important;
+        }
+
+        [data-theme="light"] .code-desc {
+            color: #4a5568 !important;
+        }
+
+        [data-theme="light"] .download-btn {
+            background: rgba(79, 209, 197, 0.15) !important;
+            color: #319795 !important;
+            border-color: rgba(79, 209, 197, 0.4) !important;
+        }
+
+        [data-theme="light"] .quick-download {
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+        [data-theme="light"] .quick-download h2 {
+            color: #2b6cb0 !important;
+        }
+
+        [data-theme="light"] .quick-btn {
+            background: rgba(79, 209, 197, 0.1) !important;
+            color: #319795 !important;
+            border-color: rgba(79, 209, 197, 0.4) !important;
+        }
+
+        [data-theme="light"] .quick-btn:hover {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+    <div class="container">
+        <!-- 頁首 -->
+        <header class="header">
+            <h1>資源下載中心</h1>
+            <p>G1 ~ G6 分組實作的所有範例程式碼與操作手冊</p>
+        </header>
+
+        <!-- 分組資源 -->
+        <div class="group-section">
+            <!-- G1 光線控制組 -->
+            <div class="group-card">
+                <div class="group-header" onclick="toggleGroup(this)">
+                    <div class="group-title">
+                        <span class="group-badge">G1</span>
+                        <h2>光線控制組</h2>
+                    </div>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="group-content">
+                    <div class="content-inner">
+                        <div class="resource-section">
+                            <h3>📖 操作手冊</h3>
+                            <a href="G1_光線控制組_操作手冊.html" class="manual-link">
+                                <span>📄</span> 線上閱讀操作手冊
+                            </a>
+                        </div>
+                        <div class="resource-section">
+                            <h3>💻 範例程式碼</h3>
+                            <div class="code-list">
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">01_led_blink.ino</div>
+                                            <div class="code-desc">LED 閃爍基礎練習</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G1_光線控制組/01_led_blink.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">02_led_pwm.ino</div>
+                                            <div class="code-desc">PWM 調光控制</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G1_光線控制組/02_led_pwm.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">03_potentiometer_led.ino</div>
+                                            <div class="code-desc">可變電阻控制 LED</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G1_光線控制組/03_potentiometer_led.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">04_light_sensor.ino</div>
+                                            <div class="code-desc">光敏電阻讀取</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G1_光線控制組/04_light_sensor.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">05_auto_light.ino</div>
+                                            <div class="code-desc">自動補光系統</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G1_光線控制組/05_auto_light.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- G2 溫溼度控制組 -->
+            <div class="group-card">
+                <div class="group-header" onclick="toggleGroup(this)">
+                    <div class="group-title">
+                        <span class="group-badge">G2</span>
+                        <h2>溫溼度控制組</h2>
+                    </div>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="group-content">
+                    <div class="content-inner">
+                        <div class="resource-section">
+                            <h3>📖 操作手冊</h3>
+                            <a href="G2_溫溼度控制組_操作手冊.html" class="manual-link">
+                                <span>📄</span> 線上閱讀操作手冊
+                            </a>
+                        </div>
+                        <div class="resource-section">
+                            <h3>💻 範例程式碼</h3>
+                            <div class="code-list">
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">01_dht11_basic.ino</div>
+                                            <div class="code-desc">DHT11 基礎讀取</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G2_溫溼度控制組/01_dht11_basic.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">02_relay_control.ino</div>
+                                            <div class="code-desc">繼電器控制</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G2_溫溼度控制組/02_relay_control.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">03_temp_fan.ino</div>
+                                            <div class="code-desc">溫度控制風扇</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G2_溫溼度控制組/03_temp_fan.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">04_humidity_humidifier.ino</div>
+                                            <div class="code-desc">濕度控制加濕器</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G2_溫溼度控制組/04_humidity_humidifier.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">05_climate_control.ino</div>
+                                            <div class="code-desc">完整氣候控制系統</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G2_溫溼度控制組/05_climate_control.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- G3 土壤水份控制組 -->
+            <div class="group-card">
+                <div class="group-header" onclick="toggleGroup(this)">
+                    <div class="group-title">
+                        <span class="group-badge">G3</span>
+                        <h2>土壤水份控制組</h2>
+                    </div>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="group-content">
+                    <div class="content-inner">
+                        <div class="resource-section">
+                            <h3>📖 操作手冊</h3>
+                            <a href="G3_土壤水份控制組_操作手冊.html" class="manual-link">
+                                <span>📄</span> 線上閱讀操作手冊
+                            </a>
+                        </div>
+                        <div class="resource-section">
+                            <h3>💻 範例程式碼</h3>
+                            <div class="code-list">
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">01_soil_sensor.ino</div>
+                                            <div class="code-desc">土壤濕度感測器讀取</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G3_土壤水份控制組/01_soil_sensor.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">02_moisture_indicator.ino</div>
+                                            <div class="code-desc">濕度指示燈</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G3_土壤水份控制組/02_moisture_indicator.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">03_pump_control.ino</div>
+                                            <div class="code-desc">抽水馬達控制</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G3_土壤水份控制組/03_pump_control.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">04_safe_watering.ino</div>
+                                            <div class="code-desc">安全澆水機制</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G3_土壤水份控制組/04_safe_watering.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">05_auto_irrigation.ino</div>
+                                            <div class="code-desc">自動灌溉系統</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G3_土壤水份控制組/05_auto_irrigation.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- G4 螢幕顯示組 -->
+            <div class="group-card">
+                <div class="group-header" onclick="toggleGroup(this)">
+                    <div class="group-title">
+                        <span class="group-badge">G4</span>
+                        <h2>螢幕顯示組</h2>
+                    </div>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="group-content">
+                    <div class="content-inner">
+                        <div class="resource-section">
+                            <h3>📖 操作手冊</h3>
+                            <a href="G4_螢幕顯示組_操作手冊.html" class="manual-link">
+                                <span>📄</span> 線上閱讀操作手冊
+                            </a>
+                        </div>
+                        <div class="resource-section">
+                            <h3>💻 範例程式碼</h3>
+                            <div class="code-list">
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">01_lcd_basic.ino</div>
+                                            <div class="code-desc">LCD 基礎顯示</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G4_螢幕顯示組/01_lcd_basic.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">02_lcd_dynamic.ino</div>
+                                            <div class="code-desc">動態數據顯示</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G4_螢幕顯示組/02_lcd_dynamic.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">03_lcd_custom_char.ino</div>
+                                            <div class="code-desc">自訂字元</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G4_螢幕顯示組/03_lcd_custom_char.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">04_led_matrix.ino</div>
+                                            <div class="code-desc">LED 點矩陣</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G4_螢幕顯示組/04_led_matrix.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">05_monitor_panel.ino</div>
+                                            <div class="code-desc">監控面板</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G4_螢幕顯示組/05_monitor_panel.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- G5 遠端遙控組 -->
+            <div class="group-card">
+                <div class="group-header" onclick="toggleGroup(this)">
+                    <div class="group-title">
+                        <span class="group-badge">G5</span>
+                        <h2>遠端遙控組</h2>
+                    </div>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="group-content">
+                    <div class="content-inner">
+                        <div class="resource-section">
+                            <h3>📖 操作手冊</h3>
+                            <a href="G5_遠端遙控組_操作手冊.html" class="manual-link">
+                                <span>📄</span> 線上閱讀操作手冊
+                            </a>
+                        </div>
+                        <div class="resource-section">
+                            <h3>💻 範例程式碼</h3>
+                            <div class="code-list">
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">01_ir_receive.ino</div>
+                                            <div class="code-desc">紅外線訊號接收</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G5_遠端遙控組/01_ir_receive.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">02_ir_led_control.ino</div>
+                                            <div class="code-desc">紅外線控制 LED</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G5_遠端遙控組/02_ir_led_control.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">03_servo_control.ino</div>
+                                            <div class="code-desc">伺服馬達控制</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G5_遠端遙控組/03_servo_control.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">04_stepper_control.ino</div>
+                                            <div class="code-desc">步進馬達控制</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G5_遠端遙控組/04_stepper_control.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">05_remote_control_system.ino</div>
+                                            <div class="code-desc">完整遙控系統</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G5_遠端遙控組/05_remote_control_system.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- G6 網路控制組 -->
+            <div class="group-card">
+                <div class="group-header" onclick="toggleGroup(this)">
+                    <div class="group-title">
+                        <span class="group-badge">G6</span>
+                        <h2>網路控制組</h2>
+                    </div>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="group-content">
+                    <div class="content-inner">
+                        <div class="resource-section">
+                            <h3>📖 操作手冊</h3>
+                            <a href="G6_網路控制組_操作手冊.html" class="manual-link">
+                                <span>📄</span> 線上閱讀操作手冊
+                            </a>
+                        </div>
+                        <div class="resource-section">
+                            <h3>💻 範例程式碼</h3>
+                            <div class="code-list">
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">01_wifi_connect.ino</div>
+                                            <div class="code-desc">WiFi 連線</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G6_網路控制組/01_wifi_connect.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">02_mqtt_connect.ino</div>
+                                            <div class="code-desc">MQTT 連線</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G6_網路控制組/02_mqtt_connect.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">03_fake_sensor_data.ino</div>
+                                            <div class="code-desc">模擬感測器數據</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G6_網路控制組/03_fake_sensor_data.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">04_greenhouse_simulation.ino</div>
+                                            <div class="code-desc">溫室模擬</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G6_網路控制組/04_greenhouse_simulation.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                                <div class="code-item">
+                                    <div class="code-info">
+                                        <span class="code-icon">📝</span>
+                                        <div>
+                                            <div class="code-name">05_iot_greenhouse.ino</div>
+                                            <div class="code-desc">IoT 溫室完整系統</div>
+                                        </div>
+                                    </div>
+                                    <a href="downloads/G6_網路控制組/05_iot_greenhouse.ino" class="download-btn" download>⬇️ 下載</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快速連結 -->
+        <div class="quick-download">
+            <h2>快速連結 - 操作手冊</h2>
+            <div class="quick-buttons">
+                <a href="分組任務總覽.html" class="quick-btn">📋 分組任務總覽</a>
+                <a href="G1_光線控制組_操作手冊.html" class="quick-btn">💡 G1 光線控制</a>
+                <a href="G2_溫溼度控制組_操作手冊.html" class="quick-btn">🌡️ G2 溫溼度控制</a>
+                <a href="G3_土壤水份控制組_操作手冊.html" class="quick-btn">💧 G3 土壤水份</a>
+                <a href="G4_螢幕顯示組_操作手冊.html" class="quick-btn">📺 G4 螢幕顯示</a>
+                <a href="G5_遠端遙控組_操作手冊.html" class="quick-btn">📡 G5 遠端遙控</a>
+                <a href="G6_網路控制組_操作手冊.html" class="quick-btn">🌐 G6 網路控制</a>
+            </div>
+        </div>
+
+        <!-- 頁尾 -->
+        <footer class="footer">
+            <p>智慧農業課程教材 | 最後更新：2025年12月</p>
+        </footer>
+    </div>
+
+    <script>
+        // 展開/收合分組
+        function toggleGroup(header) {
+            const card = header.parentElement;
+            card.classList.toggle('open');
+        }
+
+        // 主題切換
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // 載入儲存的主題
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

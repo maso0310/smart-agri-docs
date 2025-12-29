@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>植生指標計算教學</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #68d391, #48bb78);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a0aec0;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h2 {
+            color: #68d391;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(104, 211, 145, 0.3);
+        }
+
+        h3 {
+            color: #63b3ed;
+            font-size: 1.2rem;
+            margin: 25px 0 15px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #cbd5e0;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+            border: 1px solid #30363d;
+        }
+
+        .code-block code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: #e6edf3;
+            white-space: pre;
+        }
+
+        .comment { color: #8b949e; }
+        .keyword { color: #ff7b72; }
+        .string { color: #a5d6ff; }
+        .number { color: #79c0ff; }
+        .function { color: #d2a8ff; }
+        .variable { color: #ffa657; }
+
+        .formula-box {
+            background: linear-gradient(135deg, rgba(104, 211, 145, 0.15), rgba(72, 187, 120, 0.1));
+            border: 2px solid rgba(104, 211, 145, 0.4);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .formula {
+            font-size: 1.8rem;
+            color: #68d391;
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            margin: 15px 0;
+        }
+
+        .formula-name {
+            font-size: 1.1rem;
+            color: #a0aec0;
+            margin-bottom: 10px;
+        }
+
+        .tip-box {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.1), rgba(99, 179, 237, 0.1));
+            border-left: 4px solid #4fd1c5;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .tip-box strong {
+            color: #4fd1c5;
+        }
+
+        .warning-box {
+            background: rgba(237, 137, 54, 0.1);
+            border-left: 4px solid #ed8936;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box strong {
+            color: #ed8936;
+        }
+
+        .info-box {
+            background: rgba(99, 179, 237, 0.1);
+            border-left: 4px solid #63b3ed;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .info-box strong {
+            color: #63b3ed;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(104, 211, 145, 0.2);
+            color: #68d391;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+        }
+
+        .card h4 {
+            color: #68d391;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #63b3ed;
+        }
+
+        .index-range {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .range-bar {
+            flex: 1;
+            height: 30px;
+            margin: 0 20px;
+            border-radius: 15px;
+            background: linear-gradient(to right,
+                #8b4513 0%,
+                #cd853f 20%,
+                #f0e68c 40%,
+                #90ee90 60%,
+                #228b22 80%,
+                #006400 100%
+            );
+        }
+
+        .range-label {
+            font-size: 0.9rem;
+            color: #a0aec0;
+        }
+
+        .color-scale {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        .home-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #68d391, #48bb78);
+            color: #1a1a2e;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(104, 211, 145, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(104, 211, 145, 0.4);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .comparison-item h4 {
+            color: #63b3ed;
+            margin-bottom: 10px;
+        }
+
+        .ndvi-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌿 植生指標計算教學</h1>
+        <p class="subtitle">利用遙測影像評估作物健康狀態</p>
+
+        <!-- 什麼是植生指標 -->
+        <div class="section">
+            <h2>📖 什麼是植生指標？</h2>
+            <p>植生指標 (Vegetation Index, VI) 是利用植物對不同波段光線的反射特性，透過數學運算得出的數值，用來評估植物的健康狀態、覆蓋程度與生長情況。</p>
+
+            <h3>植物的光譜特性</h3>
+            <div class="grid-3">
+                <div class="card">
+                    <h4>🔵 藍光 (450-495nm)</h4>
+                    <p>被葉綠素強烈吸收</p>
+                    <div class="value" style="color: #4299e1;">吸收</div>
+                </div>
+                <div class="card">
+                    <h4>🟢 綠光 (495-570nm)</h4>
+                    <p>反射較多，植物呈綠色</p>
+                    <div class="value" style="color: #48bb78;">反射</div>
+                </div>
+                <div class="card">
+                    <h4>🔴 紅光 (620-750nm)</h4>
+                    <p>被葉綠素強烈吸收</p>
+                    <div class="value" style="color: #f56565;">吸收</div>
+                </div>
+                <div class="card">
+                    <h4>🌡️ 近紅外 (750-1400nm)</h4>
+                    <p>被細胞結構強烈反射</p>
+                    <div class="value" style="color: #ed8936;">高反射</div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 核心原理：</strong><br>
+                健康植物會強烈吸收紅光（用於光合作用），同時強烈反射近紅外光（因細胞結構）。<br>
+                這個對比就是大多數植生指標的計算基礎！
+            </div>
+        </div>
+
+        <!-- NDVI -->
+        <div class="section">
+            <h2>🌱 NDVI - 常態差異植生指標</h2>
+            <p>NDVI (Normalized Difference Vegetation Index) 是最廣泛使用的植生指標，用於評估植物的健康程度。</p>
+
+            <div class="formula-box">
+                <div class="formula-name">Normalized Difference Vegetation Index</div>
+                <div class="formula">NDVI = (NIR - Red) / (NIR + Red)</div>
+                <p style="color: #a0aec0; margin-top: 15px;">NIR = 近紅外波段反射值，Red = 紅光波段反射值</p>
+            </div>
+
+            <h3>NDVI 數值解讀</h3>
+            <div class="index-range">
+                <span class="range-label">-1.0</span>
+                <div class="range-bar"></div>
+                <span class="range-label">+1.0</span>
+            </div>
+
+            <div class="ndvi-legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4a90d9;"></div>
+                    <span>-1.0~0: 水體</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #8b4513;"></div>
+                    <span>0~0.1: 裸土/岩石</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #cd853f;"></div>
+                    <span>0.1~0.2: 枯萎植被</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f0e68c;"></div>
+                    <span>0.2~0.3: 稀疏植被</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #90ee90;"></div>
+                    <span>0.3~0.5: 中度健康</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #228b22;"></div>
+                    <span>0.5~0.7: 健康植被</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #006400;"></div>
+                    <span>0.7~1.0: 茂密植被</span>
+                </div>
+            </div>
+
+            <h3>Python 實作</h3>
+            <div class="code-block">
+<code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> cv2
+
+<span class="keyword">def</span> <span class="function">calculate_NDVI</span>(nir_band, red_band):
+    <span class="string">"""
+    計算 NDVI 指標
+
+    參數:
+        nir_band: 近紅外波段影像 (numpy array)
+        red_band: 紅光波段影像 (numpy array)
+
+    回傳:
+        ndvi: NDVI 值 (-1 到 1)
+        ndvi_colored: 彩色視覺化影像
+    """</span>
+    <span class="comment"># 轉換為浮點數避免溢位</span>
+    nir = nir_band.astype(np.float32)
+    red = red_band.astype(np.float32)
+
+    <span class="comment"># 避免除以零</span>
+    denominator = nir + red
+    denominator[denominator == <span class="number">0</span>] = <span class="number">1e-10</span>
+
+    <span class="comment"># 計算 NDVI</span>
+    ndvi = (nir - red) / denominator
+
+    <span class="comment"># 確保值在 -1 到 1 之間</span>
+    ndvi = np.clip(ndvi, -<span class="number">1</span>, <span class="number">1</span>)
+
+    <span class="comment"># 建立彩色視覺化 (使用色彩映射)</span>
+    ndvi_normalized = ((ndvi + <span class="number">1</span>) * <span class="number">127.5</span>).astype(np.uint8)
+    ndvi_colored = cv2.applyColorMap(ndvi_normalized, cv2.COLORMAP_JET)
+
+    <span class="keyword">return</span> ndvi, ndvi_colored
+
+<span class="comment"># 使用範例</span>
+nir = cv2.imread(<span class="string">'nir_band.tif'</span>, cv2.IMREAD_GRAYSCALE)
+red = cv2.imread(<span class="string">'red_band.tif'</span>, cv2.IMREAD_GRAYSCALE)
+
+ndvi, ndvi_vis = calculate_NDVI(nir, red)
+
+<span class="comment"># 統計分析</span>
+<span class="function">print</span>(<span class="string">f'NDVI 範圍: {ndvi.min():.3f} ~ {ndvi.max():.3f}'</span>)
+<span class="function">print</span>(<span class="string">f'NDVI 平均: {ndvi.mean():.3f}'</span>)
+
+<span class="comment"># 找出健康植被區域 (NDVI > 0.3)</span>
+healthy_mask = ndvi > <span class="number">0.3</span>
+healthy_ratio = np.sum(healthy_mask) / healthy_mask.size * <span class="number">100</span>
+<span class="function">print</span>(<span class="string">f'健康植被覆蓋率: {healthy_ratio:.2f}%'</span>)</code>
+            </div>
+
+            <div class="info-box">
+                <strong>📊 農業應用：</strong><br>
+                • 監測作物生長狀態<br>
+                • 偵測病蟲害區域（NDVI 異常降低）<br>
+                • 評估灌溉效果<br>
+                • 預測產量
+            </div>
+        </div>
+
+        <!-- ExG -->
+        <div class="section">
+            <h2>🌿 ExG - 超綠指數</h2>
+            <p>ExG (Excess Green Index) 是使用一般 RGB 相機就能計算的植生指標，適合無人機或一般數位相機拍攝的影像。</p>
+
+            <div class="formula-box">
+                <div class="formula-name">Excess Green Index</div>
+                <div class="formula">ExG = 2g - r - b</div>
+                <p style="color: #a0aec0; margin-top: 15px;">r, g, b 為正規化後的 RGB 值（各通道除以總和）</p>
+            </div>
+
+            <h3>Python 實作</h3>
+            <div class="code-block">
+<code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> cv2
+
+<span class="keyword">def</span> <span class="function">calculate_ExG</span>(image):
+    <span class="string">"""
+    計算 ExG 超綠指數
+
+    參數:
+        image: BGR 格式的彩色影像
+
+    回傳:
+        exg: ExG 值 (約 -1 到 1)
+        exg_display: 顯示用影像 (0-255)
+    """</span>
+    <span class="comment"># 分離 BGR 通道並轉為浮點數</span>
+    B = image[:, :, <span class="number">0</span>].astype(np.float32)
+    G = image[:, :, <span class="number">1</span>].astype(np.float32)
+    R = image[:, :, <span class="number">2</span>].astype(np.float32)
+
+    <span class="comment"># 正規化 (除以總和)</span>
+    total = R + G + B + <span class="number">1e-10</span>  <span class="comment"># 避免除以零</span>
+    r = R / total
+    g = G / total
+    b = B / total
+
+    <span class="comment"># 計算 ExG</span>
+    exg = <span class="number">2</span> * g - r - b
+
+    <span class="comment"># 轉換為顯示格式 (0-255)</span>
+    exg_display = ((exg + <span class="number">1</span>) * <span class="number">127.5</span>).astype(np.uint8)
+
+    <span class="keyword">return</span> exg, exg_display
+
+<span class="keyword">def</span> <span class="function">create_vegetation_mask</span>(image, threshold=<span class="number">0.1</span>):
+    <span class="string">"""使用 ExG 建立植被遮罩"""</span>
+    exg, _ = calculate_ExG(image)
+    mask = (exg > threshold).astype(np.uint8) * <span class="number">255</span>
+    <span class="keyword">return</span> mask
+
+<span class="comment"># 使用範例</span>
+img = cv2.imread(<span class="string">'farm_field.jpg'</span>)
+exg, exg_vis = calculate_ExG(img)
+veg_mask = create_vegetation_mask(img, threshold=<span class="number">0.1</span>)
+
+<span class="comment"># 計算植被覆蓋率</span>
+coverage = np.sum(veg_mask > <span class="number">0</span>) / veg_mask.size * <span class="number">100</span>
+<span class="function">print</span>(<span class="string">f'植被覆蓋率: {coverage:.2f}%'</span>)
+
+<span class="comment"># 標記植被區域</span>
+result = img.copy()
+result[veg_mask > <span class="number">0</span>] = [<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>]  <span class="comment"># 綠色標記</span>
+blended = cv2.addWeighted(img, <span class="number">0.7</span>, result, <span class="number">0.3</span>, <span class="number">0</span>)</code>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 ExG 的優點：</strong><br>
+                • 只需要一般 RGB 相機<br>
+                • 計算簡單快速<br>
+                • 適合即時處理<br>
+                • 對綠色植物敏感度高
+            </div>
+        </div>
+
+        <!-- 其他常用指標 -->
+        <div class="section">
+            <h2>📊 其他常用植生指標</h2>
+
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <h4>ExGR (超綠減超紅指數)</h4>
+                    <div class="formula-box" style="padding: 15px;">
+                        <div class="formula" style="font-size: 1.3rem;">ExGR = ExG - ExR</div>
+                        <div class="formula" style="font-size: 1rem; color: #a0aec0;">= (2g - r - b) - (1.4r - g)</div>
+                    </div>
+                    <p>更能區分植被與土壤</p>
+                </div>
+                <div class="comparison-item">
+                    <h4>GLI (綠葉指數)</h4>
+                    <div class="formula-box" style="padding: 15px;">
+                        <div class="formula" style="font-size: 1.3rem;">GLI = (2G - R - B) / (2G + R + B)</div>
+                    </div>
+                    <p>正規化的綠色指標</p>
+                </div>
+                <div class="comparison-item">
+                    <h4>VARI (可見大氣阻抗植生指數)</h4>
+                    <div class="formula-box" style="padding: 15px;">
+                        <div class="formula" style="font-size: 1.3rem;">VARI = (G - R) / (G + R - B)</div>
+                    </div>
+                    <p>減少大氣影響</p>
+                </div>
+                <div class="comparison-item">
+                    <h4>SAVI (土壤調整植生指數)</h4>
+                    <div class="formula-box" style="padding: 15px;">
+                        <div class="formula" style="font-size: 1.3rem;">SAVI = (NIR - R) × (1+L) / (NIR + R + L)</div>
+                    </div>
+                    <p>L=0.5，減少土壤背景影響</p>
+                </div>
+            </div>
+
+            <h3>完整計算範例</h3>
+            <div class="code-block">
+<code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="keyword">class</span> <span class="function">VegetationIndices</span>:
+    <span class="string">"""植生指標計算器"""</span>
+
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, image):
+        <span class="comment"># 分離通道並正規化</span>
+        self.B = image[:, :, <span class="number">0</span>].astype(np.float32)
+        self.G = image[:, :, <span class="number">1</span>].astype(np.float32)
+        self.R = image[:, :, <span class="number">2</span>].astype(np.float32)
+
+        total = self.R + self.G + self.B + <span class="number">1e-10</span>
+        self.r = self.R / total
+        self.g = self.G / total
+        self.b = self.B / total
+
+    <span class="keyword">def</span> <span class="function">ExG</span>(self):
+        <span class="string">"""超綠指數"""</span>
+        <span class="keyword">return</span> <span class="number">2</span> * self.g - self.r - self.b
+
+    <span class="keyword">def</span> <span class="function">ExR</span>(self):
+        <span class="string">"""超紅指數"""</span>
+        <span class="keyword">return</span> <span class="number">1.4</span> * self.r - self.g
+
+    <span class="keyword">def</span> <span class="function">ExGR</span>(self):
+        <span class="string">"""超綠減超紅"""</span>
+        <span class="keyword">return</span> self.ExG() - self.ExR()
+
+    <span class="keyword">def</span> <span class="function">GLI</span>(self):
+        <span class="string">"""綠葉指數"""</span>
+        numerator = <span class="number">2</span> * self.G - self.R - self.B
+        denominator = <span class="number">2</span> * self.G + self.R + self.B + <span class="number">1e-10</span>
+        <span class="keyword">return</span> numerator / denominator
+
+    <span class="keyword">def</span> <span class="function">VARI</span>(self):
+        <span class="string">"""可見大氣阻抗植生指數"""</span>
+        numerator = self.G - self.R
+        denominator = self.G + self.R - self.B + <span class="number">1e-10</span>
+        <span class="keyword">return</span> numerator / denominator
+
+    <span class="keyword">def</span> <span class="function">get_all</span>(self):
+        <span class="string">"""取得所有指標"""</span>
+        <span class="keyword">return</span> {
+            <span class="string">'ExG'</span>: self.ExG(),
+            <span class="string">'ExR'</span>: self.ExR(),
+            <span class="string">'ExGR'</span>: self.ExGR(),
+            <span class="string">'GLI'</span>: self.GLI(),
+            <span class="string">'VARI'</span>: self.VARI()
+        }
+
+<span class="comment"># 使用範例</span>
+img = cv2.imread(<span class="string">'crop.jpg'</span>)
+vi = VegetationIndices(img)
+
+indices = vi.get_all()
+<span class="keyword">for</span> name, values <span class="keyword">in</span> indices.items():
+    <span class="function">print</span>(<span class="string">f'{name}: 平均={values.mean():.4f}, 標準差={values.std():.4f}'</span>)</code>
+            </div>
+        </div>
+
+        <!-- 實際應用案例 -->
+        <div class="section">
+            <h2>🚜 農業實際應用</h2>
+
+            <h3>1. 雜草偵測</h3>
+            <div class="code-block">
+<code><span class="keyword">def</span> <span class="function">detect_weeds</span>(image, crop_mask, exg_threshold=<span class="number">0.1</span>):
+    <span class="string">"""
+    偵測作物區外的雜草
+
+    參數:
+        image: BGR 影像
+        crop_mask: 已知作物區域的遮罩
+        exg_threshold: 綠色植物閾值
+    """</span>
+    <span class="comment"># 計算 ExG 找出所有綠色區域</span>
+    exg, _ = calculate_ExG(image)
+    all_green = exg > exg_threshold
+
+    <span class="comment"># 雜草 = 綠色區域 - 作物區域</span>
+    weed_mask = all_green & ~crop_mask
+
+    <span class="comment"># 標記雜草區域</span>
+    result = image.copy()
+    result[weed_mask] = [<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>]  <span class="comment"># 紅色標記雜草</span>
+
+    <span class="keyword">return</span> weed_mask, result</code>
+            </div>
+
+            <h3>2. 作物健康評估</h3>
+            <div class="code-block">
+<code><span class="keyword">def</span> <span class="function">assess_crop_health</span>(ndvi):
+    <span class="string">"""根據 NDVI 評估作物健康狀態"""</span>
+    total_pixels = ndvi.size
+
+    <span class="comment"># 分類統計</span>
+    stressed = np.sum(ndvi < <span class="number">0.2</span>) / total_pixels * <span class="number">100</span>      <span class="comment"># 嚴重不健康</span>
+    moderate = np.sum((ndvi >= <span class="number">0.2</span>) & (ndvi < <span class="number">0.4</span>)) / total_pixels * <span class="number">100</span>  <span class="comment"># 輕度問題</span>
+    healthy = np.sum((ndvi >= <span class="number">0.4</span>) & (ndvi < <span class="number">0.6</span>)) / total_pixels * <span class="number">100</span>   <span class="comment"># 健康</span>
+    vigorous = np.sum(ndvi >= <span class="number">0.6</span>) / total_pixels * <span class="number">100</span>    <span class="comment"># 非常健康</span>
+
+    <span class="function">print</span>(<span class="string">"=== 作物健康評估報告 ==="</span>)
+    <span class="function">print</span>(<span class="string">f"🔴 嚴重問題 (NDVI < 0.2):  {stressed:.1f}%"</span>)
+    <span class="function">print</span>(<span class="string">f"🟡 需注意  (0.2-0.4):      {moderate:.1f}%"</span>)
+    <span class="function">print</span>(<span class="string">f"🟢 健康    (0.4-0.6):      {healthy:.1f}%"</span>)
+    <span class="function">print</span>(<span class="string">f"🌟 非常健康 (> 0.6):       {vigorous:.1f}%"</span>)
+
+    <span class="comment"># 整體評分 (0-100)</span>
+    score = healthy * <span class="number">0.5</span> + vigorous * <span class="number">1.0</span> + moderate * <span class="number">0.3</span>
+    <span class="function">print</span>(<span class="string">f"\n整體健康分數: {min(score, 100):.1f}/100"</span>)
+
+    <span class="keyword">return</span> {
+        <span class="string">'stressed'</span>: stressed,
+        <span class="string">'moderate'</span>: moderate,
+        <span class="string">'healthy'</span>: healthy,
+        <span class="string">'vigorous'</span>: vigorous,
+        <span class="string">'score'</span>: min(score, <span class="number">100</span>)
+    }</code>
+            </div>
+
+            <h3>3. 時間序列分析</h3>
+            <div class="code-block">
+<code><span class="keyword">def</span> <span class="function">analyze_growth_trend</span>(ndvi_series, dates):
+    <span class="string">"""
+    分析 NDVI 時間變化趨勢
+
+    參數:
+        ndvi_series: list of NDVI 平均值
+        dates: 對應的日期列表
+    """</span>
+    <span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+
+    <span class="comment"># 計算變化率</span>
+    changes = np.diff(ndvi_series)
+
+    <span class="comment"># 繪製趨勢圖</span>
+    fig, (ax1, ax2) = plt.subplots(<span class="number">2</span>, <span class="number">1</span>, figsize=(<span class="number">10</span>, <span class="number">8</span>))
+
+    <span class="comment"># NDVI 趨勢</span>
+    ax1.plot(dates, ndvi_series, <span class="string">'g-o'</span>, linewidth=<span class="number">2</span>)
+    ax1.axhline(y=<span class="number">0.4</span>, color=<span class="string">'orange'</span>, linestyle=<span class="string">'--'</span>, label=<span class="string">'健康閾值'</span>)
+    ax1.set_title(<span class="string">'NDVI 時間變化'</span>)
+    ax1.set_ylabel(<span class="string">'NDVI'</span>)
+    ax1.legend()
+    ax1.grid(<span class="keyword">True</span>, alpha=<span class="number">0.3</span>)
+
+    <span class="comment"># 變化率</span>
+    colors = [<span class="string">'green'</span> <span class="keyword">if</span> c > <span class="number">0</span> <span class="keyword">else</span> <span class="string">'red'</span> <span class="keyword">for</span> c <span class="keyword">in</span> changes]
+    ax2.bar(dates[<span class="number">1</span>:], changes, color=colors)
+    ax2.set_title(<span class="string">'NDVI 變化率'</span>)
+    ax2.set_ylabel(<span class="string">'變化量'</span>)
+    ax2.grid(<span class="keyword">True</span>, alpha=<span class="number">0.3</span>)
+
+    plt.tight_layout()
+    plt.savefig(<span class="string">'growth_analysis.png'</span>)
+
+    <span class="keyword">return</span> changes</code>
+            </div>
+        </div>
+
+        <!-- 選擇指標的建議 -->
+        <div class="section">
+            <h2>🎯 如何選擇適合的指標？</h2>
+
+            <table>
+                <tr>
+                    <th>應用場景</th>
+                    <th>推薦指標</th>
+                    <th>原因</th>
+                </tr>
+                <tr>
+                    <td>作物健康監測</td>
+                    <td>NDVI</td>
+                    <td>對葉綠素含量敏感，需要多光譜相機</td>
+                </tr>
+                <tr>
+                    <td>一般 RGB 相機</td>
+                    <td>ExG, GLI</td>
+                    <td>不需特殊設備，適合無人機</td>
+                </tr>
+                <tr>
+                    <td>雜草偵測</td>
+                    <td>ExGR</td>
+                    <td>能區分不同類型綠色植物</td>
+                </tr>
+                <tr>
+                    <td>土壤背景明顯</td>
+                    <td>SAVI</td>
+                    <td>減少土壤對結果的影響</td>
+                </tr>
+                <tr>
+                    <td>大氣干擾明顯</td>
+                    <td>VARI</td>
+                    <td>減少大氣散射影響</td>
+                </tr>
+            </table>
+
+            <div class="warning-box">
+                <strong>⚠️ 注意事項：</strong><br>
+                • 光線條件會影響指標計算結果（建議中午拍攝）<br>
+                • 不同作物的健康閾值可能不同<br>
+                • 季節變化需要納入考量<br>
+                • 最好結合多種指標進行綜合評估
+            </div>
+        </div>
+
+        <a href="文件索引.html" class="home-btn">🏠 返回首頁</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS 樣式設計教學</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #264de4, #2965f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a0aec0;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h2 {
+            color: #2965f1;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(41, 101, 241, 0.3);
+        }
+
+        h3 {
+            color: #63b3ed;
+            font-size: 1.2rem;
+            margin: 25px 0 15px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #cbd5e0;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+            border: 1px solid #30363d;
+        }
+
+        .code-block code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: #e6edf3;
+            white-space: pre;
+        }
+
+        .selector { color: #ff7b72; }
+        .property { color: #79c0ff; }
+        .value { color: #a5d6ff; }
+        .comment { color: #8b949e; }
+        .unit { color: #ffa657; }
+
+        .tip-box {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.1), rgba(99, 179, 237, 0.1));
+            border-left: 4px solid #4fd1c5;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .tip-box strong {
+            color: #4fd1c5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(41, 101, 241, 0.2);
+            color: #2965f1;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .demo-box {
+            background: #1a1a2e;
+            border: 2px dashed rgba(99, 179, 237, 0.5);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+        }
+
+        .card h4 {
+            color: #2965f1;
+            margin-bottom: 15px;
+        }
+
+        .home-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #264de4, #2965f1);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(41, 101, 241, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(41, 101, 241, 0.4);
+        }
+
+        .color-demo {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .color-box {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .box-model-demo {
+            background: rgba(41, 101, 241, 0.1);
+            border: 3px solid #2965f1;
+            padding: 30px;
+            margin: 20px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .box-model-demo .inner {
+            background: rgba(79, 209, 197, 0.2);
+            border: 2px solid #4fd1c5;
+            padding: 20px;
+        }
+
+        .flexbox-demo {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .flex-item {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+            padding: 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 CSS 樣式設計教學</h1>
+        <p class="subtitle">讓網頁變得美觀的樣式語言</p>
+
+        <!-- 什麼是 CSS -->
+        <div class="section">
+            <h2>📚 什麼是 CSS？</h2>
+            <p>CSS (Cascading Style Sheets) 是用來描述網頁外觀的語言。如果 HTML 是網頁的骨架，CSS 就是網頁的衣服和化妝。</p>
+
+            <div class="grid-3">
+                <div class="card">
+                    <h4>🎨 美化外觀</h4>
+                    <p>顏色、字型、間距</p>
+                </div>
+                <div class="card">
+                    <h4>📐 控制排版</h4>
+                    <p>位置、大小、對齊</p>
+                </div>
+                <div class="card">
+                    <h4>✨ 互動效果</h4>
+                    <p>動畫、過渡、變形</p>
+                </div>
+            </div>
+
+            <h3>CSS 加入網頁的三種方式</h3>
+            <div class="code-block">
+<code><span class="comment">&lt;!-- 1. 行內樣式 (inline) - 直接寫在標籤上 --&gt;</span>
+&lt;p <span class="property">style</span>=<span class="value">"color: red; font-size: 20px;"</span>&gt;紅色文字&lt;/p&gt;
+
+<span class="comment">&lt;!-- 2. 內部樣式 (internal) - 寫在 &lt;head&gt; 裡的 &lt;style&gt; 標籤 --&gt;</span>
+&lt;head&gt;
+    &lt;style&gt;
+        <span class="selector">p</span> {
+            <span class="property">color</span>: <span class="value">blue</span>;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+
+<span class="comment">&lt;!-- 3. 外部樣式 (external) - 連結外部 CSS 檔案（推薦！）--&gt;</span>
+&lt;head&gt;
+    &lt;link rel="stylesheet" href="<span class="value">styles.css</span>"&gt;
+&lt;/head&gt;</code>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 建議使用外部樣式！</strong><br>
+                把 CSS 寫在獨立的 .css 檔案中，可以讓多個網頁共用，方便維護。
+            </div>
+        </div>
+
+        <!-- 選擇器 -->
+        <div class="section">
+            <h2>🎯 CSS 選擇器</h2>
+            <p>選擇器決定 CSS 規則要套用到哪些 HTML 元素。</p>
+
+            <table>
+                <tr>
+                    <th>選擇器</th>
+                    <th>語法</th>
+                    <th>說明</th>
+                </tr>
+                <tr>
+                    <td>元素選擇器</td>
+                    <td><code>p { }</code></td>
+                    <td>選取所有 &lt;p&gt; 標籤</td>
+                </tr>
+                <tr>
+                    <td>類別選擇器</td>
+                    <td><code>.card { }</code></td>
+                    <td>選取 class="card" 的元素</td>
+                </tr>
+                <tr>
+                    <td>ID 選擇器</td>
+                    <td><code>#header { }</code></td>
+                    <td>選取 id="header" 的元素</td>
+                </tr>
+                <tr>
+                    <td>後代選擇器</td>
+                    <td><code>div p { }</code></td>
+                    <td>選取 div 裡面的 p</td>
+                </tr>
+                <tr>
+                    <td>群組選擇器</td>
+                    <td><code>h1, h2, h3 { }</code></td>
+                    <td>同時選取多個元素</td>
+                </tr>
+                <tr>
+                    <td>萬用選擇器</td>
+                    <td><code>* { }</code></td>
+                    <td>選取所有元素</td>
+                </tr>
+            </table>
+
+            <div class="code-block">
+<code><span class="comment">/* 元素選擇器 */</span>
+<span class="selector">h1</span> {
+    <span class="property">color</span>: <span class="value">#2965f1</span>;
+}
+
+<span class="comment">/* 類別選擇器（最常用！）*/</span>
+<span class="selector">.sensor-card</span> {
+    <span class="property">background</span>: <span class="value">#f0f0f0</span>;
+    <span class="property">padding</span>: <span class="value">20px</span>;
+    <span class="property">border-radius</span>: <span class="value">8px</span>;
+}
+
+<span class="comment">/* ID 選擇器（通常用於唯一元素）*/</span>
+<span class="selector">#main-title</span> {
+    <span class="property">font-size</span>: <span class="value">32px</span>;
+}
+
+<span class="comment">/* 後代選擇器 */</span>
+<span class="selector">.card p</span> {
+    <span class="property">color</span>: <span class="value">gray</span>;
+}
+
+<span class="comment">/* 偽類選擇器（互動狀態）*/</span>
+<span class="selector">button:hover</span> {
+    <span class="property">background</span>: <span class="value">#4fd1c5</span>;
+}
+
+<span class="selector">input:focus</span> {
+    <span class="property">border-color</span>: <span class="value">#2965f1</span>;
+}</code>
+            </div>
+        </div>
+
+        <!-- 顏色 -->
+        <div class="section">
+            <h2>🌈 顏色</h2>
+
+            <h3>顏色表示方式</h3>
+            <div class="code-block">
+<code><span class="comment">/* 顏色名稱 */</span>
+<span class="property">color</span>: <span class="value">red</span>;
+<span class="property">color</span>: <span class="value">blue</span>;
+<span class="property">color</span>: <span class="value">green</span>;
+
+<span class="comment">/* 十六進位 (HEX) - 最常用 */</span>
+<span class="property">color</span>: <span class="value">#ff0000</span>;    <span class="comment">/* 紅色 */</span>
+<span class="property">color</span>: <span class="value">#00ff00</span>;    <span class="comment">/* 綠色 */</span>
+<span class="property">color</span>: <span class="value">#0000ff</span>;    <span class="comment">/* 藍色 */</span>
+<span class="property">color</span>: <span class="value">#fff</span>;       <span class="comment">/* 白色（簡寫）*/</span>
+
+<span class="comment">/* RGB */</span>
+<span class="property">color</span>: <span class="value">rgb(255, 0, 0)</span>;        <span class="comment">/* 紅色 */</span>
+<span class="property">color</span>: <span class="value">rgba(255, 0, 0, 0.5)</span>;   <span class="comment">/* 50% 透明紅色 */</span>
+
+<span class="comment">/* HSL（色相、飽和度、亮度）*/</span>
+<span class="property">color</span>: <span class="value">hsl(0, 100%, 50%)</span>;     <span class="comment">/* 紅色 */</span>
+<span class="property">color</span>: <span class="value">hsla(0, 100%, 50%, 0.5)</span>; <span class="comment">/* 透明紅色 */</span></code>
+            </div>
+
+            <h3>農業網頁常用配色</h3>
+            <div class="color-demo">
+                <div class="color-box" style="background: #228b22;">森林綠<br>#228b22</div>
+                <div class="color-box" style="background: #90ee90; color: #333;">淺綠<br>#90ee90</div>
+                <div class="color-box" style="background: #8b4513;">土棕<br>#8b4513</div>
+                <div class="color-box" style="background: #87ceeb; color: #333;">天藍<br>#87ceeb</div>
+                <div class="color-box" style="background: #ffd700; color: #333;">金黃<br>#ffd700</div>
+                <div class="color-box" style="background: #ff6347;">番茄紅<br>#ff6347</div>
+            </div>
+        </div>
+
+        <!-- 文字樣式 -->
+        <div class="section">
+            <h2>📝 文字樣式</h2>
+
+            <div class="code-block">
+<code><span class="selector">.text-demo</span> {
+    <span class="comment">/* 字型 */</span>
+    <span class="property">font-family</span>: <span class="value">'Microsoft JhengHei', sans-serif</span>;
+
+    <span class="comment">/* 字型大小 */</span>
+    <span class="property">font-size</span>: <span class="value">16px</span>;
+    <span class="property">font-size</span>: <span class="value">1.2rem</span>;    <span class="comment">/* 相對大小 */</span>
+    <span class="property">font-size</span>: <span class="value">120%</span>;      <span class="comment">/* 百分比 */</span>
+
+    <span class="comment">/* 字型粗細 */</span>
+    <span class="property">font-weight</span>: <span class="value">bold</span>;
+    <span class="property">font-weight</span>: <span class="value">700</span>;      <span class="comment">/* 100~900 */</span>
+
+    <span class="comment">/* 字型樣式 */</span>
+    <span class="property">font-style</span>: <span class="value">italic</span>;
+
+    <span class="comment">/* 文字顏色 */</span>
+    <span class="property">color</span>: <span class="value">#333333</span>;
+
+    <span class="comment">/* 行高（行距）*/</span>
+    <span class="property">line-height</span>: <span class="value">1.6</span>;
+
+    <span class="comment">/* 文字對齊 */</span>
+    <span class="property">text-align</span>: <span class="value">center</span>;   <span class="comment">/* left, right, center, justify */</span>
+
+    <span class="comment">/* 文字裝飾 */</span>
+    <span class="property">text-decoration</span>: <span class="value">underline</span>;   <span class="comment">/* none, underline, line-through */</span>
+
+    <span class="comment">/* 文字轉換 */</span>
+    <span class="property">text-transform</span>: <span class="value">uppercase</span>;    <span class="comment">/* uppercase, lowercase, capitalize */</span>
+
+    <span class="comment">/* 字母間距 */</span>
+    <span class="property">letter-spacing</span>: <span class="value">2px</span>;
+}</code>
+            </div>
+        </div>
+
+        <!-- 盒模型 -->
+        <div class="section">
+            <h2>📦 盒模型 Box Model</h2>
+            <p>每個 HTML 元素都是一個「盒子」，由內到外分為：內容 → 內距 → 邊框 → 外距</p>
+
+            <div class="box-model-demo">
+                <div style="color: #2965f1; margin-bottom: 10px;">margin（外距）</div>
+                <div class="inner">
+                    <div style="color: #4fd1c5; margin-bottom: 10px;">padding（內距）</div>
+                    <div style="background: #0d1117; color: #fff; padding: 15px; border-radius: 4px;">
+                        content（內容）
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+<code><span class="selector">.box</span> {
+    <span class="comment">/* 寬度與高度（只計算內容區）*/</span>
+    <span class="property">width</span>: <span class="value">300px</span>;
+    <span class="property">height</span>: <span class="value">200px</span>;
+
+    <span class="comment">/* 內距 padding（內容到邊框的距離）*/</span>
+    <span class="property">padding</span>: <span class="value">20px</span>;           <span class="comment">/* 四邊相同 */</span>
+    <span class="property">padding</span>: <span class="value">10px 20px</span>;      <span class="comment">/* 上下 10px, 左右 20px */</span>
+    <span class="property">padding</span>: <span class="value">10px 20px 15px 25px</span>; <span class="comment">/* 上 右 下 左 */</span>
+    <span class="property">padding-top</span>: <span class="value">10px</span>;       <span class="comment">/* 個別設定 */</span>
+
+    <span class="comment">/* 邊框 border */</span>
+    <span class="property">border</span>: <span class="value">2px solid #333</span>;
+    <span class="property">border-radius</span>: <span class="value">8px</span>;      <span class="comment">/* 圓角 */</span>
+
+    <span class="comment">/* 外距 margin（元素與其他元素的距離）*/</span>
+    <span class="property">margin</span>: <span class="value">20px</span>;
+    <span class="property">margin</span>: <span class="value">0 auto</span>;         <span class="comment">/* 水平置中 */</span>
+
+    <span class="comment">/* 重要：讓 width 包含 padding 和 border */</span>
+    <span class="property">box-sizing</span>: <span class="value">border-box</span>;
+}</code>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 box-sizing: border-box 很重要！</strong><br>
+                加上這個後，width: 300px 就是真正的 300px，不會因為 padding 和 border 而變大。<br>
+                建議在 CSS 開頭加上：<code>* { box-sizing: border-box; }</code>
+            </div>
+        </div>
+
+        <!-- Flexbox -->
+        <div class="section">
+            <h2>📐 Flexbox 彈性盒子</h2>
+            <p>Flexbox 是現代 CSS 排版的利器，可以輕鬆實現各種對齊和排列效果。</p>
+
+            <div class="code-block">
+<code><span class="comment">/* 父容器 */</span>
+<span class="selector">.container</span> {
+    <span class="property">display</span>: <span class="value">flex</span>;              <span class="comment">/* 啟用 flexbox */</span>
+
+    <span class="comment">/* 主軸方向 */</span>
+    <span class="property">flex-direction</span>: <span class="value">row</span>;        <span class="comment">/* row, column, row-reverse, column-reverse */</span>
+
+    <span class="comment">/* 主軸對齊（水平）*/</span>
+    <span class="property">justify-content</span>: <span class="value">center</span>;   <span class="comment">/* flex-start, flex-end, center, space-between, space-around */</span>
+
+    <span class="comment">/* 交叉軸對齊（垂直）*/</span>
+    <span class="property">align-items</span>: <span class="value">center</span>;       <span class="comment">/* flex-start, flex-end, center, stretch */</span>
+
+    <span class="comment">/* 換行 */</span>
+    <span class="property">flex-wrap</span>: <span class="value">wrap</span>;           <span class="comment">/* nowrap, wrap */</span>
+
+    <span class="comment">/* 項目間距 */</span>
+    <span class="property">gap</span>: <span class="value">20px</span>;
+}
+
+<span class="comment">/* 子項目 */</span>
+<span class="selector">.item</span> {
+    <span class="property">flex</span>: <span class="value">1</span>;                  <span class="comment">/* 平均分配空間 */</span>
+    <span class="property">flex-grow</span>: <span class="value">1</span>;             <span class="comment">/* 可以放大 */</span>
+    <span class="property">flex-shrink</span>: <span class="value">0</span>;           <span class="comment">/* 不縮小 */</span>
+}</code>
+            </div>
+
+            <h3>常見排版範例</h3>
+            <div class="code-block">
+<code><span class="comment">/* 水平置中 */</span>
+<span class="selector">.center-horizontal</span> {
+    <span class="property">display</span>: <span class="value">flex</span>;
+    <span class="property">justify-content</span>: <span class="value">center</span>;
+}
+
+<span class="comment">/* 完全置中（水平 + 垂直）*/</span>
+<span class="selector">.center-both</span> {
+    <span class="property">display</span>: <span class="value">flex</span>;
+    <span class="property">justify-content</span>: <span class="value">center</span>;
+    <span class="property">align-items</span>: <span class="value">center</span>;
+    <span class="property">height</span>: <span class="value">100vh</span>;
+}
+
+<span class="comment">/* 左右分散 */</span>
+<span class="selector">.space-between</span> {
+    <span class="property">display</span>: <span class="value">flex</span>;
+    <span class="property">justify-content</span>: <span class="value">space-between</span>;
+}
+
+<span class="comment">/* 卡片網格 */</span>
+<span class="selector">.card-grid</span> {
+    <span class="property">display</span>: <span class="value">flex</span>;
+    <span class="property">flex-wrap</span>: <span class="value">wrap</span>;
+    <span class="property">gap</span>: <span class="value">20px</span>;
+}
+
+<span class="selector">.card-grid .card</span> {
+    <span class="property">flex</span>: <span class="value">1 1 300px</span>;  <span class="comment">/* 最小寬度 300px，可放大可縮小 */</span>
+}</code>
+            </div>
+
+            <h3>Flexbox 視覺範例</h3>
+            <div class="flexbox-demo" style="justify-content: flex-start;">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+            </div>
+            <p style="text-align: center; color: #a0aec0;">justify-content: flex-start</p>
+
+            <div class="flexbox-demo" style="justify-content: center;">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+            </div>
+            <p style="text-align: center; color: #a0aec0;">justify-content: center</p>
+
+            <div class="flexbox-demo" style="justify-content: space-between;">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+            </div>
+            <p style="text-align: center; color: #a0aec0;">justify-content: space-between</p>
+        </div>
+
+        <!-- 常用效果 -->
+        <div class="section">
+            <h2>✨ 常用效果</h2>
+
+            <h3>陰影</h3>
+            <div class="code-block">
+<code><span class="comment">/* 盒子陰影 */</span>
+<span class="selector">.card</span> {
+    <span class="property">box-shadow</span>: <span class="value">0 4px 6px rgba(0, 0, 0, 0.1)</span>;
+    <span class="comment">/* 水平偏移 垂直偏移 模糊半徑 顏色 */</span>
+}
+
+<span class="comment">/* 多層陰影 */</span>
+<span class="selector">.card-elevated</span> {
+    <span class="property">box-shadow</span>:
+        <span class="value">0 2px 4px rgba(0,0,0,0.1)</span>,
+        <span class="value">0 8px 16px rgba(0,0,0,0.1)</span>;
+}
+
+<span class="comment">/* 文字陰影 */</span>
+<span class="selector">.title</span> {
+    <span class="property">text-shadow</span>: <span class="value">2px 2px 4px rgba(0,0,0,0.3)</span>;
+}</code>
+            </div>
+
+            <h3>漸層背景</h3>
+            <div class="code-block">
+<code><span class="comment">/* 線性漸層 */</span>
+<span class="selector">.gradient-1</span> {
+    <span class="property">background</span>: <span class="value">linear-gradient(to right, #4fd1c5, #63b3ed)</span>;
+}
+
+<span class="comment">/* 對角線漸層 */</span>
+<span class="selector">.gradient-2</span> {
+    <span class="property">background</span>: <span class="value">linear-gradient(135deg, #667eea, #764ba2)</span>;
+}
+
+<span class="comment">/* 放射狀漸層 */</span>
+<span class="selector">.gradient-3</span> {
+    <span class="property">background</span>: <span class="value">radial-gradient(circle, #fff, #ccc)</span>;
+}</code>
+            </div>
+
+            <h3>過渡動畫</h3>
+            <div class="code-block">
+<code><span class="selector">.button</span> {
+    <span class="property">background</span>: <span class="value">#4fd1c5</span>;
+    <span class="property">padding</span>: <span class="value">12px 24px</span>;
+    <span class="property">border-radius</span>: <span class="value">8px</span>;
+
+    <span class="comment">/* 過渡效果 */</span>
+    <span class="property">transition</span>: <span class="value">all 0.3s ease</span>;
+    <span class="comment">/* 屬性 時間 緩動函數 */</span>
+}
+
+<span class="selector">.button:hover</span> {
+    <span class="property">background</span>: <span class="value">#38b2ac</span>;
+    <span class="property">transform</span>: <span class="value">translateY(-3px)</span>;
+    <span class="property">box-shadow</span>: <span class="value">0 4px 12px rgba(79, 209, 197, 0.4)</span>;
+}</code>
+            </div>
+
+            <h3>變形 Transform</h3>
+            <div class="code-block">
+<code><span class="selector">.box</span> {
+    <span class="comment">/* 位移 */</span>
+    <span class="property">transform</span>: <span class="value">translateX(50px)</span>;
+    <span class="property">transform</span>: <span class="value">translateY(-20px)</span>;
+    <span class="property">transform</span>: <span class="value">translate(50px, -20px)</span>;
+
+    <span class="comment">/* 縮放 */</span>
+    <span class="property">transform</span>: <span class="value">scale(1.2)</span>;     <span class="comment">/* 放大 120% */</span>
+
+    <span class="comment">/* 旋轉 */</span>
+    <span class="property">transform</span>: <span class="value">rotate(45deg)</span>;
+
+    <span class="comment">/* 組合使用 */</span>
+    <span class="property">transform</span>: <span class="value">translateY(-5px) scale(1.05)</span>;
+}</code>
+            </div>
+        </div>
+
+        <!-- 響應式設計 -->
+        <div class="section">
+            <h2>📱 響應式設計</h2>
+            <p>使用 Media Query 讓網頁在不同裝置上都能良好顯示。</p>
+
+            <div class="code-block">
+<code><span class="comment">/* 基本樣式（手機優先）*/</span>
+<span class="selector">.container</span> {
+    <span class="property">width</span>: <span class="value">100%</span>;
+    <span class="property">padding</span>: <span class="value">10px</span>;
+}
+
+<span class="comment">/* 平板 (768px 以上) */</span>
+<span class="selector">@media</span> (<span class="property">min-width</span>: <span class="value">768px</span>) {
+    <span class="selector">.container</span> {
+        <span class="property">max-width</span>: <span class="value">720px</span>;
+        <span class="property">margin</span>: <span class="value">0 auto</span>;
+    }
+}
+
+<span class="comment">/* 桌面 (1024px 以上) */</span>
+<span class="selector">@media</span> (<span class="property">min-width</span>: <span class="value">1024px</span>) {
+    <span class="selector">.container</span> {
+        <span class="property">max-width</span>: <span class="value">960px</span>;
+    }
+
+    <span class="selector">.card-grid</span> {
+        <span class="property">grid-template-columns</span>: <span class="value">repeat(3, 1fr)</span>;
+    }
+}
+
+<span class="comment">/* 大螢幕 (1200px 以上) */</span>
+<span class="selector">@media</span> (<span class="property">min-width</span>: <span class="value">1200px</span>) {
+    <span class="selector">.container</span> {
+        <span class="property">max-width</span>: <span class="value">1140px</span>;
+    }
+}</code>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 響應式設計原則：</strong><br>
+                • 使用相對單位（%, rem, vw）而非固定像素<br>
+                • 手機優先設計，再用 min-width 擴展到大螢幕<br>
+                • 測試各種螢幕尺寸
+            </div>
+        </div>
+
+        <!-- 農業儀表板範例 -->
+        <div class="section">
+            <h2>🌾 農業儀表板 CSS 範例</h2>
+
+            <div class="code-block">
+<code><span class="comment">/* 儀表板卡片 */</span>
+<span class="selector">.sensor-card</span> {
+    <span class="property">background</span>: <span class="value">linear-gradient(135deg, #1a1a2e, #16213e)</span>;
+    <span class="property">border-radius</span>: <span class="value">16px</span>;
+    <span class="property">padding</span>: <span class="value">24px</span>;
+    <span class="property">box-shadow</span>: <span class="value">0 4px 20px rgba(0, 0, 0, 0.3)</span>;
+    <span class="property">transition</span>: <span class="value">transform 0.3s, box-shadow 0.3s</span>;
+}
+
+<span class="selector">.sensor-card:hover</span> {
+    <span class="property">transform</span>: <span class="value">translateY(-5px)</span>;
+    <span class="property">box-shadow</span>: <span class="value">0 8px 30px rgba(79, 209, 197, 0.2)</span>;
+}
+
+<span class="selector">.sensor-value</span> {
+    <span class="property">font-size</span>: <span class="value">3rem</span>;
+    <span class="property">font-weight</span>: <span class="value">bold</span>;
+    <span class="property">background</span>: <span class="value">linear-gradient(135deg, #4fd1c5, #63b3ed)</span>;
+    <span class="property">-webkit-background-clip</span>: <span class="value">text</span>;
+    <span class="property">-webkit-text-fill-color</span>: <span class="value">transparent</span>;
+}
+
+<span class="selector">.status-good</span> { <span class="property">color</span>: <span class="value">#68d391</span>; }
+<span class="selector">.status-warning</span> { <span class="property">color</span>: <span class="value">#f6ad55</span>; }
+<span class="selector">.status-danger</span> { <span class="property">color</span>: <span class="value">#fc8181</span>; }
+
+<span class="comment">/* 控制按鈕 */</span>
+<span class="selector">.control-btn</span> {
+    <span class="property">background</span>: <span class="value">linear-gradient(135deg, #4fd1c5, #38b2ac)</span>;
+    <span class="property">color</span>: <span class="value">white</span>;
+    <span class="property">border</span>: <span class="value">none</span>;
+    <span class="property">padding</span>: <span class="value">12px 28px</span>;
+    <span class="property">border-radius</span>: <span class="value">50px</span>;
+    <span class="property">cursor</span>: <span class="value">pointer</span>;
+    <span class="property">font-weight</span>: <span class="value">bold</span>;
+    <span class="property">transition</span>: <span class="value">all 0.3s</span>;
+}
+
+<span class="selector">.control-btn:hover</span> {
+    <span class="property">transform</span>: <span class="value">scale(1.05)</span>;
+    <span class="property">box-shadow</span>: <span class="value">0 4px 15px rgba(79, 209, 197, 0.4)</span>;
+}
+
+<span class="selector">.control-btn:active</span> {
+    <span class="property">transform</span>: <span class="value">scale(0.98)</span>;
+}</code>
+            </div>
+        </div>
+
+        <a href="文件索引.html" class="home-btn">🏠 返回首頁</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>機器學習名詞解釋 - 白話文完整指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e8e8e8;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #a855f7, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a0aec0;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+
+        .section {
+            background: rgba(45, 55, 72, 0.6);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 4px solid #a855f7;
+        }
+
+        h2 {
+            color: #c084fc;
+            font-size: 1.6em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            color: #e879f9;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+
+        .term-card {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .term-card:hover {
+            border-color: rgba(168, 85, 247, 0.6);
+            transform: translateX(5px);
+        }
+
+        .term-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .term-name {
+            font-size: 1.25em;
+            font-weight: bold;
+            color: #c084fc;
+        }
+
+        .term-english {
+            font-family: "Consolas", monospace;
+            background: rgba(168, 85, 247, 0.2);
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #e9d5ff;
+        }
+
+        .term-category {
+            font-size: 0.75em;
+            padding: 3px 8px;
+            border-radius: 10px;
+            background: rgba(99, 102, 241, 0.3);
+            color: #a5b4fc;
+        }
+
+        .term-explain {
+            color: #cbd5e0;
+            margin-bottom: 10px;
+        }
+
+        .term-simple {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(99, 102, 241, 0.1));
+            border-left: 3px solid #a855f7;
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 10px;
+        }
+
+        .term-simple::before {
+            content: "白話文：";
+            font-weight: bold;
+            color: #c084fc;
+        }
+
+        .term-example {
+            background: rgba(45, 55, 72, 0.5);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.95em;
+            color: #a0aec0;
+        }
+
+        .term-example::before {
+            content: "舉例：";
+            font-weight: bold;
+            color: #6ee7b7;
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.1));
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .analogy-box h4 {
+            color: #fbbf24;
+            margin-bottom: 10px;
+        }
+
+        .analogy-box p {
+            color: #fef3c7;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(26, 32, 44, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        .comparison-table th {
+            background: rgba(168, 85, 247, 0.2);
+            color: #c084fc;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            color: #cbd5e0;
+        }
+
+        .visual-diagram {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px dashed rgba(168, 85, 247, 0.4);
+        }
+
+        .flow-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .flow-box {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(99, 102, 241, 0.2));
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            border-radius: 10px;
+            padding: 12px 18px;
+            min-width: 100px;
+        }
+
+        .flow-arrow {
+            font-size: 1.5em;
+            color: #c084fc;
+        }
+
+        .tip-box {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(74, 222, 128, 0.1));
+            border: 1px solid rgba(74, 222, 128, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .tip-box h4 {
+            color: #4ade80;
+            margin-bottom: 10px;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(248, 113, 113, 0.1));
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #f87171;
+            margin-bottom: 10px;
+        }
+
+        .toc {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            color: #c084fc;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin: 15px 0 0 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .toc li a {
+            color: #a5b4fc;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .toc li a:hover {
+            background: rgba(99, 102, 241, 0.3);
+            color: #c7d2fe;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #c084fc;
+            text-decoration: none;
+            font-size: 0.95em;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .formula {
+            background: #0d1117;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-family: "Consolas", monospace;
+            color: #e9d5ff;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .section { padding: 20px; }
+            .term-header { flex-direction: column; align-items: flex-start; }
+            .flow-diagram { flex-direction: column; }
+            .flow-arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="文件索引.html" class="back-link">← 返回文件索引</a>
+
+        <h1>機器學習名詞解釋</h1>
+        <p class="subtitle">用白話文理解 AI 與機器學習的專業術語</p>
+
+        <!-- 目錄 -->
+        <div class="toc">
+            <h3>快速導覽</h3>
+            <ul>
+                <li><a href="#basic">基礎概念</a></li>
+                <li><a href="#data">資料相關</a></li>
+                <li><a href="#training">訓練過程</a></li>
+                <li><a href="#evaluation">模型評估</a></li>
+                <li><a href="#neural">神經網路</a></li>
+                <li><a href="#deep">深度學習架構</a></li>
+                <li><a href="#optimization">優化技術</a></li>
+                <li><a href="#advanced">進階概念</a></li>
+            </ul>
+        </div>
+
+        <!-- 基礎概念 -->
+        <section class="section" id="basic">
+            <h2>1. 基礎概念</h2>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">機器學習</span>
+                    <span class="term-english">Machine Learning, ML</span>
+                </div>
+                <p class="term-explain">讓電腦從資料中自動學習規律，而不需要人類明確編寫每一條規則的技術。</p>
+                <div class="term-simple">就像教小孩認識水果，你不用告訴他「紅色圓形的是蘋果」這種規則，只要給他看很多蘋果的照片，他自己就會學會辨認。機器學習就是讓電腦用同樣的方式學習。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">模型</span>
+                    <span class="term-english">Model</span>
+                </div>
+                <p class="term-explain">從資料中學習到的「規律」或「知識」的數學表示形式。</p>
+                <div class="term-simple">模型就像是一個「經驗老到的專家」。這個專家看過很多案例後，累積了判斷的經驗。當你問他問題時，他會根據過去的經驗給你答案。</div>
+                <div class="term-example">訓練好的蘋果品質辨識模型，就像一個看過幾萬顆蘋果的品管專家，能快速判斷蘋果好不好。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">訓練</span>
+                    <span class="term-english">Training</span>
+                </div>
+                <p class="term-explain">讓模型從資料中學習規律的過程。</p>
+                <div class="term-simple">就像學生在學校上課、做練習題。電腦會反覆看資料、做預測、檢查答案、修正自己，直到學會為止。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">推論 / 預測</span>
+                    <span class="term-english">Inference / Prediction</span>
+                </div>
+                <p class="term-explain">使用訓練好的模型來處理新資料，得出結果的過程。</p>
+                <div class="term-simple">學生考試時，用學到的知識來解答沒見過的題目。模型用學到的規律來判斷新的資料。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">特徵</span>
+                    <span class="term-english">Feature</span>
+                </div>
+                <p class="term-explain">用來描述資料的各種屬性或特性，是模型學習的依據。</p>
+                <div class="term-simple">就像你描述一個人時會說「身高180、體重70、黑髮」，這些就是特徵。對於圖片來說，每個像素的顏色值都是特徵。</div>
+                <div class="term-example">判斷蘋果品質時，顏色、大小、形狀、有無斑點都是特徵。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">標籤</span>
+                    <span class="term-english">Label</span>
+                </div>
+                <p class="term-explain">資料的「正確答案」，告訴模型這筆資料應該被分類為什麼。</p>
+                <div class="term-simple">就像考卷的標準答案。我們告訴電腦「這張圖是蘋果」、「這張圖是橘子」，這些就是標籤。</div>
+            </div>
+
+            <div class="visual-diagram">
+                <p style="margin-bottom: 15px; color: #a0aec0;">機器學習基本流程</p>
+                <div class="flow-diagram">
+                    <div class="flow-box">資料收集<br><small>蒐集大量範例</small></div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box">資料標註<br><small>標記正確答案</small></div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box">模型訓練<br><small>學習規律</small></div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box">模型評估<br><small>測試準確度</small></div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box">實際應用<br><small>推論預測</small></div>
+                </div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">監督式學習</span>
+                    <span class="term-english">Supervised Learning</span>
+                </div>
+                <p class="term-explain">訓練資料有標籤（正確答案）的學習方式。</p>
+                <div class="term-simple">就像有老師在旁邊指導的學習。學生做完題目，老師會告訴他對不對，錯了要怎麼改。</div>
+                <div class="term-example">給電腦看 1000 張標記好「健康/生病」的蘋果圖片，讓它學會判斷。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">非監督式學習</span>
+                    <span class="term-english">Unsupervised Learning</span>
+                </div>
+                <p class="term-explain">訓練資料沒有標籤，讓模型自己發現資料中的規律。</p>
+                <div class="term-simple">就像把一堆東西丟給小孩，讓他自己分類。他可能會把紅色的放一堆、圓形的放一堆，自己找出分類方式。</div>
+                <div class="term-example">給電腦 1000 張水果圖片（不告訴它是什麼水果），讓它自己把相似的分在一起。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">強化學習</span>
+                    <span class="term-english">Reinforcement Learning</span>
+                </div>
+                <p class="term-explain">透過與環境互動，根據獎勵或懲罰來學習最佳策略。</p>
+                <div class="term-simple">就像訓練小狗。做對了給零食（獎勵），做錯了不給（懲罰）。久了小狗就會學會什麼行為能得到獎勵。</div>
+                <div class="term-example">訓練 AI 玩遊戲，贏了加分、輸了扣分，讓它自己學會怎麼玩得更好。</div>
+            </div>
+        </section>
+
+        <!-- 資料相關 -->
+        <section class="section" id="data">
+            <h2>2. 資料相關術語</h2>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">訓練集</span>
+                    <span class="term-english">Training Set</span>
+                </div>
+                <p class="term-explain">用來訓練模型的資料集，模型會從這些資料中學習。</p>
+                <div class="term-simple">就像學生的課本和練習題。這些是用來學習的材料。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">驗證集</span>
+                    <span class="term-english">Validation Set</span>
+                </div>
+                <p class="term-explain">在訓練過程中用來調整模型的資料，幫助選擇最佳設定。</p>
+                <div class="term-simple">就像模擬考。用來檢查學習進度，看哪種讀書方法效果最好，但不是真正的考試。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">測試集</span>
+                    <span class="term-english">Test Set</span>
+                </div>
+                <p class="term-explain">訓練完成後，用來評估模型最終表現的資料。模型在訓練過程中從未見過這些資料。</p>
+                <div class="term-simple">就像正式考試。用全新的題目來測試真正的實力，這些題目學生從沒看過。</div>
+            </div>
+
+            <div class="analogy-box">
+                <h4>資料集分割的比喻</h4>
+                <p>想像準備大考：</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>訓練集 (70-80%)</strong>：課本和習題 → 用來學習知識</li>
+                    <li><strong>驗證集 (10-15%)</strong>：模擬考 → 調整讀書策略</li>
+                    <li><strong>測試集 (10-15%)</strong>：正式考試 → 評估真實能力</li>
+                </ul>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">資料增強</span>
+                    <span class="term-english">Data Augmentation</span>
+                </div>
+                <p class="term-explain">透過對原始資料進行變換（旋轉、翻轉、縮放等），人工產生更多訓練資料。</p>
+                <div class="term-simple">就像把一張蘋果照片旋轉、放大、調亮度，變成好幾張不同的照片。這樣電腦看到的「蘋果樣本」就變多了，學得更全面。</div>
+                <div class="term-example">一張蘋果圖片 → 水平翻轉、旋轉15度、調整亮度 → 變成4張訓練圖片</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">正規化 / 標準化</span>
+                    <span class="term-english">Normalization / Standardization</span>
+                </div>
+                <p class="term-explain">將資料調整到統一的範圍或分布，讓模型更容易學習。</p>
+                <div class="term-simple">就像把不同單位統一。如果身高用公分、體重用公斤、年齡用年，數值差很大。把它們都調整到 0~1 之間，模型比較好處理。</div>
+                <div class="formula">
+                    正規化：x_new = (x - min) / (max - min)  → 結果範圍 0~1<br>
+                    標準化：x_new = (x - mean) / std  → 平均值=0，標準差=1
+                </div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">類別不平衡</span>
+                    <span class="term-english">Class Imbalance</span>
+                </div>
+                <p class="term-explain">訓練資料中，各類別的數量差異很大。</p>
+                <div class="term-simple">就像考試題目 100 題有 95 題是選擇題，只有 5 題是問答題。學生會專注練選擇題而忽略問答題。模型也一樣，會偏向多數類別。</div>
+                <div class="term-example">1000 張健康蘋果 + 50 張病蟲害蘋果 = 模型可能會傾向都判斷為健康</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">批次</span>
+                    <span class="term-english">Batch</span>
+                </div>
+                <p class="term-explain">每次訓練時，一起送入模型的資料數量。</p>
+                <div class="term-simple">就像老師改作業。不是每寫完一題就給老師改，而是累積一疊（比如 32 份）一起交。這樣效率更高。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">批次大小</span>
+                    <span class="term-english">Batch Size</span>
+                </div>
+                <p class="term-explain">每個批次包含的資料筆數。</p>
+                <div class="term-simple">一疊作業有幾份。常見的批次大小有 16、32、64、128。</div>
+                <table class="comparison-table">
+                    <tr>
+                        <th>批次大小</th>
+                        <th>優點</th>
+                        <th>缺點</th>
+                    </tr>
+                    <tr>
+                        <td>小 (8-16)</td>
+                        <td>記憶體需求低、可能找到更好的解</td>
+                        <td>訓練較慢、不穩定</td>
+                    </tr>
+                    <tr>
+                        <td>大 (64-256)</td>
+                        <td>訓練快、較穩定</td>
+                        <td>記憶體需求高、可能陷入局部最佳解</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- 訓練過程 -->
+        <section class="section" id="training">
+            <h2>3. 訓練過程術語</h2>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">Epoch（訓練週期）</span>
+                    <span class="term-english">Epoch</span>
+                </div>
+                <p class="term-explain">模型完整看過訓練集一次，稱為一個 epoch。</p>
+                <div class="term-simple">就像讀完整本課本一遍。通常要讀好幾遍（好幾個 epoch）才會學得好。</div>
+                <div class="term-example">如果訓練集有 1000 張圖片，模型看完這 1000 張 = 1 個 epoch</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">迭代</span>
+                    <span class="term-english">Iteration</span>
+                </div>
+                <p class="term-explain">模型處理一個批次並更新一次參數，稱為一次迭代。</p>
+                <div class="term-simple">每交一疊作業、老師改完、學生訂正一次 = 一次迭代。</div>
+                <div class="formula">
+                    一個 Epoch 的迭代次數 = 訓練資料總數 / 批次大小<br>
+                    例：1000 張圖片 / 批次32 = 約 31 次迭代
+                </div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">損失函數</span>
+                    <span class="term-english">Loss Function</span>
+                </div>
+                <p class="term-explain">用來衡量模型預測結果與正確答案之間差距的函數。</p>
+                <div class="term-simple">就像考試的扣分標準。答案越離譜，扣越多分。模型會努力降低損失（少被扣分）。</div>
+                <div class="term-example">預測機率 0.9 是蘋果，實際是蘋果 → 損失小<br>預測機率 0.2 是蘋果，實際是蘋果 → 損失大</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">學習率</span>
+                    <span class="term-english">Learning Rate</span>
+                </div>
+                <p class="term-explain">每次更新模型參數時，調整的幅度大小。</p>
+                <div class="term-simple">就像爬山找山頂時，每一步要跨多大。步伐太大可能跨過頭、步伐太小走太慢。</div>
+                <table class="comparison-table">
+                    <tr>
+                        <th>學習率</th>
+                        <th>效果</th>
+                    </tr>
+                    <tr>
+                        <td>太大 (0.1, 1.0)</td>
+                        <td>學習不穩定，可能永遠找不到好答案</td>
+                    </tr>
+                    <tr>
+                        <td>適中 (0.001, 0.01)</td>
+                        <td>穩定學習，通常是好的起點</td>
+                    </tr>
+                    <tr>
+                        <td>太小 (0.00001)</td>
+                        <td>學習太慢，需要很長時間</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">過擬合</span>
+                    <span class="term-english">Overfitting</span>
+                </div>
+                <p class="term-explain">模型在訓練資料上表現很好，但在新資料上表現很差。模型「背答案」而非真正理解。</p>
+                <div class="term-simple">就像學生只背考古題，遇到新題目就不會了。模型把訓練資料的細節都記住了（包括雜訊），但沒學會真正的規律。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">欠擬合</span>
+                    <span class="term-english">Underfitting</span>
+                </div>
+                <p class="term-explain">模型在訓練資料上表現就不好，沒有學到足夠的規律。</p>
+                <div class="term-simple">就像學生根本沒讀書，連課本題目都不會。可能是模型太簡單，或是訓練不夠。</div>
+            </div>
+
+            <div class="visual-diagram">
+                <p style="margin-bottom: 15px; color: #a0aec0;">過擬合 vs 欠擬合 vs 剛好</p>
+                <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2em;">📉</div>
+                        <div style="color: #f87171;">欠擬合</div>
+                        <div style="font-size: 0.85em; color: #a0aec0;">學太少<br>訓練差、測試差</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2em;">✅</div>
+                        <div style="color: #4ade80;">剛剛好</div>
+                        <div style="font-size: 0.85em; color: #a0aec0;">學得好<br>訓練好、測試好</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2em;">📈</div>
+                        <div style="color: #fbbf24;">過擬合</div>
+                        <div style="font-size: 0.85em; color: #a0aec0;">背答案<br>訓練好、測試差</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">正則化</span>
+                    <span class="term-english">Regularization</span>
+                </div>
+                <p class="term-explain">防止過擬合的技術，限制模型的複雜度。</p>
+                <div class="term-simple">就像叫學生不要死背，要理解重點。常見方法有 L1/L2 正則化、Dropout 等。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">Dropout</span>
+                    <span class="term-english">Dropout</span>
+                </div>
+                <p class="term-explain">訓練時隨機「關閉」一部分神經元，防止模型過度依賴特定神經元。</p>
+                <div class="term-simple">就像小組報告時，隨機讓某些組員「請假」。這樣每個人都要學會做所有事，不能只依賴某個人。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">早停</span>
+                    <span class="term-english">Early Stopping</span>
+                </div>
+                <p class="term-explain">當驗證集表現開始變差時，提前停止訓練。</p>
+                <div class="term-simple">就像煮菜要在剛好熟的時候關火，不要煮過頭。訓練太久會過擬合。</div>
+            </div>
+        </section>
+
+        <!-- 模型評估 -->
+        <section class="section" id="evaluation">
+            <h2>4. 模型評估指標</h2>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">準確率</span>
+                    <span class="term-english">Accuracy</span>
+                </div>
+                <p class="term-explain">所有預測中，正確預測的比例。</p>
+                <div class="term-simple">考試答對幾題除以總題數。100 題答對 85 題 = 85% 準確率。</div>
+                <div class="formula">準確率 = 正確預測數 / 總預測數</div>
+                <div class="warning-box">
+                    <h4>注意：類別不平衡時不可靠</h4>
+                    <p>如果 100 張圖有 95 張是蘋果，模型全部猜蘋果就有 95% 準確率，但其實什麼都沒學到。</p>
+                </div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">精確率</span>
+                    <span class="term-english">Precision</span>
+                </div>
+                <p class="term-explain">在所有被模型判斷為「正類」的樣本中，真正是正類的比例。</p>
+                <div class="term-simple">模型說「這是壞蘋果」的時候，有多少次是真的壞。重點是「說的準不準」。</div>
+                <div class="formula">精確率 = 真正例 / (真正例 + 假正例)</div>
+                <div class="term-example">模型判定 10 顆蘋果有病蟲害，其中 8 顆確實有 → 精確率 = 80%</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">召回率</span>
+                    <span class="term-english">Recall</span>
+                </div>
+                <p class="term-explain">在所有真正的正類樣本中，被模型正確找出來的比例。</p>
+                <div class="term-simple">真正壞的蘋果中，模型找出了多少。重點是「有沒有漏掉」。</div>
+                <div class="formula">召回率 = 真正例 / (真正例 + 假負例)</div>
+                <div class="term-example">實際有 20 顆壞蘋果，模型找出 16 顆 → 召回率 = 80%</div>
+            </div>
+
+            <div class="analogy-box">
+                <h4>精確率 vs 召回率的比喻</h4>
+                <p>想像用金屬探測器找地雷：</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>精確率高</strong>：探測器響了，挖下去幾乎都是地雷（很少誤報）</li>
+                    <li><strong>召回率高</strong>：地雷幾乎都被找到了（很少漏掉）</li>
+                    <li>實務中兩者要取捨：太敏感會誤報多、太遲鈍會漏掉</li>
+                </ul>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">F1 分數</span>
+                    <span class="term-english">F1 Score</span>
+                </div>
+                <p class="term-explain">精確率和召回率的調和平均數，綜合評估模型表現。</p>
+                <div class="term-simple">把精確率和召回率「平均」起來看。如果兩個都高，F1 就高；如果有一個很低，F1 也會被拉低。</div>
+                <div class="formula">F1 = 2 × (精確率 × 召回率) / (精確率 + 召回率)</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">混淆矩陣</span>
+                    <span class="term-english">Confusion Matrix</span>
+                </div>
+                <p class="term-explain">展示模型預測結果的表格，可以看出模型把什麼類別誤判成什麼。</p>
+                <div class="term-simple">一張成績單，顯示每種錯誤犯了幾次。</div>
+                <table class="comparison-table" style="max-width: 400px;">
+                    <tr>
+                        <th></th>
+                        <th>預測：正</th>
+                        <th>預測：負</th>
+                    </tr>
+                    <tr>
+                        <td><strong>實際：正</strong></td>
+                        <td style="background: rgba(74, 222, 128, 0.2);">真正例 (TP)</td>
+                        <td style="background: rgba(248, 113, 113, 0.2);">假負例 (FN)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>實際：負</strong></td>
+                        <td style="background: rgba(248, 113, 113, 0.2);">假正例 (FP)</td>
+                        <td style="background: rgba(74, 222, 128, 0.2);">真負例 (TN)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">IoU（交併比）</span>
+                    <span class="term-english">Intersection over Union</span>
+                </div>
+                <p class="term-explain">物件偵測中，評估預測框與實際框重疊程度的指標。</p>
+                <div class="term-simple">你畫的框和正確答案的框，重疊的部分佔多少比例。100% 表示完全重合。</div>
+                <div class="formula">IoU = 重疊面積 / 聯集面積</div>
+                <div class="term-example">IoU > 0.5 通常視為「正確偵測到」</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">mAP（平均精確率均值）</span>
+                    <span class="term-english">mean Average Precision</span>
+                </div>
+                <p class="term-explain">物件偵測常用的綜合評估指標，考慮所有類別在不同閾值下的表現。</p>
+                <div class="term-simple">把所有類別的偵測表現「平均」起來的分數。mAP 越高越好，YOLO 等模型常用。</div>
+            </div>
+        </section>
+
+        <!-- 神經網路 -->
+        <section class="section" id="neural">
+            <h2>5. 神經網路術語</h2>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">神經網路</span>
+                    <span class="term-english">Neural Network</span>
+                </div>
+                <p class="term-explain">模仿人腦神經元結構的運算模型，由多個「神經元」連接組成。</p>
+                <div class="term-simple">就像很多小工人（神經元）組成的工廠。每個工人做一點計算，把結果傳給下一個工人，最後產出答案。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">神經元 / 節點</span>
+                    <span class="term-english">Neuron / Node</span>
+                </div>
+                <p class="term-explain">神經網路的基本運算單元，接收輸入、做運算、產出輸出。</p>
+                <div class="term-simple">一個小工人。他收到幾個數字，做加權平均，再決定要不要「激活」（輸出結果）。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">層</span>
+                    <span class="term-english">Layer</span>
+                </div>
+                <p class="term-explain">一群同時運作的神經元組成一層，神經網路由多層堆疊而成。</p>
+                <div class="term-simple">工廠的一個部門。輸入層（接收部）→ 隱藏層（加工部）→ 輸出層（出貨部）。</div>
+            </div>
+
+            <div class="visual-diagram">
+                <p style="margin-bottom: 15px; color: #a0aec0;">神經網路結構示意</p>
+                <div class="flow-diagram">
+                    <div class="flow-box" style="background: linear-gradient(135deg, rgba(74, 222, 128, 0.3), rgba(34, 197, 94, 0.2)); border-color: rgba(74, 222, 128, 0.5);">
+                        輸入層<br><small>接收資料</small>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box">隱藏層 1<br><small>特徵提取</small></div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box">隱藏層 2<br><small>深層特徵</small></div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box" style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.2)); border-color: rgba(251, 191, 36, 0.5);">
+                        輸出層<br><small>產出結果</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">權重</span>
+                    <span class="term-english">Weight</span>
+                </div>
+                <p class="term-explain">神經元之間連接的「強度」，決定輸入對輸出的影響程度。</p>
+                <div class="term-simple">每個輸入的「重要性分數」。權重大的輸入影響力大，權重小的影響力小。訓練就是在調整這些權重。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">偏差</span>
+                    <span class="term-english">Bias</span>
+                </div>
+                <p class="term-explain">神經元的一個額外參數，讓輸出可以做平移調整。</p>
+                <div class="term-simple">就像考試加分。不管輸入是什麼，都可以加上一個固定值來調整結果。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">激活函數</span>
+                    <span class="term-english">Activation Function</span>
+                </div>
+                <p class="term-explain">決定神經元是否「激活」（輸出）的函數，引入非線性讓網路能學習複雜模式。</p>
+                <div class="term-simple">就像開關的判斷標準。計算結果超過某個值就「開啟」輸出，否則「關閉」或減弱。</div>
+                <table class="comparison-table">
+                    <tr>
+                        <th>激活函數</th>
+                        <th>特性</th>
+                        <th>常用場景</th>
+                    </tr>
+                    <tr>
+                        <td>ReLU</td>
+                        <td>負值=0，正值不變</td>
+                        <td>隱藏層首選</td>
+                    </tr>
+                    <tr>
+                        <td>Sigmoid</td>
+                        <td>輸出 0~1</td>
+                        <td>二元分類輸出</td>
+                    </tr>
+                    <tr>
+                        <td>Softmax</td>
+                        <td>輸出機率分布（總和=1）</td>
+                        <td>多類別分類輸出</td>
+                    </tr>
+                    <tr>
+                        <td>Tanh</td>
+                        <td>輸出 -1~1</td>
+                        <td>RNN</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">反向傳播</span>
+                    <span class="term-english">Backpropagation</span>
+                </div>
+                <p class="term-explain">計算損失對每個權重的影響，從輸出層往回傳遞，用來更新權重。</p>
+                <div class="term-simple">考試檢討。從最後的答案開始往回追，看是哪一步算錯了，一步一步修正。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">梯度</span>
+                    <span class="term-english">Gradient</span>
+                </div>
+                <p class="term-explain">損失函數對權重的偏微分，指出權重應該往哪個方向調整。</p>
+                <div class="term-simple">就像站在山上，梯度告訴你「往哪邊走是下坡」。我們要往下坡走才能到達山谷（最小損失）。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">梯度消失 / 梯度爆炸</span>
+                    <span class="term-english">Vanishing / Exploding Gradient</span>
+                </div>
+                <p class="term-explain">深層網路中，梯度在傳遞過程中變得極小或極大，導致訓練困難。</p>
+                <div class="term-simple">
+                    <strong>梯度消失</strong>：像傳話遊戲傳太多人，訊息越傳越小聲，最後聽不到。<br>
+                    <strong>梯度爆炸</strong>：像滾雪球越滾越大，最後大到無法控制。
+                </div>
+            </div>
+        </section>
+
+        <!-- 深度學習架構 -->
+        <section class="section" id="deep">
+            <h2>6. 深度學習架構</h2>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">深度學習</span>
+                    <span class="term-english">Deep Learning</span>
+                </div>
+                <p class="term-explain">使用多層神經網路（深層網路）的機器學習方法。</p>
+                <div class="term-simple">工廠有很多層加工部門，能處理更複雜的任務。「深」是指層數多。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">CNN（卷積神經網路）</span>
+                    <span class="term-english">Convolutional Neural Network</span>
+                </div>
+                <p class="term-explain">專門處理圖像的神經網路，使用卷積運算來提取圖像特徵。</p>
+                <div class="term-simple">就像用放大鏡一小塊一小塊檢查圖片，找出邊緣、紋理、形狀等特徵。是圖像辨識的標準工具。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">卷積</span>
+                    <span class="term-english">Convolution</span>
+                </div>
+                <p class="term-explain">用小型濾波器（kernel）在圖像上滑動，提取局部特徵的運算。</p>
+                <div class="term-simple">像拿一個小印章在圖片上蓋，每蓋一個位置就計算一次。不同的印章可以找出不同的特徵（橫線、直線、角等）。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">池化</span>
+                    <span class="term-english">Pooling</span>
+                </div>
+                <p class="term-explain">縮小特徵圖的尺寸，保留重要資訊，減少運算量。</p>
+                <div class="term-simple">把 4 個像素合併成 1 個（取最大值或平均值）。就像把高畫質圖片縮小，檔案變小但還是看得出內容。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">RNN（遞迴神經網路）</span>
+                    <span class="term-english">Recurrent Neural Network</span>
+                </div>
+                <p class="term-explain">能處理序列資料的神經網路，具有「記憶」功能。</p>
+                <div class="term-simple">看句子時，會記住前面看過的字。就像讀文章會記得前面講了什麼，才能理解後面的意思。</div>
+                <div class="term-example">用途：文字生成、語音辨識、時間序列預測</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">LSTM（長短期記憶網路）</span>
+                    <span class="term-english">Long Short-Term Memory</span>
+                </div>
+                <p class="term-explain">改良版的 RNN，能記住更長期的資訊，解決梯度消失問題。</p>
+                <div class="term-simple">RNN 只能記住剛剛發生的事，LSTM 可以記住更久以前的重要資訊，像是有一個筆記本專門記錄重點。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">Transformer</span>
+                    <span class="term-english">Transformer</span>
+                </div>
+                <p class="term-explain">使用注意力機制的架構，能平行處理序列，是現代 NLP 的主流。</p>
+                <div class="term-simple">不用一個字一個字慢慢讀，而是一眼看整段話，同時注意每個字跟其他字的關係。處理速度更快，效果更好。</div>
+                <div class="term-example">GPT、BERT、ChatGPT 都是基於 Transformer。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">注意力機制</span>
+                    <span class="term-english">Attention Mechanism</span>
+                </div>
+                <p class="term-explain">讓模型學習「該注意哪裡」，對重要的部分給予更多權重。</p>
+                <div class="term-simple">就像看一張圖片時，眼睛會自動看重點。模型學會在一堆資訊中，找出最相關的部分來做決策。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">YOLO</span>
+                    <span class="term-english">You Only Look Once</span>
+                </div>
+                <p class="term-explain">快速的物件偵測模型，只看一次圖片就能同時偵測多個物件。</p>
+                <div class="term-simple">不像傳統方法要掃很多次，YOLO 看一眼就知道圖片裡有什麼東西、在哪裡。速度快到能即時處理影片。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">GAN（生成對抗網路）</span>
+                    <span class="term-english">Generative Adversarial Network</span>
+                </div>
+                <p class="term-explain">兩個網路互相對抗：一個生成假資料，一個判斷真假，互相進步。</p>
+                <div class="term-simple">就像偽鈔集團和警察。偽鈔做得越來越像，警察辨識能力也越來越強。最後偽鈔（生成的圖片）可以以假亂真。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">自編碼器</span>
+                    <span class="term-english">Autoencoder</span>
+                </div>
+                <p class="term-explain">學習將資料壓縮再還原的網路，中間的壓縮表示是有用的特徵。</p>
+                <div class="term-simple">就像把一篇文章摘要成幾個關鍵字，再從關鍵字還原成文章。中間那幾個關鍵字就是精華。</div>
+            </div>
+        </section>
+
+        <!-- 優化技術 -->
+        <section class="section" id="optimization">
+            <h2>7. 優化技術</h2>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">優化器</span>
+                    <span class="term-english">Optimizer</span>
+                </div>
+                <p class="term-explain">決定如何根據梯度來更新權重的演算法。</p>
+                <div class="term-simple">就像爬山的策略。有人喜歡穩穩走、有人喜歡看情況調整步伐。不同優化器有不同的策略。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">梯度下降</span>
+                    <span class="term-english">Gradient Descent</span>
+                </div>
+                <p class="term-explain">最基本的優化方法，沿著梯度的反方向（下坡方向）更新權重。</p>
+                <div class="term-simple">閉著眼睛往下坡方向走，每走一步就重新感覺哪邊是下坡，最後走到山谷。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">SGD（隨機梯度下降）</span>
+                    <span class="term-english">Stochastic Gradient Descent</span>
+                </div>
+                <p class="term-explain">每次只用一個（或一小批）樣本來計算梯度，而不是用全部資料。</p>
+                <div class="term-simple">不用等全班作業都交齊才檢討，每收到幾份就先改先調整。速度快但方向可能不太穩定。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">動量</span>
+                    <span class="term-english">Momentum</span>
+                </div>
+                <p class="term-explain">讓更新帶有「慣性」，考慮之前的更新方向，使訓練更穩定。</p>
+                <div class="term-simple">像滾球下山，即使遇到小坑洞也能靠慣性滾過去，不會卡住。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">Adam</span>
+                    <span class="term-english">Adaptive Moment Estimation</span>
+                </div>
+                <p class="term-explain">結合動量和自適應學習率的優化器，是目前最常用的優化器之一。</p>
+                <div class="term-simple">聰明的登山者，會記住之前走過的方向（動量），也會根據地形調整步伐大小（自適應學習率）。大多數情況用它就對了。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">學習率排程</span>
+                    <span class="term-english">Learning Rate Schedule</span>
+                </div>
+                <p class="term-explain">在訓練過程中動態調整學習率的策略。</p>
+                <div class="term-simple">一開始大步快走（高學習率），接近目標時小步慢走（低學習率）。常見策略有每隔幾個 epoch 減半、或用 cosine 曲線下降。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">Batch Normalization</span>
+                    <span class="term-english">批次正規化</span>
+                </div>
+                <p class="term-explain">在每層之間加入正規化，使訓練更穩定、更快收斂。</p>
+                <div class="term-simple">每一層做完後，把結果「校準」一下，確保數值範圍正常，不會太大或太小。就像每站都校正一下時間，避免誤差累積。</div>
+            </div>
+        </section>
+
+        <!-- 進階概念 -->
+        <section class="section" id="advanced">
+            <h2>8. 進階概念</h2>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">遷移學習</span>
+                    <span class="term-english">Transfer Learning</span>
+                </div>
+                <p class="term-explain">把在大資料集上學到的知識，應用到新的（通常較小的）資料集上。</p>
+                <div class="term-simple">會開車的人學騎機車比較快。因為很多技巧是共通的。同樣地，學過辨識貓狗的模型，拿來辨識蘋果也會比從零開始快。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">預訓練模型</span>
+                    <span class="term-english">Pre-trained Model</span>
+                </div>
+                <p class="term-explain">已經在大型資料集上訓練好的模型，可以直接使用或進一步微調。</p>
+                <div class="term-simple">別人幫你讀完大學課程的畢業生。你可以直接聘用，或是稍微訓練一下他特定領域的知識。</div>
+                <div class="term-example">ImageNet 預訓練的 ResNet、GPT、BERT 等</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">微調</span>
+                    <span class="term-english">Fine-tuning</span>
+                </div>
+                <p class="term-explain">在預訓練模型的基礎上，用自己的資料繼續訓練，使其適應新任務。</p>
+                <div class="term-simple">派畢業生去你公司實習幾天，讓他熟悉你們的業務。不用從幼稚園教起，很快就能上手。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">端到端學習</span>
+                    <span class="term-english">End-to-End Learning</span>
+                </div>
+                <p class="term-explain">模型直接從原始輸入學習到最終輸出，不需要人工設計中間步驟。</p>
+                <div class="term-simple">給模型看原始圖片，直接輸出答案，中間怎麼處理讓它自己學。不需要人類先做特徵工程。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">超參數</span>
+                    <span class="term-english">Hyperparameter</span>
+                </div>
+                <p class="term-explain">訓練前需要人工設定的參數，不是由模型學習得到的。</p>
+                <div class="term-simple">就像煮飯前要決定火力大小、煮多久。學習率、批次大小、網路層數都是超參數。</div>
+                <div class="term-example">常見超參數：學習率、批次大小、epoch 數、隱藏層神經元數</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">超參數調優</span>
+                    <span class="term-english">Hyperparameter Tuning</span>
+                </div>
+                <p class="term-explain">嘗試不同的超參數組合，找出最佳設定。</p>
+                <div class="term-simple">試不同的火力和時間，找出最好吃的煮飯方式。常見方法有網格搜尋、隨機搜尋、貝氏優化等。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">交叉驗證</span>
+                    <span class="term-english">Cross-Validation</span>
+                </div>
+                <p class="term-explain">將資料分成多份，輪流用不同部分做訓練和驗證，更可靠地評估模型。</p>
+                <div class="term-simple">就像考多次模擬考，每次題目略有不同，平均成績比較能反映真實實力。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">集成學習</span>
+                    <span class="term-english">Ensemble Learning</span>
+                </div>
+                <p class="term-explain">結合多個模型的預測結果，通常比單一模型更準確。</p>
+                <div class="term-simple">三個臭皮匠勝過諸葛亮。讓多個模型投票，多數決通常比單一意見更可靠。</div>
+                <div class="term-example">Random Forest、Boosting、模型平均等</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">嵌入 / 向量表示</span>
+                    <span class="term-english">Embedding</span>
+                </div>
+                <p class="term-explain">將離散資料（如文字、類別）轉換成連續向量，使其能被神經網路處理。</p>
+                <div class="term-simple">把「蘋果」、「香蕉」這種文字，變成一串數字 [0.2, 0.8, 0.3...]。相似的東西，數字會比較接近。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">推論時間</span>
+                    <span class="term-english">Inference Time</span>
+                </div>
+                <p class="term-explain">模型處理一筆資料所需的時間。</p>
+                <div class="term-simple">模型回答一個問題要花多少時間。即時應用（如自駕車）需要很短的推論時間。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">模型壓縮</span>
+                    <span class="term-english">Model Compression</span>
+                </div>
+                <p class="term-explain">縮小模型大小、加快推論速度，同時盡量維持準確度。</p>
+                <div class="term-simple">把大模型「瘦身」，讓它能在手機或嵌入式設備上運行。方法有剪枝、量化、知識蒸餾等。</div>
+            </div>
+
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">量化</span>
+                    <span class="term-english">Quantization</span>
+                </div>
+                <p class="term-explain">將模型中的浮點數權重轉換為低精度數字（如 8-bit 整數）。</p>
+                <div class="term-simple">把 3.14159265 簡化成 3.14。精確度稍微降低，但檔案變小、運算變快。</div>
+            </div>
+        </section>
+
+        <!-- 速查表 -->
+        <section class="section">
+            <h2>快速參考表</h2>
+
+            <h3>常見縮寫對照</h3>
+            <table class="comparison-table">
+                <tr>
+                    <th>縮寫</th>
+                    <th>全名</th>
+                    <th>中文</th>
+                </tr>
+                <tr><td>ML</td><td>Machine Learning</td><td>機器學習</td></tr>
+                <tr><td>DL</td><td>Deep Learning</td><td>深度學習</td></tr>
+                <tr><td>NN</td><td>Neural Network</td><td>神經網路</td></tr>
+                <tr><td>CNN</td><td>Convolutional Neural Network</td><td>卷積神經網路</td></tr>
+                <tr><td>RNN</td><td>Recurrent Neural Network</td><td>遞迴神經網路</td></tr>
+                <tr><td>LSTM</td><td>Long Short-Term Memory</td><td>長短期記憶網路</td></tr>
+                <tr><td>GAN</td><td>Generative Adversarial Network</td><td>生成對抗網路</td></tr>
+                <tr><td>NLP</td><td>Natural Language Processing</td><td>自然語言處理</td></tr>
+                <tr><td>CV</td><td>Computer Vision</td><td>電腦視覺</td></tr>
+                <tr><td>SGD</td><td>Stochastic Gradient Descent</td><td>隨機梯度下降</td></tr>
+                <tr><td>LR</td><td>Learning Rate</td><td>學習率</td></tr>
+                <tr><td>BN</td><td>Batch Normalization</td><td>批次正規化</td></tr>
+                <tr><td>TP/FP/TN/FN</td><td>True/False Positive/Negative</td><td>真/假 正例/負例</td></tr>
+                <tr><td>IoU</td><td>Intersection over Union</td><td>交併比</td></tr>
+                <tr><td>mAP</td><td>mean Average Precision</td><td>平均精確率均值</td></tr>
+            </table>
+
+            <div class="tip-box">
+                <h4>學習建議</h4>
+                <ul style="margin-left: 20px;">
+                    <li>不需要一次記住所有名詞，遇到時再回來查就好</li>
+                    <li>實作比背名詞更重要，動手做會更理解這些概念</li>
+                    <li>從基礎概念開始，慢慢擴展到進階術語</li>
+                    <li>多看論文和教學會逐漸熟悉這些術語</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 頁尾 -->
+        <div style="text-align: center; margin-top: 50px; padding: 30px; border-top: 1px solid rgba(168, 85, 247, 0.3);">
+            <p style="color: #a0aec0;">智慧農業課程 - 機器學習名詞解釋</p>
+            <p style="color: #718096; font-size: 0.9em;">用白話文理解 AI 世界的語言</p>
+        </div>
+    </div>
+</body>
+</html>

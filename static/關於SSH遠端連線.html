@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於SSH遠端連線</title>
+
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+
+        }
+        @media (max-width: 768px) {
+
+            body {  }
+        }
+
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="ssh">關於 SSH 遠端連線</h1>
+
+<blockquote>
+<p>SSH 是管理遠端伺服器、樹莓派、IoT 設備的必備技能。學會 SSH，你就能在任何地方控制你的設備！</p>
+</blockquote>
+
+<h2 id="what-is-ssh">什麼是 SSH？</h2>
+
+<p>SSH（Secure Shell）是一種加密的網路協定，用於在不安全的網路上安全地進行遠端登入和執行命令。它取代了早期不安全的 Telnet、rlogin 等協定。</p>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                      SSH 連線架構                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   你的電腦（SSH 客戶端）              遠端設備（SSH 伺服器）      │
+│   ┌─────────────────┐                ┌─────────────────┐        │
+│   │                 │    加密通道    │                 │        │
+│   │   Windows PC    │ ════════════► │   Raspberry Pi  │        │
+│   │   macOS         │ ◄════════════ │   Linux 伺服器  │        │
+│   │   Linux         │    Port 22    │   雲端主機      │        │
+│   │                 │                │                 │        │
+│   └─────────────────┘                └─────────────────┘        │
+│                                                                 │
+│   SSH 提供：                                                     │
+│   ✓ 加密傳輸 - 防止中間人竊聽                                   │
+│   ✓ 身份驗證 - 密碼或金鑰認證                                   │
+│   ✓ 資料完整性 - 防止傳輸中被篡改                               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="ssh-vs-others">SSH 與其他遠端連線方式比較</h3>
+
+<table>
+<tr>
+<th>特性</th>
+<th>SSH</th>
+<th>Telnet</th>
+<th>VNC/遠端桌面</th>
+</tr>
+<tr>
+<td>加密</td>
+<td>完全加密</td>
+<td>無加密（明文）</td>
+<td>可選加密</td>
+</tr>
+<tr>
+<td>介面</td>
+<td>命令列</td>
+<td>命令列</td>
+<td>圖形介面</td>
+</tr>
+<tr>
+<td>頻寬需求</td>
+<td>極低</td>
+<td>極低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>預設埠</td>
+<td>22</td>
+<td>23</td>
+<td>3389/5900</td>
+</tr>
+<tr>
+<td>適用場景</td>
+<td>伺服器管理</td>
+<td>已棄用</td>
+<td>需要 GUI 時</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>高</td>
+<td>極低（危險）</td>
+<td>中等</td>
+</tr>
+</table>
+
+<hr />
+
+<h2 id="how-ssh-works">SSH 運作原理</h2>
+
+<h3 id="encryption">加密機制</h3>
+
+<p>SSH 使用混合加密系統，結合了對稱加密和非對稱加密的優點：</p>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    SSH 連線建立過程                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  客戶端                                           伺服器        │
+│     │                                               │           │
+│     │  1. TCP 連線（Port 22）                       │           │
+│     │ ─────────────────────────────────────────────►│           │
+│     │                                               │           │
+│     │  2. 交換協定版本和支援的演算法                  │           │
+│     │ ◄────────────────────────────────────────────►│           │
+│     │                                               │           │
+│     │  3. 金鑰交換（Diffie-Hellman）                 │           │
+│     │    生成共享的會話金鑰                          │           │
+│     │ ◄────────────────────────────────────────────►│           │
+│     │                                               │           │
+│     │  4. 伺服器認證                                 │           │
+│     │    客戶端驗證伺服器的公鑰                      │           │
+│     │ ◄─────────────────────────────────────────────│           │
+│     │                                               │           │
+│     │  5. 使用者認證（密碼或金鑰）                   │           │
+│     │ ─────────────────────────────────────────────►│           │
+│     │                                               │           │
+│     │  6. 建立加密通道，開始安全通訊                  │           │
+│     │ ◄════════════════════════════════════════════►│           │
+│     │           所有後續通訊都經過加密               │           │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="auth-methods">認證方式</h3>
+
+<pre><code>╔══════════════════════════════════════════════════════════════════╗
+║  SSH 支援的認證方式                                               ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  1. 密碼認證（Password Authentication）                          ║
+║     ├─ 最簡單的方式                                              ║
+║     ├─ 密碼透過加密通道傳輸                                      ║
+║     └─ 缺點：容易被暴力破解                                      ║
+║                                                                  ║
+║  2. 公鑰認證（Public Key Authentication）【推薦】                ║
+║     ├─ 使用金鑰對（公鑰 + 私鑰）                                 ║
+║     ├─ 私鑰保存在客戶端，永不傳輸                                ║
+║     ├─ 公鑰放在伺服器上                                          ║
+║     └─ 更安全，可免密碼登入                                      ║
+║                                                                  ║
+║  3. 雙因素認證（Two-Factor Authentication）                      ║
+║     ├─ 結合密碼/金鑰 + OTP（一次性密碼）                         ║
+║     └─ 最高安全性                                                ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+</code></pre>
+
+<hr />
+
+<h2 id="windows-setup">Windows 系統設定</h2>
+
+<h3 id="windows-client">Windows 10/11 內建 SSH 客戶端</h3>
+
+<p>Windows 10（1809 版本後）和 Windows 11 已內建 OpenSSH 客戶端。</p>
+
+<pre><code>檢查 SSH 是否已安裝：
+┌─────────────────────────────────────────────────────────────────┐
+│ 開啟 PowerShell 或命令提示字元，輸入：                           │
+│                                                                 │
+│ C:\Users\你的名字&gt; ssh -V                                       │
+│ OpenSSH_for_Windows_8.1p1, LibreSSL 3.0.2                       │
+│                                                                 │
+│ 如果顯示版本號，表示已安裝                                       │
+└─────────────────────────────────────────────────────────────────┘
+
+如果未安裝，手動安裝步驟：
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. 開啟「設定」→「應用程式」→「選用功能」                        │
+│ 2. 點擊「新增功能」                                              │
+│ 3. 搜尋「OpenSSH 用戶端」                                        │
+│ 4. 點擊「安裝」                                                  │
+│ 5. 重新開啟命令提示字元                                          │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="putty">使用 PuTTY（傳統方式）</h3>
+
+<p>PuTTY 是 Windows 上歷史悠久的 SSH 客戶端，提供圖形化介面。</p>
+
+<pre><code>下載與安裝：
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. 前往官網：https://www.putty.org/                             │
+│ 2. 下載 putty-64bit-X.XX-installer.msi                          │
+│ 3. 執行安裝程式，一路「Next」即可                                │
+│                                                                 │
+│ PuTTY 套件包含：                                                 │
+│ - PuTTY.exe      SSH/Telnet 客戶端                              │
+│ - PSFTP.exe      SFTP 檔案傳輸                                  │
+│ - PuTTYgen.exe   金鑰產生器                                     │
+│ - Pageant.exe    金鑰代理程式                                   │
+└─────────────────────────────────────────────────────────────────┘
+
+PuTTY 連線設定：
+┌─────────────────────────────────────────────────────────────────┐
+│  ┌─────────────────────────────────────┐                        │
+│  │ PuTTY Configuration                 │                        │
+│  ├─────────────────────────────────────┤                        │
+│  │                                     │                        │
+│  │ Host Name: 192.168.1.100           │ ← 輸入 IP 或主機名     │
+│  │                                     │                        │
+│  │ Port: 22                           │ ← SSH 預設埠           │
+│  │                                     │                        │
+│  │ Connection type:                    │                        │
+│  │ ○ Raw  ○ Telnet  ● SSH  ○ Serial   │ ← 選擇 SSH            │
+│  │                                     │                        │
+│  │ Saved Sessions: [RaspberryPi    ]  │ ← 可儲存設定           │
+│  │ [Save] [Load] [Delete]              │                        │
+│  │                                     │                        │
+│  │           [Open]                    │ ← 點擊連線             │
+│  └─────────────────────────────────────┘                        │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+
+<h2 id="basic-commands">基本 SSH 指令</h2>
+
+<h3 id="connect">連線到遠端主機</h3>
+
+<pre><code># 基本連線語法
+ssh 使用者名稱@主機位址
+
+# 範例：連線到樹莓派
+ssh pi@192.168.1.100
+
+# 範例：連線到 Linux 伺服器
+ssh root@example.com
+
+# 指定不同的埠號（預設是 22）
+ssh -p 2222 使用者名稱@主機位址
+
+# 第一次連線會顯示主機指紋確認
+┌─────────────────────────────────────────────────────────────────┐
+│ The authenticity of host '192.168.1.100 (192.168.1.100)'        │
+│ can't be established.                                           │
+│ ED25519 key fingerprint is SHA256:xxxxxxxxxxxxxxxxxxxxxxxxxxx   │
+│ Are you sure you want to continue connecting (yes/no/[finger    │
+│ print])? yes                                                    │
+│                                                                 │
+│ 輸入 yes 後，此主機會被加入已知主機列表                          │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="common-commands">連線後常用指令</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    SSH 連線後常用 Linux 指令                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  檔案與目錄操作：                                                │
+│  ─────────────────────────────────────────────────────────────  │
+│  ls              列出目錄內容                                    │
+│  ls -la          列出詳細資訊（含隱藏檔）                        │
+│  cd /path        切換目錄                                       │
+│  pwd             顯示目前目錄                                    │
+│  mkdir folder    建立資料夾                                     │
+│  rm file         刪除檔案                                       │
+│  rm -rf folder   刪除資料夾（小心使用！）                        │
+│  cp src dst      複製檔案                                       │
+│  mv src dst      移動/重新命名檔案                              │
+│  cat file        顯示檔案內容                                    │
+│  nano file       編輯檔案（簡易編輯器）                         │
+│  vim file        編輯檔案（進階編輯器）                         │
+│                                                                 │
+│  系統資訊：                                                      │
+│  ─────────────────────────────────────────────────────────────  │
+│  uname -a        顯示系統資訊                                    │
+│  hostname        顯示主機名稱                                    │
+│  hostname -I     顯示 IP 位址                                   │
+│  df -h           顯示磁碟使用量                                  │
+│  free -h         顯示記憶體使用量                                │
+│  top             即時系統監控（按 q 離開）                       │
+│  htop            更好的系統監控（需安裝）                        │
+│  uptime          顯示開機時間                                    │
+│                                                                 │
+│  網路相關：                                                      │
+│  ─────────────────────────────────────────────────────────────  │
+│  ip addr         顯示網路介面資訊                                │
+│  ping host       測試網路連通性                                  │
+│  netstat -tlnp   顯示監聽中的連接埠                              │
+│  curl url        發送 HTTP 請求                                 │
+│                                                                 │
+│  服務管理（systemd）：                                           │
+│  ─────────────────────────────────────────────────────────────  │
+│  sudo systemctl status service   查看服務狀態                   │
+│  sudo systemctl start service    啟動服務                       │
+│  sudo systemctl stop service     停止服務                       │
+│  sudo systemctl restart service  重啟服務                       │
+│  sudo systemctl enable service   設定開機自動啟動               │
+│                                                                 │
+│  離開連線：                                                      │
+│  ─────────────────────────────────────────────────────────────  │
+│  exit            正常登出                                        │
+│  logout          正常登出                                        │
+│  Ctrl + D        快捷鍵登出                                     │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+
+<h2 id="file-transfer">檔案傳輸</h2>
+
+<h3 id="scp">使用 SCP 傳輸檔案</h3>
+
+<p>SCP（Secure Copy）使用 SSH 協定進行安全的檔案傳輸。</p>
+
+<pre><code># 從本機上傳檔案到遠端
+scp 本機檔案路徑 使用者@主機:遠端路徑
+
+# 範例：上傳檔案到樹莓派
+scp C:\Users\你\Desktop\test.py pi@192.168.1.100:/home/pi/
+
+# 從遠端下載檔案到本機
+scp 使用者@主機:遠端檔案路徑 本機路徑
+
+# 範例：從樹莓派下載檔案
+scp pi@192.168.1.100:/home/pi/data.txt C:\Users\你\Desktop\
+
+# 傳輸整個資料夾（使用 -r 遞迴）
+scp -r 本機資料夾 使用者@主機:遠端路徑
+
+# 範例：上傳整個專案資料夾
+scp -r C:\Users\你\project pi@192.168.1.100:/home/pi/
+
+# 指定不同埠號
+scp -P 2222 檔案 使用者@主機:路徑
+</code></pre>
+
+<h3 id="sftp">使用 SFTP 互動式傳輸</h3>
+
+<pre><code># 連線到 SFTP
+sftp 使用者@主機
+
+# 連線後的互動指令
+┌─────────────────────────────────────────────────────────────────┐
+│ sftp&gt; pwd                    顯示遠端目前目錄                    │
+│ sftp&gt; lpwd                   顯示本機目前目錄                    │
+│ sftp&gt; ls                     列出遠端檔案                        │
+│ sftp&gt; lls                    列出本機檔案                        │
+│ sftp&gt; cd /path               切換遠端目錄                        │
+│ sftp&gt; lcd /path              切換本機目錄                        │
+│ sftp&gt; get remote_file        下載檔案                            │
+│ sftp&gt; get -r remote_folder   下載資料夾                          │
+│ sftp&gt; put local_file         上傳檔案                            │
+│ sftp&gt; put -r local_folder    上傳資料夾                          │
+│ sftp&gt; mkdir folder           建立遠端資料夾                      │
+│ sftp&gt; rm file                刪除遠端檔案                        │
+│ sftp&gt; bye                    離開 SFTP                          │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="winscp">使用 WinSCP（圖形化介面）</h3>
+
+<p>WinSCP 提供類似檔案總管的介面，方便拖放操作。</p>
+
+<pre><code>下載與安裝：
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. 前往官網：https://winscp.net/                                │
+│ 2. 下載安裝程式                                                  │
+│ 3. 執行安裝，選擇「Commander」或「Explorer」介面風格             │
+│                                                                 │
+│ 連線設定：                                                       │
+│ - 檔案協定：SFTP                                                │
+│ - 主機名稱：192.168.1.100                                       │
+│ - 埠號：22                                                      │
+│ - 使用者名稱：pi                                                │
+│ - 密碼：你的密碼                                                │
+│                                                                 │
+│ 使用方式：                                                       │
+│ - 左側面板：本機檔案                                            │
+│ - 右側面板：遠端檔案                                            │
+│ - 拖放或 F5/F6 進行傳輸                                         │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+
+<h2 id="ssh-keys">SSH 金鑰認證（免密碼登入）</h2>
+
+<h3 id="why-keys">為什麼使用金鑰認證？</h3>
+
+<pre><code>╔══════════════════════════════════════════════════════════════════╗
+║  金鑰認證 vs 密碼認證                                             ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  密碼認證的問題：                                                 ║
+║  ✗ 每次連線都要輸入密碼，麻煩                                    ║
+║  ✗ 密碼可能被暴力破解                                            ║
+║  ✗ 密碼可能被釣魚攻擊竊取                                        ║
+║  ✗ 難以管理多台伺服器的密碼                                      ║
+║                                                                  ║
+║  金鑰認證的優點：                                                 ║
+║  ✓ 免密碼登入，方便快速                                          ║
+║  ✓ 私鑰永不傳輸，無法被竊聽                                      ║
+║  ✓ 可以設定私鑰密碼（passphrase）增加安全性                      ║
+║  ✓ 可以輕鬆管理多台伺服器的存取權限                              ║
+║  ✓ 可以撤銷特定金鑰的存取權限                                    ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+</code></pre>
+
+<h3 id="key-concept">金鑰認證原理</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    公鑰加密原理                                   │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   金鑰對：                                                       │
+│   ┌─────────────────┐        ┌─────────────────┐                │
+│   │     私鑰        │        │     公鑰        │                │
+│   │  (Private Key)  │        │  (Public Key)   │                │
+│   │                 │        │                 │                │
+│   │  保密！只有你   │  ───►  │  可以公開       │                │
+│   │  自己擁有       │  配對   │  放在伺服器上   │                │
+│   └─────────────────┘        └─────────────────┘                │
+│                                                                 │
+│   認證流程：                                                     │
+│   1. 伺服器發送隨機挑戰訊息                                      │
+│   2. 客戶端用私鑰簽名                                            │
+│   3. 伺服器用公鑰驗證簽名                                        │
+│   4. 驗證通過，允許登入                                          │
+│                                                                 │
+│   關鍵：私鑰永遠不會離開你的電腦！                                │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="generate-keys">產生 SSH 金鑰</h3>
+
+<pre><code># 在你的電腦上執行（Windows PowerShell / macOS Terminal / Linux）
+
+# 產生金鑰對（推薦使用 Ed25519 演算法）
+ssh-keygen -t ed25519 -C "your_email@example.com"
+
+# 或使用 RSA（相容性較好）
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+
+# 執行後的互動過程：
+┌─────────────────────────────────────────────────────────────────┐
+│ Generating public/private ed25519 key pair.                     │
+│                                                                 │
+│ Enter file in which to save the key                             │
+│ (C:\Users\你\.ssh\id_ed25519): [按 Enter 使用預設路徑]          │
+│                                                                 │
+│ Enter passphrase (empty for no passphrase): [輸入密碼或留空]    │
+│ Enter same passphrase again: [再輸入一次]                       │
+│                                                                 │
+│ Your identification has been saved in C:\Users\你\.ssh\id_ed25519│
+│ Your public key has been saved in C:\Users\你\.ssh\id_ed25519.pub│
+│                                                                 │
+│ The key fingerprint is:                                         │
+│ SHA256:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx your_email@example.com    │
+└─────────────────────────────────────────────────────────────────┘
+
+產生的檔案：
+┌─────────────────────────────────────────────────────────────────┐
+│ C:\Users\你\.ssh\                                               │
+│     ├── id_ed25519       ← 私鑰（絕對保密！）                   │
+│     └── id_ed25519.pub   ← 公鑰（要複製到伺服器）               │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="copy-key">將公鑰複製到伺服器</h3>
+
+<pre><code># 方法一：使用 ssh-copy-id（Linux/macOS）
+ssh-copy-id 使用者@主機
+
+# 方法二：手動複製（Windows 或任何系統）
+
+# 步驟 1：查看公鑰內容
+cat ~/.ssh/id_ed25519.pub
+# 或在 Windows：
+type C:\Users\你\.ssh\id_ed25519.pub
+
+# 輸出類似：
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIxxxxxxxxx your_email@example.com
+
+# 步驟 2：連線到伺服器（這次還需要密碼）
+ssh 使用者@主機
+
+# 步驟 3：在伺服器上建立 .ssh 目錄（如果不存在）
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+
+# 步驟 4：將公鑰加入 authorized_keys 檔案
+echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIxxxxxxxxx your_email@example.com" >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+
+# 步驟 5：登出並重新連線測試
+exit
+ssh 使用者@主機
+# 這次應該不需要密碼了！
+</code></pre>
+
+<h3 id="windows-key-copy">Windows 複製公鑰的簡易方法</h3>
+
+<pre><code># 一行指令完成（在 PowerShell 執行）
+type $env:USERPROFILE\.ssh\id_ed25519.pub | ssh 使用者@主機 "cat >> .ssh/authorized_keys"
+
+# 或分步驟：
+
+# 1. 複製公鑰內容到剪貼簿
+Get-Content $env:USERPROFILE\.ssh\id_ed25519.pub | Set-Clipboard
+
+# 2. SSH 連線到伺服器
+ssh 使用者@主機
+
+# 3. 在伺服器上貼上公鑰
+echo "貼上公鑰內容" >> ~/.ssh/authorized_keys
+</code></pre>
+
+<hr />
+
+<h2 id="raspberry-pi">樹莓派 SSH 設定</h2>
+
+<h3 id="enable-ssh-pi">啟用樹莓派 SSH</h3>
+
+<pre><code>╔══════════════════════════════════════════════════════════════════╗
+║  方法一：使用 raspi-config（已有螢幕鍵盤）                        ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  1. 開啟終端機                                                   ║
+║  2. 執行：sudo raspi-config                                      ║
+║  3. 選擇「Interface Options」                                    ║
+║  4. 選擇「SSH」                                                  ║
+║  5. 選擇「Yes」啟用                                              ║
+║  6. 選擇「Finish」                                               ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════════╗
+║  方法二：在 SD 卡建立空檔案（無螢幕設定）                         ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  1. 將 SD 卡插入電腦                                             ║
+║  2. 開啟 SD 卡的 boot 分割區                                     ║
+║  3. 建立一個名為「ssh」的空檔案（無副檔名）                       ║
+║                                                                  ║
+║  Windows 命令提示字元：                                          ║
+║  echo. > E:\ssh                                                  ║
+║  （E: 是你的 SD 卡磁碟機代號）                                   ║
+║                                                                  ║
+║  4. 安全移除 SD 卡，插入樹莓派開機                               ║
+║  5. SSH 會自動啟用                                               ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════════╗
+║  方法三：使用 Raspberry Pi Imager 設定                            ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  1. 開啟 Raspberry Pi Imager                                     ║
+║  2. 選擇作業系統後，點擊齒輪圖示（進階設定）                      ║
+║  3. 勾選「Enable SSH」                                           ║
+║  4. 可以同時設定：                                               ║
+║     - 使用者名稱和密碼                                           ║
+║     - WiFi 設定                                                  ║
+║     - 主機名稱                                                   ║
+║  5. 燒錄完成後直接開機即可 SSH 連線                              ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+</code></pre>
+
+<h3 id="find-pi-ip">找到樹莓派的 IP 位址</h3>
+
+<pre><code>方法一：在樹莓派上查看
+──────────────────────────────────────
+hostname -I
+# 或
+ip addr show
+
+方法二：從路由器管理頁面查看
+──────────────────────────────────────
+登入你的路由器（通常是 192.168.1.1 或 192.168.0.1）
+查看「已連線設備」列表
+
+方法三：使用網路掃描工具
+──────────────────────────────────────
+# Windows - 使用 arp 指令
+arp -a
+
+# 或使用 Advanced IP Scanner（免費軟體）
+# 下載：https://www.advanced-ip-scanner.com/
+
+# Linux/macOS - 使用 nmap
+nmap -sn 192.168.1.0/24
+
+方法四：使用主機名稱連線
+──────────────────────────────────────
+# 樹莓派預設主機名稱是 raspberrypi
+# 可以嘗試：
+ssh pi@raspberrypi.local
+# （需要 mDNS/Bonjour 支援）
+</code></pre>
+
+<h3 id="first-pi-ssh">第一次 SSH 連線到樹莓派</h3>
+
+<pre><code># 預設帳號密碼（舊版 Raspberry Pi OS）
+# 使用者名稱：pi
+# 密碼：raspberry
+
+# 新版 Raspberry Pi OS 需要在 Imager 中設定帳號密碼
+
+ssh pi@192.168.1.100
+
+# 連線成功後的畫面：
+┌─────────────────────────────────────────────────────────────────┐
+│ Linux raspberrypi 6.1.21-v8+ #1642 SMP PREEMPT Mon Apr  3       │
+│ 18:]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+]+│
+│                                                                 │
+│ The programs included with the Debian GNU/Linux system are free │
+│ software; the exact distribution terms for each program are     │
+│ described in the individual files in /usr/share/doc/*/copyright.│
+│                                                                 │
+│ Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the      │
+│ extent permitted by applicable law.                             │
+│                                                                 │
+│ pi@raspberrypi:~ $                                              │
+└─────────────────────────────────────────────────────────────────┘
+
+# 重要！第一次登入後請立即更改密碼：
+passwd
+</code></pre>
+
+<hr />
+
+<h2 id="advanced">進階設定</h2>
+
+<h3 id="ssh-config">SSH 設定檔（簡化連線）</h3>
+
+<p>建立 SSH 設定檔可以簡化常用連線的操作。</p>
+
+<pre><code># 設定檔位置
+# Windows: C:\Users\你\.ssh\config
+# Linux/macOS: ~/.ssh/config
+
+# 建立或編輯設定檔：
+notepad C:\Users\你\.ssh\config    # Windows
+nano ~/.ssh/config                  # Linux/macOS
+
+# 設定檔範例：
+┌─────────────────────────────────────────────────────────────────┐
+│ # 樹莓派                                                        │
+│ Host pi                                                         │
+│     HostName 192.168.1.100                                      │
+│     User pi                                                     │
+│     IdentityFile ~/.ssh/id_ed25519                              │
+│                                                                 │
+│ # 雲端伺服器                                                     │
+│ Host myserver                                                   │
+│     HostName example.com                                        │
+│     User admin                                                  │
+│     Port 2222                                                   │
+│     IdentityFile ~/.ssh/id_rsa_server                           │
+│                                                                 │
+│ # 跳板連線（透過中繼伺服器）                                     │
+│ Host internal                                                   │
+│     HostName 10.0.0.50                                          │
+│     User developer                                              │
+│     ProxyJump myserver                                          │
+│                                                                 │
+│ # 所有連線的預設設定                                             │
+│ Host *                                                          │
+│     ServerAliveInterval 60                                      │
+│     ServerAliveCountMax 3                                       │
+└─────────────────────────────────────────────────────────────────┘
+
+# 設定後的簡化連線：
+ssh pi          # 等同於 ssh pi@192.168.1.100
+ssh myserver    # 等同於 ssh -p 2222 admin@example.com
+scp file pi:~   # 上傳檔案到樹莓派家目錄
+</code></pre>
+
+<h3 id="port-forwarding">SSH 通道（Port Forwarding）</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    SSH 通道類型                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  本地轉發（Local Forwarding）-L                                  │
+│  ─────────────────────────────────────────────────────────────  │
+│  將遠端服務映射到本機埠                                          │
+│                                                                 │
+│  ssh -L 本機埠:目標主機:目標埠 使用者@SSH伺服器                  │
+│                                                                 │
+│  範例：存取遠端 MySQL 資料庫                                     │
+│  ssh -L 3306:localhost:3306 pi@192.168.1.100                    │
+│  # 現在可以用 localhost:3306 連線到樹莓派的 MySQL                │
+│                                                                 │
+│  範例：存取內網網頁                                              │
+│  ssh -L 8080:192.168.1.50:80 pi@192.168.1.100                   │
+│  # 透過樹莓派存取內網 192.168.1.50 的網頁伺服器                  │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  遠端轉發（Remote Forwarding）-R                                 │
+│  ─────────────────────────────────────────────────────────────  │
+│  讓外部能存取本機服務                                            │
+│                                                                 │
+│  ssh -R 遠端埠:本機主機:本機埠 使用者@SSH伺服器                  │
+│                                                                 │
+│  範例：讓伺服器能存取你電腦的開發網站                            │
+│  ssh -R 8080:localhost:3000 user@server.com                     │
+│  # 伺服器的 8080 埠會轉發到你電腦的 3000 埠                      │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  動態轉發（Dynamic Forwarding）-D                                │
+│  ─────────────────────────────────────────────────────────────  │
+│  建立 SOCKS 代理伺服器                                          │
+│                                                                 │
+│  ssh -D 1080 使用者@SSH伺服器                                   │
+│  # 本機 1080 埠變成 SOCKS5 代理                                 │
+│  # 可以設定瀏覽器使用此代理                                      │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="keep-alive">保持連線不斷線</h3>
+
+<pre><code># 方法一：在連線時加參數
+ssh -o ServerAliveInterval=60 使用者@主機
+
+# 方法二：在設定檔中設定（推薦）
+# 編輯 ~/.ssh/config
+Host *
+    ServerAliveInterval 60    # 每 60 秒發送心跳
+    ServerAliveCountMax 3     # 3 次沒回應才斷線
+
+# 方法三：伺服器端設定
+# 編輯 /etc/ssh/sshd_config
+ClientAliveInterval 60
+ClientAliveCountMax 3
+</code></pre>
+
+<hr />
+
+<h2 id="security">安全性最佳實踐</h2>
+
+<h3 id="secure-server">強化 SSH 伺服器安全</h3>
+
+<pre><code>╔══════════════════════════════════════════════════════════════════╗
+║  SSH 伺服器安全設定（編輯 /etc/ssh/sshd_config）                  ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  1. 禁用 root 直接登入                                           ║
+║     PermitRootLogin no                                           ║
+║                                                                  ║
+║  2. 禁用密碼登入（僅允許金鑰）                                   ║
+║     PasswordAuthentication no                                    ║
+║     （確保金鑰登入正常後再設定！）                               ║
+║                                                                  ║
+║  3. 更改預設埠（減少自動掃描攻擊）                               ║
+║     Port 2222                                                    ║
+║                                                                  ║
+║  4. 限制可登入的使用者                                           ║
+║     AllowUsers pi admin                                          ║
+║                                                                  ║
+║  5. 設定登入嘗試次數限制                                         ║
+║     MaxAuthTries 3                                               ║
+║                                                                  ║
+║  6. 禁用空密碼                                                   ║
+║     PermitEmptyPasswords no                                      ║
+║                                                                  ║
+║  修改後重啟 SSH 服務：                                           ║
+║  sudo systemctl restart sshd                                     ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+</code></pre>
+
+<h3 id="fail2ban">使用 Fail2Ban 防止暴力破解</h3>
+
+<pre><code># 安裝 Fail2Ban
+sudo apt update
+sudo apt install fail2ban
+
+# 建立本地設定檔
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+
+# 編輯設定
+sudo nano /etc/fail2ban/jail.local
+
+# 找到 [sshd] 區段，設定：
+[sshd]
+enabled = true
+port = ssh
+filter = sshd
+logpath = /var/log/auth.log
+maxretry = 3          # 3 次失敗後封鎖
+bantime = 3600        # 封鎖 1 小時
+findtime = 600        # 在 10 分鐘內
+
+# 啟動服務
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+
+# 查看封鎖狀態
+sudo fail2ban-client status sshd
+</code></pre>
+
+<hr />
+
+<h2 id="troubleshooting">常見問題排除</h2>
+
+<h3 id="connection-refused">問題：Connection refused</h3>
+
+<pre><code>症狀：ssh: connect to host 192.168.1.100 port 22: Connection refused
+
+可能原因與解決方案：
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. SSH 服務未啟動                                               │
+│    解決：在伺服器上執行 sudo systemctl start sshd               │
+│                                                                 │
+│ 2. SSH 服務未安裝                                               │
+│    解決：sudo apt install openssh-server                        │
+│                                                                 │
+│ 3. 防火牆阻擋                                                    │
+│    解決：sudo ufw allow 22                                      │
+│    或：sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT       │
+│                                                                 │
+│ 4. SSH 使用非預設埠                                             │
+│    解決：ssh -p 埠號 使用者@主機                                │
+│                                                                 │
+│ 5. IP 位址錯誤                                                  │
+│    解決：確認目標主機的正確 IP 位址                             │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="timeout">問題：Connection timed out</h3>
+
+<pre><code>症狀：ssh: connect to host 192.168.1.100 port 22: Connection timed out
+
+可能原因與解決方案：
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. 網路不通                                                     │
+│    測試：ping 192.168.1.100                                     │
+│    解決：檢查網路連線、路由設定                                  │
+│                                                                 │
+│ 2. 目標主機未開機                                               │
+│    解決：確認主機已開機並連上網路                               │
+│                                                                 │
+│ 3. 不在同一網段                                                 │
+│    解決：確認 IP 位址和子網路遮罩設定正確                       │
+│                                                                 │
+│ 4. 路由器/防火牆阻擋                                            │
+│    解決：檢查中間設備的防火牆規則                               │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="permission-denied">問題：Permission denied</h3>
+
+<pre><code>症狀：Permission denied (publickey,password)
+
+可能原因與解決方案：
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. 密碼錯誤                                                     │
+│    解決：確認密碼正確，注意大小寫                               │
+│                                                                 │
+│ 2. 使用者名稱錯誤                                               │
+│    解決：確認正確的使用者名稱                                   │
+│                                                                 │
+│ 3. 金鑰權限問題                                                 │
+│    解決：chmod 600 ~/.ssh/id_ed25519                            │
+│          chmod 700 ~/.ssh                                       │
+│                                                                 │
+│ 4. 公鑰未正確加入伺服器                                         │
+│    解決：檢查 ~/.ssh/authorized_keys 內容                       │
+│                                                                 │
+│ 5. 伺服器 authorized_keys 權限問題                              │
+│    解決：chmod 600 ~/.ssh/authorized_keys                       │
+│          chmod 700 ~/.ssh                                       │
+│                                                                 │
+│ 6. SELinux 問題（某些 Linux 發行版）                            │
+│    解決：restorecon -Rv ~/.ssh                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="host-key-changed">問題：Host key verification failed</h3>
+
+<pre><code>症狀：
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+原因：伺服器的主機金鑰與之前記錄的不同
+（可能是伺服器重裝、IP 被重新分配、或被中間人攻擊）
+
+解決方案：
+┌─────────────────────────────────────────────────────────────────┐
+│ 如果確定是正常變更（如重裝系統）：                               │
+│                                                                 │
+│ 方法一：刪除舊的主機金鑰                                        │
+│ ssh-keygen -R 192.168.1.100                                     │
+│                                                                 │
+│ 方法二：手動編輯 known_hosts 檔案                               │
+│ 刪除 ~/.ssh/known_hosts 中對應 IP 的那一行                      │
+│                                                                 │
+│ 然後重新連線，會提示接受新的主機金鑰                            │
+│                                                                 │
+│ ⚠️ 警告：如果不確定原因，請勿輕易接受新金鑰！                   │
+│    這可能是中間人攻擊的跡象                                      │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="slow-connection">問題：連線很慢</h3>
+
+<pre><code>症狀：SSH 連線需要很長時間才能建立
+
+可能原因與解決方案：
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. DNS 反向查詢超時                                             │
+│    解決：在伺服器 /etc/ssh/sshd_config 加入：                   │
+│          UseDNS no                                              │
+│                                                                 │
+│ 2. GSSAPI 認證超時                                              │
+│    解決：連線時加參數：                                         │
+│          ssh -o GSSAPIAuthentication=no 使用者@主機             │
+│    或在設定檔加入：                                              │
+│          GSSAPIAuthentication no                                │
+│                                                                 │
+│ 3. 網路品質差                                                   │
+│    測試：ping 主機 查看延遲                                     │
+│    解決：檢查網路連線品質                                       │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+
+<h2 id="quick-reference">快速參考</h2>
+
+<h3 id="command-cheatsheet">指令速查表</h3>
+
+<pre><code>連線相關：
+──────────────────────────────────────
+ssh user@host                基本連線
+ssh -p 2222 user@host        指定埠號
+ssh -i key user@host         指定私鑰
+ssh -v user@host             除錯模式
+
+檔案傳輸：
+──────────────────────────────────────
+scp file user@host:path      上傳檔案
+scp user@host:file path      下載檔案
+scp -r dir user@host:path    上傳資料夾
+sftp user@host               互動式 SFTP
+
+金鑰管理：
+──────────────────────────────────────
+ssh-keygen -t ed25519        產生金鑰
+ssh-copy-id user@host        複製公鑰
+ssh-add ~/.ssh/key           加入金鑰代理
+ssh-keygen -R host           移除主機金鑰
+
+通道轉發：
+──────────────────────────────────────
+ssh -L 8080:localhost:80 user@host   本地轉發
+ssh -R 8080:localhost:80 user@host   遠端轉發
+ssh -D 1080 user@host                動態轉發（SOCKS）
+</code></pre>
+
+<h3 id="important-files">重要檔案位置</h3>
+
+<pre><code>客戶端（你的電腦）：
+──────────────────────────────────────
+~/.ssh/config            SSH 設定檔
+~/.ssh/known_hosts       已知主機金鑰
+~/.ssh/id_ed25519        私鑰
+~/.ssh/id_ed25519.pub    公鑰
+
+伺服器端：
+──────────────────────────────────────
+/etc/ssh/sshd_config     SSH 伺服器設定
+~/.ssh/authorized_keys   允許登入的公鑰
+/var/log/auth.log        認證日誌（Debian/Ubuntu）
+/var/log/secure          認證日誌（RHEL/CentOS）
+</code></pre>
+
+<hr />
+
+<h2 id="summary">總結</h2>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    SSH 學習路線圖                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  入門階段：                                                      │
+│  ├─ 了解 SSH 是什麼、為什麼需要它                               │
+│  ├─ 學會基本連線指令                                            │
+│  ├─ 能夠 SSH 到樹莓派或伺服器                                   │
+│  └─ 學會使用 SCP/SFTP 傳輸檔案                                  │
+│                                                                 │
+│  進階階段：                                                      │
+│  ├─ 設定 SSH 金鑰認證（免密碼登入）                             │
+│  ├─ 配置 SSH config 簡化連線                                    │
+│  ├─ 了解 SSH 通道和埠轉發                                       │
+│  └─ 強化 SSH 伺服器安全性                                       │
+│                                                                 │
+│  專家階段：                                                      │
+│  ├─ 設定跳板連線（ProxyJump）                                   │
+│  ├─ 使用 SSH Agent 管理多個金鑰                                 │
+│  ├─ 自動化部署腳本                                              │
+│  └─ 整合 CI/CD 流程                                             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<blockquote>
+<p><strong>提示</strong>：SSH 是每個程式設計師和系統管理員必備的技能。花時間熟練掌握它，將大大提升你的工作效率！</p>
+</blockquote>
+
+<hr />
+
+<h2 id="related">延伸閱讀</h2>
+
+<ul>
+<li><a href="關於樹莓派基礎.html">關於樹莓派基礎</a> - 樹莓派入門設定</li>
+<li><a href="關於Linux指令.html">關於 Linux 指令</a> - 常用 Linux 指令</li>
+<li><a href="關於網路基礎.html">關於網路基礎</a> - IP、埠號、網路概念</li>
+</ul>
+
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

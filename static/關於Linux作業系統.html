@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於Linux作業系統</title>
+
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+
+        }
+        @media (max-width: 768px) {
+
+            body {  }
+        }
+
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="linux">關於 Linux 作業系統</h1>
+
+<blockquote>
+<p>「Linux 無所不在：從你的手機到超級電腦，從智慧家電到國際太空站，Linux 驅動著這個世界。」</p>
+</blockquote>
+
+<h2 id="what-is-linux">什麼是 Linux？</h2>
+
+<p>Linux 是一個開源的作業系統核心（Kernel），由芬蘭大學生 Linus Torvalds 於 1991 年創建。它是類 Unix 系統，遵循 POSIX 標準，以穩定、安全、開放著稱。</p>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    作業系統層次架構                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │                    應用程式層                            │   │
+│   │        瀏覽器、文字編輯器、Python、遊戲...              │   │
+│   └─────────────────────────────────────────────────────────┘   │
+│                              ▼                                  │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │                     Shell 層                             │   │
+│   │           Bash、Zsh、命令列介面、終端機                  │   │
+│   └─────────────────────────────────────────────────────────┘   │
+│                              ▼                                  │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │              系統程式庫與系統呼叫                        │   │
+│   │              glibc、系統 API、驅動程式                   │   │
+│   └─────────────────────────────────────────────────────────┘   │
+│                              ▼                                  │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │                Linux 核心 (Kernel)                       │   │
+│   │     程序管理、記憶體管理、檔案系統、網路、裝置驅動       │   │
+│   └─────────────────────────────────────────────────────────┘   │
+│                              ▼                                  │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │                      硬體層                              │   │
+│   │            CPU、記憶體、硬碟、網路卡...                  │   │
+│   └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="linux-everywhere">Linux 無所不在</h3>
+
+<table>
+<tr>
+<th>應用領域</th>
+<th>市佔率</th>
+<th>代表性應用</th>
+</tr>
+<tr>
+<td>超級電腦</td>
+<td>100%</td>
+<td>全球 Top 500 超級電腦全部使用 Linux</td>
+</tr>
+<tr>
+<td>雲端伺服器</td>
+<td>90%+</td>
+<td>AWS、Google Cloud、Azure</td>
+</tr>
+<tr>
+<td>智慧手機</td>
+<td>70%+</td>
+<td>Android 基於 Linux 核心</td>
+</tr>
+<tr>
+<td>嵌入式系統</td>
+<td>高</td>
+<td>路由器、智慧家電、汽車</td>
+</tr>
+<tr>
+<td>物聯網裝置</td>
+<td>高</td>
+<td>樹莓派、Arduino（部分）</td>
+</tr>
+<tr>
+<td>桌面電腦</td>
+<td>~4%</td>
+<td>Ubuntu、Fedora、Linux Mint</td>
+</tr>
+</table>
+
+<hr />
+
+<h2 id="history">Linux 發展歷史</h2>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    Linux 發展時間軸                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  1969  Unix 誕生（AT&T 貝爾實驗室）                             │
+│    │   Ken Thompson 和 Dennis Ritchie 開發                      │
+│    │                                                            │
+│  1983  GNU 計畫啟動                                             │
+│    │   Richard Stallman 發起自由軟體運動                        │
+│    │   目標：創建完全自由的類 Unix 系統                         │
+│    │                                                            │
+│  1991  Linux 核心誕生                                           │
+│    │   Linus Torvalds 發布 Linux 0.01                           │
+│    │   著名郵件：「我正在做一個免費的作業系統                   │
+│    │            （只是興趣，不會像 GNU 那麼大）」               │
+│    │                                                            │
+│  1992  Linux 採用 GPL 授權                                      │
+│    │   與 GNU 工具結合，成為完整的作業系統                      │
+│    │                                                            │
+│  1993  首批發行版誕生                                           │
+│    │   Slackware、Debian 發布                                   │
+│    │                                                            │
+│  1994  Linux 1.0 發布                                           │
+│    │   第一個「生產就緒」版本                                   │
+│    │                                                            │
+│  1996  Linux 2.0 發布                                           │
+│    │   支援多處理器（SMP）                                      │
+│    │   企鵝 Tux 成為官方吉祥物                                  │
+│    │                                                            │
+│  1998  大公司開始擁抱 Linux                                     │
+│    │   IBM、Oracle 宣布支援 Linux                               │
+│    │                                                            │
+│  2004  Ubuntu 發布                                              │
+│    │   降低 Linux 使用門檻，推動桌面普及                        │
+│    │                                                            │
+│  2008  Android 發布                                             │
+│    │   基於 Linux 核心，進入行動裝置市場                        │
+│    │                                                            │
+│  2011  Linux 3.0 發布                                           │
+│    │   Linux 20 週年紀念版本                                    │
+│    │                                                            │
+│  2015  Linux 4.0 發布                                           │
+│    │   支援熱修補（Live Patching）                              │
+│    │                                                            │
+│  2019  Linux 5.0 發布                                           │
+│    │                                                            │
+│  2022  Linux 6.0 發布                                           │
+│    │   Rust 語言正式進入核心                                    │
+│    │                                                            │
+│  現今  Linux 核心由數千名開發者共同維護                         │
+│        每個版本約有 1,500+ 開發者貢獻                           │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="linus">關於 Linus Torvalds</h3>
+
+<blockquote>
+<p>「Talk is cheap. Show me the code.」（空談廉價，給我看程式碼。）<br/>
+— Linus Torvalds</p>
+</blockquote>
+
+<p>Linus Torvalds 是 Linux 核心和 Git 版本控制系統的創造者。他至今仍是 Linux 核心的首席維護者，負責最終決定哪些程式碼能夠進入核心。</p>
+
+<hr />
+
+<h2 id="distributions">Linux 發行版（Distributions）</h2>
+
+<p>Linux 核心本身只是作業系統的核心部分。<strong>發行版</strong>（簡稱 Distro）是將 Linux 核心與應用程式、套件管理器、桌面環境等打包在一起的完整作業系統。</p>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    主要發行版家族                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   Debian 系列                     Red Hat 系列                  │
+│   ────────────                    ─────────────                 │
+│   │                               │                             │
+│   ├── Debian ─────────────────    ├── RHEL ──────────────────   │
+│   │   │                           │   │                         │
+│   │   ├── Ubuntu                  │   ├── CentOS (已終止)       │
+│   │   │   ├── Linux Mint          │   │                         │
+│   │   │   ├── Pop!_OS             │   ├── Rocky Linux           │
+│   │   │   └── Elementary OS       │   │                         │
+│   │   │                           │   ├── AlmaLinux             │
+│   │   └── Raspberry Pi OS         │   │                         │
+│   │                               │   └── Oracle Linux          │
+│   └── Kali Linux                  │                             │
+│                                   └── Fedora                    │
+│                                                                 │
+│   Arch 系列                       其他獨立發行版                 │
+│   ──────────                      ────────────────              │
+│   │                               │                             │
+│   ├── Arch Linux                  ├── openSUSE                  │
+│   │   │                           │                             │
+│   │   ├── Manjaro                 ├── Gentoo                    │
+│   │   │                           │                             │
+│   │   └── EndeavourOS             ├── Slackware                 │
+│   │                               │                             │
+│   └── SteamOS                     └── Alpine Linux              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="distro-comparison">常見發行版比較</h3>
+
+<table>
+<tr>
+<th>發行版</th>
+<th>特點</th>
+<th>適合對象</th>
+<th>套件管理</th>
+</tr>
+<tr>
+<td><strong>Ubuntu</strong></td>
+<td>使用者友善、社群大、資源多</td>
+<td>初學者、桌面使用</td>
+<td>apt (deb)</td>
+</tr>
+<tr>
+<td><strong>Debian</strong></td>
+<td>穩定、保守、純自由軟體</td>
+<td>伺服器、進階使用者</td>
+<td>apt (deb)</td>
+</tr>
+<tr>
+<td><strong>Fedora</strong></td>
+<td>新技術先驅、GNOME 旗艦</td>
+<td>開發者、愛好者</td>
+<td>dnf (rpm)</td>
+</tr>
+<tr>
+<td><strong>CentOS/Rocky</strong></td>
+<td>企業級穩定、長期支援</td>
+<td>企業伺服器</td>
+<td>dnf (rpm)</td>
+</tr>
+<tr>
+<td><strong>Arch Linux</strong></td>
+<td>滾動更新、高度客製化</td>
+<td>進階使用者</td>
+<td>pacman</td>
+</tr>
+<tr>
+<td><strong>Linux Mint</strong></td>
+<td>類似 Windows、開箱即用</td>
+<td>Windows 轉換者</td>
+<td>apt (deb)</td>
+</tr>
+<tr>
+<td><strong>Raspberry Pi OS</strong></td>
+<td>樹莓派專用、GPIO 支援</td>
+<td>樹莓派使用者</td>
+<td>apt (deb)</td>
+</tr>
+<tr>
+<td><strong>Alpine Linux</strong></td>
+<td>極輕量、安全導向</td>
+<td>容器、嵌入式</td>
+<td>apk</td>
+</tr>
+</table>
+
+<h3 id="choose-distro">如何選擇發行版？</h3>
+
+<pre><code>╔══════════════════════════════════════════════════════════════════╗
+║  發行版選擇指南                                                   ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  你是 Linux 新手嗎？                                             ║
+║  └─► 是 → Ubuntu 或 Linux Mint                                  ║
+║      └─► 有 Windows 使用習慣 → Linux Mint                       ║
+║      └─► 想學習主流 Linux → Ubuntu                              ║
+║                                                                  ║
+║  你要用於伺服器嗎？                                              ║
+║  └─► 是 → Ubuntu Server 或 Rocky Linux                          ║
+║      └─► 需要長期穩定 → Debian 或 Rocky Linux                   ║
+║      └─► 想用新技術 → Ubuntu Server 或 Fedora Server            ║
+║                                                                  ║
+║  你使用樹莓派嗎？                                                ║
+║  └─► 是 → Raspberry Pi OS（首選）                               ║
+║      └─► 也可用 Ubuntu Server for ARM                           ║
+║                                                                  ║
+║  你是進階使用者，想完全控制系統？                                ║
+║  └─► 是 → Arch Linux 或 Gentoo                                  ║
+║                                                                  ║
+║  你要用於 Docker 容器？                                          ║
+║  └─► 是 → Alpine Linux（極輕量）                                ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+</code></pre>
+
+<hr />
+
+<h2 id="filesystem">Linux 檔案系統結構</h2>
+
+<p>Linux 使用階層式的目錄結構，一切從根目錄 <code>/</code> 開始。與 Windows 不同，Linux 沒有磁碟機代號（C:、D:），所有東西都掛載在同一個樹狀結構下。</p>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    Linux 目錄結構                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  /（根目錄）                                                     │
+│  │                                                              │
+│  ├── bin/      基本指令（ls, cp, mv, cat...）                   │
+│  │             所有使用者都能執行的基本程式                      │
+│  │                                                              │
+│  ├── boot/     開機檔案                                         │
+│  │             核心映像、開機載入器（GRUB）                      │
+│  │                                                              │
+│  ├── dev/      裝置檔案                                         │
+│  │             硬體以檔案形式呈現（/dev/sda, /dev/tty）         │
+│  │                                                              │
+│  ├── etc/      系統設定檔                                       │
+│  │             幾乎所有程式的設定檔都在這裡                      │
+│  │             ├── passwd      使用者帳號資訊                   │
+│  │             ├── shadow      密碼（加密）                     │
+│  │             ├── fstab       檔案系統掛載設定                 │
+│  │             ├── hosts       主機名稱對應                     │
+│  │             └── ssh/        SSH 設定                         │
+│  │                                                              │
+│  ├── home/     使用者家目錄                                     │
+│  │             每個使用者的個人檔案                              │
+│  │             ├── pi/         (樹莓派預設使用者)               │
+│  │             └── username/                                    │
+│  │                                                              │
+│  ├── lib/      共享程式庫                                       │
+│  │             類似 Windows 的 DLL 檔案                         │
+│  │                                                              │
+│  ├── media/    可移除媒體掛載點                                 │
+│  │             USB 隨身碟、光碟自動掛載於此                      │
+│  │                                                              │
+│  ├── mnt/      臨時掛載點                                       │
+│  │             手動掛載檔案系統的傳統位置                        │
+│  │                                                              │
+│  ├── opt/      第三方軟體                                       │
+│  │             非系統內建的大型軟體                              │
+│  │                                                              │
+│  ├── proc/     程序資訊（虛擬檔案系統）                         │
+│  │             系統和程序的即時資訊                              │
+│  │             ├── cpuinfo     CPU 資訊                         │
+│  │             ├── meminfo     記憶體資訊                       │
+│  │             └── [PID]/      各程序的資訊                     │
+│  │                                                              │
+│  ├── root/     root 使用者的家目錄                              │
+│  │             系統管理員的個人檔案                              │
+│  │                                                              │
+│  ├── sbin/     系統管理指令                                     │
+│  │             需要 root 權限的指令（shutdown, fdisk）          │
+│  │                                                              │
+│  ├── srv/      服務資料                                         │
+│  │             網頁伺服器、FTP 等服務的資料                      │
+│  │                                                              │
+│  ├── sys/      系統資訊（虛擬檔案系統）                         │
+│  │             核心與硬體的介面                                  │
+│  │                                                              │
+│  ├── tmp/      暫存檔案                                         │
+│  │             重開機後會清空                                    │
+│  │                                                              │
+│  ├── usr/      使用者程式                                       │
+│  │             大部分安裝的程式都在這裡                          │
+│  │             ├── bin/        使用者指令                       │
+│  │             ├── lib/        程式庫                           │
+│  │             ├── local/      本地安裝的軟體                   │
+│  │             └── share/      共享資料、文件                   │
+│  │                                                              │
+│  └── var/      變動資料                                         │
+│                日誌、郵件、暫存、快取等                          │
+│                ├── log/        系統日誌                         │
+│                ├── www/        網頁檔案（某些發行版）           │
+│                └── tmp/        持久暫存                         │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="path-concept">路徑概念</h3>
+
+<pre><code>絕對路徑 vs 相對路徑：
+────────────────────────────────────────────────────────
+
+絕對路徑：從根目錄 / 開始的完整路徑
+  /home/pi/Documents/project/main.py
+
+相對路徑：相對於目前目錄的路徑
+  ./main.py          （目前目錄下的 main.py）
+  ../config.txt      （上一層目錄的 config.txt）
+  Documents/file     （目前目錄下的 Documents 資料夾中的 file）
+
+特殊目錄符號：
+  /      根目錄
+  ~      目前使用者的家目錄（例如 /home/pi）
+  .      目前目錄
+  ..     上一層目錄
+</code></pre>
+
+<hr />
+
+<h2 id="basic-commands">基本指令教學</h2>
+
+<h3 id="navigation">目錄瀏覽與檔案操作</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    目錄瀏覽指令                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  pwd                     顯示目前所在目錄                       │
+│  ──────────────────────────────────────                         │
+│  $ pwd                                                          │
+│  /home/pi                                                       │
+│                                                                 │
+│  ls                      列出目錄內容                           │
+│  ──────────────────────────────────────                         │
+│  $ ls                    基本列表                               │
+│  $ ls -l                 詳細列表（權限、大小、日期）           │
+│  $ ls -la                包含隱藏檔（以 . 開頭的檔案）          │
+│  $ ls -lh                人類可讀的檔案大小（KB, MB）           │
+│  $ ls -lt                按修改時間排序                         │
+│  $ ls -R                 遞迴列出子目錄                         │
+│                                                                 │
+│  cd                      切換目錄                               │
+│  ──────────────────────────────────────                         │
+│  $ cd /home/pi           切換到指定目錄                         │
+│  $ cd ~                  回到家目錄                             │
+│  $ cd ..                 回到上一層                             │
+│  $ cd -                  回到上一個所在目錄                     │
+│  $ cd                    回到家目錄（不加參數）                 │
+│                                                                 │
+│  tree                    樹狀顯示目錄結構（需安裝）             │
+│  ──────────────────────────────────────                         │
+│  $ tree                  顯示目前目錄的樹狀結構                 │
+│  $ tree -L 2             只顯示 2 層                            │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    檔案操作指令                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  touch                   建立空檔案或更新時間戳                 │
+│  $ touch newfile.txt                                            │
+│                                                                 │
+│  mkdir                   建立目錄                               │
+│  $ mkdir newdir                                                 │
+│  $ mkdir -p a/b/c        建立多層目錄                           │
+│                                                                 │
+│  cp                      複製檔案或目錄                         │
+│  $ cp file1 file2        複製檔案                               │
+│  $ cp -r dir1 dir2       複製目錄（遞迴）                       │
+│  $ cp -i file1 file2     覆蓋前詢問                             │
+│                                                                 │
+│  mv                      移動或重新命名                         │
+│  $ mv file1 file2        重新命名                               │
+│  $ mv file1 /path/       移動檔案                               │
+│  $ mv dir1 dir2          重新命名目錄                           │
+│                                                                 │
+│  rm                      刪除檔案或目錄                         │
+│  $ rm file               刪除檔案                               │
+│  $ rm -r dir             刪除目錄（遞迴）                       │
+│  $ rm -rf dir            強制刪除（危險！不會詢問）             │
+│  $ rm -i file            刪除前詢問                             │
+│                                                                 │
+│  ⚠️ 警告：rm 刪除的檔案無法復原！沒有資源回收桶！               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="file-viewing">檔案檢視與編輯</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    檔案檢視指令                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  cat                     顯示檔案全部內容                       │
+│  $ cat file.txt                                                 │
+│  $ cat file1 file2       串接多個檔案                           │
+│                                                                 │
+│  less                    分頁檢視（可上下捲動）                 │
+│  $ less file.txt                                                │
+│  操作：空白鍵=下一頁, b=上一頁, /=搜尋, q=離開                 │
+│                                                                 │
+│  more                    分頁檢視（較簡單）                     │
+│  $ more file.txt                                                │
+│                                                                 │
+│  head                    顯示檔案開頭                           │
+│  $ head file.txt         預設顯示前 10 行                       │
+│  $ head -n 20 file.txt   顯示前 20 行                           │
+│                                                                 │
+│  tail                    顯示檔案結尾                           │
+│  $ tail file.txt         預設顯示最後 10 行                     │
+│  $ tail -n 20 file.txt   顯示最後 20 行                         │
+│  $ tail -f file.txt      持續監控檔案（看日誌很有用）           │
+│                                                                 │
+│  wc                      計算行數、字數、位元組                 │
+│  $ wc file.txt           顯示行數、字數、位元組數               │
+│  $ wc -l file.txt        只顯示行數                             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    文字編輯器                                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  nano                    簡易文字編輯器（推薦新手）             │
+│  $ nano file.txt                                                │
+│  操作：                                                         │
+│    Ctrl+O  儲存                                                 │
+│    Ctrl+X  離開                                                 │
+│    Ctrl+K  剪下一行                                             │
+│    Ctrl+U  貼上                                                 │
+│    Ctrl+W  搜尋                                                 │
+│                                                                 │
+│  vim                     進階文字編輯器                         │
+│  $ vim file.txt                                                 │
+│  模式：                                                         │
+│    普通模式：按 Esc 進入，用於瀏覽和指令                       │
+│    插入模式：按 i 進入，用於編輯文字                           │
+│    命令模式：按 : 進入，用於儲存、離開等                       │
+│  基本操作：                                                     │
+│    i       進入插入模式                                         │
+│    Esc     回到普通模式                                         │
+│    :w      儲存                                                 │
+│    :q      離開                                                 │
+│    :wq     儲存並離開                                           │
+│    :q!     不儲存強制離開                                       │
+│    dd      刪除一行                                             │
+│    yy      複製一行                                             │
+│    p       貼上                                                 │
+│    /text   搜尋 text                                            │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="search-commands">搜尋指令</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    搜尋指令                                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  find                    搜尋檔案                               │
+│  ──────────────────────────────────────                         │
+│  $ find /home -name "*.txt"      在 /home 下找所有 .txt 檔案   │
+│  $ find . -name "config*"        在目前目錄找 config 開頭的檔案│
+│  $ find / -size +100M            找大於 100MB 的檔案           │
+│  $ find . -mtime -7              找 7 天內修改的檔案           │
+│  $ find . -type d                只找目錄                       │
+│  $ find . -type f                只找檔案                       │
+│                                                                 │
+│  grep                    在檔案內容中搜尋                       │
+│  ──────────────────────────────────────                         │
+│  $ grep "error" log.txt          在檔案中找 "error"            │
+│  $ grep -i "error" log.txt       不分大小寫                    │
+│  $ grep -r "TODO" .              遞迴搜尋目前目錄               │
+│  $ grep -n "error" log.txt       顯示行號                      │
+│  $ grep -v "debug" log.txt       反向匹配（不含 debug 的行）   │
+│  $ grep -c "error" log.txt       計算匹配次數                  │
+│                                                                 │
+│  which                   找指令的完整路徑                       │
+│  $ which python                                                 │
+│  /usr/bin/python                                                │
+│                                                                 │
+│  whereis                 找指令、原始碼、手冊的位置             │
+│  $ whereis python                                               │
+│                                                                 │
+│  locate                  快速搜尋（使用資料庫，需先 updatedb）  │
+│  $ sudo updatedb         更新資料庫                             │
+│  $ locate filename                                              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+
+<h2 id="permissions">使用者與權限管理</h2>
+
+<h3 id="users">使用者管理</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    Linux 使用者概念                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  root 使用者（超級使用者）                                      │
+│  ─────────────────────────────                                  │
+│  - UID = 0                                                      │
+│  - 擁有系統的完全控制權                                         │
+│  - 可以做任何事，包括破壞系統                                   │
+│  - 日常操作不建議使用 root                                      │
+│                                                                 │
+│  一般使用者                                                     │
+│  ─────────────────────────────                                  │
+│  - UID >= 1000（通常）                                          │
+│  - 只能存取自己的檔案和被授權的資源                             │
+│  - 需要時使用 sudo 提升權限                                     │
+│                                                                 │
+│  系統使用者                                                     │
+│  ─────────────────────────────                                  │
+│  - UID 1-999（通常）                                            │
+│  - 用於執行系統服務（如 www-data, mysql）                       │
+│  - 通常不能登入                                                 │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+使用者管理指令：
+──────────────────────────────────────────────────────────────────
+
+# 查看目前使用者
+whoami
+id
+
+# 切換使用者
+su username              切換到指定使用者
+su -                     切換到 root（需要 root 密碼）
+sudo -i                  切換到 root（使用自己的密碼）
+
+# 以 root 權限執行指令
+sudo command             以 root 身份執行單一指令
+sudo -u user command     以指定使用者身份執行
+
+# 使用者管理（需要 root）
+sudo adduser username    新增使用者（互動式）
+sudo useradd username    新增使用者（非互動式）
+sudo deluser username    刪除使用者
+sudo passwd username     設定/修改密碼
+
+# 群組管理
+groups                   顯示目前使用者所屬群組
+sudo usermod -aG group user    將使用者加入群組
+</code></pre>
+
+<h3 id="file-permissions">檔案權限</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    Linux 檔案權限                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ls -l 的輸出解析：                                             │
+│  ──────────────────────────────────────                         │
+│  -rw-r--r-- 1 pi pi 4096 Dec 24 10:00 file.txt                 │
+│  │└┬┘└┬┘└┬┘ │ │  │  │    │              │                       │
+│  │ │  │  │  │ │  │  │    │              └─ 檔案名稱             │
+│  │ │  │  │  │ │  │  │    └─ 修改時間                           │
+│  │ │  │  │  │ │  │  └─ 檔案大小                                │
+│  │ │  │  │  │ │  └─ 群組                                       │
+│  │ │  │  │  │ └─ 擁有者                                        │
+│  │ │  │  │  └─ 硬連結數                                        │
+│  │ │  │  └─ 其他人權限（read）                                 │
+│  │ │  └─ 群組權限（read）                                      │
+│  │ └─ 擁有者權限（read, write）                                │
+│  └─ 檔案類型（- 檔案, d 目錄, l 連結）                         │
+│                                                                 │
+│  權限符號：                                                     │
+│  ──────────────────────────────────────                         │
+│  r (read)    = 4    讀取                                        │
+│  w (write)   = 2    寫入                                        │
+│  x (execute) = 1    執行                                        │
+│  - (none)    = 0    無權限                                      │
+│                                                                 │
+│  權限數字表示法：                                               │
+│  ──────────────────────────────────────                         │
+│  rwx = 4+2+1 = 7                                                │
+│  rw- = 4+2+0 = 6                                                │
+│  r-x = 4+0+1 = 5                                                │
+│  r-- = 4+0+0 = 4                                                │
+│                                                                 │
+│  常見權限組合：                                                  │
+│  ──────────────────────────────────────                         │
+│  755 = rwxr-xr-x   擁有者全權，其他人可讀可執行（程式）         │
+│  644 = rw-r--r--   擁有者可寫，其他人只讀（一般檔案）          │
+│  700 = rwx------   只有擁有者能存取（私密）                    │
+│  600 = rw-------   只有擁有者能讀寫（SSH 金鑰）                │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+權限修改指令：
+──────────────────────────────────────────────────────────────────
+
+# chmod - 修改權限
+chmod 755 file           使用數字設定權限
+chmod u+x file           給擁有者加上執行權限
+chmod g-w file           移除群組的寫入權限
+chmod o=r file           設定其他人只有讀取權限
+chmod a+x file           給所有人加上執行權限
+chmod -R 755 dir         遞迴修改目錄權限
+
+# chown - 修改擁有者
+sudo chown user file              修改擁有者
+sudo chown user:group file        同時修改擁有者和群組
+sudo chown -R user:group dir      遞迴修改
+
+# chgrp - 修改群組
+sudo chgrp group file
+</code></pre>
+
+<h3 id="sudo">sudo 的使用</h3>
+
+<pre><code>╔══════════════════════════════════════════════════════════════════╗
+║  sudo（Superuser Do）                                            ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  sudo 讓一般使用者能暫時以 root 權限執行指令                     ║
+║                                                                  ║
+║  基本用法：                                                      ║
+║  sudo command              以 root 執行指令                      ║
+║  sudo -i                   切換到 root shell                    ║
+║  sudo -u user command      以指定使用者執行                      ║
+║  sudo !!                   以 sudo 重新執行上一個指令           ║
+║                                                                  ║
+║  設定 sudo 權限（編輯 /etc/sudoers）：                           ║
+║  sudo visudo               安全地編輯 sudoers 檔案               ║
+║                                                                  ║
+║  sudoers 設定範例：                                              ║
+║  ┌────────────────────────────────────────────────────────┐      ║
+║  │ # 使用者 pi 可以執行任何指令                           │      ║
+║  │ pi ALL=(ALL:ALL) ALL                                   │      ║
+║  │                                                        │      ║
+║  │ # 使用者 deploy 可以不輸入密碼執行特定指令            │      ║
+║  │ deploy ALL=(ALL) NOPASSWD: /usr/bin/systemctl          │      ║
+║  └────────────────────────────────────────────────────────┘      ║
+║                                                                  ║
+║  在樹莓派上，預設使用者 pi 已有完整 sudo 權限                   ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+</code></pre>
+
+<hr />
+
+<h2 id="package-management">套件管理</h2>
+
+<p>不同的 Linux 發行版使用不同的套件管理系統：</p>
+
+<h3 id="apt">APT（Debian/Ubuntu/Raspberry Pi OS）</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    APT 套件管理                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  更新套件清單（必須先執行）                                     │
+│  sudo apt update                                                │
+│                                                                 │
+│  升級已安裝的套件                                               │
+│  sudo apt upgrade                     升級所有套件              │
+│  sudo apt full-upgrade                完整升級（可能移除套件）  │
+│                                                                 │
+│  安裝套件                                                       │
+│  sudo apt install package             安裝套件                  │
+│  sudo apt install pkg1 pkg2           安裝多個套件              │
+│  sudo apt install ./file.deb          安裝本地 deb 檔案         │
+│                                                                 │
+│  移除套件                                                       │
+│  sudo apt remove package              移除套件（保留設定）      │
+│  sudo apt purge package               完全移除（含設定）        │
+│  sudo apt autoremove                  移除不需要的相依套件      │
+│                                                                 │
+│  搜尋套件                                                       │
+│  apt search keyword                   搜尋套件                  │
+│  apt show package                     顯示套件資訊              │
+│                                                                 │
+│  列出套件                                                       │
+│  apt list --installed                 列出已安裝套件            │
+│  apt list --upgradable                列出可升級套件            │
+│                                                                 │
+│  清理快取                                                       │
+│  sudo apt clean                       清除下載的套件檔          │
+│  sudo apt autoclean                   清除舊版套件檔            │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+常用套件安裝範例：
+──────────────────────────────────────────────────────────────────
+
+# 更新系統
+sudo apt update && sudo apt upgrade -y
+
+# 安裝常用工具
+sudo apt install vim git curl wget htop tree
+
+# 安裝 Python 相關
+sudo apt install python3 python3-pip python3-venv
+
+# 安裝編譯工具
+sudo apt install build-essential
+
+# 安裝網路工具
+sudo apt install net-tools nmap
+</code></pre>
+
+<h3 id="other-pkg-managers">其他套件管理器</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    各發行版套件管理器                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  DNF / YUM（Fedora/RHEL/CentOS）                                │
+│  ──────────────────────────────                                 │
+│  sudo dnf update                      更新套件                  │
+│  sudo dnf install package             安裝套件                  │
+│  sudo dnf remove package              移除套件                  │
+│  sudo dnf search keyword              搜尋套件                  │
+│                                                                 │
+│  Pacman（Arch Linux）                                           │
+│  ──────────────────────────────                                 │
+│  sudo pacman -Syu                     更新系統                  │
+│  sudo pacman -S package               安裝套件                  │
+│  sudo pacman -R package               移除套件                  │
+│  sudo pacman -Ss keyword              搜尋套件                  │
+│                                                                 │
+│  APK（Alpine Linux）                                            │
+│  ──────────────────────────────                                 │
+│  apk update                           更新套件清單              │
+│  apk add package                      安裝套件                  │
+│  apk del package                      移除套件                  │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+
+<h2 id="system-management">系統管理</h2>
+
+<h3 id="systemd">Systemd 服務管理</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    Systemd 服務管理                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  systemctl 基本指令：                                           │
+│  ──────────────────────────────────────                         │
+│  sudo systemctl start service         啟動服務                  │
+│  sudo systemctl stop service          停止服務                  │
+│  sudo systemctl restart service       重啟服務                  │
+│  sudo systemctl reload service        重新載入設定              │
+│  sudo systemctl status service        查看服務狀態              │
+│                                                                 │
+│  開機自動啟動：                                                 │
+│  ──────────────────────────────────────                         │
+│  sudo systemctl enable service        設定開機啟動              │
+│  sudo systemctl disable service       取消開機啟動              │
+│  sudo systemctl is-enabled service    檢查是否開機啟動          │
+│                                                                 │
+│  列出服務：                                                     │
+│  ──────────────────────────────────────                         │
+│  systemctl list-units --type=service  列出執行中的服務          │
+│  systemctl list-unit-files            列出所有服務              │
+│                                                                 │
+│  系統控制：                                                     │
+│  ──────────────────────────────────────                         │
+│  sudo systemctl poweroff              關機                      │
+│  sudo systemctl reboot                重新開機                  │
+│  sudo systemctl suspend               休眠                      │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+範例：管理 SSH 服務
+──────────────────────────────────────────────────────────────────
+
+# 查看 SSH 服務狀態
+sudo systemctl status sshd
+
+# 輸出範例：
+● sshd.service - OpenBSD Secure Shell server
+     Loaded: loaded (/lib/systemd/system/sshd.service; enabled)
+     Active: active (running) since Mon 2024-12-24 10:00:00 CST
+   Main PID: 1234 (sshd)
+      Tasks: 1 (limit: 4915)
+     Memory: 3.2M
+        CPU: 42ms
+     CGroup: /system.slice/sshd.service
+             └─1234 sshd: /usr/sbin/sshd -D
+
+# 重啟 SSH 服務
+sudo systemctl restart sshd
+</code></pre>
+
+<h3 id="process-management">程序管理</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    程序管理指令                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ps                      顯示程序                               │
+│  ──────────────────────────────────────                         │
+│  ps                      顯示目前終端機的程序                   │
+│  ps aux                  顯示所有程序（詳細）                   │
+│  ps -ef                  顯示所有程序（另一種格式）             │
+│  ps aux | grep python    找出 python 相關程序                   │
+│                                                                 │
+│  top / htop              即時監控程序                           │
+│  ──────────────────────────────────────                         │
+│  top                     基本的即時監控                         │
+│  htop                    更好的介面（需安裝）                   │
+│                                                                 │
+│  操作（在 top/htop 中）：                                       │
+│    q        離開                                                │
+│    k        終止程序                                            │
+│    r        調整優先權                                          │
+│    M        按記憶體排序                                        │
+│    P        按 CPU 排序                                         │
+│                                                                 │
+│  kill                    終止程序                               │
+│  ──────────────────────────────────────                         │
+│  kill PID                正常終止（SIGTERM）                    │
+│  kill -9 PID             強制終止（SIGKILL）                    │
+│  killall name            終止所有同名程序                       │
+│  pkill pattern           依模式終止程序                         │
+│                                                                 │
+│  背景執行：                                                     │
+│  ──────────────────────────────────────                         │
+│  command &               在背景執行指令                         │
+│  nohup command &         背景執行，登出後繼續                   │
+│  jobs                    列出背景工作                           │
+│  fg %1                   將工作 1 帶回前景                      │
+│  bg %1                   將工作 1 放到背景繼續執行              │
+│  Ctrl+Z                  暫停目前程序                           │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="system-info">系統資訊</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    系統資訊指令                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  系統資訊：                                                     │
+│  uname -a                顯示核心版本等資訊                     │
+│  cat /etc/os-release     顯示發行版資訊                         │
+│  hostname                顯示主機名稱                           │
+│  uptime                  顯示運行時間和負載                     │
+│                                                                 │
+│  硬體資訊：                                                     │
+│  lscpu                   CPU 資訊                               │
+│  free -h                 記憶體使用量                           │
+│  df -h                   磁碟使用量                             │
+│  lsblk                   區塊裝置（硬碟、分割區）               │
+│  lsusb                   USB 裝置                               │
+│  lspci                   PCI 裝置                               │
+│                                                                 │
+│  網路資訊：                                                     │
+│  ip addr                 網路介面和 IP                          │
+│  ip route                路由表                                 │
+│  ss -tlnp                監聽中的埠                             │
+│  netstat -tlnp           監聽中的埠（較舊）                     │
+│                                                                 │
+│  日誌檢視：                                                     │
+│  journalctl              systemd 日誌                           │
+│  journalctl -u service   特定服務的日誌                         │
+│  journalctl -f           即時追蹤日誌                           │
+│  dmesg                   核心訊息                               │
+│  cat /var/log/syslog     系統日誌                               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+
+<h2 id="networking">網路設定</h2>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    網路設定與診斷                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  查看網路設定：                                                 │
+│  ip addr                 顯示所有網路介面                       │
+│  ip addr show eth0       顯示特定介面                           │
+│  hostname -I             顯示所有 IP 位址                       │
+│                                                                 │
+│  網路診斷：                                                     │
+│  ping host               測試連線                               │
+│  ping -c 4 google.com    ping 4 次                              │
+│  traceroute host         追蹤路由（需安裝）                     │
+│  nslookup domain         DNS 查詢                               │
+│  dig domain              DNS 查詢（詳細）                       │
+│                                                                 │
+│  下載檔案：                                                     │
+│  wget URL                下載檔案                               │
+│  wget -O name URL        指定檔名下載                           │
+│  curl URL                取得網頁內容                           │
+│  curl -O URL             下載檔案                               │
+│                                                                 │
+│  網路設定檔（Debian/Ubuntu）：                                  │
+│  /etc/network/interfaces          傳統設定                      │
+│  /etc/netplan/*.yaml              Netplan 設定（Ubuntu 新版）   │
+│                                                                 │
+│  防火牆（UFW）：                                                │
+│  sudo ufw status         查看狀態                               │
+│  sudo ufw enable         啟用防火牆                             │
+│  sudo ufw allow 22       開放 SSH 埠                            │
+│  sudo ufw allow 80/tcp   開放 HTTP                              │
+│  sudo ufw deny 23        封鎖 Telnet                            │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+
+<h2 id="shell-scripting">Shell 腳本入門</h2>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    Bash 腳本基礎                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  建立腳本檔案：                                                 │
+│  1. 建立檔案，第一行加上 shebang                                │
+│  2. 給予執行權限                                                │
+│  3. 執行腳本                                                    │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+範例腳本：hello.sh
+──────────────────────────────────────────────────────────────────
+#!/bin/bash
+# 這是註解
+
+# 變數
+NAME="World"
+echo "Hello, $NAME!"
+
+# 讀取輸入
+echo "請輸入你的名字："
+read USER_NAME
+echo "你好，$USER_NAME！"
+
+# 條件判斷
+if [ -f "/etc/passwd" ]; then
+    echo "passwd 檔案存在"
+else
+    echo "passwd 檔案不存在"
+fi
+
+# 迴圈
+for i in 1 2 3 4 5; do
+    echo "數字：$i"
+done
+
+# 函數
+greet() {
+    echo "Hello, $1!"
+}
+greet "Linux"
+──────────────────────────────────────────────────────────────────
+
+# 給予執行權限並執行
+chmod +x hello.sh
+./hello.sh
+
+常用腳本技巧：
+──────────────────────────────────────────────────────────────────
+
+# 取得腳本所在目錄
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# 檢查指令是否存在
+if command -v python3 &> /dev/null; then
+    echo "Python3 已安裝"
+fi
+
+# 檢查是否以 root 執行
+if [ "$EUID" -ne 0 ]; then
+    echo "請以 root 執行此腳本"
+    exit 1
+fi
+
+# 讀取設定檔
+source config.sh
+
+# 錯誤時中止
+set -e
+
+# 顯示執行的指令
+set -x
+</code></pre>
+
+<hr />
+
+<h2 id="raspberry-pi-linux">樹莓派與 Linux</h2>
+
+<h3 id="raspberry-pi-os">Raspberry Pi OS</h3>
+
+<p>Raspberry Pi OS（前身為 Raspbian）是樹莓派的官方作業系統，基於 Debian。</p>
+
+<pre><code>╔══════════════════════════════════════════════════════════════════╗
+║  樹莓派專用指令                                                   ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  raspi-config               系統設定工具（圖形化選單）           ║
+║  sudo raspi-config                                               ║
+║                                                                  ║
+║  vcgencmd                   VideoCore GPU 指令                   ║
+║  vcgencmd measure_temp      查看 CPU 溫度                        ║
+║  vcgencmd get_throttled     查看是否有降頻                       ║
+║                                                                  ║
+║  pinout                     顯示 GPIO 腳位圖（需安裝）           ║
+║  sudo apt install python3-gpiozero                               ║
+║  pinout                                                          ║
+║                                                                  ║
+║  GPIO 控制（Python）                                             ║
+║  ┌────────────────────────────────────────────────────────┐      ║
+║  │ from gpiozero import LED                               │      ║
+║  │ from time import sleep                                 │      ║
+║  │                                                        │      ║
+║  │ led = LED(17)  # GPIO 17                              │      ║
+║  │ led.on()                                               │      ║
+║  │ sleep(1)                                               │      ║
+║  │ led.off()                                              │      ║
+║  └────────────────────────────────────────────────────────┘      ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+</code></pre>
+
+<h3 id="pi-setup">樹莓派基本設定流程</h3>
+
+<pre><code># 1. 更新系統
+sudo apt update && sudo apt upgrade -y
+
+# 2. 設定系統（語系、時區、介面等）
+sudo raspi-config
+
+# 3. 啟用 SSH（如果還沒啟用）
+sudo systemctl enable ssh
+sudo systemctl start ssh
+
+# 4. 查看 IP 位址
+hostname -I
+
+# 5. 安裝常用工具
+sudo apt install vim git python3-pip
+
+# 6. 設定靜態 IP（可選）
+# 編輯 /etc/dhcpcd.conf
+sudo nano /etc/dhcpcd.conf
+
+# 加入：
+interface eth0
+static ip_address=192.168.1.100/24
+static routers=192.168.1.1
+static domain_name_servers=8.8.8.8
+
+# 7. 重新啟動網路
+sudo systemctl restart dhcpcd
+</code></pre>
+
+<hr />
+
+<h2 id="tips">實用技巧</h2>
+
+<h3 id="shortcuts">常用快捷鍵</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    終端機快捷鍵                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  Ctrl + C          中斷目前執行的指令                           │
+│  Ctrl + Z          暫停目前程序（放到背景）                     │
+│  Ctrl + D          登出 / 結束輸入                              │
+│  Ctrl + L          清除螢幕（同 clear）                         │
+│                                                                 │
+│  Ctrl + A          游標移到行首                                 │
+│  Ctrl + E          游標移到行尾                                 │
+│  Ctrl + U          刪除游標前的所有字元                         │
+│  Ctrl + K          刪除游標後的所有字元                         │
+│  Ctrl + W          刪除游標前一個單字                           │
+│                                                                 │
+│  Ctrl + R          搜尋歷史指令                                 │
+│  ↑ / ↓             瀏覽歷史指令                                 │
+│  !!                重複上一個指令                               │
+│  !$                上一個指令的最後一個參數                     │
+│                                                                 │
+│  Tab               自動補全                                     │
+│  Tab Tab           顯示所有可能的補全                           │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="pipe-redirect">管線與重導向</h3>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    管線與重導向                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  管線（|）將前一個指令的輸出作為下一個指令的輸入                │
+│  ──────────────────────────────────────                         │
+│  ls -la | grep ".txt"        列出 .txt 檔案                     │
+│  cat file | wc -l            計算檔案行數                       │
+│  ps aux | grep python        找出 python 程序                   │
+│  history | tail -20          顯示最近 20 個指令                 │
+│                                                                 │
+│  輸出重導向（>、>>）                                            │
+│  ──────────────────────────────────────                         │
+│  echo "hello" > file         輸出到檔案（覆蓋）                 │
+│  echo "world" >> file        輸出到檔案（附加）                 │
+│  ls > filelist.txt           將 ls 結果存到檔案                 │
+│  command 2> error.log        將錯誤輸出存到檔案                 │
+│  command > out.log 2>&1      將正常和錯誤輸出都存到檔案         │
+│  command &> all.log          同上（較簡短的寫法）               │
+│                                                                 │
+│  輸入重導向（<）                                                │
+│  ──────────────────────────────────────                         │
+│  command < file              從檔案讀取輸入                     │
+│  mysql < script.sql          執行 SQL 腳本                      │
+│                                                                 │
+│  常用組合：                                                     │
+│  ──────────────────────────────────────                         │
+│  cat file | sort | uniq      排序並去除重複                     │
+│  grep "error" log | wc -l    計算錯誤數量                       │
+│  find . -name "*.py" | xargs grep "import"   在 Python 檔中找 import │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+
+<h2 id="summary">總結</h2>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    Linux 學習路線圖                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  入門階段：                                                      │
+│  ├─ 了解 Linux 是什麼、為什麼重要                               │
+│  ├─ 學會基本指令（ls, cd, cp, mv, rm）                         │
+│  ├─ 理解檔案系統結構                                            │
+│  └─ 會使用 nano 或 vim 編輯檔案                                │
+│                                                                 │
+│  進階階段：                                                      │
+│  ├─ 理解使用者與權限管理                                        │
+│  ├─ 學會使用套件管理器                                          │
+│  ├─ 了解 systemd 服務管理                                       │
+│  └─ 學會使用 SSH 遠端連線                                       │
+│                                                                 │
+│  熟練階段：                                                      │
+│  ├─ 撰寫 Shell 腳本自動化工作                                   │
+│  ├─ 設定網路和防火牆                                            │
+│  ├─ 排解常見問題                                                │
+│  └─ 管理多台伺服器                                              │
+│                                                                 │
+│  專家階段：                                                      │
+│  ├─ 深入了解核心原理                                            │
+│  ├─ 效能調校                                                    │
+│  ├─ 容器化（Docker、Kubernetes）                                │
+│  └─ 系統安全與加固                                              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<blockquote>
+<p><strong>學習建議</strong>：Linux 的精髓在於「動手做」。建議在樹莓派或虛擬機上安裝 Linux，實際操作每一個指令，這比單純閱讀文件更有效！</p>
+</blockquote>
+
+<hr />
+
+<h2 id="related">延伸閱讀</h2>
+
+<ul>
+<li><a href="關於SSH遠端連線.html">關於 SSH 遠端連線</a> - SSH 詳細教學</li>
+<li><a href="關於樹莓派基礎.html">關於樹莓派基礎</a> - 樹莓派入門設定</li>
+<li><a href="關於Python程式設計.html">關於 Python 程式設計</a> - Linux 上的 Python 開發</li>
+</ul>
+
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

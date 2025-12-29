@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧農業課程 - 文件中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e8e8e8;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 頁首區域 */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.1) 0%, rgba(99, 179, 237, 0.1) 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(79, 209, 197, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #a0aec0;
+        }
+
+        /* 統計區塊 */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px 25px;
+            background: rgba(45, 55, 72, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(79, 209, 197, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #4fd1c5;
+        }
+
+        .stat-label {
+            font-size: 0.95em;
+            color: #a0aec0;
+        }
+
+        /* 分類按鈕區 */
+        .category-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(45, 55, 72, 0.3);
+            border-radius: 15px;
+        }
+
+        .category-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: rgba(45, 55, 72, 0.8);
+            color: #e8e8e8;
+            border: 1px solid rgba(79, 209, 197, 0.3);
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(79, 209, 197, 0.4);
+        }
+
+        /* 文件卡片區 */
+        .docs-section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #4fd1c5;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(79, 209, 197, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title .icon {
+            font-size: 1.2em;
+        }
+
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .doc-card {
+            background: rgba(45, 55, 72, 0.6);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(79, 209, 197, 0.2);
+            text-decoration: none;
+            display: block;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.2);
+            border-color: #4fd1c5;
+            background: rgba(45, 55, 72, 0.8);
+        }
+
+        .doc-card h3 {
+            color: #63b3ed;
+            font-size: 1.15em;
+            margin-bottom: 10px;
+            transition: color 0.3s;
+        }
+
+        .doc-card:hover h3 {
+            color: #4fd1c5;
+        }
+
+        .doc-card p {
+            color: #a0aec0;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .doc-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            background: rgba(79, 209, 197, 0.15);
+            color: #4fd1c5;
+        }
+
+        .tag.beginner { background: rgba(72, 187, 120, 0.2); color: #68d391; }
+        .tag.intermediate { background: rgba(237, 137, 54, 0.2); color: #f6ad55; }
+        .tag.advanced { background: rgba(245, 101, 101, 0.2); color: #fc8181; }
+        .tag.essential { background: rgba(159, 122, 234, 0.2); color: #b794f4; }
+
+        /* 學習路徑區 */
+        .learning-path {
+            background: rgba(45, 55, 72, 0.5);
+            border-radius: 20px;
+            padding: 35px;
+            margin-top: 50px;
+            border: 1px solid rgba(79, 209, 197, 0.2);
+        }
+
+        .learning-path h2 {
+            color: #4fd1c5;
+            margin-bottom: 25px;
+            font-size: 1.6em;
+        }
+
+        .path-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(26, 26, 46, 0.5);
+            border-radius: 12px;
+            border-left: 4px solid #4fd1c5;
+        }
+
+        .path-number {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .path-content h4 {
+            color: #63b3ed;
+            margin-bottom: 8px;
+        }
+
+        .path-content p {
+            color: #a0aec0;
+            font-size: 0.95em;
+        }
+
+        /* 頁尾 */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+            color: #718096;
+            border-top: 1px solid rgba(79, 209, 197, 0.2);
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .stats {
+                gap: 20px;
+            }
+
+            .stat-item {
+                padding: 12px 20px;
+            }
+
+            .docs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .category-nav {
+                gap: 8px;
+            }
+
+            .category-btn {
+                padding: 10px 18px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* 隱藏類別 */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 搜尋框樣式 */
+        .search-container {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            font-size: 1.1em;
+            border: 2px solid rgba(79, 209, 197, 0.3);
+            border-radius: 30px;
+            background: rgba(45, 55, 72, 0.8);
+            color: #e8e8e8;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: #718096;
+        }
+
+        .search-input:focus {
+            border-color: #4fd1c5;
+            box-shadow: 0 0 20px rgba(79, 209, 197, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4fd1c5;
+            font-size: 1.2em;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #718096;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: none;
+        }
+
+        .search-clear:hover {
+            color: #fc8181;
+        }
+
+        .search-results-info {
+            text-align: center;
+            color: #a0aec0;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        .search-results-info .highlight {
+            color: #4fd1c5;
+            font-weight: bold;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+
+        .no-results .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        /* 搜尋匹配高亮 */
+        .doc-card.search-match {
+            border-color: #4fd1c5;
+            background: rgba(79, 209, 197, 0.1);
+        }
+
+        [data-theme="light"] .search-input {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border-color: rgba(79, 209, 197, 0.4) !important;
+        }
+
+        [data-theme="light"] .search-input::placeholder {
+            color: #a0aec0 !important;
+        }
+
+        [data-theme="light"] .search-input:focus {
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 0 20px rgba(79, 209, 197, 0.2) !important;
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+
+    <div class="container">
+        <!-- 頁首 -->
+        <header class="header">
+            <h1>智慧農業課程文件中心</h1>
+            <p>完整的技術文件與教學資源，從入門到進階一應俱全</p>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalDocs">88</div>
+                    <div class="stat-label">份技術文件</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">16</div>
+                    <div class="stat-label">個主題分類</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">份分組教材</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 搜尋框 -->
+        <div class="search-container">
+            <div class="search-wrapper">
+                <input type="text" class="search-input" id="searchInput" placeholder="搜尋文件... (輸入關鍵字如：Arduino、感測器、MQTT)">
+                <button class="search-clear" id="searchClear" title="清除搜尋">&times;</button>
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+        <div class="search-results-info" id="searchResultsInfo" style="display: none;"></div>
+
+        <!-- 分類導覽 -->
+        <nav class="category-nav">
+            <button class="category-btn active" data-category="all">全部文件</button>
+            <button class="category-btn" data-category="env">環境設定</button>
+            <button class="category-btn" data-category="arduino">Arduino開發</button>
+            <button class="category-btn" data-category="electronics">電子學基礎</button>
+            <button class="category-btn" data-category="comm">通訊協定</button>
+            <button class="category-btn" data-category="iot">網路與物聯網</button>
+            <button class="category-btn" data-category="web">網頁開發</button>
+            <button class="category-btn" data-category="components">元件與模組</button>
+            <button class="category-btn" data-category="tools">實用工具</button>
+            <button class="category-btn" data-category="ml">影像辨識</button>
+            <button class="category-btn" data-category="python">Python開發</button>
+            <button class="category-btn" data-category="ai">AI機器學習</button>
+            <button class="category-btn" data-category="geo">地理資料</button>
+            <button class="category-btn" data-category="trend">科技趨勢</button>
+            <button class="category-btn" data-category="practice">實作練習</button>
+            <button class="category-btn" data-category="group">溫室分組實作</button>
+            <button class="category-btn" data-category="download">資源下載</button>
+        </nav>
+
+        <!-- 環境設定 -->
+        <section class="docs-section" data-section="env">
+            <h2 class="section-title"><span class="icon">📦</span>環境設定與工具</h2>
+            <div class="docs-grid">
+                <a href="環境安裝指南.html" class="doc-card">
+                    <h3>環境安裝指南</h3>
+                    <p>Python、VS Code、Arduino IDE 等軟體安裝步驟</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="關於終端機與vscode操作的新手指南.html" class="doc-card">
+                    <h3>終端機與VSCode操作指南</h3>
+                    <p>命令列基礎操作、VS Code 常用功能與快捷鍵</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="關於git操作的新手指南.html" class="doc-card">
+                    <h3>Git操作新手指南</h3>
+                    <p>Git 版本控制基礎，包含 commit、push、pull 等操作</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於GitHub.html" class="doc-card">
+                    <h3>GitHub使用指南</h3>
+                    <p>GitHub 平台使用教學，含繁體中文資源連結</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Arduino開發 -->
+        <section class="docs-section" data-section="arduino">
+            <h2 class="section-title"><span class="icon">📟</span>Arduino 開發</h2>
+            <div class="docs-grid">
+                <a href="關於Arduino程式常用語法.html" class="doc-card">
+                    <h3>Arduino程式常用語法</h3>
+                    <p>Arduino 程式結構、變數、函數、控制流程</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="關於Arduino系列各種開發板.html" class="doc-card">
+                    <h3>Arduino系列開發板</h3>
+                    <p>各款 Arduino 開發板比較與選擇建議</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="關於ArduinoUno的各種電位與訊號類別.html" class="doc-card">
+                    <h3>Arduino電位與訊號類別</h3>
+                    <p>數位訊號、類比訊號、PWM 訊號的原理與應用</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於移位暫存器與IO擴展IC.html" class="doc-card">
+                    <h3>移位暫存器與IO擴展</h3>
+                    <p>當 Arduino 腳位不夠用時的擴展方案</p>
+                    <div class="doc-tags">
+                        <span class="tag advanced">高階</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 電子學基礎 -->
+        <section class="docs-section" data-section="electronics">
+            <h2 class="section-title"><span class="icon">⚡</span>電子學基礎</h2>
+            <div class="docs-grid">
+                <a href="關於基礎電子學與Arduino.html" class="doc-card">
+                    <h3>基礎電子學與Arduino</h3>
+                    <p>電壓、電流、電阻、歐姆定律基礎</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="關於電阻色碼與使用情境.html" class="doc-card">
+                    <h3>電阻色碼與使用情境</h3>
+                    <p>色碼判讀方法、常用阻值速查、六大使用情境</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="關於麵包板與基礎接線.html" class="doc-card">
+                    <h3>麵包板與基礎接線</h3>
+                    <p>麵包板結構、接線技巧、常見錯誤</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="關於上拉電阻與下拉電阻.html" class="doc-card">
+                    <h3>上拉電阻與下拉電阻</h3>
+                    <p>解決輸入腳位浮動問題的必備知識</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於電源供應.html" class="doc-card">
+                    <h3>電源供應</h3>
+                    <p>電源設計、穩壓模組、電流計算</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於電子材料行.html" class="doc-card">
+                    <h3>電子材料行採購指南</h3>
+                    <p>電子零件採購、商品分類、選購技巧</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="關於各種電子線材.html" class="doc-card">
+                    <h3>各種電子線材</h3>
+                    <p>杜邦線、排線、電源線等線材規格與選用</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="關於電子焊接入門.html" class="doc-card">
+                    <h3>電子焊接入門</h3>
+                    <p>烙鐵使用、焊接技巧、安全注意事項</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於靜電與電路保護.html" class="doc-card">
+                    <h3>靜電與電路保護</h3>
+                    <p>ESD 防護、過壓保護、電路安全</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 通訊協定 -->
+        <section class="docs-section" data-section="comm">
+            <h2 class="section-title"><span class="icon">🔌</span>通訊協定</h2>
+            <div class="docs-grid">
+                <a href="關於序列埠通訊.html" class="doc-card">
+                    <h3>序列埠通訊</h3>
+                    <p>Serial 通訊基礎，Arduino 與電腦/Python 溝通</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="關於資料通訊方式.html" class="doc-card">
+                    <h3>資料通訊方式</h3>
+                    <p>各種通訊協定的完整比較與應用場景</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於LoRa通訊.html" class="doc-card">
+                    <h3>LoRa 長距離通訊</h3>
+                    <p>LoRa/LoRaWAN 技術原理、參數設定、農業物聯網應用</p>
+                    <div class="doc-tags">
+                        <span class="tag advanced">高階</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 網路與物聯網 -->
+        <section class="docs-section" data-section="iot">
+            <h2 class="section-title"><span class="icon">🌐</span>網路與物聯網</h2>
+            <div class="docs-grid">
+                <a href="關於MQTT訊息.html" class="doc-card">
+                    <h3>MQTT訊息協定</h3>
+                    <p>物聯網訊息協定，發布/訂閱模式</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於ESP-01_WiFi模組.html" class="doc-card">
+                    <h3>ESP-01 WiFi模組</h3>
+                    <p>ESP8266 WiFi 模組使用指南</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於樹莓派入門.html" class="doc-card">
+                    <h3>樹莓派入門</h3>
+                    <p>Raspberry Pi 單板電腦入門指南</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於RustDesk遠端連線樹莓派教學.html" class="doc-card">
+                    <h3>RustDesk遠端連線教學</h3>
+                    <p>使用 RustDesk 遠端控制樹莓派桌面</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於SSH遠端連線.html" class="doc-card">
+                    <h3>SSH遠端連線</h3>
+                    <p>SSH 連線設定、金鑰認證、檔案傳輸（SCP/SFTP）</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="關於Linux作業系統.html" class="doc-card">
+                    <h3>Linux作業系統</h3>
+                    <p>Linux 基礎指令、檔案系統、權限管理、套件安裝</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 網頁開發 -->
+        <section class="docs-section" data-section="web">
+            <h2 class="section-title"><span class="icon">🎨</span>網頁開發</h2>
+            <div class="docs-grid">
+                <a href="關於網頁前端三巨頭.html" class="doc-card">
+                    <h3>網頁前端三巨頭</h3>
+                    <p>HTML、CSS、JavaScript 基礎與範例</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="HTML基礎教學.html" class="doc-card">
+                    <h3>HTML 基礎教學</h3>
+                    <p>網頁結構、常用標籤、表單、語意化標籤完整教學</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="CSS樣式設計教學.html" class="doc-card">
+                    <h3>CSS 樣式設計教學</h3>
+                    <p>選擇器、盒模型、Flexbox、響應式設計</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="JavaScript入門教學.html" class="doc-card">
+                    <h3>JavaScript 入門教學</h3>
+                    <p>變數、函式、DOM操作、事件處理、Fetch API</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="Leaflet地圖教學.html" class="doc-card">
+                    <h3>Leaflet 互動地圖教學</h3>
+                    <p>建立農業 GIS 網頁地圖、標記、GeoJSON</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="Flask網頁應用入門.html" class="doc-card">
+                    <h3>Flask 網頁應用入門</h3>
+                    <p>Python 後端開發、路由、模板、REST API</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Python 與資料科學 -->
+        <section class="docs-section" data-section="python">
+            <h2 class="section-title"><span class="icon">🐍</span>Python 與資料科學</h2>
+            <div class="docs-grid">
+                <a href="Python基礎語法速查表.html" class="doc-card">
+                    <h3>Python 基礎語法速查表</h3>
+                    <p>變數、運算子、字串、列表、字典、迴圈、函式完整速查</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="NumPy陣列操作指南.html" class="doc-card">
+                    <h3>NumPy 陣列操作指南</h3>
+                    <p>陣列建立、索引切片、運算、布林遮罩、影像處理基礎</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="OpenCV影像處理教學.html" class="doc-card">
+                    <h3>OpenCV 影像處理教學</h3>
+                    <p>圖片讀取、色彩空間、濾波、邊緣偵測、形態學操作</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="植生指標計算教學.html" class="doc-card">
+                    <h3>植生指標計算教學</h3>
+                    <p>NDVI、ExG、GLI 等植生指標計算與農業應用</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於Pandas資料分析.html" class="doc-card">
+                    <h3>Pandas 資料分析</h3>
+                    <p>DataFrame 操作、資料清洗、分組統計、時間序列分析</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="關於Scikit-learn套件.html" class="doc-card">
+                    <h3>Scikit-learn 機器學習</h3>
+                    <p>資料預處理、分類迴歸演算法、模型評估與交叉驗證</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於RGB與HSV與Lab與YCrCb等呈色方式.html" class="doc-card">
+                    <h3>色彩空間詳解</h3>
+                    <p>RGB、HSV、Lab、YCrCb 色彩空間原理與 OpenCV 轉換應用</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- AI 與機器學習 -->
+        <section class="docs-section" data-section="ai">
+            <h2 class="section-title"><span class="icon">🤖</span>AI 與機器學習</h2>
+            <div class="docs-grid">
+                <a href="機器學習基礎概念.html" class="doc-card">
+                    <h3>機器學習基礎概念</h3>
+                    <p>監督/非監督學習、Random Forest、SVM、CNN、YOLO</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="機器學習名詞解釋.html" class="doc-card">
+                    <h3>機器學習名詞解釋</h3>
+                    <p>白話文解釋 AI 術語：特徵、標籤、過擬合、CNN、Transformer 等完整指南</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="強化學習Q-Learning教學.html" class="doc-card">
+                    <h3>強化學習 Q-Learning 教學</h3>
+                    <p>Q表、獎勵機制、智慧灌溉決策模擬器</p>
+                    <div class="doc-tags">
+                        <span class="tag advanced">高階</span>
+                    </div>
+                </a>
+                <a href="LangChain代理人教學.html" class="doc-card">
+                    <h3>LangChain AI 代理人教學</h3>
+                    <p>建立能使用工具的 AI 助手、Ollama 整合</p>
+                    <div class="doc-tags">
+                        <span class="tag advanced">高階</span>
+                    </div>
+                </a>
+                <a href="YOLO物件偵測教學.html" class="doc-card">
+                    <h3>YOLO 物件偵測詳細教學</h3>
+                    <p>從原理到實戰：安裝、資料集準備、標註、訓練、推論與農業應用</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="關於Tensorflow與PyTorch.html" class="doc-card">
+                    <h3>TensorFlow 與 PyTorch</h3>
+                    <p>深度學習框架比較、CNN 實作、遷移學習、GPU 加速</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="關於領域適應學習.html" class="doc-card">
+                    <h3>領域適應學習</h3>
+                    <p>Domain Adaptation 原理、DANN 架構、跨農場模型部署</p>
+                    <div class="doc-tags">
+                        <span class="tag advanced">高階</span>
+                    </div>
+                </a>
+                <a href="關於深度強化式學習.html" class="doc-card">
+                    <h3>深度強化式學習</h3>
+                    <p>DQN、PPO 演算法、智慧溫室環境控制應用</p>
+                    <div class="doc-tags">
+                        <span class="tag advanced">高階</span>
+                    </div>
+                </a>
+                <a href="Kaggle智慧農業資料集指南.html" class="doc-card">
+                    <h3>Kaggle 智慧農業資料集指南</h3>
+                    <p>50 個高品質智慧農業資料集、Kaggle 平台使用教學、API 下載指南</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="SAM模型完整指南.html" class="doc-card">
+                    <h3>SAM 模型完整指南</h3>
+                    <p>Segment Anything Model 零樣本圖像分割、Meta AI 革命性技術、智慧農業應用</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="機器學習模型完整指南.html" class="doc-card">
+                    <h3>機器學習模型完整指南</h3>
+                    <p>11 種常用機器學習模型詳解、數學原理、優缺點比較、智慧農業應用範例</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 地理資料 -->
+        <section class="docs-section" data-section="geo">
+            <h2 class="section-title"><span class="icon">🌍</span>地理空間資料</h2>
+            <div class="docs-grid">
+                <a href="開源地理空間資料教學.html" class="doc-card">
+                    <h3>開源地理空間資料教學</h3>
+                    <p>SoilGrids 土壤資料、Copernicus 哥白尼、Sentinel 衛星、NASA POWER 氣象資料</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="關於遙測技術應用於智慧農業.html" class="doc-card">
+                    <h3>遙測技術應用於智慧農業</h3>
+                    <p>衛星遙測原理、植被指數、Sentinel-2 資料下載與分析</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="關於RTK定位技術.html" class="doc-card">
+                    <h3>RTK 高精度定位技術</h3>
+                    <p>GNSS 定位原理、RTK 校正、農機自動駕駛應用</p>
+                    <div class="doc-tags">
+                        <span class="tag advanced">高階</span>
+                    </div>
+                </a>
+                <a href="關於光達與雷達的差異.html" class="doc-card">
+                    <h3>光達與雷達的差異</h3>
+                    <p>LiDAR vs Radar 比較、點雲處理、農業感測應用</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於TWD97座標與WGS84座標系統.html" class="doc-card">
+                    <h3>TWD97 與 WGS84 座標系統</h3>
+                    <p>座標系統原理、EPSG 代碼、Python 座標轉換</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於克利金與其他內插法.html" class="doc-card">
+                    <h3>克利金與空間內插法</h3>
+                    <p>IDW、Kriging、Spline 內插原理與土壤養分製圖</p>
+                    <div class="doc-tags">
+                        <span class="tag advanced">高階</span>
+                    </div>
+                </a>
+                <a href="關於向量圖及點陣圖.html" class="doc-card">
+                    <h3>向量圖與點陣圖</h3>
+                    <p>Shapefile、GeoTIFF、GeoJSON 格式與 Python 處理</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於GDAL.html" class="doc-card">
+                    <h3>GDAL 地理資料處理</h3>
+                    <p>空間資料讀寫、座標轉換、網格運算、NDVI 監測系統</p>
+                    <div class="doc-tags">
+                        <span class="tag advanced">高階</span>
+                    </div>
+                </a>
+                <a href="關於無人機航拍巡檢注意事項.html" class="doc-card">
+                    <h3>無人機航拍巡檢注意事項</h3>
+                    <p>台灣法規、飛行規劃、GSD 計算、影像處理流程</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="關於全色態與融合影像.html" class="doc-card">
+                    <h3>全色態與影像融合</h3>
+                    <p>Pan-sharpening 技術、IHS/Brovey/小波融合、品質評估</p>
+                    <div class="doc-tags">
+                        <span class="tag advanced">高階</span>
+                    </div>
+                </a>
+                <a href="關於影像鑲嵌軟體之運算原理.html" class="doc-card">
+                    <h3>影像鑲嵌軟體運算原理</h3>
+                    <p>SfM/MVS 原理、特徵匹配、光束平差、正射影像生成</p>
+                    <div class="doc-tags">
+                        <span class="tag advanced">高階</span>
+                    </div>
+                </a>
+                <a href="關於衛星與無人機影像如何處理散射干擾.html" class="doc-card">
+                    <h3>衛星與無人機影像散射校正</h3>
+                    <p>大氣散射原理、瑞利/米氏散射、DOS校正、6S模型、輻射校正板</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 元件與模組 -->
+        <section class="docs-section" data-section="components">
+            <h2 class="section-title"><span class="icon">💡</span>元件與模組</h2>
+            <div class="docs-grid">
+                <a href="關於繼電器模組.html" class="doc-card">
+                    <h3>繼電器模組</h3>
+                    <p>用小電流控制大電流的電子開關</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於DHT溫溼度感測器.html" class="doc-card">
+                    <h3>DHT溫溼度感測器</h3>
+                    <p>溫度與濕度二合一數位感測器</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="關於伺服馬達.html" class="doc-card">
+                    <h3>伺服馬達</h3>
+                    <p>精確角度控制的馬達</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="關於步進馬達.html" class="doc-card">
+                    <h3>步進馬達</h3>
+                    <p>精確步數控制的馬達</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於紅外線遙控.html" class="doc-card">
+                    <h3>紅外線遙控</h3>
+                    <p>無線遙控接收與控制</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="關於LCD液晶螢幕.html" class="doc-card">
+                    <h3>LCD液晶螢幕</h3>
+                    <p>文字與數據顯示螢幕</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="關於LED點矩陣.html" class="doc-card">
+                    <h3>LED點矩陣</h3>
+                    <p>8x8 LED 圖案顯示</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於LED排燈挑選.html" class="doc-card">
+                    <h3>LED排燈挑選指南</h3>
+                    <p>LED 燈條類型比較、驅動方式、程式庫</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於RTC時鐘.html" class="doc-card">
+                    <h3>RTC時鐘模組</h3>
+                    <p>即時時鐘模組原理與應用</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="關於土壤濕度感測器.html" class="doc-card">
+                    <h3>土壤濕度感測器</h3>
+                    <p>土壤濕度偵測與自動灌溉應用</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 實用工具 -->
+        <section class="docs-section" data-section="tools">
+            <h2 class="section-title"><span class="icon">🛠️</span>實用工具</h2>
+            <div class="docs-grid">
+                <a href="關於線材轉接與整理.html" class="doc-card">
+                    <h3>轉接線接頭對照表</h3>
+                    <p>常見接頭類型圖解、規格對照、使用情境</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="關於三用電表使用.html" class="doc-card">
+                    <h3>三用電表使用教學</h3>
+                    <p>電壓、電流、電阻測量方法與注意事項</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 影像辨識 -->
+        <section class="docs-section" data-section="ml">
+            <h2 class="section-title"><span class="icon">🤖</span>影像辨識與機器學習</h2>
+            <div class="docs-grid">
+                <a href="影像辨識總覽.html" class="doc-card">
+                    <h3>影像辨識總覽</h3>
+                    <p>YOLOv8 物件偵測與語意分割課程總覽</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="物件偵測教學.html" class="doc-card">
+                    <h3>物件偵測教學</h3>
+                    <p>辨識圖片中的物體與位置</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="語意分割教學.html" class="doc-card">
+                    <h3>語意分割教學</h3>
+                    <p>像素級別的物體分割</p>
+                    <div class="doc-tags">
+                        <span class="tag advanced">高階</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 科技趨勢 -->
+        <section class="docs-section" data-section="trend">
+            <h2 class="section-title"><span class="icon">🚀</span>科技趨勢</h2>
+            <div class="docs-grid">
+                <a href="關於AI的近代發展史.html" class="doc-card">
+                    <h3>AI的近代發展史</h3>
+                    <p>從圖靈測試到 ChatGPT，完整的人工智慧發展歷程</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="Vibe_Coding_指南.html" class="doc-card">
+                    <h3>Vibe Coding 完整指南</h3>
+                    <p>2025 年 AI 輔助編程工具全面比較：Cursor、Claude Code、Windsurf、Copilot 等</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 實作練習 -->
+        <section class="docs-section" data-section="practice">
+            <h2 class="section-title"><span class="icon">✏️</span>實作小練習</h2>
+            <div class="docs-grid">
+                <a href="關於Python常用套件.html" class="doc-card">
+                    <h3>Python套件練習題</h3>
+                    <p>pip 安裝、requirements.txt、虛擬環境操作練習</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 溫室分組實作 -->
+        <section class="docs-section" data-section="group">
+            <h2 class="section-title"><span class="icon">🌱</span>Arduino溫室分組實作</h2>
+            <div class="docs-grid">
+                <a href="分組任務總覽.html" class="doc-card">
+                    <h3>分組任務總覽</h3>
+                    <p>六組任務分配、角色說明、整體架構</p>
+                    <div class="doc-tags">
+                        <span class="tag essential">必讀</span>
+                    </div>
+                </a>
+                <a href="G1_光線控制組_操作手冊.html" class="doc-card">
+                    <h3>G1 光線控制組</h3>
+                    <p>光敏電阻、LED 燈條控制</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="G2_溫溼度控制組_操作手冊.html" class="doc-card">
+                    <h3>G2 溫溼度控制組</h3>
+                    <p>DHT感測器、風扇繼電器控制</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="G3_土壤水份控制組_操作手冊.html" class="doc-card">
+                    <h3>G3 土壤水份控制組</h3>
+                    <p>土壤濕度感測、抽水馬達控制</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="G4_螢幕顯示組_操作手冊.html" class="doc-card">
+                    <h3>G4 螢幕顯示組</h3>
+                    <p>LCD 顯示、I2C 通訊</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="G5_遠端遙控組_操作手冊.html" class="doc-card">
+                    <h3>G5 遠端遙控組</h3>
+                    <p>紅外線遙控、狀態切換</p>
+                    <div class="doc-tags">
+                        <span class="tag intermediate">進階</span>
+                    </div>
+                </a>
+                <a href="G6_網路控制組_操作手冊.html" class="doc-card">
+                    <h3>G6 網路控制組</h3>
+                    <p>ESP-01 WiFi、MQTT 通訊</p>
+                    <div class="doc-tags">
+                        <span class="tag advanced">高階</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 資源下載 -->
+        <section class="docs-section" data-section="download">
+            <h2 class="section-title"><span class="icon">📥</span>資源下載中心</h2>
+            <div class="docs-grid">
+                <a href="資源下載中心.html" class="doc-card">
+                    <h3>G1-G6 程式碼與手冊下載</h3>
+                    <p>所有分組的範例程式碼 (.ino) 與操作手冊，可直接下載使用</p>
+                    <div class="doc-tags">
+                        <span class="tag essential">必讀</span>
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="Arduino速查表.html" class="doc-card">
+                    <h3>Arduino 速查表</h3>
+                    <p>常用函數、腳位對照、程式語法快速查閱</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+                <a href="常見錯誤排解.html" class="doc-card">
+                    <h3>常見錯誤排解</h3>
+                    <p>編譯錯誤、上傳失敗、硬體問題排解指南</p>
+                    <div class="doc-tags">
+                        <span class="tag beginner">初學者</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 學習路徑 -->
+        <div class="learning-path">
+            <h2>學習路徑建議</h2>
+
+            <div class="path-item">
+                <div class="path-number">1</div>
+                <div class="path-content">
+                    <h4>完全初學者</h4>
+                    <p>環境安裝指南 → 終端機與VSCode → 基礎電子學 → 電阻色碼 → 麵包板接線 → Arduino程式語法</p>
+                </div>
+            </div>
+
+            <div class="path-item">
+                <div class="path-number">2</div>
+                <div class="path-content">
+                    <h4>已有程式基礎</h4>
+                    <p>Arduino程式語法 → 電位與訊號類別 → 序列埠通訊 → MQTT訊息 → 網頁前端</p>
+                </div>
+            </div>
+
+            <div class="path-item">
+                <div class="path-number">3</div>
+                <div class="path-content">
+                    <h4>溫室實作準備</h4>
+                    <p>分組任務總覽 → 各組操作手冊 → 相關元件文件 → 通訊協定 → MQTT訊息</p>
+                </div>
+            </div>
+
+            <div class="path-item">
+                <div class="path-number">4</div>
+                <div class="path-content">
+                    <h4>影像辨識學習</h4>
+                    <p>影像辨識總覽 → 物件偵測教學 → 語意分割教學 → 訓練自己的模型</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 頁尾 -->
+        <footer class="footer">
+            <p>智慧農業課程教材 | 最後更新：2025年12月</p>
+        </footer>
+    </div>
+
+    <script>
+        // 分類篩選功能
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const sections = document.querySelectorAll('.docs-section');
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 清除搜尋
+                searchInput.value = '';
+                searchClear.style.display = 'none';
+                searchResultsInfo.style.display = 'none';
+
+                // 移除所有搜尋匹配樣式
+                document.querySelectorAll('.doc-card').forEach(card => {
+                    card.classList.remove('search-match', 'hidden');
+                });
+
+                // 更新按鈕狀態
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const category = btn.dataset.category;
+
+                // 篩選區塊
+                sections.forEach(section => {
+                    if (category === 'all' || section.dataset.section === category) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+            });
+        });
+
+        // 搜尋功能
+        const searchInput = document.getElementById('searchInput');
+        const searchClear = document.getElementById('searchClear');
+        const searchResultsInfo = document.getElementById('searchResultsInfo');
+        const allCards = document.querySelectorAll('.doc-card');
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+
+            // 顯示/隱藏清除按鈕
+            searchClear.style.display = query ? 'block' : 'none';
+
+            if (!query) {
+                // 清除搜尋時恢復原狀
+                searchResultsInfo.style.display = 'none';
+                allCards.forEach(card => {
+                    card.classList.remove('search-match', 'hidden');
+                });
+                sections.forEach(section => {
+                    section.classList.remove('hidden');
+                });
+                // 恢復分類按鈕狀態
+                const activeBtn = document.querySelector('.category-btn.active');
+                if (activeBtn && activeBtn.dataset.category !== 'all') {
+                    activeBtn.click();
+                }
+                return;
+            }
+
+            // 顯示所有區塊進行搜尋
+            sections.forEach(section => section.classList.remove('hidden'));
+
+            let matchCount = 0;
+
+            allCards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const description = card.querySelector('p').textContent.toLowerCase();
+                const tags = Array.from(card.querySelectorAll('.tag')).map(t => t.textContent.toLowerCase()).join(' ');
+
+                const searchText = title + ' ' + description + ' ' + tags;
+
+                if (searchText.includes(query)) {
+                    card.classList.remove('hidden');
+                    card.classList.add('search-match');
+                    matchCount++;
+                } else {
+                    card.classList.add('hidden');
+                    card.classList.remove('search-match');
+                }
+            });
+
+            // 隱藏沒有匹配結果的區塊
+            sections.forEach(section => {
+                const visibleCards = section.querySelectorAll('.doc-card:not(.hidden)');
+                if (visibleCards.length === 0) {
+                    section.classList.add('hidden');
+                }
+            });
+
+            // 顯示搜尋結果資訊
+            searchResultsInfo.style.display = 'block';
+            if (matchCount > 0) {
+                searchResultsInfo.innerHTML = `找到 <span class="highlight">${matchCount}</span> 份相關文件`;
+            } else {
+                searchResultsInfo.innerHTML = `<div class="no-results"><div class="icon">🔍</div>找不到「${query}」相關的文件<br><small>請嘗試其他關鍵字</small></div>`;
+            }
+
+            // 重置分類按鈕狀態
+            categoryBtns.forEach(b => b.classList.remove('active'));
+            document.querySelector('.category-btn[data-category="all"]').classList.add('active');
+        });
+
+        // 清除搜尋
+        searchClear.addEventListener('click', function() {
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+            searchInput.focus();
+        });
+
+        // 按 Escape 清除搜尋
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                this.value = '';
+                this.dispatchEvent(new Event('input'));
+            }
+        });
+
+        // 按 / 聚焦搜尋框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '/' && document.activeElement !== searchInput) {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
+    </script>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

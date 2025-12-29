@@ -1,0 +1,3193 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於移位暫存器與各種擴展IC</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="io-ic">關於移位暫存器與各種擴展 IC</h1>
+<h2 id="io">前言：為什麼需要 I/O 擴展？</h2>
+<h3 id="_1">問題情境</h3>
+<p>你正在做一個專案，需要控制：<br />
+- 8 個 LED 燈（跑馬燈效果）<br />
+- 1 個 LCD 螢幕（4 個腳位）<br />
+- 1 個溫濕度感測器（1 個腳位）<br />
+- 1 個馬達（2 個腳位）<br />
+- 幾個按鈕（3 個腳位）</p>
+<p><strong>問題來了</strong>：Arduino Uno 只有 14 個數位腳位，根本不夠用！</p>
+<h3 id="_2">解決方案</h3>
+<p>使用 <strong>I/O 擴展 IC</strong>，只需要 2-3 個腳位，就能控制 8 個、16 個甚至更多輸出！</p>
+<pre><code>【沒有擴展 IC】
+Arduino ─┬─ LED 0
+         ├─ LED 1
+         ├─ LED 2
+         ├─ LED 3
+         ├─ LED 4
+         ├─ LED 5
+         ├─ LED 6
+         └─ LED 7
+用掉 8 個腳位！
+
+【使用 74HC595】
+Arduino ─┬─ 資料線 ───→ 74HC595 ─┬─ LED 0
+         ├─ 時脈線 ───→          ├─ LED 1
+         └─ 鎖存線 ───→          ├─ LED 2
+                                  ├─ LED 3
+只用 3 個腳位！                   ├─ LED 4
+                                  ├─ LED 5
+                                  ├─ LED 6
+                                  └─ LED 7
+</code></pre>
+<hr />
+<h2 id="_3">什麼是移位暫存器？</h2>
+<h3 id="_4">用生活例子理解</h3>
+<p>想像一個 <strong>傳話遊戲</strong>：</p>
+<pre><code>【傳統方式：每人一條電話線】
+老師 ─── 學生1
+老師 ─── 學生2
+老師 ─── 學生3
+老師 ─── 學生4
+...
+老師需要很多條電話線！
+
+【移位暫存器方式：只要一條線】
+老師 ──→ 學生1 ──→ 學生2 ──→ 學生3 ──→ 學生4
+老師依序傳話給學生1
+學生1 傳給學生2
+學生2 傳給學生3...
+最後老師喊「發布！」
+所有學生同時執行各自收到的指令
+</code></pre>
+<h3 id="_5">技術名稱</h3>
+<ul>
+<li><strong>串進並出 (SIPO)</strong>：資料一個一個「串」著進去，最後「並」排同時輸出</li>
+<li>用於<strong>輸出擴展</strong>（控制 LED、繼電器等）</li>
+<li>
+<p>代表 IC：<strong>74HC595</strong></p>
+</li>
+<li>
+<p><strong>並進串出 (PISO)</strong>：資料「並」排同時輸入，一個一個「串」著讀出</p>
+</li>
+<li>用於<strong>輸入擴展</strong>（讀取按鈕、開關等）</li>
+<li>代表 IC：<strong>74HC165</strong></li>
+</ul>
+<h3 id="_6">水桶比喻</h3>
+<pre><code>【74HC595 - 串進並出】
+
+想像 8 個水桶排成一排，每個水桶底部有開關：
+
+步驟 1：依序倒水（傳送資料）
+        水 → [桶1] → [桶2] → [桶3] → ... → [桶8]
+             有水    沒水    有水          沒水
+              1       0       1             0
+
+步驟 2：喊「開！」（鎖存訊號）
+        所有水桶的開關同時打開
+        有水的桶出水（輸出 HIGH）
+        沒水的桶不出水（輸出 LOW）
+</code></pre>
+<hr />
+<h2 id="74hc595-ic">74HC595 - 最常用的輸出擴展 IC</h2>
+<h3 id="74hc595">為什麼選 74HC595？</h3>
+<table>
+<thead>
+<tr>
+<th>優點</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>便宜</td>
+<td>一顆只要 $5-15</td>
+</tr>
+<tr>
+<td>簡單</td>
+<td>只需要 3 條線</td>
+</tr>
+<tr>
+<td>可串聯</td>
+<td>串 2 顆變 16 輸出，串 3 顆變 24 輸出...</td>
+</tr>
+<tr>
+<td>有鎖存</td>
+<td>輸出不會閃爍</td>
+</tr>
+<tr>
+<td>Arduino 內建支援</td>
+<td><code>shiftOut()</code> 函數直接用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_7">實際應用場景</h3>
+<pre><code>【場景 1：跑馬燈】
+用 3 個腳位控制 8 個 LED 的跑馬燈效果
+
+【場景 2：數碼管時鐘】
+用 3 個腳位控制 4 位數的七段顯示器
+
+【場景 3：LED 矩陣】
+用 3 個腳位控制 8x8 的 LED 點陣（需要 2 顆 595）
+
+【場景 4：繼電器陣列】
+用 3 個腳位控制 8 個繼電器（智慧家居）
+</code></pre>
+<h3 id="74hc595_1">74HC595 長什麼樣？</h3>
+<pre><code>實體外觀：長得像一隻黑色蜈蚣，有 16 隻腳
+
+        ┌───────────┐
+   Q1 ──┤ 1  ●   16 ├── VCC (接 5V 電源)
+   Q2 ──┤ 2      15 ├── Q0
+   Q3 ──┤ 3      14 ├── DS (資料輸入)     ← Arduino 接這裡
+   Q4 ──┤ 4      13 ├── OE (輸出開關)     ← 接 GND（永遠開啟）
+   Q5 ──┤ 5      12 ├── STCP (鎖存時脈)   ← Arduino 接這裡
+   Q6 ──┤ 6      11 ├── SHCP (移位時脈)   ← Arduino 接這裡
+   Q7 ──┤ 7      10 ├── MR (重置)         ← 接 5V（不重置）
+  GND ──┤ 8       9 ├── Q7' (串聯用)
+        └───────────┘
+
+●：第一腳的標記（凹槽或圓點）
+Q0-Q7：8 個輸出腳位，接 LED 或其他元件
+</code></pre>
+<h3 id="_8">腳位功能說明（白話版）</h3>
+<table>
+<thead>
+<tr>
+<th>腳位</th>
+<th>名稱</th>
+<th>白話說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>14</td>
+<td>DS</td>
+<td>資料入口：Arduino 從這裡一個一個送資料進去</td>
+</tr>
+<tr>
+<td>11</td>
+<td>SHCP</td>
+<td>節拍器：每敲一下，資料往裡面移動一格</td>
+</tr>
+<tr>
+<td>12</td>
+<td>STCP</td>
+<td>發布鍵：按一下，內部資料同時輸出到 Q0-Q7</td>
+</tr>
+<tr>
+<td>13</td>
+<td>OE</td>
+<td>總開關：接 GND 表示「開啟輸出」</td>
+</tr>
+<tr>
+<td>10</td>
+<td>MR</td>
+<td>重置鍵：接 5V 表示「不要重置」</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Q7'</td>
+<td>串聯出口：要接第二顆 595 時用</td>
+</tr>
+<tr>
+<td>15, 1-7</td>
+<td>Q0-Q7</td>
+<td>8 個輸出：接 LED、繼電器等</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_9">工作原理（動畫式說明）</h3>
+<p>假設要輸出 <code>10110010</code>（Q7 到 Q0）：</p>
+<pre><code>初始狀態：內部暫存器都是 0
+[?][?][?][?][?][?][?][?]
+
+第 1 次敲節拍（SHCP），送入 1：
+[1][?][?][?][?][?][?][?]
+
+第 2 次敲節拍，送入 0（之前的 1 被擠到右邊）：
+[0][1][?][?][?][?][?][?]
+
+第 3 次敲節拍，送入 1：
+[1][0][1][?][?][?][?][?]
+
+第 4 次敲節拍，送入 1：
+[1][1][0][1][?][?][?][?]
+
+第 5 次敲節拍，送入 0：
+[0][1][1][0][1][?][?][?]
+
+第 6 次敲節拍，送入 0：
+[0][0][1][1][0][1][?][?]
+
+第 7 次敲節拍，送入 1：
+[1][0][0][1][1][0][1][?]
+
+第 8 次敲節拍，送入 0：
+[0][1][0][0][1][1][0][1]
+
+最後按發布鍵（STCP）：
+Q7 Q6 Q5 Q4 Q3 Q2 Q1 Q0
+ 0  1  0  0  1  1  0  1  ← 同時輸出！
+
+對應的 LED：
+滅 亮 滅 滅 亮 亮 滅 亮
+</code></pre>
+<h3 id="arduino">Arduino 接線圖</h3>
+<pre><code>Arduino Uno          74HC595              LED
+
+    D11 ─────────────── DS (14)
+    D12 ─────────────── SHCP (11)
+    D13 ─────────────── STCP (12)
+
+    5V ────────────────  VCC (16)
+    5V ────────────────  MR (10)
+    GND ───────────────  OE (13)
+    GND ───────────────  GND (8)
+
+                        Q0 (15) ──── LED ──[220Ω]── GND
+                        Q1 (1)  ──── LED ──[220Ω]── GND
+                        Q2 (2)  ──── LED ──[220Ω]── GND
+                        Q3 (3)  ──── LED ──[220Ω]── GND
+                        Q4 (4)  ──── LED ──[220Ω]── GND
+                        Q5 (5)  ──── LED ──[220Ω]── GND
+                        Q6 (6)  ──── LED ──[220Ω]── GND
+                        Q7 (7)  ──── LED ──[220Ω]── GND
+</code></pre>
+<h3 id="1">程式範例 1：最簡單的跑馬燈</h3>
+<pre><code class="language-cpp">// 74HC595 跑馬燈 - 初學者版本
+
+// 定義腳位（可以改成其他腳位）
+const int dataPin = 11;   // DS：資料
+const int clockPin = 12;  // SHCP：節拍
+const int latchPin = 13;  // STCP：發布
+
+void setup() {
+  // 設定這三個腳位為輸出
+  pinMode(dataPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(latchPin, OUTPUT);
+}
+
+void loop() {
+  // 依序點亮 LED 0 到 LED 7
+  for (int i = 0; i &lt; 8; i++) {
+    // 計算要輸出的值
+    // i=0 時：00000001（第 0 顆亮）
+    // i=1 時：00000010（第 1 顆亮）
+    // i=2 時：00000100（第 2 顆亮）
+    // ...以此類推
+    byte ledPattern = 1 &lt;&lt; i;  // 位元左移
+
+    // 發送資料到 595
+    sendTo595(ledPattern);
+
+    // 等待 200 毫秒
+    delay(200);
+  }
+}
+
+// 發送一個 byte 到 74HC595
+void sendTo595(byte data) {
+  // 步驟 1：按住發布鍵（拉低 STCP）
+  digitalWrite(latchPin, LOW);
+
+  // 步驟 2：送出資料
+  // shiftOut 是 Arduino 內建函數，會自動處理節拍
+  // MSBFIRST 表示從最高位元開始送
+  shiftOut(dataPin, clockPin, MSBFIRST, data);
+
+  // 步驟 3：放開發布鍵（拉高 STCP），資料輸出到 Q0-Q7
+  digitalWrite(latchPin, HIGH);
+}
+</code></pre>
+<h3 id="2">程式範例 2：個別控制每個輸出</h3>
+<pre><code class="language-cpp">// 像 digitalWrite 一樣控制 74HC595 的每個輸出
+
+const int dataPin = 11;
+const int clockPin = 12;
+const int latchPin = 13;
+
+// 用一個變數記住目前 8 個輸出的狀態
+byte outputState = 0;  // 00000000，全部關閉
+
+void setup() {
+  pinMode(dataPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(latchPin, OUTPUT);
+
+  Serial.begin(9600);
+  Serial.println(&quot;74HC595 個別控制範例&quot;);
+}
+
+// 設定某一個輸出
+void setOutput(int pin, bool state) {
+  // pin: 0-7，對應 Q0-Q7
+  // state: true=HIGH, false=LOW
+
+  if (state) {
+    // 把第 pin 位設為 1
+    outputState |= (1 &lt;&lt; pin);
+  } else {
+    // 把第 pin 位設為 0
+    outputState &amp;= ~(1 &lt;&lt; pin);
+  }
+
+  // 更新輸出
+  digitalWrite(latchPin, LOW);
+  shiftOut(dataPin, clockPin, MSBFIRST, outputState);
+  digitalWrite(latchPin, HIGH);
+}
+
+void loop() {
+  Serial.println(&quot;點亮 Q0&quot;);
+  setOutput(0, HIGH);
+  delay(500);
+
+  Serial.println(&quot;點亮 Q3&quot;);
+  setOutput(3, HIGH);
+  delay(500);
+
+  Serial.println(&quot;關閉 Q0&quot;);
+  setOutput(0, LOW);
+  delay(500);
+
+  Serial.println(&quot;點亮 Q7&quot;);
+  setOutput(7, HIGH);
+  delay(500);
+
+  Serial.println(&quot;全部關閉&quot;);
+  outputState = 0;
+  digitalWrite(latchPin, LOW);
+  shiftOut(dataPin, clockPin, MSBFIRST, outputState);
+  digitalWrite(latchPin, HIGH);
+  delay(1000);
+}
+</code></pre>
+<h3 id="3-led">程式範例 3：各種 LED 效果</h3>
+<pre><code class="language-cpp">// 74HC595 LED 效果集
+
+const int dataPin = 11;
+const int clockPin = 12;
+const int latchPin = 13;
+
+void setup() {
+  pinMode(dataPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(latchPin, OUTPUT);
+}
+
+void sendTo595(byte data) {
+  digitalWrite(latchPin, LOW);
+  shiftOut(dataPin, clockPin, MSBFIRST, data);
+  digitalWrite(latchPin, HIGH);
+}
+
+void loop() {
+  // 效果 1：左移跑馬燈
+  // LED: ●○○○○○○○ → ○●○○○○○○ → ○○●○○○○○ ...
+  for (int i = 0; i &lt; 8; i++) {
+    sendTo595(1 &lt;&lt; i);
+    delay(100);
+  }
+
+  // 效果 2：右移跑馬燈
+  // LED: ○○○○○○○● → ○○○○○○●○ → ○○○○○●○○ ...
+  for (int i = 7; i &gt;= 0; i--) {
+    sendTo595(1 &lt;&lt; i);
+    delay(100);
+  }
+
+  // 效果 3：累加點亮
+  // LED: ●○○○○○○○ → ●●○○○○○○ → ●●●○○○○○ ...
+  for (int i = 0; i &lt; 8; i++) {
+    sendTo595((1 &lt;&lt; (i + 1)) - 1);  // 產生 1, 11, 111, 1111...
+    delay(150);
+  }
+
+  // 效果 4：由中間向外展開
+  // LED: ○○○●●○○○ → ○○●●●●○○ → ○●●●●●●○ → ●●●●●●●●
+  for (int i = 0; i &lt; 4; i++) {
+    byte pattern = 0;
+    for (int j = 3 - i; j &lt;= 4 + i; j++) {
+      pattern |= (1 &lt;&lt; j);
+    }
+    sendTo595(pattern);
+    delay(150);
+  }
+
+  // 效果 5：全亮閃爍
+  for (int i = 0; i &lt; 3; i++) {
+    sendTo595(0xFF);  // 11111111，全亮
+    delay(200);
+    sendTo595(0x00);  // 00000000，全滅
+    delay(200);
+  }
+
+  delay(500);
+}
+</code></pre>
+<hr />
+<h2 id="74hc595-162432">74HC595 串聯（擴展到 16、24、32... 個輸出）</h2>
+<h3 id="_10">為什麼要串聯？</h3>
+<pre><code>一顆 74HC595 = 8 個輸出
+想要 16 個輸出？串聯 2 顆！
+想要 24 個輸出？串聯 3 顆！
+想要 32 個輸出？串聯 4 顆！
+
+而且！不管串幾顆，Arduino 永遠只要用 3 個腳位！
+</code></pre>
+<h3 id="_11">串聯原理</h3>
+<pre><code>74HC595 有一個特殊腳位 Q7'（第 9 腳）
+它會輸出「被擠出去」的資料
+
+想像排隊買票：
+[入口] → [位置1] → [位置2] → ... → [位置8] → [出口]
+
+當第 9 個人進來，第 1 個人就從出口被擠出去
+這個「出口」(Q7') 可以接到下一顆 595 的「入口」(DS)
+</code></pre>
+<h3 id="_12">串聯接線圖</h3>
+<pre><code>Arduino          74HC595 #1              74HC595 #2
+                 (控制 LED 0-7)          (控制 LED 8-15)
+
+  D11 ─────────── DS (14)
+                  Q7' (9) ─────────────── DS (14)
+
+  D12 ──────┬──── SHCP (11)              SHCP (11) ────┘
+            └──────────────────────────────────────────┘
+
+  D13 ──────┬──── STCP (12)              STCP (12) ────┘
+            └──────────────────────────────────────────┘
+
+時脈線和鎖存線是共用的！
+</code></pre>
+<h3 id="_13">串聯程式範例</h3>
+<pre><code class="language-cpp">// 2 個 74HC595 串聯，控制 16 個 LED
+
+const int dataPin = 11;
+const int clockPin = 12;
+const int latchPin = 13;
+
+void setup() {
+  pinMode(dataPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(latchPin, OUTPUT);
+}
+
+// 發送 16 位元資料
+void sendTo595x2(uint16_t data) {
+  digitalWrite(latchPin, LOW);
+
+  // 重點！先送高位元組（給第二顆 595）
+  // 因為資料會被「擠」過去
+  shiftOut(dataPin, clockPin, MSBFIRST, (data &gt;&gt; 8) &amp; 0xFF);  // 高 8 位
+  shiftOut(dataPin, clockPin, MSBFIRST, data &amp; 0xFF);         // 低 8 位
+
+  digitalWrite(latchPin, HIGH);
+}
+
+void loop() {
+  // 16 個 LED 的跑馬燈
+  for (int i = 0; i &lt; 16; i++) {
+    sendTo595x2(1 &lt;&lt; i);
+    delay(100);
+  }
+}
+</code></pre>
+<hr />
+<h2 id="74hc164-ic">74HC164 - 無鎖存的移位暫存器</h2>
+<h3 id="74hc164-intro">74HC164 是什麼？</h3>
+<p>74HC164 和 74HC595 一樣是「串進並出」移位暫存器，但有一個關鍵差異：<strong>沒有鎖存功能</strong>。</p>
+<pre><code>【74HC595 vs 74HC164 的差異】
+
+74HC595（有鎖存）：
+資料移入時 → 輸出保持不變
+全部移完後 → 按發布鍵，輸出一次更新
+結果：輸出穩定，不會閃爍
+
+74HC164（無鎖存）：
+資料移入時 → 輸出立即跟著變化
+每移一個位元 → 輸出就跳一次
+結果：輸出會「跑動」，可能會閃爍
+</code></pre>
+
+<h3 id="74hc164-compare">為什麼還要用 74HC164？</h3>
+<table>
+<thead>
+<tr>
+<th>比較項目</th>
+<th>74HC595</th>
+<th>74HC164</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>腳位數</td>
+<td>16 腳</td>
+<td>14 腳（更小）</td>
+</tr>
+<tr>
+<td>控制線</td>
+<td>3 條（資料、時脈、鎖存）</td>
+<td>2 條（資料、時脈）</td>
+</tr>
+<tr>
+<td>鎖存功能</td>
+<td>有</td>
+<td>無</td>
+</tr>
+<tr>
+<td>輸出穩定性</td>
+<td>穩定（等全部資料送完才更新）</td>
+<td>會跳動（每送一位就更新）</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>$5-15</td>
+<td>$3-10（更便宜）</td>
+</tr>
+<tr>
+<td>適用場景</td>
+<td>LED 顯示、需要穩定輸出</td>
+<td>驅動其他 IC、不需要穩定輸出</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="74hc164-pinout">74HC164 腳位圖</h3>
+<pre><code>        ┌───────────┐
+    A ──┤ 1  ●   14 ├── VCC (5V)
+    B ──┤ 2      13 ├── Q7
+   Q0 ──┤ 3      12 ├── Q6
+   Q1 ──┤ 4      11 ├── Q5
+   Q2 ──┤ 5      10 ├── Q4
+   Q3 ──┤ 6       9 ├── /MR (重置，接 5V)
+  GND ──┤ 7       8 ├── CP (時脈)
+        └───────────┘
+
+A、B：資料輸入（兩個 AND 在一起，通常接一起或 B 接 5V）
+CP：時脈輸入
+/MR：重置（接 5V 表示不重置）
+Q0-Q7：8 個輸出
+</code></pre>
+
+<h3 id="74hc164-wiring">Arduino 接線圖</h3>
+<pre><code>Arduino Uno          74HC164              LED
+
+    D11 ─────────────── A (1)
+                  ┌──── B (2)
+    5V ───────────┴──── B (2)  ← A 和 B 可以接一起，或 B 接 5V
+    D12 ─────────────── CP (8)
+    5V ──────────────── /MR (9)
+    5V ──────────────── VCC (14)
+    GND ─────────────── GND (7)
+
+                       Q0 (3)  ──── LED ──[220Ω]── GND
+                       Q1 (4)  ──── LED ──[220Ω]── GND
+                       Q2 (5)  ──── LED ──[220Ω]── GND
+                       Q3 (6)  ──── LED ──[220Ω]── GND
+                       Q4 (10) ──── LED ──[220Ω]── GND
+                       Q5 (11) ──── LED ──[220Ω]── GND
+                       Q6 (12) ──── LED ──[220Ω]── GND
+                       Q7 (13) ──── LED ──[220Ω]── GND
+</code></pre>
+
+<h3 id="74hc164-code">程式範例</h3>
+<pre><code class="language-cpp">// 74HC164 跑馬燈（注意：輸出會有短暫跳動）
+
+const int dataPin = 11;   // A（資料）
+const int clockPin = 12;  // CP（時脈）
+
+void setup() {
+  pinMode(dataPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+}
+
+// 發送資料到 74HC164
+// 注意：沒有鎖存，輸出會在移位過程中變化
+void sendTo164(byte data) {
+  // 從 MSB 開始送，送 8 個位元
+  for (int i = 7; i >= 0; i--) {
+    // 設定資料線
+    digitalWrite(dataPin, (data >> i) & 1);
+
+    // 產生時脈脈衝
+    digitalWrite(clockPin, HIGH);
+    delayMicroseconds(1);
+    digitalWrite(clockPin, LOW);
+  }
+}
+
+void loop() {
+  // 跑馬燈
+  for (int i = 0; i < 8; i++) {
+    sendTo164(1 << i);
+    delay(200);
+  }
+}
+</code></pre>
+
+<h3 id="74hc164-vs-595-choose">74HC164 vs 74HC595：怎麼選？</h3>
+<pre><code>選 74HC595 的情況：
+├─ 控制 LED 顯示器（跑馬燈、數碼管）
+├─ 需要穩定、不閃爍的輸出
+├─ 串聯多顆時要同步更新
+└─ 大多數專案的首選
+
+選 74HC164 的情況：
+├─ 腳位非常緊張，想省 1 條線
+├─ 驅動不需要穩定輸出的元件
+├─ 當作其他 IC 的資料輸入（如驅動 LCD）
+├─ 預算很緊，想省一點錢
+└─ 更新頻率很快，閃爍看不出來
+
+一般建議：直接用 74HC595，多 1 條線但好用很多！
+</code></pre>
+
+<hr />
+<h2 id="74hc165-ic">74HC165 - 輸入擴展 IC</h2>
+<h3 id="_14">什麼時候需要輸入擴展？</h3>
+<pre><code>【場景】你想做一個有 16 個按鈕的遊戲控制器
+      Arduino Uno 只有 14 個數位腳位
+      扣掉 LCD、其他感測器，根本不夠用！
+
+【解決方案】使用 74HC165
+           只需要 3 個腳位，就能讀取 8 個按鈕
+           串聯 2 顆就能讀取 16 個按鈕！
+</code></pre>
+<h3 id="74hc595-vs-74hc165">74HC595 vs 74HC165</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>74HC595</th>
+<th>74HC165</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>方向</td>
+<td>Arduino → 元件（輸出）</td>
+<td>元件 → Arduino（輸入）</td>
+</tr>
+<tr>
+<td>類型</td>
+<td>串進並出 (SIPO)</td>
+<td>並進串出 (PISO)</td>
+</tr>
+<tr>
+<td>用途</td>
+<td>控制 LED、繼電器</td>
+<td>讀取按鈕、開關</td>
+</tr>
+<tr>
+<td>資料流</td>
+<td>Arduino 送資料出去</td>
+<td>Arduino 讀取資料進來</td>
+</tr>
+</tbody>
+</table>
+<h3 id="74hc165">74HC165 腳位圖</h3>
+<pre><code>        ┌───────────┐
+ SH/LD ─┤ 1  ●   16 ├── VCC (5V)
+   CLK ─┤ 2      15 ├── CLK INH (接 GND)
+    D4 ─┤ 3      14 ├── D3
+    D5 ─┤ 4      13 ├── D2
+    D6 ─┤ 5      12 ├── D1
+    D7 ─┤ 6      11 ├── D0        ← 8 個輸入
+   /Q7 ─┤ 7      10 ├── DS (串聯用)
+   GND ─┤ 8       9 ├── Q7 (資料輸出) ← Arduino 讀這裡
+        └───────────┘
+</code></pre>
+<h3 id="_15">工作原理（白話版）</h3>
+<pre><code>【步驟 1：載入】
+按下 SH/LD（拉低），把 D0-D7 的狀態「拍照」存起來
+
+按鈕狀態：[按][放][按][按][放][放][按][放]
+內部暫存：[ 1][ 0][ 1][ 1][ 0][ 0][ 1][ 0]
+
+【步驟 2：讀取】
+放開 SH/LD（拉高），開始讀取
+每敲一下節拍（CLK），從 Q7 讀出一個位元
+讀完 8 次，就知道全部按鈕的狀態了
+</code></pre>
+<h3 id="arduino_1">Arduino 接線</h3>
+<pre><code>Arduino          74HC165              按鈕
+
+    D8 ─────────── SH/LD (1)
+    D9 ─────────── CLK (2)
+    D10 ────────── Q7 (9)
+
+    GND ────────── CLK INH (15)
+    5V ─────────── VCC (16)
+    GND ────────── GND (8)
+
+                   D0 (11) ←── 按鈕0 ←── 5V (用上拉電阻)
+                   D1 (12) ←── 按鈕1 ←── 5V
+                   D2 (13) ←── 按鈕2 ←── 5V
+                   ...
+                   D7 (6)  ←── 按鈕7 ←── 5V
+
+注意：按鈕另一端接 GND
+     沒按時輸入為 HIGH（因為上拉）
+     按下時輸入為 LOW
+</code></pre>
+<h3 id="8">程式範例：讀取 8 個按鈕</h3>
+<pre><code class="language-cpp">// 74HC165 讀取 8 個按鈕
+
+const int loadPin = 8;   // SH/LD
+const int clockPin = 9;  // CLK
+const int dataPin = 10;  // Q7
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(loadPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(dataPin, INPUT);
+
+  // 預設狀態
+  digitalWrite(loadPin, HIGH);
+  digitalWrite(clockPin, LOW);
+
+  Serial.println(&quot;74HC165 按鈕讀取器&quot;);
+  Serial.println(&quot;按下任何按鈕查看狀態...&quot;);
+}
+
+// 讀取 8 個輸入
+byte readButtons() {
+  byte result = 0;
+
+  // 步驟 1：載入（拍照）
+  digitalWrite(loadPin, LOW);
+  delayMicroseconds(5);
+  digitalWrite(loadPin, HIGH);
+
+  // 步驟 2：讀取 8 個位元
+  for (int i = 0; i &lt; 8; i++) {
+    // 讀取目前的位元
+    result &lt;&lt;= 1;  // 先左移騰出空間
+    if (digitalRead(dataPin)) {
+      result |= 1;  // 如果是 HIGH，設為 1
+    }
+
+    // 敲節拍，讓下一個位元出現
+    digitalWrite(clockPin, HIGH);
+    delayMicroseconds(5);
+    digitalWrite(clockPin, LOW);
+  }
+
+  return result;
+}
+
+void loop() {
+  byte buttons = readButtons();
+
+  // 顯示二進位狀態
+  Serial.print(&quot;按鈕狀態: &quot;);
+  for (int i = 7; i &gt;= 0; i--) {
+    Serial.print((buttons &gt;&gt; i) &amp; 1);
+  }
+  Serial.print(&quot;  &quot;);
+
+  // 顯示哪些按鈕被按下（LOW = 按下，因為上拉電阻）
+  for (int i = 0; i &lt; 8; i++) {
+    if (!(buttons &amp; (1 &lt;&lt; i))) {
+      Serial.print(&quot;按鈕&quot;);
+      Serial.print(i);
+      Serial.print(&quot;按下 &quot;);
+    }
+  }
+  Serial.println();
+
+  delay(200);
+}
+</code></pre>
+<hr />
+<h2 id="i2c-ic">I2C 擴展 IC（更簡單的選擇）</h2>
+<h3 id="i2c">什麼是 I2C？</h3>
+<pre><code>I2C 是一種通訊方式，只需要 2 條線就能連接很多裝置
+
+Arduino ──SDA──┬── 裝置1（位址 0x20）
+         SCL──┤
+              ├── 裝置2（位址 0x21）
+              ├── 裝置3（位址 0x22）
+              └── ...最多 127 個裝置！
+
+每個裝置有自己的「地址」，就像每戶人家有門牌號碼
+Arduino 可以指名道姓地跟特定裝置溝通
+</code></pre>
+<h3 id="mcp23017-i2c-16-io">MCP23017 - I2C 16 位元 I/O 擴展</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>規格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>介面</td>
+<td>I2C（只要 2 條線！）</td>
+</tr>
+<tr>
+<td>I/O 數量</td>
+<td>16 個（可以當輸入或輸出）</td>
+</tr>
+<tr>
+<td>可串接</td>
+<td>8 個位址，最多 128 個 I/O</td>
+</tr>
+<tr>
+<td>功能</td>
+<td>有中斷、上拉電阻等進階功能</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>約 $30-50</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_16">使用場景</h4>
+<pre><code>【場景】做一個智慧家居控制器
+       - 16 個繼電器控制電燈
+       - 只用 I2C 兩條線連接
+       - Arduino 還有很多腳位可以接其他東西
+</code></pre>
+<h4 id="_17">接線（超簡單！）</h4>
+<pre><code>Arduino          MCP23017
+  A4 (SDA) ───── SDA
+  A5 (SCL) ───── SCL
+  5V ─────────── VDD
+  GND ────────── VSS
+  GND ────────── A0, A1, A2 (位址設定，全接 GND = 位址 0x20)
+</code></pre>
+<h4 id="_18">程式範例</h4>
+<pre><code class="language-cpp">// MCP23017 控制 LED
+// 需要安裝 Adafruit MCP23017 函式庫
+
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_MCP23X17.h&gt;
+
+Adafruit_MCP23X17 mcp;
+
+void setup() {
+  Serial.begin(9600);
+
+  // 初始化 MCP23017（位址 0x20）
+  if (!mcp.begin_I2C()) {
+    Serial.println(&quot;找不到 MCP23017！&quot;);
+    while (1);
+  }
+
+  // 設定 GPA0-GPA7 為輸出（控制 8 個 LED）
+  for (int i = 0; i &lt; 8; i++) {
+    mcp.pinMode(i, OUTPUT);
+  }
+
+  // 設定 GPB0-GPB7 為輸入（讀取 8 個按鈕）
+  for (int i = 8; i &lt; 16; i++) {
+    mcp.pinMode(i, INPUT_PULLUP);
+  }
+
+  Serial.println(&quot;MCP23017 準備完成！&quot;);
+}
+
+void loop() {
+  // 跑馬燈
+  for (int i = 0; i &lt; 8; i++) {
+    mcp.digitalWrite(i, HIGH);
+    delay(100);
+    mcp.digitalWrite(i, LOW);
+  }
+
+  // 讀取按鈕
+  for (int i = 8; i &lt; 16; i++) {
+    if (mcp.digitalRead(i) == LOW) {
+      Serial.print(&quot;按鈕 &quot;);
+      Serial.print(i - 8);
+      Serial.println(&quot; 被按下&quot;);
+    }
+  }
+}
+</code></pre>
+<h3 id="pcf8574-i2c-8-io">PCF8574 - I2C 8 位元 I/O 擴展</h3>
+<pre><code>比 MCP23017 更簡單便宜的選擇
+常見於 I2C LCD 背板（就是那塊小小的轉接板）
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>規格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I/O 數量</td>
+<td>8 個</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>約 $10-20</td>
+</tr>
+<tr>
+<td>常見用途</td>
+<td>I2C LCD 轉接板</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="adc-expand">ADC 擴展 - 類比輸入擴展</h2>
+<h3 id="adc-why">為什麼需要 ADC 擴展？</h3>
+<pre><code>Arduino Uno 的類比輸入限制：
+├─ 只有 6 個類比輸入（A0-A5）
+├─ 解析度只有 10 位元（0-1023）
+├─ 精度不夠高（約 4.9mV 一格）
+└─ 取樣速度有限
+
+ADC 擴展可以解決：
+├─ 增加類比輸入數量
+├─ 提高解析度（16 位元 = 65536 格）
+├─ 提高精度（可達 0.0078mV 一格）
+└─ 增加取樣速度
+</code></pre>
+
+<h3 id="ads1115">ADS1115 - 16 位元高精度 ADC</h3>
+<p>ADS1115 是最常用的 I2C ADC 擴展模組，特別適合需要高精度測量的場景。</p>
+
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>規格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>解析度</td>
+<td>16 位元（比 Arduino 高 64 倍！）</td>
+</tr>
+<tr>
+<td>通道數</td>
+<td>4 個單端 或 2 個差動</td>
+</tr>
+<tr>
+<td>介面</td>
+<td>I2C（只要 2 條線）</td>
+</tr>
+<tr>
+<td>位址</td>
+<td>可設定 4 個位址（最多串接 4 個 = 16 通道）</td>
+</tr>
+<tr>
+<td>內建 PGA</td>
+<td>可程式增益放大器（±6.144V ~ ±0.256V）</td>
+</tr>
+<tr>
+<td>取樣率</td>
+<td>8 ~ 860 SPS（可調）</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>約 $50-100</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="ads1115-vs-arduino">ADS1115 vs Arduino 內建 ADC</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Arduino 內建</th>
+<th>ADS1115</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>解析度</td>
+<td>10 位元（1024 格）</td>
+<td>16 位元（65536 格）</td>
+</tr>
+<tr>
+<td>最小可測電壓</td>
+<td>約 4.9mV</td>
+<td>約 0.0078mV（增益最大時）</td>
+</tr>
+<tr>
+<td>通道數</td>
+<td>6 個</td>
+<td>4 個（可串接擴展）</td>
+</tr>
+<tr>
+<td>差動測量</td>
+<td>不支援</td>
+<td>支援</td>
+</tr>
+<tr>
+<td>內建放大</td>
+<td>無</td>
+<td>有（PGA）</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="ads1115-pinout">ADS1115 模組腳位</h4>
+<pre><code>常見模組外觀（已焊好的模組）：
+
+    ┌─────────────────┐
+    │   ADS1115       │
+    │                 │
+    │ VDD  GND  SCL  SDA  ADDR  ALRT │
+    └──┬───┬───┬───┬───┬───┬──┘
+       │   │   │   │   │   │
+       5V GND  A5  A4  選  警報
+              (SCL)(SDA) 址  (可不接)
+
+A0  A1  A2  A3  ← 4 個類比輸入
+</code></pre>
+
+<h4 id="ads1115-wiring">Arduino 接線</h4>
+<pre><code>Arduino Uno          ADS1115 模組
+
+    5V ──────────────── VDD
+    GND ─────────────── GND
+    A4 (SDA) ────────── SDA
+    A5 (SCL) ────────── SCL
+    GND ─────────────── ADDR（位址 0x48）
+
+                       A0 ←── 感測器 1
+                       A1 ←── 感測器 2
+                       A2 ←── 感測器 3
+                       A3 ←── 感測器 4
+
+位址設定（ADDR 腳位）：
+├─ 接 GND → 位址 0x48（預設）
+├─ 接 VDD → 位址 0x49
+├─ 接 SDA → 位址 0x4A
+└─ 接 SCL → 位址 0x4B
+</code></pre>
+
+<h4 id="ads1115-code">程式範例</h4>
+<pre><code class="language-cpp">// ADS1115 高精度 ADC 讀取
+// 需要安裝 Adafruit ADS1X15 函式庫
+
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_ADS1X15.h&gt;
+
+Adafruit_ADS1115 ads;  // 16 位元版本
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println("ADS1115 高精度 ADC 測試");
+
+  // 初始化（位址 0x48）
+  if (!ads.begin()) {
+    Serial.println("找不到 ADS1115！");
+    while (1);
+  }
+
+  // 設定增益（影響測量範圍和精度）
+  // GAIN_TWOTHIRDS: ±6.144V（預設，最大範圍）
+  // GAIN_ONE:       ±4.096V
+  // GAIN_TWO:       ±2.048V
+  // GAIN_FOUR:      ±1.024V
+  // GAIN_EIGHT:     ±0.512V
+  // GAIN_SIXTEEN:   ±0.256V（最高精度）
+  ads.setGain(GAIN_ONE);  // ±4.096V
+}
+
+void loop() {
+  // 讀取 4 個通道
+  int16_t adc0 = ads.readADC_SingleEnded(0);
+  int16_t adc1 = ads.readADC_SingleEnded(1);
+  int16_t adc2 = ads.readADC_SingleEnded(2);
+  int16_t adc3 = ads.readADC_SingleEnded(3);
+
+  // 轉換成電壓（GAIN_ONE 時，每格 = 0.125mV）
+  float volts0 = ads.computeVolts(adc0);
+  float volts1 = ads.computeVolts(adc1);
+  float volts2 = ads.computeVolts(adc2);
+  float volts3 = ads.computeVolts(adc3);
+
+  Serial.println("-------------------");
+  Serial.print("A0: "); Serial.print(adc0); Serial.print(" ("); Serial.print(volts0, 4); Serial.println("V)");
+  Serial.print("A1: "); Serial.print(adc1); Serial.print(" ("); Serial.print(volts1, 4); Serial.println("V)");
+  Serial.print("A2: "); Serial.print(adc2); Serial.print(" ("); Serial.print(volts2, 4); Serial.println("V)");
+  Serial.print("A3: "); Serial.print(adc3); Serial.print(" ("); Serial.print(volts3, 4); Serial.println("V)");
+
+  delay(1000);
+}
+</code></pre>
+
+<h4 id="ads1115-diff">差動測量範例</h4>
+<pre><code class="language-cpp">// 差動測量：測量兩點之間的電壓差
+// 適合測量橋式感測器（如應變規、荷重元）
+
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_ADS1X15.h&gt;
+
+Adafruit_ADS1115 ads;
+
+void setup() {
+  Serial.begin(9600);
+  ads.begin();
+  ads.setGain(GAIN_SIXTEEN);  // 高增益，測量小訊號
+}
+
+void loop() {
+  // 差動測量：A0 和 A1 之間的電壓差
+  int16_t diff01 = ads.readADC_Differential_0_1();
+
+  // 差動測量：A2 和 A3 之間的電壓差
+  int16_t diff23 = ads.readADC_Differential_2_3();
+
+  float volts01 = ads.computeVolts(diff01);
+  float volts23 = ads.computeVolts(diff23);
+
+  Serial.print("A0-A1 差: "); Serial.print(volts01 * 1000, 2); Serial.println(" mV");
+  Serial.print("A2-A3 差: "); Serial.print(volts23 * 1000, 2); Serial.println(" mV");
+
+  delay(500);
+}
+</code></pre>
+
+<h4 id="ads1115-applications">ADS1115 應用場景</h4>
+<pre><code>【場景 1：高精度溫度測量】
+使用熱敏電阻或 PT100，需要高解析度
+
+【場景 2：荷重元/電子秤】
+差動測量 + 高增益，測量微伏級訊號
+
+【場景 3：電池電壓監控】
+精確測量電池電壓和電流
+
+【場景 4：多通道感測器】
+同時監測多個感測器，Arduino 類比腳位不夠用時
+</code></pre>
+
+<h3 id="ads1015">ADS1015 - 12 位元經濟版</h3>
+<p>如果不需要 16 位元精度，可以選擇 ADS1015，便宜一些且取樣速度更快。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>ADS1115</th>
+<th>ADS1015</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>解析度</td>
+<td>16 位元</td>
+<td>12 位元</td>
+</tr>
+<tr>
+<td>取樣率</td>
+<td>8-860 SPS</td>
+<td>128-3300 SPS</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>$50-100</td>
+<td>$30-60</td>
+</tr>
+<tr>
+<td>適用</td>
+<td>高精度測量</td>
+<td>快速取樣、一般用途</td>
+</tr>
+</tbody>
+</table>
+
+<hr />
+<h2 id="dac-expand">DAC 擴展 - 類比輸出擴展</h2>
+<h3 id="dac-why">為什麼需要 DAC？</h3>
+<pre><code>Arduino 的限制：
+├─ 沒有真正的類比輸出！
+├─ analogWrite() 其實是 PWM（脈寬調變）
+├─ PWM 輸出有雜訊，不適合某些應用
+└─ 無法產生精確的電壓
+
+需要真正類比輸出的場景：
+├─ 音訊輸出（喇叭、放大器）
+├─ 控制類比電路
+├─ 產生精確參考電壓
+└─ 控制某些感測器的偏壓
+</code></pre>
+
+<h3 id="mcp4725">MCP4725 - 12 位元 I2C DAC</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>規格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>解析度</td>
+<td>12 位元（4096 階）</td>
+</tr>
+<tr>
+<td>輸出範圍</td>
+<td>0V ~ VDD（通常 0-5V 或 0-3.3V）</td>
+</tr>
+<tr>
+<td>介面</td>
+<td>I2C</td>
+</tr>
+<tr>
+<td>更新率</td>
+<td>最高 400kHz I2C</td>
+</tr>
+<tr>
+<td>內建 EEPROM</td>
+<td>可儲存預設值</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>約 $30-50</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="mcp4725-wiring">接線圖</h4>
+<pre><code>Arduino Uno          MCP4725 模組
+
+    5V ──────────────── VCC
+    GND ─────────────── GND
+    A4 (SDA) ────────── SDA
+    A5 (SCL) ────────── SCL
+
+                       OUT ──→ 類比輸出（0-5V）
+</code></pre>
+
+<h4 id="mcp4725-code">程式範例</h4>
+<pre><code class="language-cpp">// MCP4725 DAC 輸出
+// 需要安裝 Adafruit MCP4725 函式庫
+
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_MCP4725.h&gt;
+
+Adafruit_MCP4725 dac;
+
+void setup() {
+  Serial.begin(9600);
+
+  // 初始化（位址通常是 0x60 或 0x62）
+  dac.begin(0x60);
+
+  Serial.println("MCP4725 DAC 測試");
+}
+
+void loop() {
+  // 輸出鋸齒波
+  for (uint16_t i = 0; i &lt; 4096; i++) {
+    dac.setVoltage(i, false);
+    // false 表示不儲存到 EEPROM
+  }
+
+  // 輸出特定電壓
+  // 5V 系統：4095 = 5V，2048 = 2.5V，0 = 0V
+  dac.setVoltage(2048, false);  // 輸出 2.5V
+  delay(1000);
+
+  dac.setVoltage(4095, false);  // 輸出 5V
+  delay(1000);
+
+  dac.setVoltage(0, false);     // 輸出 0V
+  delay(1000);
+}
+</code></pre>
+
+<h4 id="mcp4725-sinewave">產生正弦波範例</h4>
+<pre><code class="language-cpp">// 用 MCP4725 產生正弦波
+
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_MCP4725.h&gt;
+
+Adafruit_MCP4725 dac;
+
+// 預先計算的正弦波表（64 點）
+const uint16_t sineTable[64] = {
+  2048, 2248, 2447, 2642, 2831, 3013, 3185, 3347,
+  3495, 3630, 3750, 3853, 3939, 4007, 4056, 4085,
+  4095, 4085, 4056, 4007, 3939, 3853, 3750, 3630,
+  3495, 3347, 3185, 3013, 2831, 2642, 2447, 2248,
+  2048, 1847, 1648, 1453, 1264, 1082,  910,  748,
+   600,  465,  345,  242,  156,   88,   39,   10,
+     0,   10,   39,   88,  156,  242,  345,  465,
+   600,  748,  910, 1082, 1264, 1453, 1648, 1847
+};
+
+void setup() {
+  dac.begin(0x60);
+}
+
+void loop() {
+  // 輸出正弦波
+  for (int i = 0; i &lt; 64; i++) {
+    dac.setVoltage(sineTable[i], false);
+    delayMicroseconds(100);  // 調整頻率
+  }
+}
+</code></pre>
+
+<hr />
+<h2 id="pwm-expand">PWM 擴展 - 多通道 PWM 輸出</h2>
+<h3 id="pwm-why">為什麼需要 PWM 擴展？</h3>
+<pre><code>Arduino Uno 的 PWM 限制：
+├─ 只有 6 個 PWM 腳位（D3, D5, D6, D9, D10, D11）
+├─ 解析度只有 8 位元（0-255）
+├─ 頻率固定（490Hz 或 980Hz）
+└─ 控制多個伺服馬達時腳位不夠
+
+PWM 擴展可以：
+├─ 增加 PWM 通道數量
+├─ 提高解析度（12 位元 = 4096 階）
+├─ 獨立控制每個通道的頻率
+└─ 減輕 Arduino 的運算負擔
+</code></pre>
+
+<h3 id="pca9685">PCA9685 - 16 通道 PWM 驅動器</h3>
+<p>PCA9685 是最常用的 PWM 擴展 IC，特別適合控制多個伺服馬達或 LED。</p>
+
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>規格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PWM 通道</td>
+<td>16 個獨立通道</td>
+</tr>
+<tr>
+<td>解析度</td>
+<td>12 位元（4096 階）</td>
+</tr>
+<tr>
+<td>頻率範圍</td>
+<td>24Hz ~ 1526Hz（可調）</td>
+</tr>
+<tr>
+<td>介面</td>
+<td>I2C</td>
+</tr>
+<tr>
+<td>可串接</td>
+<td>最多 62 個（= 992 個 PWM！）</td>
+</tr>
+<tr>
+<td>內建輸出驅動</td>
+<td>每通道 25mA</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>約 $50-80（模組）</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="pca9685-wiring">接線圖</h4>
+<pre><code>Arduino Uno          PCA9685 模組
+
+    5V ──────────────── VCC
+    GND ─────────────── GND
+    A4 (SDA) ────────── SDA
+    A5 (SCL) ────────── SCL
+
+外部電源（控制伺服馬達時必須）：
+    5V-6V 電源 + ───── V+
+    5V-6V 電源 - ───── GND
+
+                       PWM0 ──→ 伺服馬達 1
+                       PWM1 ──→ 伺服馬達 2
+                       ...
+                       PWM15 ──→ 伺服馬達 16
+</code></pre>
+
+<h4 id="pca9685-servo">控制伺服馬達範例</h4>
+<pre><code class="language-cpp">// PCA9685 控制 16 個伺服馬達
+// 需要安裝 Adafruit PWM Servo Driver 函式庫
+
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_PWMServoDriver.h&gt;
+
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+
+// 伺服馬達的脈衝範圍（依實際馬達調整）
+#define SERVO_MIN  150  // 最小脈衝（約 0 度）
+#define SERVO_MAX  600  // 最大脈衝（約 180 度）
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println("PCA9685 伺服馬達控制");
+
+  pwm.begin();
+  pwm.setPWMFreq(50);  // 伺服馬達通常用 50Hz
+}
+
+// 設定伺服馬達角度
+void setServoAngle(uint8_t channel, int angle) {
+  // 將角度（0-180）轉換成脈衝值
+  int pulse = map(angle, 0, 180, SERVO_MIN, SERVO_MAX);
+  pwm.setPWM(channel, 0, pulse);
+}
+
+void loop() {
+  // 讓所有 16 個伺服馬達依序轉動
+  for (int servo = 0; servo &lt; 16; servo++) {
+    Serial.print("伺服 "); Serial.print(servo); Serial.println(" 轉動");
+
+    setServoAngle(servo, 0);    // 轉到 0 度
+    delay(500);
+    setServoAngle(servo, 90);   // 轉到 90 度
+    delay(500);
+    setServoAngle(servo, 180);  // 轉到 180 度
+    delay(500);
+    setServoAngle(servo, 90);   // 回到 90 度
+    delay(500);
+  }
+}
+</code></pre>
+
+<h4 id="pca9685-led">LED 亮度控制範例</h4>
+<pre><code class="language-cpp">// PCA9685 控制 LED 亮度（12 位元 PWM）
+
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_PWMServoDriver.h&gt;
+
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+
+void setup() {
+  pwm.begin();
+  pwm.setPWMFreq(1000);  // LED 可以用較高頻率
+}
+
+void loop() {
+  // 16 個 LED 呼吸效果（錯開相位）
+  for (int brightness = 0; brightness &lt; 4096; brightness += 16) {
+    for (int led = 0; led &lt; 16; led++) {
+      // 每個 LED 錯開 256 格
+      int value = (brightness + led * 256) % 4096;
+      pwm.setPWM(led, 0, value);
+    }
+    delay(10);
+  }
+}
+</code></pre>
+
+<hr />
+<h2 id="current-driver">電流驅動 IC - 大電流輸出</h2>
+<h3 id="current-why">為什麼需要電流驅動 IC？</h3>
+<pre><code>Arduino 和 74HC595 的限制：
+├─ Arduino 每腳最大 40mA
+├─ 74HC595 每腳最大 35mA
+├─ 無法直接驅動：繼電器、馬達、高亮度 LED
+└─ 驅動大電流元件需要額外電路
+
+電流驅動 IC 可以：
+├─ 放大電流（數百 mA 到數 A）
+├─ 隔離控制電路和負載
+├─ 簡化電路設計
+└─ 保護 Arduino
+</code></pre>
+
+<h3 id="uln2803">ULN2803 - 達林頓電晶體陣列</h3>
+<p>ULN2803 內含 8 組達林頓電晶體，可以驅動繼電器、馬達等大電流負載。</p>
+
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>規格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>通道數</td>
+<td>8 個</td>
+</tr>
+<tr>
+<td>最大電流</td>
+<td>每通道 500mA</td>
+</tr>
+<tr>
+<td>最大電壓</td>
+<td>50V</td>
+</tr>
+<tr>
+<td>輸入</td>
+<td>TTL/CMOS 相容（5V 直接接）</td>
+</tr>
+<tr>
+<td>內建保護二極體</td>
+<td>有（驅動繼電器不用額外加）</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>約 $10-20</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="uln2803-pinout">腳位圖</h4>
+<pre><code>        ┌───────────┐
+  IN1 ──┤ 1  ●   18 ├── OUT1
+  IN2 ──┤ 2      17 ├── OUT2
+  IN3 ──┤ 3      16 ├── OUT3
+  IN4 ──┤ 4      15 ├── OUT4
+  IN5 ──┤ 5      14 ├── OUT5
+  IN6 ──┤ 6      13 ├── OUT6
+  IN7 ──┤ 7      12 ├── OUT7
+  IN8 ──┤ 8      11 ├── OUT8
+  GND ──┤ 9      10 ├── COM（接負載電源正極）
+        └───────────┘
+
+注意：ULN2803 是「低端驅動」
+輸入 HIGH → 輸出接地（負載導通）
+輸入 LOW → 輸出浮空（負載關閉）
+</code></pre>
+
+<h4 id="uln2803-relay">驅動繼電器範例</h4>
+<pre><code>Arduino          ULN2803              繼電器
+
+   D2 ──────────── IN1
+                   OUT1 ──────────── 繼電器線圈 -
+                   COM ───────────── 繼電器線圈 +（接 5V 或 12V）
+   GND ─────────── GND
+</code></pre>
+
+<pre><code class="language-cpp">// ULN2803 驅動 8 個繼電器
+
+const int relayPins[] = {2, 3, 4, 5, 6, 7, 8, 9};
+
+void setup() {
+  for (int i = 0; i &lt; 8; i++) {
+    pinMode(relayPins[i], OUTPUT);
+    digitalWrite(relayPins[i], LOW);  // 全部關閉
+  }
+}
+
+void loop() {
+  // 依序開啟繼電器
+  for (int i = 0; i &lt; 8; i++) {
+    digitalWrite(relayPins[i], HIGH);  // 開啟
+    delay(500);
+  }
+
+  delay(1000);
+
+  // 依序關閉繼電器
+  for (int i = 0; i &lt; 8; i++) {
+    digitalWrite(relayPins[i], LOW);   // 關閉
+    delay(500);
+  }
+
+  delay(1000);
+}
+</code></pre>
+
+<h3 id="uln2803-595">ULN2803 搭配 74HC595</h3>
+<p>將 74HC595 的輸出接到 ULN2803，可以用 3 條線控制 8 個大電流負載！</p>
+<pre><code>Arduino      74HC595         ULN2803         負載
+
+ D11 ───────── DS
+ D12 ───────── SHCP
+ D13 ───────── STCP
+              Q0 ───────────── IN1
+              Q1 ───────────── IN2           OUT1 ──→ 繼電器 1
+              Q2 ───────────── IN3           OUT2 ──→ 繼電器 2
+              Q3 ───────────── IN4           ...
+              Q4 ───────────── IN5           OUT8 ──→ 繼電器 8
+              Q5 ───────────── IN6
+              Q6 ───────────── IN7
+              Q7 ───────────── IN8
+                              COM ──── 12V +
+</code></pre>
+
+<h3 id="tpic6b595">TPIC6B595 - 大電流版 74HC595</h3>
+<p>TPIC6B595 是 74HC595 的大電流版本，功能相同但輸出能力更強。</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>74HC595</th>
+<th>TPIC6B595</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>每通道電流</td>
+<td>35mA</td>
+<td>150mA（持續）/ 500mA（峰值）</td>
+</tr>
+<tr>
+<td>最大電壓</td>
+<td>7V</td>
+<td>50V</td>
+</tr>
+<tr>
+<td>輸出類型</td>
+<td>推挽（可 HIGH 或 LOW）</td>
+<td>開漏（只能 LOW，需外部上拉）</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>$5-15</td>
+<td>$20-40</td>
+</tr>
+<tr>
+<td>適用</td>
+<td>LED、低電流負載</td>
+<td>繼電器、LED 燈條、馬達</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="tpic6b595-note">注意事項</h4>
+<pre><code>TPIC6B595 是「開漏輸出」：
+├─ 輸出只能拉低（接地），不能拉高
+├─ 負載要接在 V+ 和輸出之間
+├─ 適合「低端驅動」的應用
+
+接法示意：
+V+ ──[負載]──┬── TPIC6B595 輸出
+             │
+             ↓ 當輸出 LOW 時電流流向 GND
+</code></pre>
+
+<hr />
+<h2 id="_19">該選哪一種？</h2>
+<h3 id="_20">快速決策流程</h3>
+<pre><code>你需要擴展什麼？
+│
+├─ 【數位輸出】控制 LED、繼電器
+│   │
+│   ├─ 要便宜、要快 → 74HC595 ✓
+│   ├─ 要省 1 條線 → 74HC164
+│   ├─ 接線要簡單 → MCP23017 (I2C)
+│   └─ 要大電流 → 74HC595 + ULN2803 或 TPIC6B595
+│
+├─ 【數位輸入】讀取按鈕、開關
+│   │
+│   ├─ 要便宜、要快 → 74HC165
+│   └─ 接線要簡單 → MCP23017 (I2C)
+│
+├─ 【輸入+輸出都要】
+│   └─ MCP23017 (I2C) ✓
+│
+├─ 【類比輸入】讀取感測器電壓
+│   │
+│   ├─ 需要高精度 → ADS1115 (16-bit)
+│   └─ 一般用途 → ADS1015 (12-bit，較快)
+│
+├─ 【類比輸出】產生精確電壓
+│   └─ MCP4725 (12-bit DAC)
+│
+├─ 【多通道 PWM】控制多個伺服馬達
+│   └─ PCA9685 (16 通道)
+│
+└─ 【大電流驅動】繼電器、馬達
+    │
+    ├─ 直接用 Arduino 腳位 → ULN2803
+    └─ 搭配移位暫存器 → 74HC595 + ULN2803 或 TPIC6B595
+</code></pre>
+<h3 id="_21">詳細比較表 - 數位 I/O 擴展</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>74HC595</th>
+<th>74HC164</th>
+<th>74HC165</th>
+<th>MCP23017</th>
+<th>PCF8574</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>方向</td>
+<td>輸出</td>
+<td>輸出</td>
+<td>輸入</td>
+<td>雙向</td>
+<td>雙向</td>
+</tr>
+<tr>
+<td>數量</td>
+<td>8</td>
+<td>8</td>
+<td>8</td>
+<td>16</td>
+<td>8</td>
+</tr>
+<tr>
+<td>介面</td>
+<td>3 線</td>
+<td>2 線</td>
+<td>3 線</td>
+<td>I2C</td>
+<td>I2C</td>
+</tr>
+<tr>
+<td>鎖存</td>
+<td>有</td>
+<td>無</td>
+<td>有</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>速度</td>
+<td>很快</td>
+<td>很快</td>
+<td>很快</td>
+<td>中等</td>
+<td>中等</td>
+</tr>
+<tr>
+<td>串聯</td>
+<td>容易</td>
+<td>容易</td>
+<td>容易</td>
+<td>用位址</td>
+<td>用位址</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>$5-15</td>
+<td>$3-10</td>
+<td>$5-15</td>
+<td>$30-50</td>
+<td>$10-20</td>
+</tr>
+<tr>
+<td>適合</td>
+<td>LED、數碼管</td>
+<td>省線場合</td>
+<td>按鈕陣列</td>
+<td>大型專案</td>
+<td>LCD 背板</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="analog-compare">詳細比較表 - 類比擴展</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>ADS1115</th>
+<th>ADS1015</th>
+<th>MCP4725</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>功能</td>
+<td>ADC（讀取）</td>
+<td>ADC（讀取）</td>
+<td>DAC（輸出）</td>
+</tr>
+<tr>
+<td>解析度</td>
+<td>16 位元</td>
+<td>12 位元</td>
+<td>12 位元</td>
+</tr>
+<tr>
+<td>通道數</td>
+<td>4</td>
+<td>4</td>
+<td>1</td>
+</tr>
+<tr>
+<td>介面</td>
+<td>I2C</td>
+<td>I2C</td>
+<td>I2C</td>
+</tr>
+<tr>
+<td>特色</td>
+<td>高精度、PGA</td>
+<td>快速取樣</td>
+<td>真正類比輸出</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>$50-100</td>
+<td>$30-60</td>
+<td>$30-50</td>
+</tr>
+<tr>
+<td>適合</td>
+<td>精密測量</td>
+<td>一般用途</td>
+<td>音訊、控制</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="driver-compare">詳細比較表 - 驅動擴展</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>PCA9685</th>
+<th>ULN2803</th>
+<th>TPIC6B595</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>功能</td>
+<td>PWM 輸出</td>
+<td>電流放大</td>
+<td>移位暫存器+驅動</td>
+</tr>
+<tr>
+<td>通道數</td>
+<td>16</td>
+<td>8</td>
+<td>8</td>
+</tr>
+<tr>
+<td>解析度</td>
+<td>12 位元 PWM</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>最大電流</td>
+<td>25mA/通道</td>
+<td>500mA/通道</td>
+<td>150mA 持續</td>
+</tr>
+<tr>
+<td>介面</td>
+<td>I2C</td>
+<td>直接連接</td>
+<td>3 線（同 595）</td>
+</tr>
+<tr>
+<td>價格</td>
+<td>$50-80</td>
+<td>$10-20</td>
+<td>$20-40</td>
+</tr>
+<tr>
+<td>適合</td>
+<td>伺服馬達、LED</td>
+<td>繼電器、馬達</td>
+<td>大電流 LED</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_22">依情境推薦</h3>
+<table>
+<thead>
+<tr>
+<th>情境</th>
+<th>推薦</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>跑馬燈、LED 效果</td>
+<td>74HC595</td>
+<td>便宜、速度快、有鎖存</td>
+</tr>
+<tr>
+<td>七段顯示器</td>
+<td>74HC595</td>
+<td>經典應用</td>
+</tr>
+<tr>
+<td>8x8 LED 矩陣</td>
+<td>74HC595 x2</td>
+<td>需要 16 個輸出</td>
+</tr>
+<tr>
+<td>讀取多個按鈕</td>
+<td>74HC165</td>
+<td>專門用於輸入</td>
+</tr>
+<tr>
+<td>智慧家居控制</td>
+<td>MCP23017</td>
+<td>可雙向、接線簡單</td>
+</tr>
+<tr>
+<td>使用 I2C LCD</td>
+<td>PCF8574</td>
+<td>LCD 背板就是用這個</td>
+</tr>
+<tr>
+<td>高精度電壓測量</td>
+<td>ADS1115</td>
+<td>16 位元、差動測量</td>
+</tr>
+<tr>
+<td>多通道感測器</td>
+<td>ADS1015 / ADS1115</td>
+<td>4 通道、I2C 簡單接</td>
+</tr>
+<tr>
+<td>電子秤/荷重元</td>
+<td>ADS1115</td>
+<td>高精度差動測量</td>
+</tr>
+<tr>
+<td>產生音訊波形</td>
+<td>MCP4725</td>
+<td>真正類比輸出</td>
+</tr>
+<tr>
+<td>控制多個伺服馬達</td>
+<td>PCA9685</td>
+<td>16 通道、12 位元</td>
+</tr>
+<tr>
+<td>機器人手臂</td>
+<td>PCA9685</td>
+<td>同時控制多軸</td>
+</tr>
+<tr>
+<td>多繼電器控制</td>
+<td>74HC595 + ULN2803</td>
+<td>省腳位、大電流</td>
+</tr>
+<tr>
+<td>LED 燈條驅動</td>
+<td>TPIC6B595</td>
+<td>大電流版 595</td>
+</tr>
+<tr>
+<td>學習練習</td>
+<td>74HC595</td>
+<td>便宜、教學資源多</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_23">實際專案範例</h2>
+<h3 id="18-led">專案 1：8 段 LED 音量指示器</h3>
+<pre><code>用途：顯示音量大小，類似 KTV 的音量條
+     音量越大，亮的 LED 越多
+
+接線：
+- Arduino A0 接麥克風模組
+- 74HC595 接 8 個 LED（由下到上排列）
+</code></pre>
+<pre><code class="language-cpp">const int dataPin = 11;
+const int clockPin = 12;
+const int latchPin = 13;
+const int micPin = A0;
+
+void setup() {
+  pinMode(dataPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(latchPin, OUTPUT);
+}
+
+void sendTo595(byte data) {
+  digitalWrite(latchPin, LOW);
+  shiftOut(dataPin, clockPin, MSBFIRST, data);
+  digitalWrite(latchPin, HIGH);
+}
+
+void loop() {
+  // 讀取麥克風（0-1023）
+  int volume = analogRead(micPin);
+
+  // 轉換成 0-8 的等級
+  int level = map(volume, 0, 1023, 0, 8);
+
+  // 產生對應的 LED 圖案
+  // level=0: 00000000
+  // level=1: 00000001
+  // level=2: 00000011
+  // level=3: 00000111
+  // ...
+  byte pattern = (1 &lt;&lt; level) - 1;
+
+  sendTo595(pattern);
+  delay(50);
+}
+</code></pre>
+<h3 id="24">專案 2：4 位數七段顯示器計數器</h3>
+<pre><code>用途：顯示 0000 到 9999 的數字
+     用 4 顆 74HC595 控制 4 個七段顯示器
+
+原理：每顆 595 控制一個數字的 a-g-dp 段
+</code></pre>
+<pre><code class="language-cpp">const int dataPin = 11;
+const int clockPin = 12;
+const int latchPin = 13;
+
+// 七段顯示器段碼（共陰極）
+//     a
+//    ───
+//   f│ │b
+//    ─g─
+//   e│ │c
+//    ───  ● dp
+//     d
+const byte digits[] = {
+  0b00111111,  // 0
+  0b00000110,  // 1
+  0b01011011,  // 2
+  0b01001111,  // 3
+  0b01100110,  // 4
+  0b01101101,  // 5
+  0b01111101,  // 6
+  0b00000111,  // 7
+  0b01111111,  // 8
+  0b01101111   // 9
+};
+
+void setup() {
+  pinMode(dataPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(latchPin, OUTPUT);
+}
+
+// 顯示 4 位數
+void displayNumber(int number) {
+  // 拆解成 4 個數字
+  int d0 = number % 10;         // 個位
+  int d1 = (number / 10) % 10;  // 十位
+  int d2 = (number / 100) % 10; // 百位
+  int d3 = (number / 1000) % 10;// 千位
+
+  digitalWrite(latchPin, LOW);
+  // 先送最左邊的數字（會被推到最後一顆 595）
+  shiftOut(dataPin, clockPin, MSBFIRST, digits[d3]);
+  shiftOut(dataPin, clockPin, MSBFIRST, digits[d2]);
+  shiftOut(dataPin, clockPin, MSBFIRST, digits[d1]);
+  shiftOut(dataPin, clockPin, MSBFIRST, digits[d0]);
+  digitalWrite(latchPin, HIGH);
+}
+
+void loop() {
+  static int count = 0;
+
+  displayNumber(count);
+  count++;
+  if (count &gt; 9999) count = 0;
+
+  delay(100);
+}
+</code></pre>
+<h3 id="38">專案 3：8 按鈕遊戲控制器</h3>
+<pre><code>用途：用 74HC165 做一個有 8 個按鈕的遊戲控制器
+     按下按鈕時，透過 Serial 發送按鍵代碼
+</code></pre>
+<pre><code class="language-cpp">const int loadPin = 8;
+const int clockPin = 9;
+const int dataPin = 10;
+
+// 按鈕名稱
+const char* buttonNames[] = {
+  &quot;上&quot;, &quot;下&quot;, &quot;左&quot;, &quot;右&quot;, &quot;A&quot;, &quot;B&quot;, &quot;START&quot;, &quot;SELECT&quot;
+};
+
+byte lastState = 0xFF;  // 上次的狀態（全部沒按）
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(loadPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(dataPin, INPUT);
+
+  digitalWrite(loadPin, HIGH);
+  digitalWrite(clockPin, LOW);
+
+  Serial.println(&quot;遊戲控制器就緒！&quot;);
+}
+
+byte readButtons() {
+  byte result = 0;
+
+  digitalWrite(loadPin, LOW);
+  delayMicroseconds(5);
+  digitalWrite(loadPin, HIGH);
+
+  for (int i = 0; i &lt; 8; i++) {
+    result &lt;&lt;= 1;
+    if (digitalRead(dataPin)) result |= 1;
+    digitalWrite(clockPin, HIGH);
+    delayMicroseconds(5);
+    digitalWrite(clockPin, LOW);
+  }
+
+  return result;
+}
+
+void loop() {
+  byte currentState = readButtons();
+
+  // 檢查每個按鈕的變化
+  for (int i = 0; i &lt; 8; i++) {
+    bool wasPressed = !(lastState &amp; (1 &lt;&lt; i));
+    bool isPressed = !(currentState &amp; (1 &lt;&lt; i));
+
+    if (isPressed &amp;&amp; !wasPressed) {
+      // 剛按下
+      Serial.print(&quot;按下: &quot;);
+      Serial.println(buttonNames[i]);
+    } else if (!isPressed &amp;&amp; wasPressed) {
+      // 剛放開
+      Serial.print(&quot;放開: &quot;);
+      Serial.println(buttonNames[i]);
+    }
+  }
+
+  lastState = currentState;
+  delay(20);  // 防抖動
+}
+</code></pre>
+<hr />
+<h2 id="expansion-limits">擴展的極限與實際考量</h2>
+
+<h3 id="infinite-expansion">可以無限擴展嗎？</h3>
+<p>很多初學者會問：「用擴展 IC 是不是可以無限接下去？」答案是：<strong>理論上可以，實際上有限制</strong>。</p>
+
+<pre><code>【理論上】
+74HC595 可以無限串聯：
+Arduino → 595 #1 → 595 #2 → 595 #3 → ... → 595 #100 → ...
+用 3 條線就能控制 800 個輸出！聽起來很美好...
+
+【實際上】會遇到這些限制：
+
+1. 電源供應能力
+   └─ 每顆 595 + 8 個 LED ≈ 需要 100-200mA
+   └─ 10 顆就要 1-2A，Arduino 的 5V 腳位只能輸出 500mA
+   └─ 超過就要外接電源
+
+2. 更新速度變慢
+   └─ 串聯 10 顆 = 要送 80 位元
+   └─ shiftOut() 每位元約 4μs，80 位元 ≈ 320μs
+   └─ 如果要快速動畫效果，會有延遲感
+
+3. 信號完整性
+   └─ 時脈信號經過太多 IC 會衰減
+   └─ 超過 10-20 顆可能會出現資料錯誤
+   └─ 需要加緩衝器（Buffer）
+
+4. Arduino 記憶體
+   └─ 每 8 個輸出需要 1 byte 儲存狀態
+   └─ 100 顆 595 = 100 bytes（還好）
+   └─ 但程式邏輯複雜度會增加
+
+5. I2C 位址限制（針對 I2C 擴展 IC）
+   └─ MCP23017 只有 8 個位址 = 最多 8 顆 = 128 個 I/O
+   └─ ADS1115 只有 4 個位址 = 最多 4 顆 = 16 通道
+</code></pre>
+
+<h3 id="practical-limits">實際的合理數量</h3>
+<table>
+<thead>
+<tr>
+<th>擴展方式</th>
+<th>建議最大數量</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>74HC595 串聯</td>
+<td>4-8 顆（32-64 輸出）</td>
+<td>更新速度、信號品質</td>
+</tr>
+<tr>
+<td>74HC165 串聯</td>
+<td>4-8 顆（32-64 輸入）</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>MCP23017 (I2C)</td>
+<td>8 顆（128 I/O）</td>
+<td>位址數量限制</td>
+</tr>
+<tr>
+<td>ADS1115 (I2C)</td>
+<td>4 顆（16 通道）</td>
+<td>位址數量限制</td>
+</tr>
+<tr>
+<td>PCA9685 (I2C)</td>
+<td>62 顆（992 PWM）</td>
+<td>位址數量限制</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="how-to-estimate">如何評估開發板的擴展能力？</h3>
+<p>在規劃專案之前，你需要盤點以下資源：</p>
+
+<h4>步驟 1：列出開發板的原生資源</h4>
+<pre><code>【Arduino Uno 的資源】
+├─ 數位腳位：14 個（D0-D13，其中 D0/D1 是 Serial）
+├─ 類比輸入：6 個（A0-A5，其中 A4/A5 可當 I2C）
+├─ PWM 腳位：6 個（D3, D5, D6, D9, D10, D11）
+├─ I2C：1 組（A4=SDA, A5=SCL）
+├─ SPI：1 組（D10=SS, D11=MOSI, D12=MISO, D13=SCK）
+├─ 5V 輸出電流：約 500mA（從 USB）
+├─ 每腳位電流：最大 40mA
+└─ SRAM：2KB（變數儲存空間）
+
+【Arduino Mega 的資源】
+├─ 數位腳位：54 個
+├─ 類比輸入：16 個
+├─ PWM 腳位：15 個
+├─ I2C：1 組
+└─ SRAM：8KB
+
+【ESP32 的資源】
+├─ GPIO：34 個（部分有限制）
+├─ 類比輸入：18 個（12 位元）
+├─ PWM：16 通道（任意腳位）
+├─ I2C：2 組
+├─ DAC：2 個真正類比輸出
+└─ SRAM：520KB
+</code></pre>
+
+<h4>步驟 2：計算專案需求</h4>
+<pre><code>【範例：智慧溫室專案】
+
+需要的元件：
+├─ DHT22 溫濕度感測器 x 4 → 4 個數位腳位
+├─ 土壤濕度感測器 x 6 → 6 個類比輸入
+├─ 繼電器（風扇、加濕器、水泵、燈）x 4 → 4 個數位腳位
+├─ I2C LCD 16x2 → 使用 I2C（不佔額外腳位）
+├─ LED 狀態指示燈 x 8 → 8 個數位腳位
+└─ 按鈕 x 3 → 3 個數位腳位
+
+合計需求：
+├─ 數位腳位：4 + 4 + 8 + 3 = 19 個 ← Arduino Uno 只有 14 個！
+└─ 類比輸入：6 個 ← 剛好夠
+
+結論：需要擴展！
+</code></pre>
+
+<h4>步驟 3：選擇擴展方案</h4>
+<pre><code>【解決方案 A：使用 74HC595】
+├─ LED 狀態燈 x 8 → 1 顆 74HC595（用 3 個腳位）
+├─ 繼電器 x 4 → 可以共用同一顆 595（還剩 4 個輸出）
+└─ 節省：8 + 4 - 3 = 9 個腳位
+
+腳位重新計算：
+├─ DHT22 x 4：4 個
+├─ 74HC595：3 個
+├─ 按鈕 x 3：3 個
+├─ I2C（LCD）：2 個（A4, A5）
+└─ 合計：12 個 ✓ 夠用！
+
+【解決方案 B：換更大的板子】
+直接用 Arduino Mega（54 個數位腳位）
+優點：接線直觀，程式簡單
+缺點：成本較高，體積較大
+</code></pre>
+
+<h4>步驟 4：計算電源需求</h4>
+<pre><code>【電流計算】
+├─ DHT22 x 4：4 × 2.5mA = 10mA
+├─ 土壤感測器 x 6：6 × 15mA = 90mA
+├─ LED x 8：8 × 10mA = 80mA
+├─ 繼電器模組 x 4：4 × 70mA = 280mA
+├─ I2C LCD：約 20mA
+├─ 74HC595：約 10mA
+└─ 合計：約 490mA
+
+結論：剛好在 USB 供電範圍內（500mA）
+但如果要穩定，建議外接 5V 2A 電源
+</code></pre>
+
+<hr />
+<h2 id="control-each-pin">如何控制擴展出去的每個腳位？</h2>
+
+<h3 id="concept">核心概念：位元操作</h3>
+<p>使用 74HC595 或 74HC164 時，你是用「一個 byte（8 位元）」來控制「8 個輸出」。</p>
+
+<pre><code>【傳統 Arduino】
+digitalWrite(2, HIGH);  // 只控制 1 個腳位，很直覺
+
+【使用 74HC595】
+                          Q7 Q6 Q5 Q4 Q3 Q2 Q1 Q0
+byte outputState = 0b00000000;  // 8 個輸出的狀態
+                     │  │  │  │  │  │  │  │
+                    LED7...              ...LED0
+
+要點亮 Q0：outputState = 0b00000001;  → 只有 Q0 是 HIGH
+要點亮 Q3：outputState = 0b00001000;  → 只有 Q3 是 HIGH
+要點亮 Q0 和 Q3：outputState = 0b00001001; → Q0 和 Q3 都是 HIGH
+</code></pre>
+
+<h3 id="bit-operations">位元操作速查表</h3>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>語法</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>設定某位元為 1</td>
+<td><code>state |= (1 &lt;&lt; n)</code></td>
+<td>把第 n 位設為 HIGH</td>
+</tr>
+<tr>
+<td>設定某位元為 0</td>
+<td><code>state &= ~(1 &lt;&lt; n)</code></td>
+<td>把第 n 位設為 LOW</td>
+</tr>
+<tr>
+<td>切換某位元</td>
+<td><code>state ^= (1 &lt;&lt; n)</code></td>
+<td>把第 n 位反轉</td>
+</tr>
+<tr>
+<td>讀取某位元</td>
+<td><code>(state >> n) & 1</code></td>
+<td>取得第 n 位的值</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="example-single-595">實作：像 digitalWrite 一樣控制 74HC595</h3>
+<pre><code class="language-cpp">// 把 74HC595 包裝成類似 digitalWrite 的用法
+
+const int dataPin = 11;
+const int clockPin = 12;
+const int latchPin = 13;
+
+// 儲存目前 8 個輸出的狀態
+byte shiftRegisterState = 0;
+
+void setup() {
+  pinMode(dataPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(latchPin, OUTPUT);
+}
+
+// 更新 74HC595 的輸出
+void updateShiftRegister() {
+  digitalWrite(latchPin, LOW);
+  shiftOut(dataPin, clockPin, MSBFIRST, shiftRegisterState);
+  digitalWrite(latchPin, HIGH);
+}
+
+// 模擬 digitalWrite 的函數
+// pin: 0-7，對應 Q0-Q7
+// value: HIGH 或 LOW
+void shiftWrite(int pin, int value) {
+  if (pin < 0 || pin > 7) return;  // 檢查範圍
+
+  if (value == HIGH) {
+    // 把第 pin 位設為 1
+    shiftRegisterState |= (1 &lt;&lt; pin);
+  } else {
+    // 把第 pin 位設為 0
+    shiftRegisterState &= ~(1 &lt;&lt; pin);
+  }
+
+  updateShiftRegister();
+}
+
+// 模擬 digitalRead（讀取目前設定的狀態）
+int shiftRead(int pin) {
+  if (pin < 0 || pin > 7) return -1;
+  return (shiftRegisterState >> pin) & 1;
+}
+
+void loop() {
+  // 現在可以像用普通腳位一樣使用了！
+
+  shiftWrite(0, HIGH);  // 點亮 Q0
+  delay(500);
+
+  shiftWrite(3, HIGH);  // 點亮 Q3（Q0 還是亮的）
+  delay(500);
+
+  shiftWrite(0, LOW);   // 關閉 Q0（Q3 還是亮的）
+  delay(500);
+
+  shiftWrite(7, HIGH);  // 點亮 Q7
+  delay(500);
+
+  // 全部關閉
+  for (int i = 0; i &lt; 8; i++) {
+    shiftWrite(i, LOW);
+  }
+  delay(1000);
+}
+</code></pre>
+
+<h3 id="example-multiple-595">實作：控制多顆串聯的 74HC595</h3>
+<pre><code class="language-cpp">// 控制 2 顆串聯的 74HC595（16 個輸出）
+
+const int dataPin = 11;
+const int clockPin = 12;
+const int latchPin = 13;
+
+// 用 16 位元儲存 16 個輸出的狀態
+uint16_t shiftRegisterState = 0;
+
+void setup() {
+  pinMode(dataPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(latchPin, OUTPUT);
+}
+
+void updateShiftRegister() {
+  digitalWrite(latchPin, LOW);
+  // 先送高 8 位（給第 2 顆 595）
+  shiftOut(dataPin, clockPin, MSBFIRST, (shiftRegisterState >> 8) & 0xFF);
+  // 再送低 8 位（給第 1 顆 595）
+  shiftOut(dataPin, clockPin, MSBFIRST, shiftRegisterState & 0xFF);
+  digitalWrite(latchPin, HIGH);
+}
+
+// 控制 16 個輸出中的任何一個
+// pin: 0-15
+void shiftWrite16(int pin, int value) {
+  if (pin < 0 || pin > 15) return;
+
+  if (value == HIGH) {
+    shiftRegisterState |= (1 &lt;&lt; pin);
+  } else {
+    shiftRegisterState &= ~(1 &lt;&lt; pin);
+  }
+
+  updateShiftRegister();
+}
+
+void loop() {
+  // 0-7 是第一顆 595 的 Q0-Q7
+  // 8-15 是第二顆 595 的 Q0-Q7
+
+  shiftWrite16(0, HIGH);   // 第 1 顆的 Q0
+  delay(200);
+
+  shiftWrite16(8, HIGH);   // 第 2 顆的 Q0
+  delay(200);
+
+  shiftWrite16(15, HIGH);  // 第 2 顆的 Q7
+  delay(200);
+
+  // 跑馬燈效果
+  shiftRegisterState = 0;
+  for (int i = 0; i &lt; 16; i++) {
+    shiftWrite16(i, HIGH);
+    delay(100);
+    shiftWrite16(i, LOW);
+  }
+}
+</code></pre>
+
+<h3 id="example-class">進階：用類別封裝（物件導向）</h3>
+<pre><code class="language-cpp">// ShiftRegister595 類別 - 更優雅的封裝方式
+
+class ShiftRegister595 {
+private:
+  int dataPin, clockPin, latchPin;
+  int numChips;  // 串聯幾顆
+  byte* states;  // 動態陣列儲存狀態
+
+public:
+  // 建構函數
+  ShiftRegister595(int data, int clock, int latch, int chips = 1) {
+    dataPin = data;
+    clockPin = clock;
+    latchPin = latch;
+    numChips = chips;
+    states = new byte[chips];
+
+    // 初始化
+    pinMode(dataPin, OUTPUT);
+    pinMode(clockPin, OUTPUT);
+    pinMode(latchPin, OUTPUT);
+
+    // 全部設為 0
+    for (int i = 0; i &lt; numChips; i++) {
+      states[i] = 0;
+    }
+  }
+
+  // 更新輸出
+  void update() {
+    digitalWrite(latchPin, LOW);
+    // 從最後一顆開始送
+    for (int i = numChips - 1; i >= 0; i--) {
+      shiftOut(dataPin, clockPin, MSBFIRST, states[i]);
+    }
+    digitalWrite(latchPin, HIGH);
+  }
+
+  // 設定單一腳位
+  void write(int pin, bool value) {
+    if (pin < 0 || pin >= numChips * 8) return;
+
+    int chipIndex = pin / 8;
+    int bitIndex = pin % 8;
+
+    if (value) {
+      states[chipIndex] |= (1 &lt;&lt; bitIndex);
+    } else {
+      states[chipIndex] &= ~(1 &lt;&lt; bitIndex);
+    }
+
+    update();
+  }
+
+  // 讀取目前設定
+  bool read(int pin) {
+    if (pin < 0 || pin >= numChips * 8) return false;
+    int chipIndex = pin / 8;
+    int bitIndex = pin % 8;
+    return (states[chipIndex] >> bitIndex) & 1;
+  }
+
+  // 全部設定
+  void writeAll(uint32_t value) {
+    for (int i = 0; i &lt; numChips; i++) {
+      states[i] = (value >> (i * 8)) & 0xFF;
+    }
+    update();
+  }
+
+  // 全部清除
+  void clear() {
+    for (int i = 0; i &lt; numChips; i++) {
+      states[i] = 0;
+    }
+    update();
+  }
+
+  // 取得總腳位數
+  int getPinCount() {
+    return numChips * 8;
+  }
+};
+
+// 使用範例
+ShiftRegister595 sr(11, 12, 13, 2);  // 2 顆串聯 = 16 個輸出
+
+void setup() {
+  // 類別建構時已初始化
+}
+
+void loop() {
+  // 超級簡潔的使用方式！
+  sr.write(0, HIGH);
+  sr.write(8, HIGH);
+  sr.write(15, HIGH);
+  delay(1000);
+
+  sr.clear();
+  delay(500);
+
+  // 跑馬燈
+  for (int i = 0; i &lt; sr.getPinCount(); i++) {
+    sr.write(i, HIGH);
+    delay(50);
+    sr.write(i, LOW);
+  }
+}
+</code></pre>
+
+<h3 id="address-mapping">腳位編號對照表</h3>
+<pre><code>【單顆 74HC595】
+程式中的 pin    實際腳位    IC 腳位編號
+    0      →    Q0     →    15
+    1      →    Q1     →    1
+    2      →    Q2     →    2
+    3      →    Q3     →    3
+    4      →    Q4     →    4
+    5      →    Q5     →    5
+    6      →    Q6     →    6
+    7      →    Q7     →    7
+
+【兩顆串聯的 74HC595】
+程式中的 pin    對應到
+   0-7     →   第 1 顆的 Q0-Q7
+   8-15    →   第 2 顆的 Q0-Q7
+
+【三顆串聯】
+   0-7     →   第 1 顆
+   8-15    →   第 2 顆
+   16-23   →   第 3 顆
+</code></pre>
+
+<h3 id="tips">使用秘訣</h3>
+<pre><code>【提升效能的技巧】
+
+1. 批次更新
+   錯誤：每改一個腳位就更新一次
+   shiftWrite(0, HIGH);  // 更新
+   shiftWrite(1, HIGH);  // 又更新
+   shiftWrite(2, HIGH);  // 又更新...
+
+   正確：先設定好全部，最後一次更新
+   shiftRegisterState |= 0b00000111;  // 一次設定 3 個位元
+   updateShiftRegister();              // 只更新 1 次
+
+2. 使用 SPI 加速
+   shiftOut() 是軟體模擬，速度有限
+   改用 SPI.transfer() 可以快 10 倍以上
+
+3. 善用位元運算
+   設定連續的位元：state |= 0b00001111;  // 一次設定 4 個
+   清除連續的位元：state &= 0b11110000;  // 一次清除 4 個
+</code></pre>
+
+<hr />
+<h2 id="_24">常見問題</h2>
+<h3 id="q1-74hc595">Q1: 74HC595 輸出會閃爍？</h3>
+<p><strong>原因</strong>：沒有正確使用鎖存（latch）功能</p>
+<p><strong>解決</strong>：</p>
+<pre><code class="language-cpp">// 正確寫法
+digitalWrite(latchPin, LOW);   // 1. 先關閉鎖存
+shiftOut(...);                  // 2. 送資料
+digitalWrite(latchPin, HIGH);  // 3. 最後打開鎖存，資料一次輸出
+</code></pre>
+<h3 id="q2-74hc595">Q2: 74HC595 輸出電流不夠亮？</h3>
+<p><strong>說明</strong>：74HC595 每腳最大只能輸出 35mA</p>
+<p><strong>解決方案</strong>：<br />
+- 使用電晶體放大電流<br />
+- 使用 ULN2803（達林頓陣列 IC）<br />
+- 使用 TPIC6B595（大電流版的 595）</p>
+<h3 id="q3">Q3: 串聯多顆時，最後一顆不正常？</h3>
+<p><strong>檢查清單</strong>：<br />
+1. Q7'（第 9 腳）有沒有接到下一顆的 DS（第 14 腳）？<br />
+2. SHCP 和 STCP 有沒有全部連在一起？<br />
+3. 發送資料的順序對不對？（先送最後一顆的資料）</p>
+<h3 id="q4-i2c">Q4: I2C 和移位暫存器怎麼選？</h3>
+<table>
+<thead>
+<tr>
+<th>需求</th>
+<th>選擇</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>速度要快、成本要低</td>
+<td>移位暫存器 (74HC595/165)</td>
+</tr>
+<tr>
+<td>接線要簡單、功能要多</td>
+<td>I2C (MCP23017)</td>
+</tr>
+<tr>
+<td>學習用、練習用</td>
+<td>移位暫存器（便宜好上手）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q5-shiftout-msbfirst-lsbfirst">Q5: shiftOut 的 MSBFIRST 和 LSBFIRST 是什麼？</h3>
+<pre><code>MSB = Most Significant Bit = 最高位元（最左邊的 1）
+LSB = Least Significant Bit = 最低位元（最右邊的 1）
+
+數字 0b10110010：
+     ^───────── MSB（最高位）
+            ^── LSB（最低位）
+
+MSBFIRST：先送 1，再送 0，再送 1，再送 1...（從左到右）
+LSBFIRST：先送 0，再送 1，再送 0，再送 0...（從右到左）
+
+一般用 MSBFIRST，比較直覺
+</code></pre>
+<hr />
+<h2 id="_25">總結</h2>
+<h3 id="_26">一句話記憶</h3>
+<pre><code>【數位 I/O 擴展】
+74HC595：Arduino 送出去，控制 LED 繼電器（有鎖存）
+74HC164：省一條線，但輸出會跳動（無鎖存）
+74HC165：資料讀進來，讀取按鈕和開關
+MCP23017：I2C 萬用型，雙向都可以
+
+【類比擴展】
+ADS1115：高精度 ADC，16 位元讀電壓
+ADS1015：快速 ADC，12 位元經濟版
+MCP4725：真正的類比輸出（DAC）
+
+【驅動擴展】
+PCA9685：16 通道 PWM，控制伺服馬達
+ULN2803：放大電流，驅動繼電器馬達
+TPIC6B595：大電流版 595，驅動 LED 燈條
+</code></pre>
+<h3 id="_27">學習順序建議</h3>
+<pre><code>【初學者路線】
+1. 先學 74HC595 控制 LED（最基礎）
+2. 做跑馬燈、數碼管等小專案
+3. 學習串聯多顆 595
+4. 需要時再學 74HC165 和 I2C 擴展
+
+【進階路線】
+1. 學習 I2C 協定基礎
+2. 使用 ADS1115 做高精度測量
+3. 使用 PCA9685 控制多個伺服馬達
+4. 結合 74HC595 + ULN2803 做大電流控制
+</code></pre>
+<h3 id="_28">採購清單</h3>
+<h4>基礎包（初學者）</h4>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>數量</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>74HC595</td>
+<td>2-3 顆</td>
+<td>學習輸出擴展</td>
+</tr>
+<tr>
+<td>LED（各色）</td>
+<td>16 顆以上</td>
+<td>練習用</td>
+</tr>
+<tr>
+<td>220Ω 電阻</td>
+<td>16 顆以上</td>
+<td>LED 限流</td>
+</tr>
+<tr>
+<td>七段顯示器（共陰極）</td>
+<td>1-4 個</td>
+<td>數字顯示練習</td>
+</tr>
+<tr>
+<td>74HC165</td>
+<td>1-2 顆</td>
+<td>學習輸入擴展</td>
+</tr>
+<tr>
+<td>按鈕</td>
+<td>8 顆以上</td>
+<td>測試輸入用</td>
+</tr>
+</tbody>
+</table>
+
+<h4>進階包（類比與驅動）</h4>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>數量</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ADS1115 模組</td>
+<td>1 個</td>
+<td>高精度類比輸入</td>
+</tr>
+<tr>
+<td>MCP4725 模組</td>
+<td>1 個</td>
+<td>類比輸出</td>
+</tr>
+<tr>
+<td>PCA9685 模組</td>
+<td>1 個</td>
+<td>多通道 PWM</td>
+</tr>
+<tr>
+<td>SG90 伺服馬達</td>
+<td>4-6 個</td>
+<td>搭配 PCA9685</td>
+</tr>
+<tr>
+<td>ULN2803</td>
+<td>1-2 顆</td>
+<td>電流放大</td>
+</tr>
+<tr>
+<td>5V 繼電器模組</td>
+<td>4-8 個</td>
+<td>搭配 ULN2803</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>最後更新：2025 年 12 月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

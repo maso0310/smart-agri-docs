@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於ArduinoUno的各種電位與訊號類別</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="arduino-uno">關於 Arduino Uno 的各種電位與訊號類別</h1>
+<p>本文檔整理 Arduino Uno 課程中所介紹的各種電位與訊號類別，幫助學習者快速了解 Arduino 開發中常用的訊號類型與通訊方式。</p>
+<hr />
+<h2 id="_1">一、訊號類別總覽</h2>
+<p>Arduino Uno 主要支援以下三種訊號類型：</p>
+<table>
+<thead>
+<tr>
+<th>訊號類型</th>
+<th>特性</th>
+<th>常用場景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>數位訊號</td>
+<td>二進制，只有 0 或 1（低電位/高電位）</td>
+<td>LED 開關、按鈕輸入</td>
+</tr>
+<tr>
+<td>類比訊號</td>
+<td>連續數值（0-1023），易受雜訊影響</td>
+<td>電位器、光敏電阻、各類感測器</td>
+</tr>
+<tr>
+<td>PWM 訊號</td>
+<td>透過調整脈衝寬度模擬類比訊號</td>
+<td>LED 調光、馬達速度控制</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="digital-signal">二、數位訊號（Digital Signal）</h2>
+<h3 id="21">2.1 基本概念</h3>
+<ul>
+<li><strong>電位狀態</strong>：只有兩種狀態</li>
+<li><strong>高電位（HIGH）</strong>：5V，代表邏輯 1</li>
+<li><strong>低電位（LOW）</strong>：0V，代表邏輯 0</li>
+<li><strong>特點</strong>：不易受雜訊干擾，穩定可靠</li>
+<li><strong>腳位標記</strong>：Arduino Uno 的 D0-D13 為數位腳位</li>
+</ul>
+<h3 id="22">2.2 數位輸出應用範例</h3>
+<pre><code class="language-cpp">// LED 燈控制範例
+int LED_PIN = 11;
+
+void setup() {
+  pinMode(LED_PIN, OUTPUT);  // 設定為輸出腳位
+}
+
+void loop() {
+  digitalWrite(LED_PIN, HIGH);  // 輸出高電位，LED 亮起
+  delay(1000);
+  digitalWrite(LED_PIN, LOW);   // 輸出低電位，LED 熄滅
+  delay(1000);
+}
+</code></pre>
+<h3 id="23">2.3 數位輸入應用範例</h3>
+<pre><code class="language-cpp">// 按鈕開關讀取範例
+int BUTTON_PIN = 2;
+int LED_PIN = 11;
+
+void setup() {
+  pinMode(BUTTON_PIN, INPUT);
+  pinMode(LED_PIN, OUTPUT);
+}
+
+void loop() {
+  int buttonState = digitalRead(BUTTON_PIN);
+  if (buttonState == HIGH) {
+    digitalWrite(LED_PIN, HIGH);
+  } else {
+    digitalWrite(LED_PIN, LOW);
+  }
+}
+</code></pre>
+<h3 id="24">2.4 常見數位訊號元件</h3>
+<table>
+<thead>
+<tr>
+<th>元件</th>
+<th>類型</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LED 燈</td>
+<td>輸出</td>
+<td>發光二極體，需搭配 220Ω 電阻</td>
+</tr>
+<tr>
+<td>有源蜂鳴器</td>
+<td>輸出</td>
+<td>通電即發出固定頻率聲音</td>
+</tr>
+<tr>
+<td>食人魚燈</td>
+<td>輸出</td>
+<td>高亮度 LED 模組</td>
+</tr>
+<tr>
+<td>雷射頭</td>
+<td>輸出</td>
+<td>半導體雷射發射模組</td>
+</tr>
+<tr>
+<td>按鈕開關</td>
+<td>輸入</td>
+<td>需搭配 10KΩ 電阻避免浮動</td>
+</tr>
+<tr>
+<td>傾斜開關</td>
+<td>輸入</td>
+<td>偵測物體角度變化</td>
+</tr>
+<tr>
+<td>觸摸開關</td>
+<td>輸入</td>
+<td>電容式觸摸感測</td>
+</tr>
+<tr>
+<td>限位開關</td>
+<td>輸入</td>
+<td>微動開關，偵測機械位置</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="analog-signal">三、類比訊號（Analog Signal）</h2>
+<h3 id="31">3.1 基本概念</h3>
+<ul>
+<li><strong>數值範圍</strong>：0-1023（10 位元解析度）</li>
+<li><strong>電壓對應</strong>：0V 對應 0，5V 對應 1023</li>
+<li><strong>特點</strong>：連續數值，可表達多種狀態，但易受雜訊影響</li>
+<li><strong>腳位標記</strong>：Arduino Uno 的 A0-A5 為類比輸入腳位</li>
+</ul>
+<h3 id="32">3.2 類比輸入應用範例</h3>
+<pre><code class="language-cpp">// 電位器讀取範例
+int POT_PIN = A0;
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  int potValue = analogRead(POT_PIN);  // 讀取類比值 (0-1023)
+  Serial.println(potValue);
+  delay(100);
+}
+</code></pre>
+<h3 id="33">3.3 常見類比訊號元件</h3>
+<table>
+<thead>
+<tr>
+<th>元件</th>
+<th>說明</th>
+<th>數值特性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B10K 電位器</td>
+<td>可變電阻，旋轉調節阻值</td>
+<td>線性變化，0-1023</td>
+</tr>
+<tr>
+<td>光敏電阻</td>
+<td>光照強度感測，暗時電阻高</td>
+<td>非線性，約 0-768</td>
+</tr>
+<tr>
+<td>水位感測器</td>
+<td>電阻式水位偵測</td>
+<td>水位越高，數值越大</td>
+</tr>
+<tr>
+<td>震動感測器</td>
+<td>偵測震動或撞擊</td>
+<td>震動時數值變化</td>
+</tr>
+<tr>
+<td>火焰感測器</td>
+<td>紅外線偵測火焰</td>
+<td>偵測到火焰時數值變化</td>
+</tr>
+<tr>
+<td>搖桿元件</td>
+<td>X/Y 軸各一組類比輸入</td>
+<td>中心約 512，範圍 0-1023</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="pwm-pulse-width-modulation">四、PWM 訊號（Pulse Width Modulation）</h2>
+<h3 id="41">4.1 基本概念</h3>
+<ul>
+<li><strong>原理</strong>：透過快速切換高低電位，調整「占空比」來模擬類比效果</li>
+<li><strong>占空比</strong>：高電位時間佔整個週期的比例</li>
+<li><strong>數值範圍</strong>：0-255（8 位元）</li>
+<li><strong>腳位標記</strong>：Arduino Uno 上標記 <code>~</code> 的腳位支援 PWM（3, 5, 6, 9, 10, 11）</li>
+</ul>
+<h3 id="42-pwm">4.2 PWM 輸出範例</h3>
+<pre><code class="language-cpp">// LED 漸變光範例
+int LED_PIN = 11;  // PWM 腳位
+int POT_PIN = A0;
+
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+}
+
+void loop() {
+  int potValue = analogRead(POT_PIN);           // 讀取電位器 (0-1023)
+  int pwmValue = map(potValue, 0, 1023, 0, 255); // 轉換為 PWM 值 (0-255)
+  analogWrite(LED_PIN, pwmValue);                // 輸出 PWM 訊號
+}
+</code></pre>
+<h3 id="43-pwm">4.3 PWM 應用場景</h3>
+<table>
+<thead>
+<tr>
+<th>應用</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LED 調光</td>
+<td>控制 LED 亮度漸變</td>
+</tr>
+<tr>
+<td>RGB LED 彩色控制</td>
+<td>混合 R、G、B 三色產生多種顏色</td>
+</tr>
+<tr>
+<td>無源蜂鳴器</td>
+<td>產生不同頻率的聲音</td>
+</tr>
+<tr>
+<td>舵機（伺服馬達）</td>
+<td>精確控制轉動角度</td>
+</tr>
+<tr>
+<td>馬達速度控制</td>
+<td>調整馬達轉速</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44-rgb-led">4.4 RGB LED 範例</h3>
+<pre><code class="language-cpp">int RED_PIN = 9;
+int GREEN_PIN = 10;
+int BLUE_PIN = 11;
+
+void setup() {
+  pinMode(RED_PIN, OUTPUT);
+  pinMode(GREEN_PIN, OUTPUT);
+  pinMode(BLUE_PIN, OUTPUT);
+}
+
+void loop() {
+  // 紅色 (255, 0, 0)
+  analogWrite(RED_PIN, 255);
+  analogWrite(GREEN_PIN, 0);
+  analogWrite(BLUE_PIN, 0);
+  delay(1000);
+
+  // 綠色 (0, 255, 0)
+  analogWrite(RED_PIN, 0);
+  analogWrite(GREEN_PIN, 255);
+  analogWrite(BLUE_PIN, 0);
+  delay(1000);
+
+  // 藍色 (0, 0, 255)
+  analogWrite(RED_PIN, 0);
+  analogWrite(GREEN_PIN, 0);
+  analogWrite(BLUE_PIN, 255);
+  delay(1000);
+}
+</code></pre>
+<hr />
+<h2 id="_2">五、通訊協議</h2>
+<p>Arduino Uno 支援多種通訊方式，用於與其他裝置或模組進行資料傳輸。</p>
+<h3 id="51-serial-uart">5.1 串列通訊（Serial / UART）</h3>
+<ul>
+<li><strong>腳位</strong>：D0（RX 接收）、D1（TX 發送）</li>
+<li><strong>特點</strong>：依序傳送數據，廣泛兼容，穩定</li>
+<li><strong>應用</strong>：與電腦通訊、藍牙模組、GPS 模組</li>
+</ul>
+<pre><code class="language-cpp">void setup() {
+  Serial.begin(9600);  // 初始化串列通訊，鮑率 9600
+}
+
+void loop() {
+  Serial.println(&quot;Hello World!&quot;);
+  delay(1000);
+}
+</code></pre>
+<h3 id="52-spi">5.2 SPI 傳輸</h3>
+<p>SPI（Serial Peripheral Interface）是一種高速全雙工通訊協議。</p>
+<table>
+<thead>
+<tr>
+<th>訊號線</th>
+<th>腳位</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCLK</td>
+<td>D13</td>
+<td>時鐘線，決定傳輸時間點</td>
+</tr>
+<tr>
+<td>MOSI</td>
+<td>D11</td>
+<td>主控端輸出，從端輸入</td>
+</tr>
+<tr>
+<td>MISO</td>
+<td>D12</td>
+<td>主控端輸入，從端輸出</td>
+</tr>
+<tr>
+<td>SS</td>
+<td>D10</td>
+<td>片選，控制與哪個從端溝通</td>
+</tr>
+</tbody>
+</table>
+<p><strong>特點</strong>：</p>
+<ul>
+<li>適合多設備雙向傳輸</li>
+<li>高效率、高靈活度</li>
+<li>適用於：SD 卡模組、點矩陣顯示器、部分感測器</li>
+</ul>
+<h3 id="53-i2c">5.3 I2C 傳輸</h3>
+<p>I2C（Inter-Integrated Circuit）只需兩條線即可連接多個裝置。</p>
+<table>
+<thead>
+<tr>
+<th>訊號線</th>
+<th>腳位</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SDA</td>
+<td>A4</td>
+<td>資料線，雙向傳輸資料</td>
+</tr>
+<tr>
+<td>SCL</td>
+<td>A5</td>
+<td>時鐘線，由主控端控制傳輸順序</td>
+</tr>
+</tbody>
+</table>
+<p><strong>特點</strong>：</p>
+<ul>
+<li>每個從端裝置有唯一位址（如 0x3C、0x40、0x68）</li>
+<li>主控端根據位址決定與誰溝通</li>
+<li>所需線材少、擴充性強</li>
+<li>適用於：LCD 1602 顯示器、RTC 時鐘模組、各類 I2C 感測器</li>
+</ul>
+<hr />
+<h2 id="_3">六、電壓與電源</h2>
+<h3 id="61-arduino-uno">6.1 Arduino Uno 電源規格</h3>
+<table>
+<thead>
+<tr>
+<th>電源類型</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>USB 供電</td>
+<td>5V，透過 USB 線連接電腦</td>
+</tr>
+<tr>
+<td>外部電源</td>
+<td>7-12V，透過 DC 電源插孔</td>
+</tr>
+<tr>
+<td>Vin 腳位</td>
+<td>接受外部電源輸入</td>
+</tr>
+<tr>
+<td>5V 腳位</td>
+<td>提供穩壓 5V 輸出</td>
+</tr>
+<tr>
+<td>3.3V 腳位</td>
+<td>提供穩壓 3.3V 輸出</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>接地端</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62">6.2 電阻使用注意事項</h3>
+<table>
+<thead>
+<tr>
+<th>電阻值</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>220Ω</td>
+<td>LED 限流電阻，防止 LED 燒毀</td>
+</tr>
+<tr>
+<td>10KΩ</td>
+<td>下拉/上拉電阻，避免輸入腳位浮動</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_4">七、常見元件對應訊號類型整理</h2>
+<table>
+<thead>
+<tr>
+<th>元件類別</th>
+<th>元件名稱</th>
+<th>訊號類型</th>
+<th>輸入/輸出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>燈光</td>
+<td>LED</td>
+<td>數位</td>
+<td>輸出</td>
+</tr>
+<tr>
+<td>燈光</td>
+<td>RGB LED</td>
+<td>PWM</td>
+<td>輸出</td>
+</tr>
+<tr>
+<td>燈光</td>
+<td>食人魚燈</td>
+<td>數位</td>
+<td>輸出</td>
+</tr>
+<tr>
+<td>燈光</td>
+<td>雷射頭</td>
+<td>數位</td>
+<td>輸出</td>
+</tr>
+<tr>
+<td>聲音</td>
+<td>有源蜂鳴器</td>
+<td>數位</td>
+<td>輸出</td>
+</tr>
+<tr>
+<td>聲音</td>
+<td>無源蜂鳴器</td>
+<td>PWM</td>
+<td>輸出</td>
+</tr>
+<tr>
+<td>聲音</td>
+<td>聲音感測器</td>
+<td>數位</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>馬達</td>
+<td>步進馬達</td>
+<td>數位</td>
+<td>輸出</td>
+</tr>
+<tr>
+<td>馬達</td>
+<td>舵機（伺服馬達）</td>
+<td>PWM</td>
+<td>輸出</td>
+</tr>
+<tr>
+<td>感測器</td>
+<td>電位器</td>
+<td>類比</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>感測器</td>
+<td>光敏電阻</td>
+<td>類比</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>感測器</td>
+<td>傾斜開關</td>
+<td>類比/數位</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>感測器</td>
+<td>火焰感測器</td>
+<td>類比</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>感測器</td>
+<td>水位感測器</td>
+<td>類比</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>感測器</td>
+<td>震動感測器</td>
+<td>類比</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>感測器</td>
+<td>霍爾感測器</td>
+<td>數位</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>感測器</td>
+<td>超音波測距器</td>
+<td>數位</td>
+<td>輸入/輸出</td>
+</tr>
+<tr>
+<td>感測器</td>
+<td>DS18B20 溫度感測器</td>
+<td>1-Wire</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>感測器</td>
+<td>紅外線循跡</td>
+<td>類比</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>開關</td>
+<td>按鈕開關</td>
+<td>數位</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>開關</td>
+<td>觸摸開關</td>
+<td>數位</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>開關</td>
+<td>限位開關</td>
+<td>數位</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>控制</td>
+<td>搖桿元件</td>
+<td>類比 + 數位</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>控制</td>
+<td>薄膜鍵盤</td>
+<td>數位矩陣</td>
+<td>輸入</td>
+</tr>
+<tr>
+<td>控制</td>
+<td>繼電器</td>
+<td>數位</td>
+<td>輸出</td>
+</tr>
+<tr>
+<td>顯示</td>
+<td>七段顯示器</td>
+<td>數位</td>
+<td>輸出</td>
+</tr>
+<tr>
+<td>顯示</td>
+<td>LCD 1602</td>
+<td>I2C</td>
+<td>輸出</td>
+</tr>
+<tr>
+<td>顯示</td>
+<td>點矩陣</td>
+<td>SPI</td>
+<td>輸出</td>
+</tr>
+<tr>
+<td>時鐘</td>
+<td>RTC DS1302</td>
+<td>數位</td>
+<td>輸入/輸出</td>
+</tr>
+<tr>
+<td>擴充</td>
+<td>74HC595</td>
+<td>數位（串轉並）</td>
+<td>輸出</td>
+</tr>
+<tr>
+<td>擴充</td>
+<td>74HC164</td>
+<td>數位（串轉並）</td>
+<td>輸出</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_5">八、訊號類型選擇指南</h2>
+<ol>
+<li><strong>需要開/關控制</strong> → 使用<strong>數位訊號</strong></li>
+<li><strong>需要讀取連續變化的數值</strong> → 使用<strong>類比訊號</strong></li>
+<li><strong>需要控制亮度、速度、角度等</strong> → 使用 <strong>PWM 訊號</strong></li>
+<li><strong>需要連接多個裝置共用通訊</strong> → 使用 <strong>I2C 通訊</strong></li>
+<li><strong>需要高速傳輸大量資料</strong> → 使用 <strong>SPI 通訊</strong></li>
+<li><strong>需要與電腦或其他開發板通訊</strong> → 使用<strong>串列通訊</strong></li>
+</ol>
+<h3 id="81">8.1 口訣記憶法</h3>
+<p><strong>六字口訣：「開連調，多快聊」</strong></p>
+<table>
+<thead>
+<tr>
+<th>口訣</th>
+<th>對應</th>
+<th>訊號類型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>開</strong></td>
+<td>開關控制</td>
+<td>數位訊號</td>
+</tr>
+<tr>
+<td><strong>連</strong></td>
+<td>連續變化</td>
+<td>類比訊號</td>
+</tr>
+<tr>
+<td><strong>調</strong></td>
+<td>調整亮度/速度</td>
+<td>PWM 訊號</td>
+</tr>
+<tr>
+<td><strong>多</strong></td>
+<td>多裝置共用</td>
+<td>I2C</td>
+</tr>
+<tr>
+<td><strong>快</strong></td>
+<td>快速大量傳輸</td>
+<td>SPI</td>
+</tr>
+<tr>
+<td><strong>聊</strong></td>
+<td>聊天（與電腦對話）</td>
+<td>串列通訊</td>
+</tr>
+</tbody>
+</table>
+<h3 id="82">8.2 生活聯想法</h3>
+<table>
+<thead>
+<tr>
+<th>訊號類型</th>
+<th>生活比喻</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>數位</strong></td>
+<td>電燈開關</td>
+<td>只有「開」或「關」兩種狀態</td>
+</tr>
+<tr>
+<td><strong>類比</strong></td>
+<td>水龍頭</td>
+<td>可以轉大轉小，連續變化</td>
+</tr>
+<tr>
+<td><strong>PWM</strong></td>
+<td>電風扇調速</td>
+<td>弱/中/強，模擬漸變效果</td>
+</tr>
+<tr>
+<td><strong>I2C</strong></td>
+<td>公車路線</td>
+<td>一條路，多站牌（位址），輪流上下車</td>
+</tr>
+<tr>
+<td><strong>SPI</strong></td>
+<td>高速公路</td>
+<td>四線道，速度快，各走各的</td>
+</tr>
+<tr>
+<td><strong>串列</strong></td>
+<td>講電話</td>
+<td>一句一句講，你來我往</td>
+</tr>
+</tbody>
+</table>
+<h3 id="83">8.3 關鍵字配對法</h3>
+<pre><code>數位 = 0 或 1 = 開關
+類比 = 0~1023 = 感測
+PWM  = 0~255  = 調光
+I2C  = 2線多機 = 省線
+SPI  = 4線高速 = 快傳
+串列 = TX/RX  = 對話
+</code></pre>
+<h3 id="84">8.4 情境判斷口訣</h3>
+<blockquote>
+<p><strong>「開關數位，感測類比，調整 PWM」</strong></p>
+<p><strong>「省線 I2C，快傳 SPI，對話串列」</strong></p>
+</blockquote>
+<hr />
+<h2 id="_6">參考資源</h2>
+<ul>
+<li>Arduino 官方網站：https://www.arduino.cc</li>
+<li>Arduino IDE 下載：https://www.arduino.cc/en/software</li>
+<li>TinkerCAD 線上模擬器：https://www.tinkercad.com</li>
+<li>課程範例檔案：https://bit.ly/448puCJ</li>
+</ul>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

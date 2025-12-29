@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Coding 完整指南 (2025)</title>
+
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+
+        /* 工具卡片樣式 */
+        .tool-card {
+            background: linear-gradient(135deg, rgba(45, 55, 72, 0.8), rgba(26, 32, 44, 0.9));
+            border: 1px solid #4fd1c5;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .tool-card h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .tool-card .badge {
+            font-size: 0.7em;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background: rgba(79, 209, 197, 0.3);
+            color: #4fd1c5;
+        }
+        .tool-card .badge.hot {
+            background: rgba(245, 101, 101, 0.3);
+            color: #fc8181;
+        }
+        .tool-card .badge.new {
+            background: rgba(72, 187, 120, 0.3);
+            color: #68d391;
+        }
+
+        /* 比較表特殊樣式 */
+        .comparison-table {
+            font-size: 0.9em;
+        }
+        .comparison-table th {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .comparison-table td {
+            vertical-align: top;
+        }
+        .comparison-table .tool-name {
+            font-weight: bold;
+            color: #4fd1c5;
+            white-space: nowrap;
+        }
+        .comparison-table .price {
+            color: #68d391;
+            font-weight: bold;
+        }
+        .comparison-table .highlight {
+            background-color: rgba(79, 209, 197, 0.15);
+        }
+
+        /* 評分樣式 */
+        .rating {
+            color: #f6e05e;
+            letter-spacing: 2px;
+        }
+        .rating-empty {
+            color: #4a5568;
+        }
+
+        /* 警告/提示框 */
+        .warning-box {
+            background: rgba(245, 101, 101, 0.15);
+            border-left: 4px solid #fc8181;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .info-box {
+            background: rgba(99, 179, 237, 0.15);
+            border-left: 4px solid #63b3ed;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .success-box {
+            background: rgba(72, 187, 120, 0.15);
+            border-left: 4px solid #68d391;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* 目錄 */
+        .toc {
+            background: rgba(45, 55, 72, 0.5);
+            border: 1px solid #2d3a4f;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .toc h3 {
+            margin-top: 0;
+            color: #4fd1c5;
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+        }
+        .toc a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+        }
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            table { font-size: 0.8em; }
+        }
+
+        /* 主題切換按鈕 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        /* 返回首頁按鈕 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+
+        /* 淺色主題 */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 { color: #2b6cb0 !important; border-bottom-color: #4fd1c5 !important; }
+        [data-theme="light"] h2 { color: #2c5282 !important; border-bottom-color: #90cdf4 !important; }
+        [data-theme="light"] h3 { color: #2b6cb0 !important; }
+        [data-theme="light"] h4 { color: #3182ce !important; }
+        [data-theme="light"] p, [data-theme="light"] li, [data-theme="light"] td { color: #4a5568 !important; }
+        [data-theme="light"] th { background-color: rgba(79, 209, 197, 0.25) !important; color: #2d3748 !important; }
+        [data-theme="light"] table { background-color: rgba(255, 255, 255, 0.9) !important; }
+        [data-theme="light"] code { background-color: rgba(79, 209, 197, 0.2) !important; color: #2b6cb0 !important; }
+        [data-theme="light"] pre { background-color: #f7fafc !important; border: 1px solid rgba(79, 209, 197, 0.3) !important; }
+        [data-theme="light"] pre code { color: #2d3748 !important; }
+        [data-theme="light"] blockquote { background-color: rgba(79, 209, 197, 0.15) !important; color: #2d3748 !important; }
+        [data-theme="light"] a { color: #3182ce !important; }
+        [data-theme="light"] strong { color: #d69e2e !important; }
+        [data-theme="light"] .tool-card { background: rgba(255, 255, 255, 0.9) !important; border-color: #4fd1c5 !important; }
+        [data-theme="light"] .toc { background: rgba(255, 255, 255, 0.7) !important; }
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1>Vibe Coding 完整指南 (2025)</h1>
+
+    <p style="font-size: 1.1em; color: #81e6d9;">
+        AI 輔助程式開發的新時代 — 用自然語言描述，讓 AI 來寫程式碼
+    </p>
+
+    <div class="info-box">
+        <strong>文件更新日期：</strong>2025 年 12 月 24 日<br>
+        <strong>適用對象：</strong>想了解或使用 AI 輔助編程工具的開發者、學生、教育工作者
+    </div>
+
+    <!-- 目錄 -->
+    <div class="toc">
+        <h3>目錄</h3>
+        <ul>
+            <li><a href="#what-is-vibe-coding">一、什麼是 Vibe Coding？</a></li>
+            <li><a href="#tool-categories">二、工具分類總覽</a></li>
+            <li><a href="#ide-tools">三、IDE 類工具詳細比較</a></li>
+            <li><a href="#web-tools">四、網頁應用建構工具比較</a></li>
+            <li><a href="#cli-tools">五、終端機/CLI 工具比較</a></li>
+            <li><a href="#comprehensive-comparison">六、全工具綜合比較表</a></li>
+            <li><a href="#pricing-comparison">七、價格比較一覽</a></li>
+            <li><a href="#use-case-recommendations">八、使用場景推薦</a></li>
+            <li><a href="#limitations">九、限制與注意事項</a></li>
+            <li><a href="#getting-started">十、入門建議</a></li>
+            <li><a href="#resources">十一、延伸資源</a></li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <!-- 一、什麼是 Vibe Coding？ -->
+    <h2 id="what-is-vibe-coding">一、什麼是 Vibe Coding？</h2>
+
+    <blockquote>
+        <strong>"Fully giving in to the vibes, embracing exponentials, and forgetting that the code even exists."</strong><br>
+        — Andrej Karpathy, 2025 年 2 月
+    </blockquote>
+
+    <p>
+        <strong>Vibe Coding</strong>（氛圍編程）是由 OpenAI 共同創辦人、前 Tesla AI 負責人 <strong>Andrej Karpathy</strong> 於 2025 年 2 月提出的概念。
+        這個詞已被 <strong>Collins Dictionary</strong> 選為 2025 年度詞彙。
+    </p>
+
+    <h3>核心概念</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>傳統編程</th>
+                <th>Vibe Coding</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>手動撰寫每一行程式碼</td>
+                <td>用自然語言描述需求，AI 生成程式碼</td>
+            </tr>
+            <tr>
+                <td>需要深入了解語法和框架</td>
+                <td>專注於「要做什麼」而非「怎麼做」</td>
+            </tr>
+            <tr>
+                <td>逐行除錯和修改</td>
+                <td>描述問題，讓 AI 修正</td>
+            </tr>
+            <tr>
+                <td>專業開發者專屬</td>
+                <td>非程式背景者也能建構應用</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Karpathy 的實踐方式</h3>
+    <p>Karpathy 使用 Cursor IDE 搭配 Anthropic 的 Claude 模型，透過對話甚至語音指令來建構專案（如 MenuGen）。他幾乎不碰鍵盤，完全讓 LLM 生成所有程式碼。</p>
+
+    <div class="success-box">
+        <strong>2025 年重大里程碑：</strong>
+        <ul style="margin: 10px 0 0 0;">
+            <li>Y Combinator 2025 冬季梯次中，<strong>25% 的新創公司</strong>的程式碼有 95% 是 AI 生成的</li>
+            <li>GitHub 上約 <strong>30% 的新程式碼</strong>來自 Copilot 建議</li>
+            <li>Collins Dictionary 將「Vibe Coding」選為 <strong>2025 年度詞彙</strong></li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <!-- 二、工具分類總覽 -->
+    <h2 id="tool-categories">二、工具分類總覽</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>類別</th>
+                <th>代表工具</th>
+                <th>特色</th>
+                <th>適合對象</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>IDE 類</strong></td>
+                <td>Cursor, Windsurf, VS Code + Copilot</td>
+                <td>完整開發環境，深度整合 AI</td>
+                <td>專業開發者、團隊協作</td>
+            </tr>
+            <tr>
+                <td><strong>網頁應用建構</strong></td>
+                <td>Lovable, Bolt.new, v0, Replit</td>
+                <td>瀏覽器內完成，快速原型</td>
+                <td>設計師、創業者、初學者</td>
+            </tr>
+            <tr>
+                <td><strong>終端機/CLI</strong></td>
+                <td>Claude Code, Gemini CLI, Aider</td>
+                <td>命令列操作，深度推理</td>
+                <td>資深開發者、DevOps</td>
+            </tr>
+            <tr>
+                <td><strong>特化工具</strong></td>
+                <td>GitHub Copilot, Amazon Q, Codeium</td>
+                <td>程式碼補全、特定平台整合</td>
+                <td>日常開發輔助</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 三、IDE 類工具詳細比較 -->
+    <h2 id="ide-tools">三、IDE 類工具詳細比較</h2>
+
+    <!-- Cursor -->
+    <div class="tool-card">
+        <h3>Cursor <span class="badge hot">熱門</span></h3>
+        <p><strong>官網：</strong><a href="https://cursor.com" target="_blank">cursor.com</a></p>
+        <p>基於 VS Code 分支的 AI 原生 IDE，被 Karpathy 用於示範 Vibe Coding。</p>
+
+        <table>
+            <tr><th>項目</th><th>說明</th></tr>
+            <tr><td>AI 模型</td><td>Claude 3.5/4, GPT-4, 自研模型</td></tr>
+            <tr><td>Context 長度</td><td>200K tokens</td></tr>
+            <tr><td>核心功能</td><td>Composer (多檔案編輯)、Tab 補全、Chat、.cursorrules 自訂規則</td></tr>
+            <tr><td>優勢</td><td>控制精準、VS Code 生態相容、結構化指令支援</td></tr>
+            <tr><td>劣勢</td><td>需手動添加 context、學習曲線較高</td></tr>
+        </table>
+
+        <p><strong>價格：</strong></p>
+        <ul>
+            <li>Free：2,000 次補全/月</li>
+            <li>Pro：$20/月 — 500 次快速請求</li>
+            <li>Business：$40/user/月 — 團隊功能</li>
+        </ul>
+    </div>
+
+    <!-- Windsurf -->
+    <div class="tool-card">
+        <h3>Windsurf <span class="badge new">新星</span></h3>
+        <p><strong>官網：</strong><a href="https://windsurf.com" target="_blank">windsurf.com</a> (原 Codeium)</p>
+        <p>主打自動化和速度的 AI IDE，Cascade 代理能自動理解整個程式庫。</p>
+
+        <table>
+            <tr><th>項目</th><th>說明</th></tr>
+            <tr><td>AI 模型</td><td>自研 SWE-1.5 + Claude/GPT</td></tr>
+            <tr><td>Context 長度</td><td>150K tokens</td></tr>
+            <tr><td>核心功能</td><td>Cascade Agent、自動檔案選取、即時 UI 預覽、一鍵部署</td></tr>
+            <tr><td>優勢</td><td>速度快 (30-40% 低延遲)、自動理解 codebase、UI 預覽</td></tr>
+            <tr><td>劣勢</td><td>生態系統較新、Context 長度略短</td></tr>
+        </table>
+
+        <p><strong>價格：</strong></p>
+        <ul>
+            <li>Free：基本功能</li>
+            <li>Pro：$15/月 — 500 次快速請求 (比 Cursor 便宜 25%)</li>
+            <li>Teams：$30/user/月</li>
+        </ul>
+    </div>
+
+    <!-- VS Code + GitHub Copilot -->
+    <div class="tool-card">
+        <h3>VS Code + GitHub Copilot</h3>
+        <p><strong>官網：</strong><a href="https://github.com/features/copilot" target="_blank">github.com/features/copilot</a></p>
+        <p>最穩定、最廣泛使用的 AI 程式助手，與 GitHub 深度整合。</p>
+
+        <table>
+            <tr><th>項目</th><th>說明</th></tr>
+            <tr><td>AI 模型</td><td>OpenAI Codex / GPT-4</td></tr>
+            <tr><td>核心功能</td><td>Inline 補全、Chat、Workspace Agent、PR 摘要</td></tr>
+            <tr><td>優勢</td><td>穩定可靠、廣泛語言支援、GitHub 整合</td></tr>
+            <tr><td>劣勢</td><td>Inline 補全不如 Cursor/Windsurf 聰明</td></tr>
+        </table>
+
+        <p><strong>價格：</strong></p>
+        <ul>
+            <li>Free：有限功能</li>
+            <li>Pro：$10/月 — 無限補全和對話 (最便宜)</li>
+            <li>Business：$19/user/月</li>
+            <li>Enterprise：$39/user/月</li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <!-- 四、網頁應用建構工具比較 -->
+    <h2 id="web-tools">四、網頁應用建構工具比較</h2>
+
+    <!-- Lovable -->
+    <div class="tool-card">
+        <h3>Lovable <span class="badge">最易上手</span></h3>
+        <p><strong>官網：</strong><a href="https://lovable.dev" target="_blank">lovable.dev</a></p>
+        <p>設計師友善的 AI 應用建構平台，結合自然語言與設計工具。</p>
+
+        <table>
+            <tr><th>項目</th><th>說明</th></tr>
+            <tr><td>定位</td><td>No-code / Low-code 混合</td></tr>
+            <tr><td>技術棧</td><td>React + Tailwind + shadcn/ui</td></tr>
+            <tr><td>後端支援</td><td>Supabase (有限)</td></tr>
+            <tr><td>優勢</td><td>UI 精美、學習曲線最低、適合 MVP</td></tr>
+            <tr><td>劣勢</td><td>後端功能有限、複雜邏輯較難處理</td></tr>
+        </table>
+
+        <p><strong>價格：</strong>Free 基本功能 / Pro $39/月</p>
+    </div>
+
+    <!-- Bolt.new -->
+    <div class="tool-card">
+        <h3>Bolt.new <span class="badge">開源</span></h3>
+        <p><strong>官網：</strong><a href="https://bolt.new" target="_blank">bolt.new</a></p>
+        <p>開源的全端應用建構器，支援本地和雲端 LLM。</p>
+
+        <table>
+            <tr><th>項目</th><th>說明</th></tr>
+            <tr><td>定位</td><td>Prompt → Full Stack App</td></tr>
+            <tr><td>技術棧</td><td>多框架支援 (React, Vue, Angular)</td></tr>
+            <tr><td>後端支援</td><td>Supabase 內建</td></tr>
+            <tr><td>優勢</td><td>開源透明、Diffs 增量更新快、可自架</td></tr>
+            <tr><td>劣勢</td><td>企業支援有限</td></tr>
+        </table>
+
+        <p><strong>價格：</strong>Free / Open Source</p>
+    </div>
+
+    <!-- v0 -->
+    <div class="tool-card">
+        <h3>v0 (Vercel) <span class="badge">前端專精</span></h3>
+        <p><strong>官網：</strong><a href="https://v0.dev" target="_blank">v0.dev</a></p>
+        <p>Vercel 推出的 AI 元件生成器，專注高品質 React 元件。</p>
+
+        <table>
+            <tr><th>項目</th><th>說明</th></tr>
+            <tr><td>定位</td><td>UI 元件生成器</td></tr>
+            <tr><td>技術棧</td><td>React + Tailwind + shadcn/ui</td></tr>
+            <tr><td>後端支援</td><td>無</td></tr>
+            <tr><td>優勢</td><td>元件品質極高、程式碼乾淨、Next.js 完美整合</td></tr>
+            <tr><td>劣勢</td><td>僅前端、無後端自動化</td></tr>
+        </table>
+
+        <p><strong>價格：</strong>Free 基本 / Pro $20/月</p>
+    </div>
+
+    <!-- Replit Agent -->
+    <div class="tool-card">
+        <h3>Replit Agent <span class="badge">全能環境</span></h3>
+        <p><strong>官網：</strong><a href="https://replit.com" target="_blank">replit.com</a></p>
+        <p>雲端完整開發環境，從編碼到部署一站完成。</p>
+
+        <table>
+            <tr><th>項目</th><th>說明</th></tr>
+            <tr><td>定位</td><td>雲端 IDE + AI Agent</td></tr>
+            <tr><td>核心功能</td><td>Autonomous Agent 3.0、內建 DB/Auth/Hosting</td></tr>
+            <tr><td>優勢</td><td>全功能環境、從想法到部署一站完成</td></tr>
+            <tr><td>劣勢</td><td>純雲端、無法整合本地開發環境</td></tr>
+        </table>
+
+        <p><strong>價格：</strong>Free / Core $25/月 / Teams $40/user/月</p>
+    </div>
+
+    <hr>
+
+    <!-- 五、終端機/CLI 工具比較 -->
+    <h2 id="cli-tools">五、終端機/CLI 工具比較</h2>
+
+    <!-- Claude Code -->
+    <div class="tool-card">
+        <h3>Claude Code (Anthropic) <span class="badge hot">推理最強</span></h3>
+        <p><strong>官網：</strong><a href="https://claude.ai" target="_blank">claude.ai</a></p>
+        <p>終端機為主的 AI 編程代理，以深度推理和多步驟任務見長。</p>
+
+        <table>
+            <tr><th>項目</th><th>說明</th></tr>
+            <tr><td>AI 模型</td><td>Claude 3.7 Sonnet (標準) / Claude Opus 4.1 (Max)</td></tr>
+            <tr><td>Context 長度</td><td>200K tokens (一致)</td></tr>
+            <tr><td>核心功能</td><td>Terminal Agent、多檔案推理、本地環境整合</td></tr>
+            <tr><td>優勢</td><td>推理能力最強、程式碼品質高 (減少 30% 重做)、93% 基準測試成功率</td></tr>
+            <tr><td>劣勢</td><td>需熟悉終端機、無 GUI</td></tr>
+        </table>
+
+        <p><strong>價格：</strong>按使用量計費 $20-$100/月</p>
+    </div>
+
+    <!-- Gemini CLI -->
+    <div class="tool-card">
+        <h3>Gemini CLI (Google)</h3>
+        <p><strong>官網：</strong><a href="https://cloud.google.com/gemini" target="_blank">cloud.google.com/gemini</a></p>
+        <p>Google 的終端機 AI 工具，與 GCP 深度整合。</p>
+
+        <table>
+            <tr><th>項目</th><th>說明</th></tr>
+            <tr><td>AI 模型</td><td>Gemini 2.0 / 1.5 Pro</td></tr>
+            <tr><td>核心功能</td><td>多模態支援、GCP 整合、長 context</td></tr>
+            <tr><td>優勢</td><td>Google 生態整合、多模態能力</td></tr>
+            <tr><td>劣勢</td><td>相對較新、社群資源較少</td></tr>
+        </table>
+    </div>
+
+    <hr>
+
+    <!-- 六、全工具綜合比較表 -->
+    <h2 id="comprehensive-comparison">六、全工具綜合比較表</h2>
+
+    <div class="info-box">
+        <strong>說明：</strong>以下評分為 2025 年 12 月基於社群回饋、基準測試和實際使用經驗的綜合評估。<br>
+        評分滿分 5 顆星 (★★★★★)
+    </div>
+
+    <table class="comparison-table">
+        <thead>
+            <tr>
+                <th>工具</th>
+                <th>類型</th>
+                <th>程式碼品質</th>
+                <th>易用性</th>
+                <th>速度</th>
+                <th>推理能力</th>
+                <th>價格/月</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="highlight">
+                <td class="tool-name">Claude Code</td>
+                <td>CLI</td>
+                <td><span class="rating">★★★★★</span></td>
+                <td><span class="rating">★★★</span><span class="rating-empty">☆☆</span></td>
+                <td><span class="rating">★★★★</span><span class="rating-empty">☆</span></td>
+                <td><span class="rating">★★★★★</span></td>
+                <td class="price">$20-100</td>
+            </tr>
+            <tr>
+                <td class="tool-name">Cursor</td>
+                <td>IDE</td>
+                <td><span class="rating">★★★★</span><span class="rating-empty">☆</span></td>
+                <td><span class="rating">★★★★</span><span class="rating-empty">☆</span></td>
+                <td><span class="rating">★★★★</span><span class="rating-empty">☆</span></td>
+                <td><span class="rating">★★★★</span><span class="rating-empty">☆</span></td>
+                <td class="price">$0-40</td>
+            </tr>
+            <tr>
+                <td class="tool-name">Windsurf</td>
+                <td>IDE</td>
+                <td><span class="rating">★★★★</span><span class="rating-empty">☆</span></td>
+                <td><span class="rating">★★★★★</span></td>
+                <td><span class="rating">★★★★★</span></td>
+                <td><span class="rating">★★★</span><span class="rating-empty">☆☆</span></td>
+                <td class="price">$0-30</td>
+            </tr>
+            <tr>
+                <td class="tool-name">GitHub Copilot</td>
+                <td>外掛</td>
+                <td><span class="rating">★★★</span><span class="rating-empty">☆☆</span></td>
+                <td><span class="rating">★★★★★</span></td>
+                <td><span class="rating">★★★★</span><span class="rating-empty">☆</span></td>
+                <td><span class="rating">★★★</span><span class="rating-empty">☆☆</span></td>
+                <td class="price">$0-19</td>
+            </tr>
+            <tr class="highlight">
+                <td class="tool-name">Lovable</td>
+                <td>Web Builder</td>
+                <td><span class="rating">★★★</span><span class="rating-empty">☆☆</span></td>
+                <td><span class="rating">★★★★★</span></td>
+                <td><span class="rating">★★★★</span><span class="rating-empty">☆</span></td>
+                <td><span class="rating">★★</span><span class="rating-empty">☆☆☆</span></td>
+                <td class="price">$0-39</td>
+            </tr>
+            <tr>
+                <td class="tool-name">Bolt.new</td>
+                <td>Web Builder</td>
+                <td><span class="rating">★★★</span><span class="rating-empty">☆☆</span></td>
+                <td><span class="rating">★★★★</span><span class="rating-empty">☆</span></td>
+                <td><span class="rating">★★★★★</span></td>
+                <td><span class="rating">★★★</span><span class="rating-empty">☆☆</span></td>
+                <td class="price">Free</td>
+            </tr>
+            <tr>
+                <td class="tool-name">v0 (Vercel)</td>
+                <td>UI 生成</td>
+                <td><span class="rating">★★★★★</span></td>
+                <td><span class="rating">★★★★</span><span class="rating-empty">☆</span></td>
+                <td><span class="rating">★★★★</span><span class="rating-empty">☆</span></td>
+                <td><span class="rating">★★★</span><span class="rating-empty">☆☆</span></td>
+                <td class="price">$0-20</td>
+            </tr>
+            <tr>
+                <td class="tool-name">Replit Agent</td>
+                <td>雲端 IDE</td>
+                <td><span class="rating">★★★</span><span class="rating-empty">☆☆</span></td>
+                <td><span class="rating">★★★★</span><span class="rating-empty">☆</span></td>
+                <td><span class="rating">★★★</span><span class="rating-empty">☆☆</span></td>
+                <td><span class="rating">★★★★</span><span class="rating-empty">☆</span></td>
+                <td class="price">$0-40</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 七、價格比較一覽 -->
+    <h2 id="pricing-comparison">七、價格比較一覽</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>工具</th>
+                <th>免費方案</th>
+                <th>入門/Pro</th>
+                <th>專業/Business</th>
+                <th>計費方式</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>GitHub Copilot</strong></td>
+                <td>有限功能</td>
+                <td>$10/月</td>
+                <td>$19-39/月</td>
+                <td>固定月費</td>
+            </tr>
+            <tr>
+                <td><strong>Windsurf</strong></td>
+                <td>基本功能</td>
+                <td>$15/月</td>
+                <td>$30/user/月</td>
+                <td>固定月費</td>
+            </tr>
+            <tr>
+                <td><strong>Cursor</strong></td>
+                <td>2000 補全/月</td>
+                <td>$20/月</td>
+                <td>$40/user/月</td>
+                <td>固定月費</td>
+            </tr>
+            <tr>
+                <td><strong>v0</strong></td>
+                <td>基本功能</td>
+                <td>$20/月</td>
+                <td>—</td>
+                <td>固定月費</td>
+            </tr>
+            <tr>
+                <td><strong>Claude Code</strong></td>
+                <td>—</td>
+                <td>$20/月</td>
+                <td>$100/月 (Max)</td>
+                <td>使用量計費</td>
+            </tr>
+            <tr>
+                <td><strong>Replit</strong></td>
+                <td>基本功能</td>
+                <td>$25/月</td>
+                <td>$40/user/月</td>
+                <td>固定月費</td>
+            </tr>
+            <tr>
+                <td><strong>Lovable</strong></td>
+                <td>基本功能</td>
+                <td>$39/月</td>
+                <td>—</td>
+                <td>固定月費</td>
+            </tr>
+            <tr style="background: rgba(72, 187, 120, 0.15);">
+                <td><strong>Bolt.new</strong></td>
+                <td colspan="3" style="text-align: center;">完全免費 / 開源</td>
+                <td>—</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 八、使用場景推薦 -->
+    <h2 id="use-case-recommendations">八、使用場景推薦</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>使用場景</th>
+                <th>推薦工具</th>
+                <th>原因</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>完全不會寫程式</strong></td>
+                <td>Lovable, Bolt.new</td>
+                <td>最低學習曲線，視覺化操作</td>
+            </tr>
+            <tr>
+                <td><strong>快速 UI 原型</strong></td>
+                <td>v0, Lovable</td>
+                <td>高品質元件，即時預覽</td>
+            </tr>
+            <tr>
+                <td><strong>完整 MVP 開發</strong></td>
+                <td>Replit, Bolt.new</td>
+                <td>前後端一體，內建部署</td>
+            </tr>
+            <tr>
+                <td><strong>日常程式碼輔助</strong></td>
+                <td>GitHub Copilot</td>
+                <td>最穩定、最廣泛語言支援</td>
+            </tr>
+            <tr>
+                <td><strong>IDE 內深度開發</strong></td>
+                <td>Cursor, Windsurf</td>
+                <td>完整 IDE 功能 + AI 整合</td>
+            </tr>
+            <tr>
+                <td><strong>複雜推理/大型專案</strong></td>
+                <td>Claude Code</td>
+                <td>最強推理能力，多檔案處理</td>
+            </tr>
+            <tr>
+                <td><strong>終端機愛好者</strong></td>
+                <td>Claude Code, Gemini CLI</td>
+                <td>CLI 原生，整合本地環境</td>
+            </tr>
+            <tr>
+                <td><strong>預算有限</strong></td>
+                <td>Bolt.new, GitHub Copilot Free</td>
+                <td>免費或低價入門</td>
+            </tr>
+            <tr>
+                <td><strong>團隊協作</strong></td>
+                <td>GitHub Copilot Enterprise, Cursor Business</td>
+                <td>權限管理、團隊功能</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 九、限制與注意事項 -->
+    <h2 id="limitations">九、限制與注意事項</h2>
+
+    <div class="warning-box">
+        <h4 style="margin-top: 0; color: #fc8181;">重要研究發現</h4>
+        <p>2025 年 7 月 METR 發表的研究指出：<strong>有經驗的開發者使用 AI 工具（如 Cursor、Claude）完成任務的時間反而多了 19%</strong>，儘管他們自認為快了 20%。</p>
+        <p>但對於新手開發者，使用 GitHub Copilot 等工具可提升 <strong>26% 的生產力</strong>。</p>
+    </div>
+
+    <h3>Vibe Coding 的限制</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>限制</th>
+                <th>說明</th>
+                <th>建議</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>複雜邏輯處理</strong></td>
+                <td>超過 90% 的自動生成應用無法正常運作</td>
+                <td>適合原型/簡單應用，複雜邏輯需人工介入</td>
+            </tr>
+            <tr>
+                <td><strong>安全性風險</strong></td>
+                <td>可能產生未被察覺的安全漏洞</td>
+                <td>務必進行安全審查，勿直接部署到生產環境</td>
+            </tr>
+            <tr>
+                <td><strong>程式碼理解</strong></td>
+                <td>開發者可能不理解 AI 生成的程式碼</td>
+                <td>保持學習，理解生成的程式碼邏輯</td>
+            </tr>
+            <tr>
+                <td><strong>風格同質化</strong></td>
+                <td>多數工具使用 Tailwind + shadcn，導致 UI 相似</td>
+                <td>需額外客製化設計</td>
+            </tr>
+            <tr>
+                <td><strong>維護困難</strong></td>
+                <td>「Vibe Coding 宿醉」— 接手 AI 生成的程式碼困難</td>
+                <td>建立文件、保持程式碼品質標準</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>適合 vs 不適合</h3>
+    <table>
+        <thead>
+            <tr>
+                <th style="background: rgba(72, 187, 120, 0.2);">適合使用 Vibe Coding</th>
+                <th style="background: rgba(245, 101, 101, 0.2);">不建議使用 Vibe Coding</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>快速原型 / MVP</td>
+                <td>金融交易系統</td>
+            </tr>
+            <tr>
+                <td>週末 side project</td>
+                <td>醫療健康應用</td>
+            </tr>
+            <tr>
+                <td>內部工具</td>
+                <td>高安全性需求系統</td>
+            </tr>
+            <tr>
+                <td>學習和探索</td>
+                <td>大規模生產環境</td>
+            </tr>
+            <tr>
+                <td>靜態網站 / 部落格</td>
+                <td>需長期維護的企業軟體</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 十、入門建議 -->
+    <h2 id="getting-started">十、入門建議</h2>
+
+    <h3>給完全初學者</h3>
+    <ol>
+        <li><strong>從 Lovable 或 Bolt.new 開始</strong> — 無需安裝，瀏覽器內操作</li>
+        <li>嘗試建立一個簡單的個人網站或 Todo App</li>
+        <li>觀察 AI 生成的程式碼，開始理解基本結構</li>
+    </ol>
+
+    <h3>給有程式基礎者</h3>
+    <ol>
+        <li><strong>安裝 Cursor 或 Windsurf</strong> — 熟悉 AI 輔助 IDE</li>
+        <li>設定 <code>.cursorrules</code> 或專案規則，引導 AI 風格</li>
+        <li>練習用自然語言描述需求，觀察 AI 如何解讀</li>
+    </ol>
+
+    <h3>給資深開發者</h3>
+    <ol>
+        <li><strong>嘗試 Claude Code</strong> — 體驗終端機內的深度推理</li>
+        <li>將 AI 融入現有工作流程，處理重複性任務</li>
+        <li>專注於 AI 不擅長的：架構設計、安全審查、程式碼品質</li>
+    </ol>
+
+    <div class="success-box">
+        <h4 style="margin-top: 0;">快速開始指令</h4>
+        <pre><code># 安裝 Claude Code (需要 Node.js)
+npm install -g @anthropic-ai/claude-code
+
+# 在專案目錄執行
+claude
+
+# 或使用 Cursor (下載安裝後)
+# 開啟專案，按 Cmd/Ctrl + K 開始對話</code></pre>
+    </div>
+
+    <hr>
+
+    <!-- 十一、延伸資源 -->
+    <h2 id="resources">十一、延伸資源</h2>
+
+    <h3>官方資源</h3>
+    <ul>
+        <li><a href="https://cursor.com" target="_blank">Cursor 官網</a></li>
+        <li><a href="https://windsurf.com" target="_blank">Windsurf 官網</a></li>
+        <li><a href="https://github.com/features/copilot" target="_blank">GitHub Copilot</a></li>
+        <li><a href="https://claude.ai" target="_blank">Claude (Anthropic)</a></li>
+        <li><a href="https://lovable.dev" target="_blank">Lovable</a></li>
+        <li><a href="https://bolt.new" target="_blank">Bolt.new</a></li>
+        <li><a href="https://v0.dev" target="_blank">v0 (Vercel)</a></li>
+        <li><a href="https://replit.com" target="_blank">Replit</a></li>
+    </ul>
+
+    <h3>參考文章</h3>
+    <ul>
+        <li><a href="https://en.wikipedia.org/wiki/Vibe_coding" target="_blank">Vibe Coding - Wikipedia</a></li>
+        <li><a href="https://www.ibm.com/think/topics/vibe-coding" target="_blank">What is Vibe Coding? - IBM</a></li>
+        <li><a href="https://cloud.google.com/discover/what-is-vibe-coding" target="_blank">Vibe Coding Explained - Google Cloud</a></li>
+        <li><a href="https://appwrite.io/blog/post/comparing-vibe-coding-tools" target="_blank">Comparing Vibe Coding Tools - Appwrite</a></li>
+        <li><a href="https://simonwillison.net/2025/Mar/19/vibe-coding/" target="_blank">Not all AI-assisted programming is vibe coding - Simon Willison</a></li>
+    </ul>
+
+    <h3>Andrej Karpathy 相關</h3>
+    <ul>
+        <li><a href="https://karpathy.bearblog.dev/year-in-review-2025/" target="_blank">2025 LLM Year in Review - Karpathy's Blog</a></li>
+        <li><a href="https://twitter.com/karpathy" target="_blank">@karpathy on X (Twitter)</a></li>
+    </ul>
+
+    <hr>
+
+    <div style="text-align: center; padding: 30px 0;">
+        <p style="color: #81e6d9; font-size: 1.2em;">
+            "Vibe coding will terraform software and alter job descriptions."<br>
+            — Andrej Karpathy, 2025
+        </p>
+    </div>
+
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | Vibe Coding 完整指南 | 最後更新：2025年12月24日
+    </p>
+
+
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

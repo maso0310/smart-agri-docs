@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於RGB、HSV、Lab、YCrCb等呈色方式</title>
+<style>
+    body { font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; line-height: 1.8; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e8e8e8; min-height: 100vh; }
+    h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+    h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+    h3 { color: #81e6d9; margin-top: 20px; }
+    h4 { color: #90cdf4; margin-top: 15px; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+    th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+    th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+    tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+    tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+    code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+    pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+    pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+    blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+    a { color: #63b3ed; text-decoration: none; }
+    ul, ol { padding-left: 25px; }
+    li { margin: 5px 0; }
+    hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+    strong { color: #f6e05e; }
+    .color-box { display: inline-block; width: 20px; height: 20px; vertical-align: middle; margin-right: 5px; border: 1px solid #fff; }
+    .floating-home { position: fixed; bottom: 25px; right: 25px; z-index: 9999; display: flex; align-items: center; justify-content: center; width: 55px; height: 55px; background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%); color: #1a1a2e; text-decoration: none; border-radius: 50%; box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4); font-size: 24px; transition: all 0.3s ease; }
+    .floating-home:hover { transform: scale(1.1); }
+    .theme-toggle { position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%; border: none; cursor: pointer; z-index: 10000; display: flex; align-items: center; justify-content: center; font-size: 24px; background: linear-gradient(135deg, #4fd1c5, #63b3ed); color: #1a1a2e; }
+    [data-theme="light"] body { background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important; color: #2d3748 !important; }
+    [data-theme="light"] h1 { color: #2b6cb0 !important; }
+    [data-theme="light"] h2 { color: #2c5282 !important; }
+    [data-theme="light"] h3 { color: #2b6cb0 !important; }
+    [data-theme="light"] p, [data-theme="light"] li, [data-theme="light"] td { color: #4a5568 !important; }
+    [data-theme="light"] th { background-color: rgba(79, 209, 197, 0.25) !important; color: #2d3748 !important; }
+    [data-theme="light"] table { background-color: rgba(255, 255, 255, 0.9) !important; }
+    [data-theme="light"] code { background-color: rgba(79, 209, 197, 0.2) !important; color: #2b6cb0 !important; }
+    [data-theme="light"] pre { background-color: #f7fafc !important; }
+    [data-theme="light"] pre code { color: #2d3748 !important; }
+    [data-theme="light"] blockquote { background-color: rgba(79, 209, 197, 0.15) !important; color: #2d3748 !important; }
+    [data-theme="light"] strong { color: #d69e2e !important; }
+    [data-theme="light"] .theme-toggle { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+</style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換主題"><span id="theme-icon">☀️</span></button>
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+    <h1>關於 RGB、HSV、Lab、YCrCb 等呈色方式</h1>
+    <p>色彩空間（Color Space）是描述和組織顏色的數學模型。在影像處理、電腦視覺和農業影像分析中，選擇適當的色彩空間對於分割、偵測和分類任務至關重要。</p>
+    <hr />
+
+    <h2>一、色彩空間概述</h2>
+    <h3>為什麼需要不同色彩空間</h3>
+    <ul>
+        <li><strong>RGB</strong>：適合顯示和儲存</li>
+        <li><strong>HSV/HSL</strong>：直覺描述顏色，適合色彩分割</li>
+        <li><strong>Lab</strong>：感知均勻，適合顏色比較</li>
+        <li><strong>YCrCb</strong>：亮度與色度分離，適合壓縮</li>
+    </ul>
+
+    <h3>色彩空間分類</h3>
+    <table>
+        <thead>
+            <tr><th>類型</th><th>色彩空間</th><th>特點</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>加色型</td><td>RGB, sRGB</td><td>螢幕顯示</td></tr>
+            <tr><td>減色型</td><td>CMYK</td><td>印刷</td></tr>
+            <tr><td>感知型</td><td>HSV, HSL, Lab</td><td>接近人類感知</td></tr>
+            <tr><td>亮度色度分離</td><td>YCbCr, YUV</td><td>視訊壓縮</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>二、RGB 色彩空間</h2>
+    <h3>原理</h3>
+    <p><strong>RGB</strong>（Red, Green, Blue）是基於人眼三種視錐細胞的加色模型：</p>
+    <ul>
+        <li><span class="color-box" style="background:#ff0000"></span><strong>R（紅）</strong>：0-255</li>
+        <li><span class="color-box" style="background:#00ff00"></span><strong>G（綠）</strong>：0-255</li>
+        <li><span class="color-box" style="background:#0000ff"></span><strong>B（藍）</strong>：0-255</li>
+    </ul>
+
+    <h3>特點</h3>
+    <table>
+        <thead>
+            <tr><th>優點</th><th>缺點</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>硬體直接支援、廣泛使用</td>
+                <td>三個通道相關性高</td>
+            </tr>
+            <tr>
+                <td>無需轉換即可顯示</td>
+                <td>不符合人類色彩感知</td>
+            </tr>
+            <tr>
+                <td>計算簡單</td>
+                <td>亮度與色彩混合</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>OpenCV 注意事項</h3>
+    <pre><code class="language-python">import cv2
+import numpy as np
+
+# OpenCV 讀取影像為 BGR 格式！
+img_bgr = cv2.imread('image.jpg')
+
+# 轉為 RGB（顯示用）
+img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+
+# 存取像素
+b, g, r = img_bgr[100, 100]  # OpenCV: BGR
+r, g, b = img_rgb[100, 100]  # 轉換後: RGB
+
+# 分離通道
+b, g, r = cv2.split(img_bgr)
+
+# 合併通道
+img_merged = cv2.merge([b, g, r])
+</code></pre>
+    <hr />
+
+    <h2>三、HSV/HSL 色彩空間</h2>
+    <h3>HSV 原理</h3>
+    <p><strong>HSV</strong>（Hue, Saturation, Value）以更直覺的方式描述顏色：</p>
+    <ul>
+        <li><strong>H（色相）</strong>：顏色種類，0-360°（OpenCV 中 0-179）</li>
+        <li><strong>S（飽和度）</strong>：顏色純度，0-255</li>
+        <li><strong>V（明度）</strong>：亮暗程度，0-255</li>
+    </ul>
+
+    <h3>色相環</h3>
+    <pre><code>HSV 色相值對照（OpenCV）：
+┌─────────────────────────────────┐
+│   0° = 紅色      (H ≈ 0)        │
+│  30° = 橙色      (H ≈ 15)       │
+│  60° = 黃色      (H ≈ 30)       │
+│  90° = 黃綠      (H ≈ 45)       │
+│ 120° = 綠色      (H ≈ 60)       │
+│ 150° = 青綠      (H ≈ 75)       │
+│ 180° = 青色      (H ≈ 90)       │
+│ 210° = 藍色      (H ≈ 105)      │
+│ 240° = 靛色      (H ≈ 120)      │
+│ 270° = 紫色      (H ≈ 135)      │
+│ 300° = 洋紅      (H ≈ 150)      │
+│ 330° = 玫紅      (H ≈ 165)      │
+└─────────────────────────────────┘
+注意：OpenCV 的 H 範圍是 0-179（= 原始值/2）
+</code></pre>
+
+    <h3>HSV 顏色分割</h3>
+    <pre><code class="language-python">import cv2
+import numpy as np
+
+def color_segmentation(image, color='green'):
+    """
+    使用 HSV 進行顏色分割
+    """
+    # 轉換為 HSV
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+    # 常用顏色範圍
+    color_ranges = {
+        'red':    ([0, 100, 100], [10, 255, 255]),     # 紅色（低）
+        'red2':   ([160, 100, 100], [179, 255, 255]),  # 紅色（高）
+        'orange': ([10, 100, 100], [25, 255, 255]),
+        'yellow': ([25, 100, 100], [35, 255, 255]),
+        'green':  ([35, 100, 100], [85, 255, 255]),
+        'blue':   ([100, 100, 100], [130, 255, 255]),
+        'purple': ([130, 100, 100], [160, 255, 255]),
+    }
+
+    lower, upper = color_ranges.get(color, ([0, 0, 0], [179, 255, 255]))
+    lower = np.array(lower)
+    upper = np.array(upper)
+
+    # 建立遮罩
+    mask = cv2.inRange(hsv, lower, upper)
+
+    # 套用遮罩
+    result = cv2.bitwise_and(image, image, mask=mask)
+
+    return mask, result
+
+# 植物綠色分割範例
+img = cv2.imread('plant.jpg')
+mask, green_only = color_segmentation(img, 'green')
+</code></pre>
+
+    <h3>HSL vs HSV</h3>
+    <table>
+        <thead>
+            <tr><th>項目</th><th>HSV</th><th>HSL</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>第三軸</td><td>Value（明度）</td><td>Lightness（亮度）</td></tr>
+            <tr><td>白色位置</td><td>V=255, S=0</td><td>L=255</td></tr>
+            <tr><td>黑色位置</td><td>V=0</td><td>L=0</td></tr>
+            <tr><td>純色位置</td><td>V=255, S=255</td><td>L=128, S=255</td></tr>
+            <tr><td>常用場景</td><td>影像處理</td><td>網頁設計</td></tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>四、Lab 色彩空間</h2>
+    <h3>原理</h3>
+    <p><strong>CIE Lab</strong>（或 CIELAB）是感知均勻的色彩空間：</p>
+    <ul>
+        <li><strong>L（明度）</strong>：0-100，黑到白</li>
+        <li><strong>a</strong>：-128 到 +127，綠色到紅色</li>
+        <li><strong>b</strong>：-128 到 +127，藍色到黃色</li>
+    </ul>
+
+    <h3>特點</h3>
+    <ul>
+        <li><strong>感知均勻</strong>：數值差異對應視覺差異</li>
+        <li><strong>設備獨立</strong>：不依賴特定硬體</li>
+        <li><strong>涵蓋所有可見色</strong></li>
+    </ul>
+
+    <h3>農業應用：葉綠素相關分析</h3>
+    <pre><code class="language-python">import cv2
+import numpy as np
+
+def analyze_leaf_greenness(image):
+    """
+    使用 Lab 分析葉片綠度
+    a* 通道與葉綠素含量相關
+    """
+    # 轉換為 Lab
+    lab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+
+    # 分離通道
+    L, a, b = cv2.split(lab)
+
+    # a* 通道：負值表示綠色，正值表示紅色
+    # OpenCV 中 a 的範圍是 0-255（128 為中點）
+
+    # 計算綠度指標
+    greenness = 128 - a.astype(float)  # 越大越綠
+
+    # 統計分析
+    mean_greenness = np.mean(greenness)
+    std_greenness = np.std(greenness)
+
+    return {
+        'mean_greenness': mean_greenness,
+        'std_greenness': std_greenness,
+        'greenness_map': greenness
+    }
+
+# 使用範例
+img = cv2.imread('leaf.jpg')
+result = analyze_leaf_greenness(img)
+print(f"平均綠度: {result['mean_greenness']:.2f}")
+</code></pre>
+
+    <h3>色彩差異計算（Delta E）</h3>
+    <pre><code class="language-python">def delta_e_cie76(lab1, lab2):
+    """
+    計算兩個 Lab 顏色的差異（CIE76）
+    """
+    L1, a1, b1 = lab1
+    L2, a2, b2 = lab2
+    return np.sqrt((L2-L1)**2 + (a2-a1)**2 + (b2-b1)**2)
+
+# 差異解讀
+# ΔE < 1：難以察覺
+# 1-2：細微差異
+# 2-10：可察覺差異
+# 10-49：明顯差異
+# ΔE >= 100：完全不同顏色
+</code></pre>
+    <hr />
+
+    <h2>五、YCrCb 色彩空間</h2>
+    <h3>原理</h3>
+    <p><strong>YCrCb</strong>（或 YCbCr）分離亮度與色度：</p>
+    <ul>
+        <li><strong>Y（亮度）</strong>：明暗資訊</li>
+        <li><strong>Cr（紅色色度）</strong>：紅色與亮度的差異</li>
+        <li><strong>Cb（藍色色度）</strong>：藍色與亮度的差異</li>
+    </ul>
+
+    <h3>轉換公式</h3>
+    <pre><code>Y  =  0.299R + 0.587G + 0.114B
+Cb = -0.169R - 0.331G + 0.500B + 128
+Cr =  0.500R - 0.419G - 0.081B + 128
+</code></pre>
+
+    <h3>膚色偵測範例</h3>
+    <pre><code class="language-python">import cv2
+import numpy as np
+
+def skin_detection_ycrcb(image):
+    """
+    使用 YCrCb 進行膚色偵測
+    """
+    # 轉換為 YCrCb
+    ycrcb = cv2.cvtColor(image, cv2.COLOR_BGR2YCrCb)
+
+    # 膚色範圍（經驗值）
+    lower = np.array([0, 133, 77])
+    upper = np.array([255, 173, 127])
+
+    # 建立遮罩
+    mask = cv2.inRange(ycrcb, lower, upper)
+
+    # 形態學處理
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+
+    return mask
+</code></pre>
+
+    <h3>應用場景</h3>
+    <ul>
+        <li>視訊壓縮（JPEG、MPEG）</li>
+        <li>膚色偵測</li>
+        <li>照明變化不敏感的分析</li>
+    </ul>
+    <hr />
+
+    <h2>六、其他色彩空間</h2>
+
+    <h3>灰階（Grayscale）</h3>
+    <pre><code class="language-python"># 轉灰階
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# 加權公式
+# Gray = 0.299*R + 0.587*G + 0.114*B
+</code></pre>
+
+    <h3>CMYK（印刷用）</h3>
+    <pre><code class="language-python">def rgb_to_cmyk(r, g, b):
+    """RGB 轉 CMYK"""
+    r, g, b = r/255, g/255, b/255
+    k = 1 - max(r, g, b)
+    if k == 1:
+        return 0, 0, 0, 1
+    c = (1-r-k) / (1-k)
+    m = (1-g-k) / (1-k)
+    y = (1-b-k) / (1-k)
+    return c, m, y, k
+</code></pre>
+
+    <h3>XYZ（CIE 標準）</h3>
+    <pre><code class="language-python"># 轉換為 XYZ
+xyz = cv2.cvtColor(img, cv2.COLOR_BGR2XYZ)
+</code></pre>
+    <hr />
+
+    <h2>七、色彩空間比較</h2>
+    <table>
+        <thead>
+            <tr><th>色彩空間</th><th>優點</th><th>缺點</th><th>適用場景</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>RGB</td>
+                <td>直接使用、廣泛支援</td>
+                <td>通道相關、光照敏感</td>
+                <td>顯示、儲存</td>
+            </tr>
+            <tr>
+                <td>HSV</td>
+                <td>直覺描述、色相獨立</td>
+                <td>不均勻、H 在低 S 時不穩定</td>
+                <td>顏色分割、物體追蹤</td>
+            </tr>
+            <tr>
+                <td>Lab</td>
+                <td>感知均勻、設備獨立</td>
+                <td>計算複雜</td>
+                <td>顏色比較、色彩校正</td>
+            </tr>
+            <tr>
+                <td>YCrCb</td>
+                <td>亮度分離、壓縮友善</td>
+                <td>不夠直覺</td>
+                <td>壓縮、膚色偵測</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <h2>八、農業應用範例</h2>
+
+    <h3>植物健康分析</h3>
+    <pre><code class="language-python">import cv2
+import numpy as np
+
+def plant_health_analysis(image):
+    """
+    綜合使用多種色彩空間分析植物健康
+    """
+    results = {}
+
+    # 1. HSV - 綠色覆蓋率
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    green_mask = cv2.inRange(hsv, (35, 40, 40), (85, 255, 255))
+    green_ratio = np.sum(green_mask > 0) / green_mask.size
+    results['green_coverage'] = green_ratio
+
+    # 2. Lab - 綠度指標
+    lab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+    L, a, b = cv2.split(lab)
+    greenness = 128 - a[green_mask > 0].astype(float)
+    results['mean_greenness'] = np.mean(greenness) if len(greenness) > 0 else 0
+
+    # 3. RGB - 計算植被指數
+    B, G, R = cv2.split(image)
+    R, G, B = R.astype(float), G.astype(float), B.astype(float)
+
+    # 過綠指數 (ExG)
+    exg = 2*G - R - B
+    results['ExG'] = np.mean(exg[green_mask > 0]) if np.any(green_mask > 0) else 0
+
+    # 綠紅差異指數
+    grdi = (G - R) / (G + R + 1e-6)
+    results['GRDI'] = np.mean(grdi[green_mask > 0]) if np.any(green_mask > 0) else 0
+
+    return results
+
+# 使用範例
+img = cv2.imread('crop_field.jpg')
+health = plant_health_analysis(img)
+print(f"綠色覆蓋率: {health['green_coverage']:.2%}")
+print(f"平均綠度: {health['mean_greenness']:.2f}")
+print(f"過綠指數: {health['ExG']:.2f}")
+</code></pre>
+
+    <h3>果實成熟度判斷</h3>
+    <pre><code class="language-python">def fruit_ripeness(image, fruit_mask):
+    """
+    根據顏色判斷果實成熟度
+    """
+    # 只分析果實區域
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    h, s, v = cv2.split(hsv)
+
+    # 取得果實區域的色相
+    fruit_hue = h[fruit_mask > 0]
+
+    if len(fruit_hue) == 0:
+        return 'unknown'
+
+    mean_hue = np.mean(fruit_hue)
+
+    # 以蘋果為例判斷成熟度
+    if mean_hue < 15 or mean_hue > 165:  # 紅色區域
+        return 'ripe'
+    elif 15 <= mean_hue < 35:  # 橙黃色
+        return 'nearly_ripe'
+    elif 35 <= mean_hue < 85:  # 綠色
+        return 'unripe'
+    else:
+        return 'unknown'
+</code></pre>
+    <hr />
+
+    <h2>九、轉換速查表</h2>
+    <pre><code class="language-python"># OpenCV 色彩空間轉換常用代碼
+import cv2
+
+# BGR ↔ RGB
+rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+
+# BGR ↔ 灰階
+gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
+bgr = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
+
+# BGR ↔ HSV
+hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
+bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+
+# BGR ↔ Lab
+lab = cv2.cvtColor(bgr, cv2.COLOR_BGR2LAB)
+bgr = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+
+# BGR ↔ YCrCb
+ycrcb = cv2.cvtColor(bgr, cv2.COLOR_BGR2YCrCb)
+bgr = cv2.cvtColor(ycrcb, cv2.COLOR_YCrCb2BGR)
+
+# BGR ↔ HLS
+hls = cv2.cvtColor(bgr, cv2.COLOR_BGR2HLS)
+bgr = cv2.cvtColor(hls, cv2.COLOR_HLS2BGR)
+</code></pre>
+    <hr />
+
+    <h2>十、選擇建議</h2>
+    <table>
+        <thead>
+            <tr><th>任務</th><th>建議色彩空間</th><th>原因</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>植物/綠色分割</td>
+                <td>HSV 或 Lab</td>
+                <td>色相獨立或 a* 通道</td>
+            </tr>
+            <tr>
+                <td>果實顏色分析</td>
+                <td>HSV</td>
+                <td>色相直覺對應顏色</td>
+            </tr>
+            <tr>
+                <td>光照變化處理</td>
+                <td>Lab 或 YCrCb</td>
+                <td>亮度獨立通道</td>
+            </tr>
+            <tr>
+                <td>顏色比對</td>
+                <td>Lab</td>
+                <td>Delta E 感知均勻</td>
+            </tr>
+            <tr>
+                <td>即時處理</td>
+                <td>HSV 或 RGB</td>
+                <td>計算快速</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+
+    <p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">智慧農業課程教材 | 最後更新：2025年12月</p>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) { icon.textContent = savedTheme === 'light' ? '🌙' : '☀️'; }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>語意分割（Semantic Segmentation）教學</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1>語意分割（Semantic Segmentation）教學</h1>
+
+    <h2>什麼是語意分割？</h2>
+    <p>語意分割是將圖片中的「每個像素」都分類到對應類別的技術。</p>
+
+    <pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                     語意分割示意圖                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   輸入圖片                        輸出結果                      │
+│   ┌─────────────┐                ┌─────────────┐               │
+│   │             │                │ ████  ░░░░  │               │
+│   │   🍎  🍊    │    ────→      │ ████  ░░░░  │               │
+│   │      🍌    │    分割        │      ▓▓▓▓   │               │
+│   │             │                │             │               │
+│   │  背景區域   │                │  ▒▒▒▒▒▒▒▒▒ │               │
+│   └─────────────┘                └─────────────┘               │
+│                                  ████ = 蘋果                    │
+│                                  ░░░░ = 橘子                    │
+│                                  ▓▓▓▓ = 香蕉                    │
+│                                  ▒▒▒▒ = 背景                    │
+│                                                                 │
+│   物件偵測 vs 語意分割：                                        │
+│   ┌────────────────────────────────────────────────────────────┐│
+│   │ 物件偵測：用「框」標出物體位置（Bounding Box）             ││
+│   │ 語意分割：用「像素」精確標出物體形狀（Pixel-level）        ││
+│   └────────────────────────────────────────────────────────────┘│
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+
+    <h2>農業應用場景</h2>
+    <p>語意分割在農業上的應用非常廣泛：</p>
+    <ul>
+        <li><strong>作物覆蓋分析</strong>：計算田地中作物覆蓋面積</li>
+        <li><strong>病斑區域識別</strong>：精確標出葉片上的病斑範圍</li>
+        <li><strong>雜草精準噴灑</strong>：識別雜草位置進行定點施藥</li>
+        <li><strong>果實成熟度分析</strong>：分割出果實區域計算成熟比例</li>
+        <li><strong>土壤分析</strong>：區分乾濕區域、裸土與植被</li>
+        <li><strong>植物生長監測</strong>：追蹤葉片面積變化</li>
+    </ul>
+
+    <hr>
+
+    <h2>我們使用的工具：YOLOv8-Seg</h2>
+    <p>YOLOv8 不只能做物件偵測，也能做實例分割（Instance Segmentation）！</p>
+
+    <pre><code>實例分割 = 語意分割 + 物件偵測
+          （每個像素分類）+（區分不同個體）
+
+例如：
+- 語意分割：所有蘋果都是「蘋果類」
+- 實例分割：蘋果1、蘋果2、蘋果3 分別標記</code></pre>
+
+    <hr>
+
+    <h2>快速開始</h2>
+
+    <h3>步驟一：安裝套件</h3>
+    <pre><code>pip install ultralytics opencv-python pillow</code></pre>
+
+    <h3>步驟二：執行快速展示</h3>
+    <pre><code>python 01_quick_demo.py</code></pre>
+    <p>這會使用預訓練的分割模型，讓你立即看到效果！</p>
+
+    <hr>
+
+    <h2>程式檔案說明</h2>
+    <pre><code>02_Semantic_Segmentation/
+├── README.md                    # 本說明文件
+├── 01_quick_demo.py            # 快速展示（預訓練模型）
+├── 02_prepare_dataset.py       # 準備分割資料集
+├── 03_train_model.py           # 訓練自訂分割模型
+├── 04_evaluate_model.py        # 評估模型效果
+├── 05_inference.py             # 模型推論應用
+├── datasets/                   # 資料集目錄
+└── models/                     # 訓練好的模型</code></pre>
+
+    <h3>學習順序建議</h3>
+    <pre><code>1. 01_quick_demo.py          ← 先跑這個看效果！（5分鐘）
+       ↓
+2. 02_prepare_dataset.py     ← 學習準備分割資料（20分鐘）
+       ↓
+3. 03_train_model.py         ← 訓練自己的模型（10-30分鐘）
+       ↓
+4. 04_evaluate_model.py      ← 評估模型（5分鐘）
+       ↓
+5. 05_inference.py           ← 實際應用！（5分鐘）</code></pre>
+
+    <hr>
+
+    <h2>資料集格式</h2>
+
+    <h3>YOLO 分割資料集結構</h3>
+    <pre><code>datasets/
+└── my_segmentation/
+    ├── images/
+    │   ├── train/
+    │   │   ├── img001.jpg
+    │   │   └── ...
+    │   └── val/
+    │       ├── img101.jpg
+    │       └── ...
+    ├── labels/
+    │   ├── train/
+    │   │   ├── img001.txt    ← 包含多邊形座標！
+    │   │   └── ...
+    │   └── val/
+    │       └── ...
+    └── data.yaml</code></pre>
+
+    <h3>標註格式（分割版）</h3>
+    <p>分割的標註檔格式與物件偵測不同：</p>
+    <pre><code>&lt;類別編號&gt; &lt;x1&gt; &lt;y1&gt; &lt;x2&gt; &lt;y2&gt; &lt;x3&gt; &lt;y3&gt; ... &lt;xn&gt; &lt;yn&gt;</code></pre>
+    <p>每個物件用多邊形座標（歸一化到 0-1）描述其輪廓。</p>
+
+    <p><strong>範例（img001.txt）：</strong></p>
+    <pre><code>0 0.25 0.30 0.35 0.25 0.45 0.30 0.45 0.50 0.35 0.55 0.25 0.50
+1 0.60 0.20 0.80 0.20 0.80 0.40 0.60 0.40</code></pre>
+
+    <p>這表示：</p>
+    <ul>
+        <li>第一個物件：類別 0，用 6 個點描述的多邊形</li>
+        <li>第二個物件：類別 1，用 4 個點描述的矩形區域</li>
+    </ul>
+
+    <hr>
+
+    <h2>標註工具推薦</h2>
+
+    <h3>CVAT（推薦）</h3>
+    <p>開源的專業標註工具，支援多邊形標註：</p>
+    <ul>
+        <li>網址：<a href="https://cvat.ai" target="_blank">https://cvat.ai</a></li>
+        <li>特點：支援多種標註格式、團隊協作</li>
+    </ul>
+
+    <h3>LabelMe</h3>
+    <p>另一個常用的多邊形標註工具：</p>
+    <pre><code>pip install labelme
+labelme</code></pre>
+
+    <h3>Roboflow</h3>
+    <p>線上工具，支援自動標註和格式轉換：</p>
+    <ul>
+        <li>網址：<a href="https://roboflow.com" target="_blank">https://roboflow.com</a></li>
+        <li>可以將其他格式轉換成 YOLO 分割格式</li>
+    </ul>
+
+    <hr>
+
+    <h2>訓練參數說明</h2>
+    <pre><code>model.train(
+    data='data.yaml',      # 資料集設定檔
+    epochs=50,             # 訓練輪數
+    imgsz=640,             # 圖片大小
+    batch=8,               # 批次大小（分割模型較吃記憶體）
+    task='segment',        # 指定分割任務
+    device='cpu',          # 使用 CPU 或 GPU
+)</code></pre>
+
+    <h3>訓練時間參考</h3>
+    <table>
+        <thead>
+            <tr><th>資料集大小</th><th>CPU 訓練時間</th><th>GPU 訓練時間</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>100 張</td><td>10-20 分鐘</td><td>2-5 分鐘</td></tr>
+            <tr><td>500 張</td><td>60-90 分鐘</td><td>10-20 分鐘</td></tr>
+            <tr><td>1000 張</td><td>2-3 小時</td><td>30-60 分鐘</td></tr>
+        </tbody>
+    </table>
+
+    <blockquote>分割模型比物件偵測模型需要更多運算資源</blockquote>
+
+    <hr>
+
+    <h2>常見問題</h2>
+
+    <h3>Q1: 物件偵測和語意分割要選哪個？</h3>
+    <table>
+        <thead>
+            <tr><th>需求</th><th>建議選擇</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>只需知道物體位置</td><td>物件偵測</td></tr>
+            <tr><td>需要計算物體面積/形狀</td><td>語意分割</td></tr>
+            <tr><td>需要精確的邊界</td><td>語意分割</td></tr>
+            <tr><td>運算資源有限</td><td>物件偵測</td></tr>
+            <tr><td>需要區分相同類別的不同個體</td><td>實例分割</td></tr>
+        </tbody>
+    </table>
+
+    <h3>Q2: 標註分割資料很麻煩？</h3>
+    <p>確實，分割標註比物件偵測框選更耗時。建議：</p>
+    <ol>
+        <li>使用半自動標註工具（如 Segment Anything）</li>
+        <li>使用現有資料集進行遷移學習</li>
+        <li>從小規模資料開始，逐步擴充</li>
+    </ol>
+
+    <h3>Q3: 記憶體不足怎麼辦？</h3>
+    <p>分割模型需要更多記憶體：</p>
+    <pre><code># 減少批次大小
+model.train(data='data.yaml', batch=4)
+
+# 減少圖片大小
+model.train(data='data.yaml', imgsz=320)</code></pre>
+
+    <hr>
+
+    <h2>進階主題</h2>
+
+    <h3>SAM（Segment Anything Model）</h3>
+    <p>Meta 的通用分割模型，可以分割任何物體：</p>
+    <ul>
+        <li>優點：不需要訓練，一鍵分割</li>
+        <li>用途：快速標註、通用分割</li>
+    </ul>
+
+    <h3>語意分割 vs 實例分割</h3>
+    <pre><code>語意分割（Semantic Segmentation）：
+- 所有同類別物體標記為同一顏色
+- 無法區分個別物體
+
+實例分割（Instance Segmentation）：
+- 每個物體有獨立的遮罩
+- 可以區分同類別的不同個體
+- YOLOv8-Seg 做的就是實例分割！</code></pre>
+
+    <hr>
+
+    <h2>延伸學習</h2>
+    <ul>
+        <li><a href="https://docs.ultralytics.com/tasks/segment/" target="_blank">Ultralytics YOLOv8 分割文檔</a></li>
+        <li><a href="https://segment-anything.com/" target="_blank">Segment Anything Model</a></li>
+        <li><a href="https://cvat.ai/" target="_blank">CVAT 標註工具</a></li>
+    </ul>
+
+    <hr>
+
+    <h2>下一步</h2>
+    <p>完成語意分割學習後，可以嘗試：</p>
+    <ul>
+        <li>結合物件偵測和分割做更完整的應用</li>
+        <li>探索 3D 點雲分割</li>
+        <li>嘗試影片語意分割</li>
+    </ul>
+
+    <div class="footer">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </div>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>常見錯誤排解</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="arduino">Arduino 常見錯誤排解指南</h1>
+<p>本文整理了 Arduino 開發過程中最常遇到的錯誤與解決方法，幫助你快速排除問題。</p>
+<hr />
+<h2 id="compile-error">一、編譯錯誤（Compile Error）</h2>
+<p>編譯錯誤發生在「驗證」或「上傳」時，程式碼有語法問題。</p>
+<h3 id="11">1.1 找不到函式庫</h3>
+<p><strong>錯誤訊息：</strong></p>
+<pre><code>fatal error: DHT.h: No such file or directory
+</code></pre>
+<p><strong>原因：</strong> 尚未安裝所需的函式庫</p>
+<p><strong>解決方法：</strong><br />
+1. 開啟 Arduino IDE<br />
+2. 工具 → 管理程式庫<br />
+3. 搜尋函式庫名稱（如 DHT）<br />
+4. 點擊「安裝」</p>
+<table>
+<thead>
+<tr>
+<th>常用函式庫</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DHT sensor library</td>
+<td>DHT11/DHT22 溫溼度</td>
+</tr>
+<tr>
+<td>LiquidCrystal_I2C</td>
+<td>I2C LCD 螢幕</td>
+</tr>
+<tr>
+<td>Servo</td>
+<td>伺服馬達</td>
+</tr>
+<tr>
+<td>IRremote</td>
+<td>紅外線遙控</td>
+</tr>
+<tr>
+<td>Stepper</td>
+<td>步進馬達</td>
+</tr>
+<tr>
+<td>Wire</td>
+<td>I2C 通訊</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="12">1.2 變數未宣告</h3>
+<p><strong>錯誤訊息：</strong></p>
+<pre><code>error: 'ledPin' was not declared in this scope
+</code></pre>
+<p><strong>原因：</strong> 使用了未定義的變數</p>
+<p><strong>解決方法：</strong></p>
+<pre><code class="language-cpp">// 錯誤
+void setup() {
+  pinMode(ledPin, OUTPUT);  // ledPin 未定義
+}
+
+// 正確
+int ledPin = 13;  // 先宣告變數
+void setup() {
+  pinMode(ledPin, OUTPUT);
+}
+</code></pre>
+<hr />
+<h3 id="13">1.3 缺少分號</h3>
+<p><strong>錯誤訊息：</strong></p>
+<pre><code>error: expected ';' before 'delay'
+</code></pre>
+<p><strong>原因：</strong> 上一行結尾少了分號 <code>;</code></p>
+<p><strong>解決方法：</strong></p>
+<pre><code class="language-cpp">// 錯誤
+digitalWrite(LED, HIGH)  // 少了分號
+delay(1000);
+
+// 正確
+digitalWrite(LED, HIGH);  // 加上分號
+delay(1000);
+</code></pre>
+<hr />
+<h3 id="14">1.4 括號不配對</h3>
+<p><strong>錯誤訊息：</strong></p>
+<pre><code>error: expected '}' at end of input
+</code></pre>
+<p><strong>原因：</strong> 大括號 <code>{}</code> 或小括號 <code>()</code> 數量不對</p>
+<p><strong>解決方法：</strong><br />
+- 檢查每個 <code>{</code> 是否都有對應的 <code>}</code><br />
+- 使用 IDE 的自動格式化（Ctrl+T）幫助檢查<br />
+- 點擊括號時，IDE 會高亮對應的另一個括號</p>
+<hr />
+<h3 id="15">1.5 函數重複定義</h3>
+<p><strong>錯誤訊息：</strong></p>
+<pre><code>error: redefinition of 'void setup()'
+</code></pre>
+<p><strong>原因：</strong> 同一個函數被定義了兩次</p>
+<p><strong>解決方法：</strong><br />
+- 檢查是否有兩個 <code>setup()</code> 或兩個 <code>loop()</code><br />
+- 確保每個函數只定義一次</p>
+<hr />
+<h2 id="upload-error">二、上傳錯誤（Upload Error）</h2>
+<p>程式碼正確，但無法上傳到開發板。</p>
+<h3 id="21-com-port">2.1 找不到開發板 / COM Port</h3>
+<p><strong>錯誤訊息：</strong></p>
+<pre><code>Serial port 'COM3' not found
+</code></pre>
+<p>或</p>
+<pre><code>No device found on COM3
+</code></pre>
+<p><strong>解決方法：</strong></p>
+<table>
+<thead>
+<tr>
+<th>步驟</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>確認 USB 線有連接好</td>
+</tr>
+<tr>
+<td>2</td>
+<td>檢查 USB 線是否支援資料傳輸（非純充電線）</td>
+</tr>
+<tr>
+<td>3</td>
+<td>工具 → 序列埠 → 選擇正確的 COM Port</td>
+</tr>
+<tr>
+<td>4</td>
+<td>裝置管理員 → 確認有顯示 Arduino 或 CH340</td>
+</tr>
+</tbody>
+</table>
+<p><strong>如果裝置管理員顯示驚嘆號：</strong><br />
+- 需要安裝驅動程式<br />
+- CH340：下載 CH340 驅動<br />
+- CP2102：下載 CP2102 驅動<br />
+- 原廠 Arduino：通常自動安裝</p>
+<hr />
+<h3 id="22">2.2 開發板類型選錯</h3>
+<p><strong>錯誤訊息：</strong></p>
+<pre><code>avrdude: stk500_recv(): programmer is not responding
+</code></pre>
+<p><strong>解決方法：</strong><br />
+1. 工具 → 開發板 → 選擇正確的開發板<br />
+2. 常見對應：</p>
+<table>
+<thead>
+<tr>
+<th>開發板</th>
+<th>選擇</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arduino UNO</td>
+<td>Arduino Uno</td>
+</tr>
+<tr>
+<td>Arduino Nano（新版）</td>
+<td>Arduino Nano</td>
+</tr>
+<tr>
+<td>Arduino Nano（舊版）</td>
+<td>Arduino Nano + ATmega328P (Old Bootloader)</td>
+</tr>
+<tr>
+<td>ESP8266</td>
+<td>Generic ESP8266 Module 或 NodeMCU</td>
+</tr>
+<tr>
+<td>ESP32</td>
+<td>ESP32 Dev Module</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="23-com-port">2.3 COM Port 被占用</h3>
+<p><strong>錯誤訊息：</strong></p>
+<pre><code>Serial port COM3 already in use
+</code></pre>
+<p><strong>解決方法：</strong><br />
+1. 關閉其他可能使用該 COM Port 的程式（如 Serial Monitor、Python 程式）<br />
+2. 關閉 Arduino IDE 後重新開啟<br />
+3. 拔掉 USB 重新插入</p>
+<hr />
+<h3 id="24-esp8266esp32">2.4 ESP8266/ESP32 上傳失敗</h3>
+<p><strong>錯誤訊息：</strong></p>
+<pre><code>Failed to connect to ESP8266: Timed out waiting for packet header
+</code></pre>
+<p><strong>解決方法：</strong><br />
+1. 按住開發板上的 BOOT/FLASH 按鈕<br />
+2. 點擊上傳<br />
+3. 看到「Connecting...」時放開按鈕<br />
+4. 或者接線時將 GPIO0 接到 GND</p>
+<hr />
+<h2 id="runtime-error">三、執行時錯誤（Runtime Error）</h2>
+<p>程式上傳成功，但執行結果不如預期。</p>
+<h3 id="31">3.1 感測器讀數異常</h3>
+<p><strong>現象：</strong> 溫度顯示 0、-999 或 NaN</p>
+<p><strong>原因與解決：</strong></p>
+<table>
+<thead>
+<tr>
+<th>原因</th>
+<th>解決方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>接線錯誤</td>
+<td>確認 VCC、GND、DATA 接線正確</td>
+</tr>
+<tr>
+<td>腳位設定錯誤</td>
+<td>檢查程式中的腳位編號是否與實際接線一致</td>
+</tr>
+<tr>
+<td>需要上拉電阻</td>
+<td>DHT11 的 DATA 腳需接 10K 上拉電阻到 VCC</td>
+</tr>
+<tr>
+<td>感測器損壞</td>
+<td>更換感測器測試</td>
+</tr>
+<tr>
+<td>讀取太頻繁</td>
+<td>DHT11 最快 1 秒讀一次，加入 <code>delay(2000)</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="32-lcd">3.2 LCD 不顯示或亂碼</h3>
+<p><strong>現象：</strong> LCD 背光亮但沒有字，或顯示方塊</p>
+<p><strong>解決方法：</strong></p>
+<table>
+<thead>
+<tr>
+<th>問題</th>
+<th>解決</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>背光亮無字</td>
+<td>調整背面的可變電阻（對比度）</td>
+</tr>
+<tr>
+<td>I2C 位址錯誤</td>
+<td>執行 I2C 掃描程式找到正確位址</td>
+</tr>
+<tr>
+<td>接線錯誤</td>
+<td>SDA→A4, SCL→A5（UNO）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>I2C 位址掃描程式：</strong></p>
+<pre><code class="language-cpp">#include &lt;Wire.h&gt;
+
+void setup() {
+  Wire.begin();
+  Serial.begin(9600);
+  Serial.println(&quot;掃描 I2C 設備...&quot;);
+
+  for (byte address = 1; address &lt; 127; address++) {
+    Wire.beginTransmission(address);
+    if (Wire.endTransmission() == 0) {
+      Serial.print(&quot;找到設備: 0x&quot;);
+      Serial.println(address, HEX);
+    }
+  }
+}
+
+void loop() {}
+</code></pre>
+<p>常見 I2C 位址：<code>0x27</code> 或 <code>0x3F</code></p>
+<hr />
+<h3 id="33">3.3 馬達不轉或抖動</h3>
+<p><strong>現象：</strong> 馬達完全不動，或只抖動不轉</p>
+<p><strong>解決方法：</strong></p>
+<table>
+<thead>
+<tr>
+<th>問題</th>
+<th>解決</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>電源不足</td>
+<td>馬達需要獨立電源，不能只靠 Arduino 5V</td>
+</tr>
+<tr>
+<td>接線錯誤</td>
+<td>檢查驅動板接線</td>
+</tr>
+<tr>
+<td>PWM 值太低</td>
+<td>馬達需要一定電壓才會轉，嘗試較高的 PWM 值</td>
+</tr>
+<tr>
+<td>伺服馬達角度超出範圍</td>
+<td>SG90 範圍約 0-180 度</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="34-serial-monitor">3.4 Serial Monitor 顯示亂碼</h3>
+<p><strong>現象：</strong> Serial Monitor 顯示奇怪符號</p>
+<p><strong>原因：</strong> 鮑率（Baud Rate）設定不一致</p>
+<p><strong>解決方法：</strong></p>
+<pre><code class="language-cpp">// 程式中設定
+Serial.begin(9600);  // 使用 9600
+
+// Serial Monitor 右下角也要選擇 9600
+</code></pre>
+<p>常用鮑率：<code>9600</code>、<code>115200</code></p>
+<hr />
+<h3 id="35">3.5 繼電器不動作</h3>
+<p><strong>現象：</strong> 繼電器沒有喀噠聲</p>
+<p><strong>解決方法：</strong></p>
+<table>
+<thead>
+<tr>
+<th>問題</th>
+<th>解決</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>觸發電平錯誤</td>
+<td>確認是高電平還是低電平觸發（大多是低電平）</td>
+</tr>
+<tr>
+<td>電源不足</td>
+<td>繼電器模組需要 5V 電源</td>
+</tr>
+<tr>
+<td>腳位錯誤</td>
+<td>確認訊號腳接對</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-cpp">// 低電平觸發
+digitalWrite(relayPin, LOW);   // 繼電器 ON
+digitalWrite(relayPin, HIGH);  // 繼電器 OFF
+
+// 高電平觸發
+digitalWrite(relayPin, HIGH);  // 繼電器 ON
+digitalWrite(relayPin, LOW);   // 繼電器 OFF
+</code></pre>
+<hr />
+<h2 id="wifi-esp8266esp32">四、WiFi 連線問題（ESP8266/ESP32）</h2>
+<h3 id="41-wifi">4.1 無法連線 WiFi</h3>
+<p><strong>現象：</strong> 一直顯示「Connecting...」</p>
+<p><strong>解決方法：</strong></p>
+<table>
+<thead>
+<tr>
+<th>原因</th>
+<th>解決</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SSID 或密碼錯誤</td>
+<td>注意大小寫，不能有多餘空格</td>
+</tr>
+<tr>
+<td>2.4GHz vs 5GHz</td>
+<td>ESP8266/ESP32 只支援 2.4GHz</td>
+</tr>
+<tr>
+<td>訊號太弱</td>
+<td>移近路由器測試</td>
+</tr>
+<tr>
+<td>特殊字元</td>
+<td>WiFi 名稱避免使用中文或特殊符號</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="42-mqtt">4.2 MQTT 連線失敗</h3>
+<p><strong>現象：</strong> 無法連線到 MQTT Broker</p>
+<p><strong>解決方法：</strong><br />
+1. 確認 Broker 位址和 Port 正確<br />
+2. 確認網路連線正常<br />
+3. 確認 Client ID 唯一（不能重複）<br />
+4. 如果使用 TLS，確認憑證設定</p>
+<hr />
+<h2 id="_1">五、電源相關問題</h2>
+<h3 id="51-arduino">5.1 Arduino 不斷重啟</h3>
+<p><strong>現象：</strong> 程式跑一下就重新啟動</p>
+<p><strong>原因：</strong> 電源供應不穩定或電流不足</p>
+<p><strong>解決方法：</strong><br />
+- 使用外部電源供應器（7-12V）<br />
+- 大電流元件（馬達、LED 燈條）使用獨立電源<br />
+- 加入電容穩壓</p>
+<hr />
+<h3 id="52-usb">5.2 USB 供電不足</h3>
+<p><strong>現象：</strong> 接上馬達或多個感測器後不穩定</p>
+<p><strong>原因：</strong> USB 電流有限（約 500mA）</p>
+<p><strong>解決方法：</strong><br />
+- 使用外部電源<br />
+- 使用 VIN 腳位供電（7-12V）<br />
+- 馬達使用獨立電源</p>
+<hr />
+<h2 id="_2">六、快速排錯檢查清單</h2>
+<p>遇到問題時，依序檢查：</p>
+<h3 id="_3">編譯問題</h3>
+<ul>
+<li>[ ] 函式庫是否已安裝？</li>
+<li>[ ] 變數是否有宣告？</li>
+<li>[ ] 分號是否都有加？</li>
+<li>[ ] 括號是否配對？</li>
+</ul>
+<h3 id="_4">上傳問題</h3>
+<ul>
+<li>[ ] USB 線是否為資料線？</li>
+<li>[ ] COM Port 是否選對？</li>
+<li>[ ] 開發板類型是否選對？</li>
+<li>[ ] 驅動程式是否已安裝？</li>
+</ul>
+<h3 id="_5">執行問題</h3>
+<ul>
+<li>[ ] 接線是否正確？</li>
+<li>[ ] 電源是否足夠？</li>
+<li>[ ] 腳位編號是否與程式一致？</li>
+<li>[ ] Serial Monitor 鮑率是否正確？</li>
+</ul>
+<hr />
+<h2 id="_6">七、常用除錯技巧</h2>
+<h3 id="71-serialprint">7.1 使用 Serial.print 除錯</h3>
+<pre><code class="language-cpp">void loop() {
+  int sensorValue = analogRead(A0);
+
+  // 印出數值來檢查
+  Serial.print(&quot;感測器數值: &quot;);
+  Serial.println(sensorValue);
+
+  delay(1000);
+}
+</code></pre>
+<h3 id="72-led">7.2 LED 指示燈除錯</h3>
+<pre><code class="language-cpp">// 用內建 LED 確認程式有在執行
+void loop() {
+  digitalWrite(LED_BUILTIN, HIGH);
+  // 執行某些操作
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(100);
+}
+</code></pre>
+<h3 id="73">7.3 分段測試</h3>
+<p>將程式拆成小部分，逐一測試：<br />
+1. 先測試感測器能否正確讀值<br />
+2. 再測試顯示器能否正常顯示<br />
+3. 最後整合在一起</p>
+<hr />
+<h2 id="_7">八、求助資源</h2>
+<p>如果還是無法解決：</p>
+<table>
+<thead>
+<tr>
+<th>資源</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arduino 官方論壇</td>
+<td>forum.arduino.cc</td>
+</tr>
+<tr>
+<td>Stack Overflow</td>
+<td>英文問答社群</td>
+</tr>
+<tr>
+<td>iT 邦幫忙</td>
+<td>繁體中文問答</td>
+</tr>
+<tr>
+<td>GitHub Issues</td>
+<td>函式庫的問題回報區</td>
+</tr>
+</tbody>
+</table>
+<p><strong>發問時請提供：</strong><br />
+1. 完整的錯誤訊息<br />
+2. 使用的開發板型號<br />
+3. 相關的程式碼<br />
+4. 接線方式說明</p>
+<hr />
+<p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

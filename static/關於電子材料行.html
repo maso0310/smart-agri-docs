@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於電子材料行</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="_1">關於電子材料行</h1>
+<h2 id="_2">什麼是電子材料行？</h2>
+<p>電子材料行是專門販售電子零件、元件和相關材料的專業商店。對於 Arduino 專題製作、電子 DIY 愛好者、學生實驗課程來說，電子材料行是取得零件的重要管道。</p>
+<h3 id="_3">台灣知名電子材料行</h3>
+<table>
+<thead>
+<tr>
+<th>地區</th>
+<th>店家名稱</th>
+<th>特色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>台中</td>
+<td>今華電子</td>
+<td>品項齊全、價格實惠、適合學生</td>
+</tr>
+<tr>
+<td>台中</td>
+<td>良興電子</td>
+<td>3C 與電子零件並售</td>
+</tr>
+<tr>
+<td>台北</td>
+<td>光華商場</td>
+<td>電子零件集散地、店家眾多</td>
+</tr>
+<tr>
+<td>高雄</td>
+<td>建國電子商場</td>
+<td>南部最大電子零件市場</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_4">電子材料行的商品分類</h2>
+<h3 id="1">1. 被動元件區</h3>
+<p>被動元件不需要電源就能運作，只會消耗或儲存能量。</p>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>說明</th>
+<th>常見規格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>電阻</td>
+<td>限制電流大小</td>
+<td>1/4W、1/8W，阻值 1Ω ~ 10MΩ</td>
+</tr>
+<tr>
+<td>電容</td>
+<td>儲存電荷、濾波</td>
+<td>陶瓷電容、電解電容、0.1uF ~ 1000uF</td>
+</tr>
+<tr>
+<td>電感</td>
+<td>儲存磁能、濾波</td>
+<td>各種 uH 值</td>
+</tr>
+<tr>
+<td>二極體</td>
+<td>單向導通</td>
+<td>1N4007（整流）、1N4148（訊號）</td>
+</tr>
+<tr>
+<td>LED</td>
+<td>發光二極體</td>
+<td>紅、綠、藍、白、黃，3mm/5mm</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2">2. 主動元件區</h3>
+<p>主動元件需要電源才能運作，能放大訊號或控制電流。</p>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>說明</th>
+<th>常見型號</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>電晶體</td>
+<td>電子開關、放大</td>
+<td>2N2222、S8050、TIP120</td>
+</tr>
+<tr>
+<td>場效電晶體(MOSFET)</td>
+<td>大電流開關</td>
+<td>IRF520、IRF540</td>
+</tr>
+<tr>
+<td>積體電路(IC)</td>
+<td>整合多種功能</td>
+<td>555 定時器、LM7805 穩壓</td>
+</tr>
+<tr>
+<td>運算放大器</td>
+<td>訊號放大處理</td>
+<td>LM358、LM741</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3">3. 開發板與模組區</h3>
+<p>這是 Arduino 相關專題最常逛的區域！</p>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>說明</th>
+<th>價格範圍</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arduino UNO</td>
+<td>最常用的開發板</td>
+<td>NT$150~400</td>
+</tr>
+<tr>
+<td>Arduino Nano</td>
+<td>小型版本</td>
+<td>NT$80~200</td>
+</tr>
+<tr>
+<td>ESP8266/ESP32</td>
+<td>WiFi 功能開發板</td>
+<td>NT$100~300</td>
+</tr>
+<tr>
+<td>ESP-01</td>
+<td>小型 WiFi 模組</td>
+<td>NT$50~80</td>
+</tr>
+<tr>
+<td>Raspberry Pi</td>
+<td>單板電腦</td>
+<td>NT$1000~2500</td>
+</tr>
+</tbody>
+</table>
+<p><strong>常見感測器模組：</strong></p>
+<table>
+<thead>
+<tr>
+<th>模組</th>
+<th>功能</th>
+<th>價格範圍</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DHT11/DHT22</td>
+<td>溫溼度感測</td>
+<td>NT$30~100</td>
+</tr>
+<tr>
+<td>土壤濕度感測器</td>
+<td>測量土壤水分</td>
+<td>NT$30~60</td>
+</tr>
+<tr>
+<td>光敏電阻模組</td>
+<td>偵測光線強度</td>
+<td>NT$20~40</td>
+</tr>
+<tr>
+<td>超音波模組 HC-SR04</td>
+<td>測量距離</td>
+<td>NT$40~80</td>
+</tr>
+<tr>
+<td>紅外線模組</td>
+<td>障礙偵測、遙控</td>
+<td>NT$20~50</td>
+</tr>
+<tr>
+<td>PIR 人體感測</td>
+<td>偵測人體移動</td>
+<td>NT$40~80</td>
+</tr>
+<tr>
+<td>LCD 1602 + I2C</td>
+<td>液晶顯示</td>
+<td>NT$80~150</td>
+</tr>
+<tr>
+<td>OLED 顯示器</td>
+<td>小型顯示螢幕</td>
+<td>NT$80~200</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4">4. 連接器與線材區</h3>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>說明</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>杜邦線</td>
+<td>公對公、母對母、公對母</td>
+<td>麵包板連接</td>
+</tr>
+<tr>
+<td>排針</td>
+<td>直插、彎插</td>
+<td>PCB 焊接用</td>
+</tr>
+<tr>
+<td>端子台</td>
+<td>螺絲鎖緊式連接</td>
+<td>電源、馬達連接</td>
+</tr>
+<tr>
+<td>USB 線</td>
+<td>Type-A、Type-B、Type-C</td>
+<td>開發板連接電腦</td>
+</tr>
+<tr>
+<td>電源接頭</td>
+<td>DC 圓頭 5.5x2.1mm</td>
+<td>外部電源輸入</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5">5. 電源相關區</h3>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>說明</th>
+<th>常見規格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>電池座</td>
+<td>放置電池的支架</td>
+<td>3號x2、3號x4、9V電池扣</td>
+</tr>
+<tr>
+<td>變壓器</td>
+<td>AC 轉 DC</td>
+<td>5V/2A、9V/1A、12V/2A</td>
+</tr>
+<tr>
+<td>穩壓模組</td>
+<td>穩定輸出電壓</td>
+<td>LM2596 降壓模組</td>
+</tr>
+<tr>
+<td>行動電源</td>
+<td>戶外供電</td>
+<td>5V USB 輸出</td>
+</tr>
+<tr>
+<td>鋰電池</td>
+<td>可充電電池</td>
+<td>18650、3.7V</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6">6. 馬達與致動器區</h3>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>說明</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>直流馬達</td>
+<td>連續旋轉</td>
+<td>風扇、車輪</td>
+</tr>
+<tr>
+<td>伺服馬達(Servo)</td>
+<td>角度控制</td>
+<td>機械臂、門閘</td>
+</tr>
+<tr>
+<td>步進馬達</td>
+<td>精確定位</td>
+<td>3D列印機、CNC</td>
+</tr>
+<tr>
+<td>繼電器</td>
+<td>電子開關</td>
+<td>控制大功率設備</td>
+</tr>
+<tr>
+<td>蜂鳴器</td>
+<td>發出聲音</td>
+<td>警報、提示音</td>
+</tr>
+<tr>
+<td>水泵</td>
+<td>抽水用</td>
+<td>澆灌系統</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7">7. 工具區</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>建議</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>烙鐵</td>
+<td>焊接用</td>
+<td>30W 適合初學者</td>
+</tr>
+<tr>
+<td>焊錫</td>
+<td>焊接材料</td>
+<td>0.8mm 有松香芯</td>
+</tr>
+<tr>
+<td>三用電表</td>
+<td>測量電壓電流電阻</td>
+<td>數位型較易讀取</td>
+</tr>
+<tr>
+<td>斜口鉗</td>
+<td>剪線用</td>
+<td>電子專用較精細</td>
+</tr>
+<tr>
+<td>剝線鉗</td>
+<td>剝除絕緣皮</td>
+<td>多規格通用型</td>
+</tr>
+<tr>
+<td>熱縮套管</td>
+<td>絕緣保護</td>
+<td>各種直徑備用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-pcb">8. 麵包板與 PCB 區</h3>
+<table>
+<thead>
+<tr>
+<th>品項</th>
+<th>說明</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>麵包板</td>
+<td>免焊接實驗板</td>
+<td>電路原型測試</td>
+</tr>
+<tr>
+<td>洞洞板</td>
+<td>焊接用萬用板</td>
+<td>永久電路製作</td>
+</tr>
+<tr>
+<td>PCB 電路板</td>
+<td>專用印刷電路板</td>
+<td>量產或精密電路</td>
+</tr>
+<tr>
+<td>銅柱/螺絲</td>
+<td>固定用</td>
+<td>組裝外殼</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_5">選購注意事項</h2>
+<h3 id="_6">購買前的準備</h3>
+<ol>
+<li><strong>列出清單</strong></li>
+<li>先確認專題需要的零件清單</li>
+<li>記錄規格（電阻值、電容值、接腳數等）</li>
+<li>
+<p>查好替代品型號（某些零件可能缺貨）</p>
+</li>
+<li>
+<p><strong>了解規格意義</strong><br />
+   ```<br />
+   電阻：阻值(Ω) + 功率(W)<br />
+   例：10kΩ 1/4W</p>
+</li>
+</ol>
+<p>電容：容值(F) + 耐壓(V)<br />
+   例：100uF 25V</p>
+<p>LED：顏色 + 尺寸 + 正向電壓<br />
+   例：紅色 5mm 2V<br />
+   ```</p>
+<ol>
+<li><strong>帶著參考資料</strong></li>
+<li>可以帶著電路圖或專題說明</li>
+<li>店員通常很有經驗，可以給建議</li>
+</ol>
+<h3 id="_7">在店內選購</h3>
+<ol>
+<li><strong>確認規格</strong></li>
+<li>仔細核對標籤上的規格</li>
+<li>
+<p>不確定就問店員</p>
+</li>
+<li>
+<p><strong>檢查外觀</strong></p>
+</li>
+<li>LED、IC 等不要選有氧化或生鏽的</li>
+<li>
+<p>接腳要直、沒有彎折</p>
+</li>
+<li>
+<p><strong>數量考量</strong></p>
+</li>
+<li>電阻、LED 等小零件可以多買幾個備用</li>
+<li>
+<p>容易損壞的零件（如 LED、保險絲）建議多準備</p>
+</li>
+<li>
+<p><strong>相容性確認</strong></p>
+</li>
+<li>買模組時確認工作電壓（3.3V 或 5V）</li>
+<li>確認接腳定義和 Arduino 相容</li>
+</ol>
+<h3 id="_8">價格參考</h3>
+<table>
+<thead>
+<tr>
+<th>零件類型</th>
+<th>一般價格範圍</th>
+<th>備註</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>電阻(1顆)</td>
+<td>NT$0.5~2</td>
+<td>通常10顆一包</td>
+</tr>
+<tr>
+<td>LED(1顆)</td>
+<td>NT$1~5</td>
+<td>顏色影響價格</td>
+</tr>
+<tr>
+<td>杜邦線(一排)</td>
+<td>NT$10~30</td>
+<td>40條一排</td>
+</tr>
+<tr>
+<td>麵包板(中型)</td>
+<td>NT$50~100</td>
+<td>830孔常見</td>
+</tr>
+<tr>
+<td>Arduino UNO</td>
+<td>NT$150~400</td>
+<td>副廠vs原廠差異大</td>
+</tr>
+<tr>
+<td>感測器模組</td>
+<td>NT$30~200</td>
+<td>依複雜度而定</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_9">避免踩雷</h3>
+<table>
+<thead>
+<tr>
+<th>問題</th>
+<th>說明</th>
+<th>建議</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>買到假貨</td>
+<td>某些 IC 晶片有仿冒品</td>
+<td>跟信譽好的店家買</td>
+</tr>
+<tr>
+<td>規格不符</td>
+<td>電壓、接腳不相容</td>
+<td>購買前確認 datasheet</td>
+</tr>
+<tr>
+<td>缺少配件</td>
+<td>模組需要額外的線材</td>
+<td>問清楚需要什麼配件</td>
+</tr>
+<tr>
+<td>焊接困難</td>
+<td>某些 SMD 元件很小</td>
+<td>初學者選 DIP 插件式</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="vs">電子材料行 vs 網路購買</h2>
+<table>
+<thead>
+<tr>
+<th>比較項目</th>
+<th>電子材料行</th>
+<th>網路商店（露天、蝦皮等）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>價格</td>
+<td>中等</td>
+<td>較便宜（但要加運費）</td>
+</tr>
+<tr>
+<td>取貨速度</td>
+<td>即時取貨</td>
+<td>需等待 1~7 天</td>
+</tr>
+<tr>
+<td>可看實物</td>
+<td>可以</td>
+<td>不行</td>
+</tr>
+<tr>
+<td>諮詢服務</td>
+<td>可問店員</td>
+<td>較困難</td>
+</tr>
+<tr>
+<td>退換貨</td>
+<td>當場確認</td>
+<td>流程較複雜</td>
+</tr>
+<tr>
+<td>適合情境</td>
+<td>急用、少量、初學者</td>
+<td>大量採購、價格敏感</td>
+</tr>
+</tbody>
+</table>
+<p><strong>建議：</strong><br />
+- 第一次購買或不確定規格時，去實體店面<br />
+- 大量採購相同零件時，網購較划算<br />
+- 特殊或冷門零件，可能需要網購</p>
+<hr />
+<h2 id="_10">初學者採購建議</h2>
+<h3 id="arduino">Arduino 入門套件清單</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>數量</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arduino UNO</td>
+<td>1</td>
+<td>主控制板</td>
+</tr>
+<tr>
+<td>USB 傳輸線</td>
+<td>1</td>
+<td>連接電腦</td>
+</tr>
+<tr>
+<td>麵包板</td>
+<td>1</td>
+<td>電路實驗</td>
+</tr>
+<tr>
+<td>杜邦線</td>
+<td>40+</td>
+<td>連接零件</td>
+</tr>
+<tr>
+<td>LED（各色）</td>
+<td>10+</td>
+<td>指示燈實驗</td>
+</tr>
+<tr>
+<td>電阻(220Ω, 1kΩ, 10kΩ)</td>
+<td>各10</td>
+<td>限流、分壓</td>
+</tr>
+<tr>
+<td>按鈕</td>
+<td>5</td>
+<td>輸入控制</td>
+</tr>
+<tr>
+<td>蜂鳴器</td>
+<td>1</td>
+<td>聲音輸出</td>
+</tr>
+<tr>
+<td>光敏電阻</td>
+<td>2</td>
+<td>光線感測</td>
+</tr>
+<tr>
+<td>可變電阻(10kΩ)</td>
+<td>2</td>
+<td>類比輸入</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_11">智慧農業專題額外需要</h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>數量</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DHT11</td>
+<td>1</td>
+<td>溫溼度感測</td>
+</tr>
+<tr>
+<td>土壤濕度感測器</td>
+<td>1</td>
+<td>土壤監測</td>
+</tr>
+<tr>
+<td>繼電器模組</td>
+<td>1~2</td>
+<td>控制水泵/風扇</td>
+</tr>
+<tr>
+<td>小水泵</td>
+<td>1</td>
+<td>自動澆水</td>
+</tr>
+<tr>
+<td>LCD 1602 + I2C</td>
+<td>1</td>
+<td>顯示數據</td>
+</tr>
+<tr>
+<td>ESP-01 或 ESP8266</td>
+<td>1</td>
+<td>WiFi 連網</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_12">逛電子材料行的禮儀</h2>
+<ol>
+<li><strong>可以問問題</strong></li>
+<li>店員通常樂意幫忙，但請先做功課</li>
+<li>
+<p>說明你要做什麼專題，店員可以給建議</p>
+</li>
+<li>
+<p><strong>不要拆封商品</strong></p>
+</li>
+<li>
+<p>除非店員同意，否則不要自行拆開包裝</p>
+</li>
+<li>
+<p><strong>小額消費也歡迎</strong></p>
+</li>
+<li>買幾顆電阻、LED 都可以</li>
+<li>
+<p>不需要不好意思</p>
+</li>
+<li>
+<p><strong>現金為主</strong></p>
+</li>
+<li>許多電子材料行不收信用卡</li>
+<li>
+<p>建議帶現金</p>
+</li>
+<li>
+<p><strong>記得拿發票/收據</strong></p>
+</li>
+<li>萬一有問題可以退換</li>
+</ol>
+<hr />
+<h2 id="_13">實用小技巧</h2>
+<h3 id="_14">色碼電阻速讀</h3>
+<p>電阻上的色環代表阻值：</p>
+<pre><code>黑=0  棕=1  紅=2  橙=3  黃=4
+綠=5  藍=6  紫=7  灰=8  白=9
+
+金色誤差=±5%  銀色誤差=±10%
+
+四環電阻讀法：
+第1環：第一位數字
+第2環：第二位數字
+第3環：乘數（10的幾次方）
+第4環：誤差
+
+範例：棕黑橙金 = 10 × 10³ = 10kΩ ±5%
+</code></pre>
+<h3 id="led">LED 正負極判斷</h3>
+<pre><code>     長腳 = 正極(+)
+     短腳 = 負極(-)
+
+     內部：
+     小的那片 = 正極
+     大的那片 = 負極
+</code></pre>
+<h3 id="_15">常用接線顏色規範</h3>
+<table>
+<thead>
+<tr>
+<th>顏色</th>
+<th>代表意義</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>紅色</td>
+<td>正極、VCC、5V</td>
+</tr>
+<tr>
+<td>黑色</td>
+<td>負極、GND、接地</td>
+</tr>
+<tr>
+<td>黃色</td>
+<td>訊號線</td>
+</tr>
+<tr>
+<td>綠色</td>
+<td>訊號線</td>
+</tr>
+<tr>
+<td>藍色</td>
+<td>訊號線</td>
+</tr>
+<tr>
+<td>白色</td>
+<td>訊號線</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_16">總結</h2>
+<p>電子材料行是學習電子和 Arduino 專題的好夥伴。建議：</p>
+<ol>
+<li><strong>第一次去之前</strong>：列好清單、做好功課</li>
+<li><strong>在店裡</strong>：不懂就問、仔細確認規格</li>
+<li><strong>買完之後</strong>：保留收據、分類收納零件</li>
+</ol>
+<p>祝你在電子材料行有愉快的購物體驗！</p>
+<hr />
+<p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>

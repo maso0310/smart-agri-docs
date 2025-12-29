@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arduino速查表</title>
+    
+<style>
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            
+            line-height: 1.8;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        h1 { color: #4fd1c5; border-bottom: 3px solid #4fd1c5; padding-bottom: 10px; margin-top: 30px; }
+        h2 { color: #63b3ed; border-bottom: 1px solid #2d3a4f; padding-bottom: 8px; margin-top: 25px; }
+        h3 { color: #81e6d9; margin-top: 20px; }
+        h4 { color: #90cdf4; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: rgba(45, 55, 72, 0.6); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #2d3a4f; padding: 12px; text-align: left; }
+        th { background-color: rgba(79, 209, 197, 0.2); color: #4fd1c5; font-weight: bold; }
+        tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tr:hover { background-color: rgba(79, 209, 197, 0.1); }
+        code { background-color: rgba(79, 209, 197, 0.15); padding: 2px 6px; border-radius: 3px; font-family: Consolas, Monaco, monospace; font-size: 0.9em; color: #4fd1c5; }
+        pre { background-color: #0d1117; color: #c9d1d9; padding: 15px; border-radius: 8px; overflow-x: auto; line-height: 1.5; border: 1px solid #2d3a4f; }
+        pre code { background-color: transparent; color: #c9d1d9; padding: 0; }
+        blockquote { border-left: 4px solid #4fd1c5; margin: 15px 0; padding: 10px 20px; background-color: rgba(79, 209, 197, 0.1); color: #81e6d9; border-radius: 0 8px 8px 0; }
+        a { color: #63b3ed; text-decoration: none; }
+        a:hover { color: #4fd1c5; text-decoration: underline; }
+        ul, ol { padding-left: 25px; }
+        li { margin: 5px 0; }
+        hr { border: none; border-top: 2px solid #2d3a4f; margin: 30px 0; }
+        img { max-width: 100%; height: auto; }
+        strong { color: #f6e05e; }
+        @media print {
+            body { background: white; color: #333; }
+            h1, h2, h3 { color: #333; }
+            
+        }
+        @media (max-width: 768px) {
+            
+            body {  }
+        }
+    
+        /* 深色模式下的按鈕（顯示太陽圖示） */
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 淺色模式下的按鈕（顯示月亮圖示） */
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 圖示切換動畫 */
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        
+        /* 返回首頁按鈕 - 右下角 */
+        .floating-home {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .floating-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+        }
+        .floating-home:active {
+            transform: scale(0.95);
+        }
+        /* 淺色模式下的返回首頁按鈕 */
+        [data-theme="light"] .floating-home {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.5);
+        }
+
+        /* 主題切換按鈕 - 右上角 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="dark"] .theme-toggle,
+        .theme-toggle {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed);
+            color: #1a1a2e;
+        }
+        [data-theme="dark"] .theme-toggle:hover,
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .theme-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active .icon {
+            transform: rotate(360deg);
+        }
+
+        /* ===== 統一淺色主題樣式 ===== */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #dfe4ea 100%) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] h1 {
+            color: #2b6cb0 !important;
+            border-bottom-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] h2 {
+            color: #2c5282 !important;
+            border-bottom-color: #90cdf4 !important;
+        }
+        [data-theme="light"] h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] h4 {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] p,
+        [data-theme="light"] li,
+        [data-theme="light"] td {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] th {
+            background-color: rgba(79, 209, 197, 0.25) !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] table {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] tr:nth-child(even) {
+            background-color: rgba(79, 209, 197, 0.08) !important;
+        }
+        [data-theme="light"] tr:hover {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+        }
+        [data-theme="light"] code {
+            background-color: rgba(79, 209, 197, 0.2) !important;
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] pre {
+            background-color: #f7fafc !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] pre code {
+            background-color: transparent !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] blockquote {
+            background-color: rgba(79, 209, 197, 0.15) !important;
+            border-left-color: #4fd1c5 !important;
+            color: #2d3748 !important;
+        }
+        [data-theme="light"] a {
+            color: #3182ce !important;
+        }
+        [data-theme="light"] a:hover {
+            color: #319795 !important;
+        }
+        [data-theme="light"] strong {
+            color: #d69e2e !important;
+        }
+        [data-theme="light"] hr {
+            border-top-color: rgba(79, 209, 197, 0.3) !important;
+        }
+        /* 首頁專用淺色樣式 */
+        [data-theme="light"] .container {
+            color: #2d3748;
+        }
+        [data-theme="light"] .header {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.15) 0%, rgba(99, 179, 237, 0.15) 100%) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .header p,
+        [data-theme="light"] .stat-label {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .stat-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .stat-number {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .category-nav {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        [data-theme="light"] .category-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2d3748 !important;
+            border: 1px solid rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .category-btn:hover,
+        [data-theme="light"] .category-btn.active {
+            background: linear-gradient(135deg, #4fd1c5, #63b3ed) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="light"] .section-title {
+            color: #2b6cb0 !important;
+            border-bottom-color: rgba(79, 209, 197, 0.4) !important;
+        }
+        [data-theme="light"] .doc-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #4fd1c5 !important;
+            box-shadow: 0 10px 30px rgba(79, 209, 197, 0.25) !important;
+        }
+        [data-theme="light"] .doc-card h3 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .doc-card:hover h3 {
+            color: #319795 !important;
+        }
+        [data-theme="light"] .doc-card p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(79, 209, 197, 0.2) !important;
+            color: #319795 !important;
+        }
+        [data-theme="light"] .tag.beginner {
+            background: rgba(72, 187, 120, 0.2) !important;
+            color: #2f855a !important;
+        }
+        [data-theme="light"] .tag.intermediate {
+            background: rgba(237, 137, 54, 0.2) !important;
+            color: #c05621 !important;
+        }
+        [data-theme="light"] .tag.advanced {
+            background: rgba(245, 101, 101, 0.2) !important;
+            color: #c53030 !important;
+        }
+        [data-theme="light"] .tag.essential {
+            background: rgba(159, 122, 234, 0.2) !important;
+            color: #6b46c1 !important;
+        }
+        [data-theme="light"] .learning-path {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+        [data-theme="light"] .learning-path h2 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-item {
+            background: rgba(247, 250, 252, 0.95) !important;
+            border-left-color: #4fd1c5 !important;
+        }
+        [data-theme="light"] .path-content h4 {
+            color: #2b6cb0 !important;
+        }
+        [data-theme="light"] .path-content p {
+            color: #4a5568 !important;
+        }
+        [data-theme="light"] .footer {
+            color: #4a5568 !important;
+            border-top: 1px solid rgba(79, 209, 197, 0.3) !important;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <!-- 返回首頁按鈕 -->
+    <a href="文件索引.html" class="floating-home" title="返回文件中心">🏠</a>
+
+
+    <h1 id="arduino">Arduino 速查表</h1>
+<p>一頁式快速參考，涵蓋最常用的 Arduino 函式與語法。</p>
+<hr />
+<h2 id="_1">程式結構</h2>
+<pre><code class="language-cpp">// 初始化，只執行一次
+void setup() {
+  // 設定腳位、初始化
+}
+
+// 主迴圈，重複執行
+void loop() {
+  // 主要程式邏輯
+}
+</code></pre>
+<hr />
+<h2 id="io">數位 I/O</h2>
+<table>
+<thead>
+<tr>
+<th>函式</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pinMode(pin, mode)</code></td>
+<td>設定腳位模式</td>
+<td><code>pinMode(13, OUTPUT);</code></td>
+</tr>
+<tr>
+<td><code>digitalWrite(pin, value)</code></td>
+<td>輸出高/低電位</td>
+<td><code>digitalWrite(13, HIGH);</code></td>
+</tr>
+<tr>
+<td><code>digitalRead(pin)</code></td>
+<td>讀取數位輸入</td>
+<td><code>int val = digitalRead(2);</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>模式常數：</strong><br />
+- <code>INPUT</code> - 輸入模式<br />
+- <code>OUTPUT</code> - 輸出模式<br />
+- <code>INPUT_PULLUP</code> - 輸入模式（內建上拉電阻）</p>
+<p><strong>電位常數：</strong><br />
+- <code>HIGH</code> - 高電位（5V 或 3.3V）<br />
+- <code>LOW</code> - 低電位（0V）</p>
+<hr />
+<h2 id="io_1">類比 I/O</h2>
+<table>
+<thead>
+<tr>
+<th>函式</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>analogRead(pin)</code></td>
+<td>讀取類比值 (0-1023)</td>
+<td><code>int val = analogRead(A0);</code></td>
+</tr>
+<tr>
+<td><code>analogWrite(pin, value)</code></td>
+<td>PWM 輸出 (0-255)</td>
+<td><code>analogWrite(9, 128);</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>注意：</strong><br />
+- <code>analogRead()</code> 使用 A0-A5 腳位<br />
+- <code>analogWrite()</code> 只能用於 PWM 腳位（標有 ~ 符號）<br />
+- UNO 的 PWM 腳位：3, 5, 6, 9, 10, 11</p>
+<hr />
+<h2 id="_2">時間函式</h2>
+<table>
+<thead>
+<tr>
+<th>函式</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>delay(ms)</code></td>
+<td>暫停（毫秒）</td>
+<td><code>delay(1000);</code> // 1秒</td>
+</tr>
+<tr>
+<td><code>delayMicroseconds(us)</code></td>
+<td>暫停（微秒）</td>
+<td><code>delayMicroseconds(100);</code></td>
+</tr>
+<tr>
+<td><code>millis()</code></td>
+<td>開機後經過的毫秒數</td>
+<td><code>unsigned long t = millis();</code></td>
+</tr>
+<tr>
+<td><code>micros()</code></td>
+<td>開機後經過的微秒數</td>
+<td><code>unsigned long t = micros();</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>非阻塞延遲範例：</strong></p>
+<pre><code class="language-cpp">unsigned long previousMillis = 0;
+const long interval = 1000;
+
+void loop() {
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis &gt;= interval) {
+    previousMillis = currentMillis;
+    // 每秒執行一次
+  }
+}
+</code></pre>
+<hr />
+<h2 id="_3">序列通訊</h2>
+<table>
+<thead>
+<tr>
+<th>函式</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Serial.begin(baud)</code></td>
+<td>初始化序列埠</td>
+<td><code>Serial.begin(9600);</code></td>
+</tr>
+<tr>
+<td><code>Serial.print(data)</code></td>
+<td>印出資料</td>
+<td><code>Serial.print("Hello");</code></td>
+</tr>
+<tr>
+<td><code>Serial.println(data)</code></td>
+<td>印出資料（換行）</td>
+<td><code>Serial.println(123);</code></td>
+</tr>
+<tr>
+<td><code>Serial.available()</code></td>
+<td>檢查是否有資料</td>
+<td><code>if(Serial.available() &gt; 0)</code></td>
+</tr>
+<tr>
+<td><code>Serial.read()</code></td>
+<td>讀取一個字元</td>
+<td><code>char c = Serial.read();</code></td>
+</tr>
+<tr>
+<td><code>Serial.readString()</code></td>
+<td>讀取字串</td>
+<td><code>String s = Serial.readString();</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>常用鮑率：</strong> <code>9600</code>, <code>115200</code></p>
+<hr />
+<h2 id="_4">變數類型</h2>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>大小</th>
+<th>範圍</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bool</code></td>
+<td>1 bit</td>
+<td>true / false</td>
+<td>布林值</td>
+</tr>
+<tr>
+<td><code>char</code></td>
+<td>1 byte</td>
+<td>-128 ~ 127</td>
+<td>字元</td>
+</tr>
+<tr>
+<td><code>byte</code></td>
+<td>1 byte</td>
+<td>0 ~ 255</td>
+<td>無號整數</td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td>2 bytes</td>
+<td>-32768 ~ 32767</td>
+<td>整數</td>
+</tr>
+<tr>
+<td><code>unsigned int</code></td>
+<td>2 bytes</td>
+<td>0 ~ 65535</td>
+<td>無號整數</td>
+</tr>
+<tr>
+<td><code>long</code></td>
+<td>4 bytes</td>
+<td>±21億</td>
+<td>長整數</td>
+</tr>
+<tr>
+<td><code>unsigned long</code></td>
+<td>4 bytes</td>
+<td>0 ~ 42億</td>
+<td>無號長整數</td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td>4 bytes</td>
+<td>±3.4e38</td>
+<td>浮點數</td>
+</tr>
+<tr>
+<td><code>double</code></td>
+<td>4 bytes</td>
+<td>同 float</td>
+<td>雙精度（Arduino 同 float）</td>
+</tr>
+<tr>
+<td><code>String</code></td>
+<td>動態</td>
+<td>-</td>
+<td>字串物件</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_5">運算子</h2>
+<h3 id="_6">算術運算子</h3>
+<table>
+<thead>
+<tr>
+<th>運算子</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>+</code></td>
+<td>加法</td>
+<td><code>a + b</code></td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td>減法</td>
+<td><code>a - b</code></td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>乘法</td>
+<td><code>a * b</code></td>
+</tr>
+<tr>
+<td><code>/</code></td>
+<td>除法</td>
+<td><code>a / b</code></td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td>取餘數</td>
+<td><code>a % b</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_7">比較運算子</h3>
+<table>
+<thead>
+<tr>
+<th>運算子</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>==</code></td>
+<td>等於</td>
+<td><code>a == b</code></td>
+</tr>
+<tr>
+<td><code>!=</code></td>
+<td>不等於</td>
+<td><code>a != b</code></td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td>小於</td>
+<td><code>a &lt; b</code></td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td>大於</td>
+<td><code>a &gt; b</code></td>
+</tr>
+<tr>
+<td><code>&lt;=</code></td>
+<td>小於等於</td>
+<td><code>a &lt;= b</code></td>
+</tr>
+<tr>
+<td><code>&gt;=</code></td>
+<td>大於等於</td>
+<td><code>a &gt;= b</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">邏輯運算子</h3>
+<table>
+<thead>
+<tr>
+<th>運算子</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&amp;&amp;</code></td>
+<td>AND</td>
+<td><code>a &amp;&amp; b</code></td>
+</tr>
+<tr>
+<td><code>\|\|</code></td>
+<td>OR</td>
+<td><code>a \|\| b</code></td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td>NOT</td>
+<td><code>!a</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_9">控制結構</h2>
+<h3 id="if-else">if-else</h3>
+<pre><code class="language-cpp">if (condition) {
+  // 條件成立
+} else if (condition2) {
+  // 條件2成立
+} else {
+  // 其他情況
+}
+</code></pre>
+<h3 id="for">for 迴圈</h3>
+<pre><code class="language-cpp">for (int i = 0; i &lt; 10; i++) {
+  // 重複 10 次
+}
+</code></pre>
+<h3 id="while">while 迴圈</h3>
+<pre><code class="language-cpp">while (condition) {
+  // 條件成立時重複
+}
+</code></pre>
+<h3 id="switch-case">switch-case</h3>
+<pre><code class="language-cpp">switch (variable) {
+  case 1:
+    // variable == 1
+    break;
+  case 2:
+    // variable == 2
+    break;
+  default:
+    // 其他情況
+    break;
+}
+</code></pre>
+<hr />
+<h2 id="_10">常用數學函式</h2>
+<table>
+<thead>
+<tr>
+<th>函式</th>
+<th>說明</th>
+<th>範例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>min(a, b)</code></td>
+<td>最小值</td>
+<td><code>min(5, 3)</code> → 3</td>
+</tr>
+<tr>
+<td><code>max(a, b)</code></td>
+<td>最大值</td>
+<td><code>max(5, 3)</code> → 5</td>
+</tr>
+<tr>
+<td><code>abs(x)</code></td>
+<td>絕對值</td>
+<td><code>abs(-5)</code> → 5</td>
+</tr>
+<tr>
+<td><code>constrain(x, a, b)</code></td>
+<td>限制範圍</td>
+<td><code>constrain(150, 0, 100)</code> → 100</td>
+</tr>
+<tr>
+<td><code>map(x, in_min, in_max, out_min, out_max)</code></td>
+<td>映射範圍</td>
+<td><code>map(512, 0, 1023, 0, 255)</code> → 127</td>
+</tr>
+<tr>
+<td><code>pow(base, exp)</code></td>
+<td>次方</td>
+<td><code>pow(2, 3)</code> → 8.0</td>
+</tr>
+<tr>
+<td><code>sqrt(x)</code></td>
+<td>平方根</td>
+<td><code>sqrt(16)</code> → 4.0</td>
+</tr>
+<tr>
+<td><code>random(max)</code></td>
+<td>隨機數</td>
+<td><code>random(100)</code> → 0~99</td>
+</tr>
+<tr>
+<td><code>random(min, max)</code></td>
+<td>隨機數（範圍）</td>
+<td><code>random(10, 20)</code> → 10~19</td>
+</tr>
+<tr>
+<td><code>randomSeed(seed)</code></td>
+<td>設定隨機種子</td>
+<td><code>randomSeed(analogRead(0));</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_11">字串操作</h2>
+<pre><code class="language-cpp">String str = &quot;Hello&quot;;
+
+str.length()           // 字串長度 → 5
+str.charAt(0)          // 取得字元 → 'H'
+str.substring(0, 3)    // 子字串 → &quot;Hel&quot;
+str.indexOf(&quot;l&quot;)       // 搜尋位置 → 2
+str.toInt()            // 轉為整數
+str.toFloat()          // 轉為浮點數
+str.toUpperCase()      // 轉大寫
+str.toLowerCase()      // 轉小寫
+str + &quot; World&quot;         // 字串串接
+str.equals(&quot;Hello&quot;)    // 比較字串
+</code></pre>
+<hr />
+<h2 id="_12">陣列</h2>
+<pre><code class="language-cpp">// 宣告陣列
+int numbers[5] = {1, 2, 3, 4, 5};
+
+// 存取元素
+int first = numbers[0];   // → 1
+numbers[2] = 10;          // 修改第3個元素
+
+// 陣列長度
+int len = sizeof(numbers) / sizeof(numbers[0]);  // → 5
+
+// 遍歷陣列
+for (int i = 0; i &lt; 5; i++) {
+  Serial.println(numbers[i]);
+}
+</code></pre>
+<hr />
+<h2 id="arduino-uno">Arduino UNO 腳位對照</h2>
+<pre><code>                    +-----+
+       +------------| USB |------------+
+       |            +-----+            |
+  B5 --|13       [ ]     [ ]       Vin|-- Vin
+       |AREF     [ ]     [ ]       GND|-- GND
+       |         [ ]     [ ]       GND|-- GND
+  B4 --|12       [ ]     [ ]        5V|-- 5V
+  B3~--|11       [ ]     [ ]       3V3|-- 3.3V
+  B2~--|10       [ ]     [ ]     RESET|-- RESET
+  B1~--|9        [ ]     [ ]     IOREF|-- IOREF
+  B0 --|8        [ ]     [ ]          |
+       |                              |
+  D7 --|7        [ ]     [ ]       A0 |-- PC0
+  D6~--|6        [ ]     [ ]       A1 |-- PC1
+  D5~--|5        [ ]     [ ]       A2 |-- PC2
+  D4 --|4        [ ]     [ ]       A3 |-- PC3
+  D3~--|3        [ ]     [ ]   SDA A4 |-- PC4
+  D2 --|2        [ ]     [ ]   SCL A5 |-- PC5
+  D1 TX|1        [ ]     [ ]          |
+  D0 RX|0        [ ]     [ ]          |
+       |            Arduino           |
+       +------------------------------+
+
+~ = PWM 腳位
+</code></pre>
+<hr />
+<h2 id="_13">常用接線速查</h2>
+<h3 id="i2c-lcdoledrtc">I2C 接線（LCD、OLED、RTC）</h3>
+<table>
+<thead>
+<tr>
+<th>Arduino UNO</th>
+<th>I2C 設備</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A4 (SDA)</td>
+<td>SDA</td>
+</tr>
+<tr>
+<td>A5 (SCL)</td>
+<td>SCL</td>
+</tr>
+<tr>
+<td>5V</td>
+<td>VCC</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>GND</td>
+</tr>
+</tbody>
+</table>
+<h3 id="spi-sd-led">SPI 接線（SD 卡、LED 矩陣）</h3>
+<table>
+<thead>
+<tr>
+<th>Arduino UNO</th>
+<th>SPI 設備</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>11 (MOSI)</td>
+<td>MOSI / DIN</td>
+</tr>
+<tr>
+<td>12 (MISO)</td>
+<td>MISO</td>
+</tr>
+<tr>
+<td>13 (SCK)</td>
+<td>SCK / CLK</td>
+</tr>
+<tr>
+<td>10 (SS)</td>
+<td>CS / SS</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dht11">DHT11 接線</h3>
+<table>
+<thead>
+<tr>
+<th>DHT11</th>
+<th>Arduino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VCC</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>DATA</td>
+<td>D2（加 10K 上拉電阻到 5V）</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>GND</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_14">伺服馬達接線</h3>
+<table>
+<thead>
+<tr>
+<th>伺服馬達</th>
+<th>Arduino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>紅線 (VCC)</td>
+<td>5V（外部電源更好）</td>
+</tr>
+<tr>
+<td>棕線 (GND)</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>橙線 (Signal)</td>
+<td>PWM 腳位（如 9）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_15">常用函式庫</h2>
+<table>
+<thead>
+<tr>
+<th>函式庫</th>
+<th>用途</th>
+<th>引入方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wire</td>
+<td>I2C 通訊</td>
+<td><code>#include &lt;Wire.h&gt;</code></td>
+</tr>
+<tr>
+<td>SPI</td>
+<td>SPI 通訊</td>
+<td><code>#include &lt;SPI.h&gt;</code></td>
+</tr>
+<tr>
+<td>Servo</td>
+<td>伺服馬達</td>
+<td><code>#include &lt;Servo.h&gt;</code></td>
+</tr>
+<tr>
+<td>LiquidCrystal_I2C</td>
+<td>I2C LCD</td>
+<td><code>#include &lt;LiquidCrystal_I2C.h&gt;</code></td>
+</tr>
+<tr>
+<td>DHT</td>
+<td>溫溼度感測器</td>
+<td><code>#include &lt;DHT.h&gt;</code></td>
+</tr>
+<tr>
+<td>IRremote</td>
+<td>紅外線遙控</td>
+<td><code>#include &lt;IRremote.h&gt;</code></td>
+</tr>
+<tr>
+<td>Stepper</td>
+<td>步進馬達</td>
+<td><code>#include &lt;Stepper.h&gt;</code></td>
+</tr>
+<tr>
+<td>EEPROM</td>
+<td>內部記憶體</td>
+<td><code>#include &lt;EEPROM.h&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_16">快速範例</h2>
+<h3 id="led">LED 閃爍</h3>
+<pre><code class="language-cpp">void setup() {
+  pinMode(13, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(13, HIGH);
+  delay(1000);
+  digitalWrite(13, LOW);
+  delay(1000);
+}
+</code></pre>
+<h3 id="_17">讀取按鈕</h3>
+<pre><code class="language-cpp">void setup() {
+  pinMode(2, INPUT_PULLUP);
+  pinMode(13, OUTPUT);
+}
+
+void loop() {
+  if (digitalRead(2) == LOW) {
+    digitalWrite(13, HIGH);
+  } else {
+    digitalWrite(13, LOW);
+  }
+}
+</code></pre>
+<h3 id="_18">讀取可變電阻</h3>
+<pre><code class="language-cpp">void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  int value = analogRead(A0);
+  Serial.println(value);
+  delay(100);
+}
+</code></pre>
+<h3 id="pwm-led">PWM LED 漸變</h3>
+<pre><code class="language-cpp">void setup() {
+  pinMode(9, OUTPUT);
+}
+
+void loop() {
+  for (int i = 0; i &lt;= 255; i++) {
+    analogWrite(9, i);
+    delay(10);
+  }
+  for (int i = 255; i &gt;= 0; i--) {
+    analogWrite(9, i);
+    delay(10);
+  }
+}
+</code></pre>
+<hr />
+<h2 id="_19">常見錯誤速查</h2>
+<table>
+<thead>
+<tr>
+<th>錯誤訊息</th>
+<th>可能原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>not declared in this scope</code></td>
+<td>變數未宣告</td>
+</tr>
+<tr>
+<td><code>expected ';'</code></td>
+<td>缺少分號</td>
+</tr>
+<tr>
+<td><code>expected '}'</code></td>
+<td>括號不配對</td>
+</tr>
+<tr>
+<td><code>No such file or directory</code></td>
+<td>函式庫未安裝</td>
+</tr>
+<tr>
+<td><code>programmer is not responding</code></td>
+<td>COM Port 或開發板選錯</td>
+</tr>
+<tr>
+<td><code>Serial port not found</code></td>
+<td>USB 線問題或驅動未裝</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>最後更新：2025年12月</em></p>
+    <hr>
+    <p style="text-align: center; color: #718096; font-size: 0.9em;">
+        智慧農業課程教材 | 最後更新：2025年12月
+    </p>
+
+    
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>
