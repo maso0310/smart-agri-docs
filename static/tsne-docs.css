@@ -1,0 +1,395 @@
+/* t-SNE 技術文件樣式表 */
+
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --accent-color: #e74c3c;
+    --success-color: #27ae60;
+    --warning-color: #f39c12;
+    --bg-color: #f8f9fa;
+    --code-bg: #282c34;
+    --border-color: #ddd;
+    --shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', sans-serif;
+    line-height: 1.8;
+    color: var(--primary-color);
+    background-color: var(--bg-color);
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 40px;
+    box-shadow: var(--shadow);
+    border-radius: 8px;
+}
+
+/* 標題樣式 */
+h1 {
+    color: var(--primary-color);
+    font-size: 2.5em;
+    margin-bottom: 0.5em;
+    padding-bottom: 0.3em;
+    border-bottom: 3px solid var(--secondary-color);
+}
+
+h2 {
+    color: var(--secondary-color);
+    font-size: 2em;
+    margin-top: 1.5em;
+    margin-bottom: 0.8em;
+    padding-left: 10px;
+    border-left: 5px solid var(--secondary-color);
+}
+
+h3 {
+    color: var(--primary-color);
+    font-size: 1.5em;
+    margin-top: 1.2em;
+    margin-bottom: 0.6em;
+}
+
+h4 {
+    color: var(--primary-color);
+    font-size: 1.2em;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+/* 段落與內容 */
+p {
+    margin-bottom: 1em;
+    text-align: justify;
+}
+
+/* 列表樣式 */
+ul, ol {
+    margin-left: 2em;
+    margin-bottom: 1em;
+}
+
+li {
+    margin-bottom: 0.5em;
+}
+
+/* 程式碼區塊 */
+code {
+    background-color: #f4f4f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+    color: var(--accent-color);
+}
+
+pre {
+    background-color: var(--code-bg);
+    color: #abb2bf;
+    padding: 20px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin: 1em 0;
+    box-shadow: var(--shadow);
+}
+
+pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    font-size: 0.95em;
+}
+
+/* 表格樣式 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+    box-shadow: var(--shadow);
+}
+
+thead {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+th {
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* 提示框樣式 */
+.note, .warning, .tip, .important {
+    padding: 15px 20px;
+    margin: 1.5em 0;
+    border-radius: 5px;
+    border-left: 5px solid;
+}
+
+.note {
+    background-color: #e3f2fd;
+    border-color: var(--secondary-color);
+}
+
+.warning {
+    background-color: #fff3e0;
+    border-color: var(--warning-color);
+}
+
+.tip {
+    background-color: #e8f5e9;
+    border-color: var(--success-color);
+}
+
+.important {
+    background-color: #ffebee;
+    border-color: var(--accent-color);
+}
+
+.note::before {
+    content: "📝 提示：";
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+.warning::before {
+    content: "⚠️ 注意：";
+    font-weight: bold;
+    color: var(--warning-color);
+}
+
+.tip::before {
+    content: "💡 技巧：";
+    font-weight: bold;
+    color: var(--success-color);
+}
+
+.important::before {
+    content: "❗ 重要：";
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+/* 目錄導航 */
+.toc {
+    background-color: #f8f9fa;
+    padding: 20px;
+    margin: 2em 0;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+}
+
+.toc h2 {
+    margin-top: 0;
+    font-size: 1.5em;
+}
+
+.toc ul {
+    list-style: none;
+    margin-left: 0;
+}
+
+.toc li {
+    margin-bottom: 0.3em;
+}
+
+.toc a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.toc a:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+/* 強調文字 */
+strong {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+em {
+    color: var(--secondary-color);
+    font-style: italic;
+}
+
+/* 分隔線 */
+hr {
+    border: none;
+    border-top: 2px solid var(--border-color);
+    margin: 2em 0;
+}
+
+/* 連結樣式 */
+a {
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* 圖片樣式 */
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    box-shadow: var(--shadow);
+    margin: 1em 0;
+}
+
+/* 公式區塊 */
+.formula {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin: 1em 0;
+    border-radius: 5px;
+    text-align: center;
+    font-style: italic;
+    border: 1px dashed var(--border-color);
+}
+
+/* 參數卡片 */
+.parameter-card {
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 1em 0;
+    box-shadow: var(--shadow);
+}
+
+.parameter-card h4 {
+    color: var(--secondary-color);
+    margin-top: 0;
+}
+
+/* 範例區塊 */
+.example {
+    background-color: #f0f7ff;
+    border-left: 4px solid var(--secondary-color);
+    padding: 20px;
+    margin: 1.5em 0;
+    border-radius: 5px;
+}
+
+.example-title {
+    font-weight: bold;
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+}
+
+/* 回到頂部按鈕 */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: var(--secondary-color);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: all 0.3s;
+    text-decoration: none;
+    font-size: 24px;
+}
+
+.back-to-top:hover {
+    background-color: var(--accent-color);
+    transform: translateY(-5px);
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    h2 {
+        font-size: 1.6em;
+    }
+
+    pre {
+        padding: 15px;
+        font-size: 0.85em;
+    }
+}
+
+/* 頁首區塊 */
+.header {
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+    color: white;
+    padding: 30px;
+    margin: -40px -40px 40px -40px;
+    border-radius: 8px 8px 0 0;
+}
+
+.header h1 {
+    color: white;
+    border: none;
+    margin: 0;
+}
+
+.header p {
+    margin-top: 10px;
+    opacity: 0.9;
+}
+
+/* 區段卡片 */
+.section-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 2em 0;
+    border: 1px solid var(--border-color);
+}
+
+/* 語法高亮 */
+.python-keyword {
+    color: #c678dd;
+}
+
+.python-string {
+    color: #98c379;
+}
+
+.python-comment {
+    color: #5c6370;
+    font-style: italic;
+}
+
+.python-number {
+    color: #d19a66;
+}

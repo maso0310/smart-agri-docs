@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>霍夫轉換原理與應用 - 智慧農業影像處理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #2c5364;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 4px solid #2c5364;
+            padding-bottom: 20px;
+        }
+
+        h2 {
+            color: #203a43;
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #2c5364;
+        }
+
+        h3 {
+            color: #2c5364;
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #203a43;
+            font-size: 1.2em;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        p {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, rgba(44, 83, 100, 0.1), rgba(32, 58, 67, 0.1));
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 5px solid #2c5364;
+        }
+
+        .concept-box {
+            background: #f8f9fa;
+            border-left: 5px solid #2c5364;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, rgba(44, 83, 100, 0.05), rgba(32, 58, 67, 0.05));
+            border: 2px solid #2c5364;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 12px;
+        }
+
+        .analogy {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .analogy::before {
+            content: "💡 生活比喻：";
+            font-weight: bold;
+            color: #2e7d32;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .application-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .app-card {
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            border-left: 5px solid #2c5364;
+            padding: 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(44, 83, 100, 0.2);
+        }
+
+        .app-card h4 {
+            color: #2c5364;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #2c5364, #203a43);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .comparison-table tr:hover {
+            background-color: rgba(44, 83, 100, 0.1);
+        }
+
+        code {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: "Courier New", monospace;
+            color: #c7254e;
+        }
+
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            color: #f8f8f2;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .tip {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, rgba(44, 83, 100, 0.1), rgba(32, 58, 67, 0.1));
+            border: 2px solid #2c5364;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .key-point::before {
+            content: "🎯 重點整理：";
+            display: block;
+            color: #2c5364;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .steps {
+            counter-reset: step-counter;
+            list-style: none;
+            padding: 0;
+        }
+
+        .steps li {
+            counter-increment: step-counter;
+            margin-bottom: 25px;
+            padding-left: 60px;
+            position: relative;
+        }
+
+        .steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: linear-gradient(135deg, #2c5364, #203a43);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        strong {
+            color: #203a43;
+        }
+
+        .formula-box {
+            background: #f0f4f8;
+            border: 2px dashed #2c5364;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-family: "Courier New", monospace;
+        }
+
+        .param-table {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .param-table dt {
+            font-weight: bold;
+            color: #2c5364;
+            margin-top: 10px;
+        }
+
+        .param-table dd {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* 主題切換按鈕 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #2c5364, #203a43);
+            color: white;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(44, 83, 100, 0.5);
+        }
+
+        /* 淺色主題 */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+        }
+
+        [data-theme="light"] h1 {
+            color: #1565c0;
+            border-bottom-color: #1565c0;
+        }
+
+        [data-theme="light"] h2 {
+            color: #0d47a1;
+            border-left-color: #1565c0;
+        }
+
+        [data-theme="light"] h3, [data-theme="light"] h4 {
+            color: #1565c0;
+        }
+
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+    </style>
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <div class="container">
+        <h1>📐 霍夫轉換原理與應用</h1>
+
+        <div class="intro">
+            <h3>📖 什麼是霍夫轉換（Hough Transform）？</h3>
+            <p><strong>霍夫轉換</strong>是一種強大的影像處理技術，專門用來<strong>偵測影像中的幾何形狀</strong>，例如直線、圓形、橢圓等。即使這些形狀被部分遮擋或有雜訊干擾，霍夫轉換仍然能夠準確偵測。</p>
+            <p>在智慧農業中，霍夫轉換常用於：</p>
+            <ul>
+                <li>🌾 偵測農田中的作物行（crop rows）</li>
+                <li>🚜 自動導航系統的路徑偵測</li>
+                <li>🍎 水果輪廓偵測（圓形識別）</li>
+                <li>📏 溫室結構分析（偵測支架、管線）</li>
+            </ul>
+        </div>
+
+        <h2>💡 霍夫轉換的核心概念</h2>
+
+        <div class="analogy">
+            想像你在一張照片中尋找「直線」：
+            <br><br>
+            <strong>傳統方法：</strong>
+            <ul>
+                <li>逐一檢查每個像素點</li>
+                <li>判斷附近的點是否排成一直線</li>
+                <li>效率低，容易受雜訊影響</li>
+            </ul>
+            <strong>霍夫轉換的聰明做法：</strong>
+            <ul>
+                <li>把問題反過來想：「如果有一條直線，哪些點會在上面？」</li>
+                <li>在「參數空間」中進行投票</li>
+                <li>得票最多的參數就是最可能的直線！</li>
+            </ul>
+            這就像是<strong>民主選舉</strong>：每個點都為可能經過它的直線投票，得票最高的直線就是答案！
+        </div>
+
+        <h2>🔍 霍夫轉換如何運作？</h2>
+
+        <h3>1️⃣ 霍夫直線偵測（Hough Line Transform）</h3>
+
+        <div class="concept-box">
+            <h4>基本原理</h4>
+            <p>一條直線可以用兩種方式表示：</p>
+
+            <div class="formula-box">
+                <strong>笛卡爾座標：</strong>y = mx + b<br>
+                (m = 斜率, b = 截距)<br><br>
+
+                <strong>極座標（霍夫空間）：</strong>ρ = x·cos(θ) + y·sin(θ)<br>
+                (ρ = 原點到直線的距離, θ = 法線與x軸夾角)
+            </div>
+
+            <p><strong>為什麼用極座標？</strong></p>
+            <ul>
+                <li>可以表示垂直線（笛卡爾座標中斜率 = ∞）</li>
+                <li>參數空間有界（θ: 0-180°, ρ: 有限範圍）</li>
+                <li>更穩定、更適合投票機制</li>
+            </ul>
+        </div>
+
+        <ol class="steps">
+            <li>
+                <h4>邊緣偵測</h4>
+                <p>先用 Canny 邊緣偵測找出影像中的邊緣點（白色像素）。</p>
+                <pre><code>import cv2
+edges = cv2.Canny(image, 50, 150)</code></pre>
+            </li>
+
+            <li>
+                <h4>建立累加器（Accumulator）</h4>
+                <p>創建一個二維陣列，橫軸是 θ（角度），縱軸是 ρ（距離）。</p>
+                <p>初始值全部為 0。</p>
+            </li>
+
+            <li>
+                <h4>投票過程</h4>
+                <p>對於每個邊緣點 (x, y)：</p>
+                <ul>
+                    <li>遍歷所有可能的角度 θ（例如 0° 到 180°）</li>
+                    <li>計算對應的 ρ = x·cos(θ) + y·sin(θ)</li>
+                    <li>在累加器的 (θ, ρ) 位置 +1（投票）</li>
+                </ul>
+            </li>
+
+            <li>
+                <h4>找出峰值</h4>
+                <p>累加器中值最大的位置，代表通過最多邊緣點的直線參數。</p>
+                <p>設定一個閾值，只保留得票數超過閾值的直線。</p>
+            </li>
+
+            <li>
+                <h4>繪製結果</h4>
+                <p>將偵測到的 (ρ, θ) 轉回 (x, y) 座標，畫在原圖上。</p>
+            </li>
+        </ol>
+
+        <h3>2️⃣ 霍夫圓形偵測（Hough Circle Transform）</h3>
+
+        <div class="concept-box">
+            <h4>基本原理</h4>
+            <p>圓形可以用三個參數表示：</p>
+
+            <div class="formula-box">
+                (x - a)² + (y - b)² = r²<br>
+                <br>
+                a, b = 圓心座標<br>
+                r = 半徑
+            </div>
+
+            <p><strong>挑戰：</strong>三維參數空間（a, b, r），計算量大！</p>
+            <p><strong>解決方案：</strong>使用<strong>霍夫梯度法（Hough Gradient Method）</strong>，分兩階段偵測：</p>
+            <ol>
+                <li>找圓心候選位置（利用梯度方向）</li>
+                <li>根據圓心候選位置找半徑</li>
+            </ol>
+        </div>
+
+        <h2>🌾 智慧農業應用實例</h2>
+
+        <div class="application-grid">
+            <div class="app-card">
+                <h4>🚜 1. 自動駕駛農機導航</h4>
+                <p><strong>應用：</strong>偵測作物行（crop rows）的直線，計算導航路徑。</p>
+                <p><strong>方法：</strong>霍夫直線偵測</p>
+                <p><strong>優勢：</strong>即使部分遮擋仍能準確偵測路徑</p>
+            </div>
+
+            <div class="app-card">
+                <h4>🍎 2. 水果分級與計數</h4>
+                <p><strong>應用：</strong>偵測蘋果、柳橙等圓形水果的輪廓。</p>
+                <p><strong>方法：</strong>霍夫圓形偵測</p>
+                <p><strong>優勢：</strong>自動計數、測量大小</p>
+            </div>
+
+            <div class="app-card">
+                <h4>🏡 3. 溫室結構檢測</h4>
+                <p><strong>應用：</strong>偵測溫室骨架、管線是否變形。</p>
+                <p><strong>方法：</strong>霍夫直線偵測</p>
+                <p><strong>優勢：</strong>自動化結構健康檢查</p>
+            </div>
+
+            <div class="app-card">
+                <h4>🌱 4. 種植行距測量</h4>
+                <p><strong>應用：</strong>檢查作物種植是否整齊，行距是否一致。</p>
+                <p><strong>方法：</strong>霍夫直線偵測</p>
+                <p><strong>優勢：</strong>精準農業品質控制</p>
+            </div>
+
+            <div class="app-card">
+                <h4>💧 5. 灌溉管線偵測</h4>
+                <p><strong>應用：</strong>無人機影像中偵測灌溉管線位置。</p>
+                <p><strong>方法：</strong>霍夫直線偵測</p>
+                <p><strong>優勢：</strong>管線維護、漏水點定位</p>
+            </div>
+
+            <div class="app-card">
+                <h4>📏 6. 葉片形態測量</h4>
+                <p><strong>應用：</strong>測量圓形或橢圓形葉片的大小。</p>
+                <p><strong>方法：</strong>霍夫圓形/橢圓偵測</p>
+                <p><strong>優勢：</strong>生長監測、病害診斷</p>
+            </div>
+        </div>
+
+        <h2>💻 Python OpenCV 實作</h2>
+
+        <h3>實例 1：偵測作物行（直線偵測）</h3>
+
+        <pre><code>import cv2
+import numpy as np
+
+# 讀取影像
+image = cv2.imread('crop_field.jpg')
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+# 步驟 1：邊緣偵測
+edges = cv2.Canny(gray, 50, 150, apertureSize=3)
+
+# 步驟 2：霍夫直線偵測（標準方法）
+lines = cv2.HoughLines(edges, rho=1, theta=np.pi/180, threshold=100)
+
+# 繪製偵測到的直線
+if lines is not None:
+    for line in lines:
+        rho, theta = line[0]
+        a = np.cos(theta)
+        b = np.sin(theta)
+        x0 = a * rho
+        y0 = b * rho
+        x1 = int(x0 + 1000 * (-b))
+        y1 = int(y0 + 1000 * (a))
+        x2 = int(x0 - 1000 * (-b))
+        y2 = int(y0 - 1000 * (a))
+        cv2.line(image, (x1, y1), (x2, y2), (0, 0, 255), 2)
+
+# 顯示結果
+cv2.imshow('Detected Lines', image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()</code></pre>
+
+        <h3>實例 2：偵測水果（圓形偵測）</h3>
+
+        <pre><code>import cv2
+import numpy as np
+
+# 讀取影像
+image = cv2.imread('apples.jpg')
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+# 高斯模糊（減少雜訊）
+blurred = cv2.GaussianBlur(gray, (9, 9), 2)
+
+# 霍夫圓形偵測
+circles = cv2.HoughCircles(
+    blurred,
+    cv2.HOUGH_GRADIENT,      # 偵測方法
+    dp=1,                     # 累加器解析度比例
+    minDist=50,               # 圓心之間最小距離
+    param1=100,               # Canny 邊緣偵測的高閾值
+    param2=30,                # 累加器閾值（越小偵測越多圓）
+    minRadius=20,             # 最小半徑
+    maxRadius=100             # 最大半徑
+)
+
+# 繪製偵測到的圓形
+if circles is not None:
+    circles = np.uint16(np.around(circles))
+    for i in circles[0, :]:
+        center = (i[0], i[1])
+        radius = i[2]
+        # 畫圓心
+        cv2.circle(image, center, 2, (0, 255, 0), 3)
+        # 畫圓周
+        cv2.circle(image, center, radius, (255, 0, 0), 3)
+
+    print(f"偵測到 {len(circles[0])} 個圓形（水果）")
+
+# 顯示結果
+cv2.imshow('Detected Circles', image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()</code></pre>
+
+        <h3>實例 3：機率霍夫轉換（更快、更精準）</h3>
+
+        <pre><code>import cv2
+import numpy as np
+
+# 讀取影像
+image = cv2.imread('greenhouse.jpg')
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+edges = cv2.Canny(gray, 50, 150, apertureSize=3)
+
+# 機率霍夫轉換（Probabilistic Hough Transform）
+# 優點：更快、直接返回線段端點座標
+lines = cv2.HoughLinesP(
+    edges,
+    rho=1,                    # 距離解析度（像素）
+    theta=np.pi/180,          # 角度解析度（弧度）
+    threshold=50,             # 累加器閾值
+    minLineLength=100,        # 最小線段長度
+    maxLineGap=10             # 線段間最大間隔
+)
+
+# 繪製偵測到的線段
+if lines is not None:
+    for line in lines:
+        x1, y1, x2, y2 = line[0]
+        cv2.line(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
+    print(f"偵測到 {len(lines)} 條線段")
+
+cv2.imshow('Probabilistic Hough Lines', image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()</code></pre>
+
+        <h2>⚙️ 參數調整指南</h2>
+
+        <h3>霍夫直線偵測參數</h3>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>參數</th>
+                    <th>說明</th>
+                    <th>建議值</th>
+                    <th>調整原則</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>rho</code></td>
+                    <td>距離解析度（像素）</td>
+                    <td>1</td>
+                    <td>通常保持 1，越小越精確但越慢</td>
+                </tr>
+                <tr>
+                    <td><code>theta</code></td>
+                    <td>角度解析度（弧度）</td>
+                    <td>π/180 (1度)</td>
+                    <td>越小越精確，可用 π/360 (0.5度)</td>
+                </tr>
+                <tr>
+                    <td><code>threshold</code></td>
+                    <td>累加器閾值</td>
+                    <td>50-150</td>
+                    <td>越大偵測越嚴格，線越少但越可靠</td>
+                </tr>
+                <tr>
+                    <td><code>minLineLength</code></td>
+                    <td>最小線段長度</td>
+                    <td>50-200</td>
+                    <td>過濾短線段雜訊</td>
+                </tr>
+                <tr>
+                    <td><code>maxLineGap</code></td>
+                    <td>線段最大間隔</td>
+                    <td>5-20</td>
+                    <td>允許斷裂的線段連接</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>霍夫圓形偵測參數</h3>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>參數</th>
+                    <th>說明</th>
+                    <th>建議值</th>
+                    <th>調整原則</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>dp</code></td>
+                    <td>累加器解析度比例</td>
+                    <td>1-2</td>
+                    <td>1 = 與原圖相同；2 = 一半解析度（更快）</td>
+                </tr>
+                <tr>
+                    <td><code>minDist</code></td>
+                    <td>圓心最小距離</td>
+                    <td>物體直徑</td>
+                    <td>避免偵測到重疊的圓</td>
+                </tr>
+                <tr>
+                    <td><code>param1</code></td>
+                    <td>Canny 高閾值</td>
+                    <td>100-200</td>
+                    <td>邊緣偵測敏感度</td>
+                </tr>
+                <tr>
+                    <td><code>param2</code></td>
+                    <td>累加器閾值</td>
+                    <td>20-50</td>
+                    <td>越小偵測越多圓（包括假陽性）</td>
+                </tr>
+                <tr>
+                    <td><code>minRadius</code></td>
+                    <td>最小半徑</td>
+                    <td>依目標物體</td>
+                    <td>過濾太小的圓</td>
+                </tr>
+                <tr>
+                    <td><code>maxRadius</code></td>
+                    <td>最大半徑</td>
+                    <td>依目標物體</td>
+                    <td>過濾太大的圓；0 = 不限制</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🎯 實戰技巧與最佳實踐</h2>
+
+        <div class="tip">
+            <h4>✅ 提升偵測準確度的技巧</h4>
+            <ol>
+                <li><strong>前處理很重要：</strong>
+                    <ul>
+                        <li>使用高斯模糊去除雜訊</li>
+                        <li>調整對比度和亮度</li>
+                        <li>使用形態學操作（開運算、閉運算）</li>
+                    </ul>
+                </li>
+                <li><strong>邊緣偵測優化：</strong>
+                    <ul>
+                        <li>Canny 閾值要根據影像調整</li>
+                        <li>可以先用自適應閾值二值化</li>
+                    </ul>
+                </li>
+                <li><strong>參數調整策略：</strong>
+                    <ul>
+                        <li>先用寬鬆參數看效果，再逐步收緊</li>
+                        <li>threshold 從小到大調整</li>
+                        <li>使用滑動條（cv2.createTrackbar）即時調整</li>
+                    </ul>
+                </li>
+                <li><strong>後處理過濾：</strong>
+                    <ul>
+                        <li>過濾重複或相似的線段/圓形</li>
+                        <li>根據角度範圍過濾不合理的結果</li>
+                        <li>使用 RANSAC 等方法進一步精煉</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="example-box">
+            <h3>完整範例：作物行偵測與導航角度計算</h3>
+            <pre><code>import cv2
+import numpy as np
+
+def detect_crop_rows(image_path):
+    """
+    偵測作物行並計算導航角度
+    """
+    # 讀取影像
+    image = cv2.imread(image_path)
+    original = image.copy()
+
+    # 轉灰階
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # 高斯模糊
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    # 邊緣偵測
+    edges = cv2.Canny(blurred, 50, 150, apertureSize=3)
+
+    # 霍夫直線偵測
+    lines = cv2.HoughLinesP(
+        edges,
+        rho=1,
+        theta=np.pi/180,
+        threshold=80,
+        minLineLength=150,
+        maxLineGap=20
+    )
+
+    if lines is None:
+        print("未偵測到直線")
+        return None
+
+    # 過濾並計算角度
+    angles = []
+    valid_lines = []
+
+    for line in lines:
+        x1, y1, x2, y2 = line[0]
+
+        # 計算角度（與水平線的夾角）
+        angle = np.arctan2(y2 - y1, x2 - x1) * 180 / np.pi
+
+        # 只保留接近垂直的線（作物行通常是垂直或接近垂直）
+        if abs(angle - 90) < 30 or abs(angle + 90) < 30:
+            angles.append(angle)
+            valid_lines.append(line[0])
+            # 繪製偵測到的線
+            cv2.line(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
+    if len(angles) == 0:
+        print("未偵測到有效的作物行")
+        return None
+
+    # 計算平均角度（導航方向）
+    avg_angle = np.mean(angles)
+
+    # 在影像上標註結果
+    cv2.putText(image, f'Rows detected: {len(valid_lines)}',
+                (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+    cv2.putText(image, f'Navigation angle: {avg_angle:.1f} deg',
+                (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+
+    # 顯示結果
+    combined = np.hstack([original, image])
+    cv2.imshow('Crop Row Detection', combined)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    return {
+        'num_rows': len(valid_lines),
+        'avg_angle': avg_angle,
+        'lines': valid_lines
+    }
+
+# 使用範例
+result = detect_crop_rows('crop_field.jpg')
+if result:
+    print(f"偵測到 {result['num_rows']} 條作物行")
+    print(f"建議導航角度：{result['avg_angle']:.1f}°")</code></pre>
+        </div>
+
+        <h2>⚠️ 霍夫轉換的限制與替代方案</h2>
+
+        <div class="warning">
+            <h4>❌ 霍夫轉換的限制</h4>
+            <ul>
+                <li><strong>計算量大：</strong>對於大圖或高解析度影像可能很慢，尤其是圓形偵測</li>
+                <li><strong>參數敏感：</strong>需要仔細調整參數才能獲得好結果</li>
+                <li><strong>雜訊敏感：</strong>影像雜訊多時容易產生假陽性</li>
+                <li><strong>形狀限制：</strong>只能偵測特定幾何形狀（直線、圓、橢圓），無法偵測不規則形狀</li>
+                <li><strong>重疊問題：</strong>多個物體重疊時偵測困難</li>
+            </ul>
+        </div>
+
+        <h3>替代方案與補充技術</h3>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>技術</th>
+                    <th>適用場景</th>
+                    <th>優點</th>
+                    <th>缺點</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>RANSAC</strong></td>
+                    <td>直線/平面擬合</td>
+                    <td>抗雜訊能力強</td>
+                    <td>需要迭代，較慢</td>
+                </tr>
+                <tr>
+                    <td><strong>輪廓偵測</strong></td>
+                    <td>任意形狀</td>
+                    <td>不限形狀，靈活</td>
+                    <td>需要好的二值化</td>
+                </tr>
+                <tr>
+                    <td><strong>深度學習</strong></td>
+                    <td>複雜場景</td>
+                    <td>準確度高，泛化好</td>
+                    <td>需要大量訓練資料</td>
+                </tr>
+                <tr>
+                    <td><strong>LSD 線段偵測</strong></td>
+                    <td>快速直線偵測</td>
+                    <td>比霍夫轉換快</td>
+                    <td>功能較單一</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🎯 總結</h2>
+
+        <div class="key-point">
+            <strong>霍夫轉換的核心價值：</strong>
+            <ul>
+                <li>✅ 能在雜訊和部分遮擋下偵測幾何形狀</li>
+                <li>✅ 不需要完整的形狀輪廓</li>
+                <li>✅ 演算法穩定、可靠</li>
+                <li>✅ 參數可調整以適應不同場景</li>
+            </ul>
+
+            <strong>智慧農業最佳應用場景：</strong>
+            <ol>
+                <li><strong>作物行偵測：</strong>自動駕駛農機導航</li>
+                <li><strong>水果計數：</strong>產量估計、品質分級</li>
+                <li><strong>結構檢測：</strong>溫室、灌溉系統維護</li>
+                <li><strong>病害分析：</strong>葉片形態變化監測</li>
+            </ol>
+
+            <strong>使用建議：</strong>
+            <ul>
+                <li>簡單場景：霍夫轉換 + 適當前處理</li>
+                <li>複雜場景：霍夫轉換 + 深度學習混合使用</li>
+                <li>即時需求：使用機率霍夫轉換（HoughLinesP）</li>
+                <li>高精度需求：霍夫轉換 + RANSAC 精煉</li>
+            </ul>
+        </div>
+
+        <h2>📚 延伸學習資源</h2>
+
+        <ul>
+            <li><strong>進階霍夫轉換：</strong>
+                <ul>
+                    <li>廣義霍夫轉換（Generalized Hough Transform）：偵測任意形狀</li>
+                    <li>漸進式機率霍夫轉換（Progressive Probabilistic HT）</li>
+                    <li>多尺度霍夫轉換（Multi-Scale HT）</li>
+                </ul>
+            </li>
+            <li><strong>相關技術：</strong>
+                <ul>
+                    <li>Canny 邊緣偵測器優化</li>
+                    <li>RANSAC 隨機抽樣一致性</li>
+                    <li>LSD（Line Segment Detector）</li>
+                    <li>輪廓分析與形狀匹配</li>
+                </ul>
+            </li>
+            <li><strong>OpenCV 官方文檔：</strong>
+                <ul>
+                    <li><a href="https://docs.opencv.org/4.x/d9/db0/tutorial_hough_lines.html" target="_blank">Hough Line Transform</a></li>
+                    <li><a href="https://docs.opencv.org/4.x/d4/d70/tutorial_hough_circle.html" target="_blank">Hough Circle Transform</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        <div class="key-point" style="margin-top: 40px; text-align: center;">
+            <p style="font-size: 1.3em; margin-bottom: 0;">
+                📐 <strong>霍夫轉換：把「找形狀」變成「投票遊戲」！</strong> 📐
+            </p>
+        </div>
+
+        <p style="text-align: center; margin-top: 40px; color: #666;">
+            ─────────────────────────────────────<br>
+            智慧農業課程教材 | 最後更新：2025年12月
+        </p>
+    </div>
+
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>
