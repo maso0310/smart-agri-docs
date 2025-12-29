@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCA 主成分分析白話文教學 - 智慧農業應用</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        h2 {
+            color: #764ba2;
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #764ba2;
+        }
+
+        h3 {
+            color: #667eea;
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #764ba2;
+            font-size: 1.2em;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        p {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .concept-box {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            border: 2px solid #667eea;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 12px;
+        }
+
+        .analogy {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .analogy::before {
+            content: "💡 生活比喻：";
+            font-weight: bold;
+            color: #856404;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .math-simple {
+            background: #e7f3ff;
+            border: 2px dashed #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-family: "Courier New", monospace;
+        }
+
+        .steps {
+            counter-reset: step-counter;
+            list-style: none;
+            padding: 0;
+        }
+
+        .steps li {
+            counter-increment: step-counter;
+            margin-bottom: 25px;
+            padding-left: 60px;
+            position: relative;
+        }
+
+        .steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .comparison-table tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        code {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: "Courier New", monospace;
+            color: #c7254e;
+        }
+
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            color: #f8f8f2;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .tip {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border: 2px solid #667eea;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .key-point::before {
+            content: "🎯 重點整理：";
+            display: block;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        strong {
+            color: #764ba2;
+        }
+
+        .formula {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        /* 主題切換按鈕 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 淺色主題 */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        [data-theme="light"] h1 {
+            color: #4a5568;
+            border-bottom-color: #4a5568;
+        }
+
+        [data-theme="light"] h2 {
+            color: #2d3748;
+            border-left-color: #2d3748;
+        }
+
+        [data-theme="light"] h3 {
+            color: #4a5568;
+        }
+
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+    </style>
+</head>
+<body>
+    <!-- 主題切換按鈕 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切換淺色/深色主題">
+        <span class="icon" id="theme-icon">☀️</span>
+    </button>
+
+    <div class="container">
+        <h1>🌾 PCA 主成分分析白話文教學</h1>
+
+        <div class="intro">
+            <h3>📖 什麼是 PCA？</h3>
+            <p><strong>PCA（Principal Component Analysis，主成分分析）</strong>是一種降維技術，就像把複雜的數據「簡化」成更容易理解的形式，同時保留最重要的資訊。</p>
+            <p>在智慧農業中，我們常常會收集大量感測器數據（溫度、濕度、光照、土壤養分等），PCA 可以幫我們找出哪些因素最重要，並且去除冗餘資訊。</p>
+        </div>
+
+        <h2>💡 為什麼需要 PCA？</h2>
+
+        <div class="analogy">
+            想像你在觀察一個蘋果園，你記錄了 100 種不同的數據：
+            <ul>
+                <li>土壤 pH 值、氮磷鉀含量、有機質含量...</li>
+                <li>氣溫、濕度、降雨量、日照時數...</li>
+                <li>蘋果大小、重量、糖度、酸度...</li>
+            </ul>
+            但其實，這 100 種數據中，<strong>很多是高度相關的</strong>。例如：
+            <ul>
+                <li>氣溫高 → 通常濕度低、蒸發量大</li>
+                <li>土壤氮含量高 → 通常植物長得快、葉子綠</li>
+            </ul>
+            <strong>PCA 的作用就是找出「真正獨立的幾個主要因素」</strong>，可能只需要 5-10 個「主成分」就能解釋 90% 的變化！
+        </div>
+
+        <h2>🎯 PCA 的三大核心目標</h2>
+
+        <div class="concept-box">
+            <h3>1️⃣ 降維（Dimensionality Reduction）</h3>
+            <p><strong>白話說：</strong>把 100 個變數變成 5 個變數，但保留大部分資訊。</p>
+            <p><strong>好處：</strong></p>
+            <ul>
+                <li>資料更容易視覺化（2D/3D 圖表）</li>
+                <li>訓練機器學習模型更快</li>
+                <li>避免「維度災難」（特徵太多反而效果變差）</li>
+            </ul>
+        </div>
+
+        <div class="concept-box">
+            <h3>2️⃣ 去除特徵間的相關性（Decorrelation）</h3>
+            <p><strong>白話說：</strong>讓每個新的「主成分」都是獨立的，不會互相影響。</p>
+            <p><strong>農業例子：</strong></p>
+            <ul>
+                <li>原本：溫度 ↑ → 濕度 ↓（有相關性）</li>
+                <li>PCA 後：主成分 1 可能代表「整體氣候強度」，主成分 2 代表「乾濕差異」（完全獨立）</li>
+            </ul>
+        </div>
+
+        <div class="concept-box">
+            <h3>3️⃣ 找出最重要的變異方向</h3>
+            <p><strong>白話說：</strong>在數據中找出「差異最大」的方向，因為差異大的地方通常包含最多資訊。</p>
+            <p><strong>比喻：</strong>拍照時，你會選擇「最能看出差異」的角度，而不是正面看所有蘋果都一樣的角度。</p>
+        </div>
+
+        <h2>🔍 PCA 如何運作？五步驟理解</h2>
+
+        <ol class="steps">
+            <li>
+                <h4>標準化數據（Standardization）</h4>
+                <p><strong>為什麼要做：</strong>不同變數的單位和範圍不同（例如溫度 0-40°C，濕度 0-100%），需要先統一標準。</p>
+                <div class="math-simple">
+                    標準化公式：z = (x - 平均值) / 標準差
+                </div>
+                <p><strong>結果：</strong>所有特徵的平均值變成 0，標準差變成 1。</p>
+            </li>
+
+            <li>
+                <h4>計算共變異矩陣（Covariance Matrix）</h4>
+                <p><strong>共變異是什麼：</strong>衡量兩個變數是否一起變化。</p>
+                <ul>
+                    <li>正的共變異：一起增加（溫度高 → 蒸發量大）</li>
+                    <li>負的共變異：一增一減（溫度高 → 相對濕度低）</li>
+                    <li>零共變異：沒有關係</li>
+                </ul>
+                <p><strong>共變異矩陣：</strong>一個表格，記錄所有變數兩兩之間的關係。</p>
+            </li>
+
+            <li>
+                <h4>計算特徵值與特徵向量（Eigenvalues & Eigenvectors）</h4>
+                <p><strong>不要被嚇到！白話理解：</strong></p>
+                <ul>
+                    <li><strong>特徵向量：</strong>數據變化最大的「方向」（像是指南針的指針）</li>
+                    <li><strong>特徵值：</strong>在那個方向上變化有「多大」（指針有多長）</li>
+                </ul>
+                <div class="analogy">
+                    想像蘋果園的數據是一群散佈的點，特徵向量就是「讓這些點看起來最分散的方向」。
+                    <br>特徵值越大 → 那個方向的變化越大 → 越重要！
+                </div>
+            </li>
+
+            <li>
+                <h4>選擇主成分（Select Principal Components）</h4>
+                <p><strong>如何選：</strong>依照特徵值由大到小排序，選前幾個最大的。</p>
+                <p><strong>判斷標準：</strong></p>
+                <ul>
+                    <li>看累積解釋變異量：前 5 個主成分能解釋 90% 的變異 → 夠用了！</li>
+                    <li>畫「碎石圖」：斜率變平的地方就是切點</li>
+                </ul>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>主成分</th>
+                            <th>特徵值</th>
+                            <th>解釋變異量</th>
+                            <th>累積變異量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PC1</td>
+                            <td>45.2</td>
+                            <td>45.2%</td>
+                            <td>45.2%</td>
+                        </tr>
+                        <tr>
+                            <td>PC2</td>
+                            <td>23.5</td>
+                            <td>23.5%</td>
+                            <td>68.7%</td>
+                        </tr>
+                        <tr>
+                            <td>PC3</td>
+                            <td>15.3</td>
+                            <td>15.3%</td>
+                            <td>84.0%</td>
+                        </tr>
+                        <tr>
+                            <td>PC4</td>
+                            <td>8.1</td>
+                            <td>8.1%</td>
+                            <td>92.1%</td>
+                        </tr>
+                        <tr>
+                            <td>PC5</td>
+                            <td>3.9</td>
+                            <td>3.9%</td>
+                            <td>96.0%</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>👆 通常選到累積 85-95% 就夠了，這個例子選前 4 個主成分即可。</p>
+            </li>
+
+            <li>
+                <h4>轉換數據（Transform Data）</h4>
+                <p><strong>最後一步：</strong>把原始數據投影到新的主成分軸上。</p>
+                <p><strong>結果：</strong>原本 100 個特徵 → 變成 5 個主成分！</p>
+            </li>
+        </ol>
+
+        <h2>🌱 智慧農業應用實例</h2>
+
+        <div class="example-box">
+            <h3>案例 1：土壤養分分析</h3>
+            <p><strong>問題：</strong>土壤檢測有 20+ 種指標（氮、磷、鉀、有機質、pH、微量元素...），太複雜！</p>
+            <p><strong>PCA 分析發現：</strong></p>
+            <ul>
+                <li><strong>主成分 1（解釋 58%）：</strong>整體肥力水平（氮磷鉀都高 vs. 都低）</li>
+                <li><strong>主成分 2（解釋 22%）：</strong>酸鹼平衡（pH、鈣鎂含量）</li>
+                <li><strong>主成分 3（解釋 12%）：</strong>微量元素特殊性</li>
+            </ul>
+            <p><strong>實際應用：</strong>只用這 3 個主成分就能對土壤分類，製作「土壤健康地圖」！</p>
+        </div>
+
+        <div class="example-box">
+            <h3>案例 2：作物生長監測</h3>
+            <p><strong>問題：</strong>多光譜影像有 10+ 個波段，計算各種植生指標（NDVI、EVI、SAVI...）又多了 5+ 個，總共 15+ 個特徵。</p>
+            <p><strong>PCA 分析發現：</strong></p>
+            <ul>
+                <li><strong>主成分 1：</strong>植物健康狀態（葉綠素含量）</li>
+                <li><strong>主成分 2：</strong>水分壓力（缺水 vs. 充足）</li>
+                <li><strong>主成分 3：</strong>土壤背景影響</li>
+            </ul>
+            <p><strong>實際應用：</strong>用這 3 個主成分訓練機器學習模型，預測產量更準確且更快！</p>
+        </div>
+
+        <div class="example-box">
+            <h3>案例 3：溫室環境控制</h3>
+            <p><strong>問題：</strong>溫室裡有 50+ 個感測器（溫度、濕度、CO2、光照、風速...），資料量龐大。</p>
+            <p><strong>PCA 分析發現：</strong></p>
+            <ul>
+                <li><strong>主成分 1：</strong>整體氣候強度（晴天 vs. 陰天）</li>
+                <li><strong>主成分 2：</strong>通風狀況（悶熱 vs. 涼爽）</li>
+                <li><strong>主成分 3：</strong>晝夜溫差</li>
+            </ul>
+            <p><strong>實際應用：</strong>只監控這 3 個主成分，就能掌握溫室整體狀態，設計更智慧的控制策略！</p>
+        </div>
+
+        <h2>💻 Python 實作範例</h2>
+
+        <h3>方法一：使用 scikit-learn（最簡單）</h3>
+        <pre><code>import numpy as np
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+import pandas as pd
+
+# 假設我們有土壤數據
+data = pd.DataFrame({
+    '氮含量': [45, 52, 38, 61, 55],
+    '磷含量': [23, 28, 19, 32, 27],
+    '鉀含量': [180, 210, 165, 235, 200],
+    'pH值': [6.5, 6.8, 5.9, 7.1, 6.7],
+    '有機質': [3.2, 3.8, 2.7, 4.1, 3.5]
+})
+
+# 步驟 1：標準化
+scaler = StandardScaler()
+data_scaled = scaler.fit_transform(data)
+
+# 步驟 2：執行 PCA
+pca = PCA(n_components=3)  # 保留 3 個主成分
+data_pca = pca.fit_transform(data_scaled)
+
+# 步驟 3：查看結果
+print("各主成分解釋的變異量：", pca.explained_variance_ratio_)
+print("累積變異量：", np.cumsum(pca.explained_variance_ratio_))
+
+# 輸出範例：
+# 各主成分解釋的變異量： [0.58  0.22  0.12]
+# 累積變異量： [0.58  0.80  0.92]
+# → 前 3 個主成分解釋了 92% 的變異！
+
+# 步驟 4：查看主成分的組成（哪些原始特徵影響最大）
+components_df = pd.DataFrame(
+    pca.components_,
+    columns=data.columns,
+    index=['PC1', 'PC2', 'PC3']
+)
+print("\n主成分組成：")
+print(components_df)
+
+# 步驟 5：轉換後的數據
+pca_df = pd.DataFrame(
+    data_pca,
+    columns=['主成分1', '主成分2', '主成分3']
+)
+print("\n轉換後的數據：")
+print(pca_df)</code></pre>
+
+        <h3>方法二：使用 NumPy 手動實作（理解原理）</h3>
+        <pre><code>import numpy as np
+
+# 假設數據矩陣 X (樣本數 × 特徵數)
+X = np.array([
+    [45, 23, 180, 6.5, 3.2],
+    [52, 28, 210, 6.8, 3.8],
+    [38, 19, 165, 5.9, 2.7],
+    [61, 32, 235, 7.1, 4.1],
+    [55, 27, 200, 6.7, 3.5]
+])
+
+# 步驟 1：標準化（中心化 + 標準差歸一）
+X_mean = X.mean(axis=0)
+X_std = X.std(axis=0)
+X_scaled = (X - X_mean) / X_std
+
+# 步驟 2：計算共變異矩陣
+# cov = (X^T · X) / (n-1)
+n_samples = X_scaled.shape[0]
+cov_matrix = (X_scaled.T @ X_scaled) / (n_samples - 1)
+
+# 步驟 3：計算特徵值和特徵向量
+eigenvalues, eigenvectors = np.linalg.eig(cov_matrix)
+
+# 步驟 4：按特徵值大小排序
+idx = eigenvalues.argsort()[::-1]  # 降序排列
+eigenvalues = eigenvalues[idx]
+eigenvectors = eigenvectors[:, idx]
+
+# 步驟 5：選擇前 k 個主成分
+k = 3
+principal_components = eigenvectors[:, :k]
+
+# 步驟 6：投影數據到主成分空間
+X_pca = X_scaled @ principal_components
+
+print("特徵值（變異量）：", eigenvalues)
+print("解釋變異比例：", eigenvalues / eigenvalues.sum())
+print("轉換後的數據形狀：", X_pca.shape)  # (5, 3)</code></pre>
+
+        <h2>📊 如何解讀 PCA 結果</h2>
+
+        <div class="concept-box">
+            <h3>1. 碎石圖（Scree Plot）</h3>
+            <p>橫軸：主成分編號（PC1, PC2, PC3...）</p>
+            <p>縱軸：特徵值（或解釋變異量）</p>
+            <p><strong>怎麼看：</strong>找「手肘點」，通常在曲線變平的地方，那就是保留的主成分數量。</p>
+        </div>
+
+        <div class="concept-box">
+            <h3>2. 解釋變異量表格</h3>
+            <p><strong>個別解釋變異量：</strong>每個主成分解釋了多少 % 的總變異。</p>
+            <p><strong>累積解釋變異量：</strong>前 n 個主成分累計解釋了多少 % 的總變異。</p>
+            <p><strong>經驗法則：</strong>累積達到 85-95% 就足夠了。</p>
+        </div>
+
+        <div class="concept-box">
+            <h3>3. 主成分載荷（Loadings）</h3>
+            <p>顯示每個原始特徵對主成分的「貢獻度」。</p>
+            <p><strong>範例：</strong></p>
+            <pre><code>        氮含量   磷含量   鉀含量    pH值   有機質
+PC1      0.45    0.42    0.47   0.35    0.51
+PC2     -0.38    0.52   -0.29   0.68    0.15
+PC3      0.72   -0.31    0.15  -0.48   -0.35</code></pre>
+            <p><strong>解讀：</strong></p>
+            <ul>
+                <li>PC1：所有養分都是正值 → 代表「整體肥力水平」</li>
+                <li>PC2：pH 和磷最重要 → 代表「酸鹼與磷素平衡」</li>
+                <li>PC3：氮含量影響最大 → 代表「氮素特殊性」</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ PCA 使用注意事項</h2>
+
+        <div class="warning">
+            <h4>❌ PCA 不適合的情況</h4>
+            <ul>
+                <li><strong>資料本身就是獨立的：</strong>如果特徵之間沒有相關性，PCA 沒有幫助。</li>
+                <li><strong>非線性關係：</strong>PCA 只能處理線性關係，對於複雜的非線性結構要用 t-SNE 或 UMAP。</li>
+                <li><strong>分類任務重視解釋性：</strong>PCA 後的主成分很難解釋「這代表什麼意義」。</li>
+                <li><strong>樣本數太少：</strong>樣本數要 &gt; 特徵數，否則共變異矩陣不穩定。</li>
+            </ul>
+        </div>
+
+        <div class="tip">
+            <h4>✅ PCA 最佳實踐</h4>
+            <ul>
+                <li>先標準化數據（StandardScaler）</li>
+                <li>檢查特徵之間是否有相關性（畫相關矩陣熱圖）</li>
+                <li>保留 85-95% 的累積變異量</li>
+                <li>視覺化前兩個主成分（2D 散點圖）來觀察數據分布</li>
+                <li>分析主成分載荷，理解每個主成分的「意義」</li>
+                <li>對比 PCA 前後的模型效果，確保有幫助</li>
+            </ul>
+        </div>
+
+        <h2>🎯 總結：一張圖理解 PCA</h2>
+
+        <div class="key-point">
+            <strong>PCA 做了什麼？</strong>
+            <ol>
+                <li>把高維度的數據（100 個特徵）投影到低維度（5 個主成分）</li>
+                <li>選擇「變異最大」的方向作為新的座標軸</li>
+                <li>讓新的座標軸（主成分）彼此獨立（互相垂直，相關性為零）</li>
+                <li>丟掉「不重要」的方向，保留最有資訊量的部分</li>
+            </ol>
+
+            <strong>什麼時候用 PCA？</strong>
+            <ul>
+                <li>特徵太多，想要降維加速訓練</li>
+                <li>想要視覺化高維數據</li>
+                <li>想要去除特徵間的多重共線性</li>
+                <li>想要減少雜訊（雜訊通常在變異小的方向）</li>
+            </ul>
+
+            <strong>智慧農業的 PCA 典型流程：</strong>
+            <div class="math-simple" style="text-align: left;">
+原始數據（感測器、影像、土壤檢測）<br>
+↓<br>
+標準化處理<br>
+↓<br>
+執行 PCA 降維<br>
+↓<br>
+分析主成分意義（載荷分析）<br>
+↓<br>
+應用：視覺化 / 訓練模型 / 異常偵測 / 分群<br>
+            </div>
+        </div>
+
+        <h2>📚 延伸學習資源</h2>
+
+        <ul>
+            <li><strong>線性代數基礎：</strong>特徵值、特徵向量、矩陣運算</li>
+            <li><strong>其他降維技術：</strong>
+                <ul>
+                    <li>t-SNE：非線性降維，適合視覺化</li>
+                    <li>UMAP：更快的非線性降維</li>
+                    <li>LDA：有監督的降維（用於分類）</li>
+                    <li>Autoencoder：深度學習的降維方法</li>
+                </ul>
+            </li>
+            <li><strong>進階 PCA：</strong>
+                <ul>
+                    <li>Kernel PCA：處理非線性關係</li>
+                    <li>Sparse PCA：產生稀疏的主成分（更容易解釋）</li>
+                    <li>Incremental PCA：處理大數據（無法一次載入記憶體）</li>
+                </ul>
+            </li>
+        </ul>
+
+        <div class="key-point" style="margin-top: 40px; text-align: center;">
+            <p style="font-size: 1.3em; margin-bottom: 0;">
+                🌾 <strong>記住：PCA 是把複雜變簡單，但不失去本質！</strong> 🌾
+            </p>
+        </div>
+
+        <p style="text-align: center; margin-top: 40px; color: #666;">
+            ─────────────────────────────────────<br>
+            智慧農業課程教材 | 最後更新：2025年12月
+        </p>
+    </div>
+
+    <script>
+        // 主題切換功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme') || 'dark';
+
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // 頁面載入時讀取儲存的主題設定
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            }
+        })();
+    </script>
+</body>
+</html>
